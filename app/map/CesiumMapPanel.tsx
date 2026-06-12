@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { syncMapEntities, type CesiumSyncState, type MaskingPolygon } from '@/lib/map/cesium-sync'
+import { syncHeatmapLayer } from '@/lib/map/heatmap-layer'
+import type { HeatmapCell } from '@/lib/propagation/types'
 import type { CesiumModule, CesiumTerrainProvider, CesiumViewer } from '@/lib/map/cesium-types'
 import { loadCesium } from '@/lib/map/load-cesium'
 import {
@@ -32,6 +34,9 @@ interface CesiumMapPanelProps {
   placedCuas: PlacedCuas[]
   overlaps: OverlapVolume[]
   maskingPolygons: MaskingPolygon[]
+  heatmapCells?: HeatmapCell[]
+  heatmapGridSteps?: number
+  heatmapJammer?: PlacedCuas | null
   windByUas: Record<string, WindSample>
   nilWind: boolean
   placementMode: PlacementMode
@@ -51,6 +56,9 @@ export default function CesiumMapPanel({
   placedCuas,
   overlaps,
   maskingPolygons,
+  heatmapCells = [],
+  heatmapGridSteps = 0,
+  heatmapJammer = null,
   windByUas,
   nilWind,
   placementMode,
@@ -318,6 +326,19 @@ export default function CesiumMapPanel({
       nilWind,
     }
     syncMapEntities(Cesium, viewer, state)
+
+    if (heatmapJammer && heatmapCells.length > 0) {
+      const spanDeg = (heatmapJammer.asset.defeat_range_km / 111) * 0.85
+      syncHeatmapLayer(Cesium, viewer, heatmapCells, heatmapGridSteps, {
+        south: heatmapJammer.lat - spanDeg,
+        north: heatmapJammer.lat + spanDeg,
+        west: heatmapJammer.lon - spanDeg,
+        east: heatmapJammer.lon + spanDeg,
+      })
+    } else {
+      syncHeatmapLayer(Cesium, viewer, [], 0)
+    }
+
     viewer.scene.requestRender()
   }, [
     cesiumReady,
@@ -325,6 +346,9 @@ export default function CesiumMapPanel({
     placedCuas,
     overlaps,
     maskingPolygons,
+    heatmapCells,
+    heatmapGridSteps,
+    heatmapJammer,
     windByUas,
     nilWind,
     terrainEpoch,

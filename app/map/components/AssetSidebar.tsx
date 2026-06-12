@@ -63,8 +63,14 @@ export function AssetSidebar({
   onRemoveUas,
   onRemoveCuas,
   overlapLegend,
+  overlapSource,
+  heatmapEnabled,
+  heatmapLoading,
+  heatmapError,
+  onToggleHeatmap,
   onOpenSpectralAnalysis,
 }: AssetSidebarProps) {
+  const operations = isOperationsEditionClient()
   const [uasOpen, setUasOpen] = useState(true)
   const [cuasOpen, setCuasOpen] = useState(true)
   const [placedOpen, setPlacedOpen] = useState(true)
@@ -108,8 +114,9 @@ export function AssetSidebar({
             <p className="text-[10px] store-text-muted">Terrain laydown & envelopes</p>
           </div>
         </div>
-        <div className="mt-3">
+        <div className="mt-3 flex items-center justify-between gap-2">
           <StoreEyebrow icon={<Crosshair size={12} />}>Place assets on globe</StoreEyebrow>
+          <EditionBadge />
         </div>
       </div>
 
@@ -238,17 +245,38 @@ export function AssetSidebar({
         )}
 
         {(placedUas.length > 0 || placedCuas.length > 0) && (
-          <div>
+          <div className="space-y-2">
             <button
               type="button"
               onClick={onOpenSpectralAnalysis}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl store-btn-primary text-sm"
+              title="Keyboard: S"
             >
               <Radio className="w-4 h-4" />
               Spectral Analysis
             </button>
-            <p className="text-[11px] store-text-muted text-center mt-2 leading-relaxed">
-              Band overlap, defeat tactics, and AeroCopilot assessment
+            {operations && placedCuas.length > 0 && onToggleHeatmap && (
+              <button
+                type="button"
+                onClick={onToggleHeatmap}
+                className={cn(
+                  'w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-mono transition-colors',
+                  heatmapEnabled
+                    ? 'border-cyan/40 bg-cyan/10 text-cyan'
+                    : 'store-panel-inner store-text-body hover:border-cyan/30',
+                )}
+                title="Keyboard: H — jam coverage heatmap (Operations)"
+              >
+                {heatmapLoading ? 'Computing heatmap…' : heatmapEnabled ? 'Hide jam heatmap' : 'Show jam heatmap'}
+              </button>
+            )}
+            {heatmapError && (
+              <p className="text-[10px] font-mono text-amber text-center">{heatmapError}</p>
+            )}
+            <p className="text-[11px] store-text-muted text-center leading-relaxed">
+              {operations
+                ? 'Server adjudication, J/S, propagation — press S'
+                : 'Band overlap + defeat tactics — press S'}
             </p>
           </div>
         )}
@@ -274,7 +302,15 @@ export function AssetSidebar({
             {overlapLegend && (overlapLegend.defeat > 0 || overlapLegend.survivable > 0) && (
               <p className="text-[11px] store-text-body pt-1 border-t border-[var(--store-line)]">
                 {overlapLegend.defeat} defeat · {overlapLegend.survivable} survivable
+                {overlapSource === 'adjudication' && (
+                  <span className="block text-[10px] font-mono text-cyan mt-0.5">
+                    Dome colours: Operations adjudication
+                  </span>
+                )}
               </p>
+            )}
+            {heatmapEnabled && (
+              <LegendRow colour="bg-gradient-to-r from-cyan/40 to-orange/40" label="Jam coverage heatmap (dB)" />
             )}
             {dualRoleIds.size > 0 && (
               <p className="text-[10px] store-text-muted leading-snug pt-1">

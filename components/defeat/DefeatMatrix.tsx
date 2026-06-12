@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react'
 import { Download, ShieldCheck, BadgeCheck, Grid3x3 } from 'lucide-react'
+import { EditionBadge } from '@/components/operations/EditionBadge'
+import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import {
   StoreCatalogHeader,
   StoreCatalogLayout,
@@ -21,6 +23,7 @@ interface DefeatMatrixProps {
 }
 
 export function DefeatMatrix({ data }: DefeatMatrixProps) {
+  const operations = isOperationsEditionClient()
   const [categoryPill, setCategoryPill] = useState<CategoryPill>('all')
   const [defeatType, setDefeatType] = useState<DefeatTypeFilter>('all')
   const [selectedCell, setSelectedCell] = useState<{
@@ -94,6 +97,16 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
           { icon: Grid3x3, label: 'CSV export for briefings' },
         ]}
       />
+
+      {operations && (
+        <div className="mb-4 flex items-center justify-between gap-3 store-panel-inner rounded-xl px-4 py-3 border border-cyan/20">
+          <p className="text-xs store-text-body">
+            <span className="font-mono text-cyan">Operations note:</span> static OSINT grid here —
+            propagation-aware adjudication runs on Map Intel Spectral Analysis.
+          </p>
+          <EditionBadge />
+        </div>
+      )}
 
       <StoreCatalogLayout
         sidebar={

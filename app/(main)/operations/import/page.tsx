@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { Check, FileUp, Upload } from 'lucide-react'
+import { EditionBadge } from '@/components/operations/EditionBadge'
 import { HubPageShell } from '@/components/hub/HubPageShell'
 import { StoreFilterSection } from '@/components/catalog/StoreFilterSidebar'
 import { Button } from '@/components/ui/button'
@@ -14,13 +15,23 @@ export default function OperationsImportPage() {
   const [platformName, setPlatformName] = useState('')
   const [docTitle, setDocTitle] = useState('')
   const [loading, setLoading] = useState(false)
+  const [refreshing, setRefreshing] = useState(true)
+  const [accessError, setAccessError] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
+    setRefreshing(true)
     const res = await fetch('/api/v1/import-jobs')
-    if (res.ok) {
+    if (res.status === 403) {
+      setAccessError('Operations edition required for tenant import')
+      setJobs([])
+    } else if (res.ok) {
       const json = await res.json()
       setJobs(json.data ?? [])
+      setAccessError(null)
+    } else if (res.status === 401) {
+      setAccessError('Authenticate to manage import jobs')
     }
+    setRefreshing(false)
   }, [])
 
   useEffect(() => {
@@ -67,6 +78,13 @@ export default function OperationsImportPage() {
       subtitle="Tenant-scoped platform and document ingestion with human approval workflow"
     >
       <div className="grid gap-6 max-w-3xl">
+        <div className="flex items-center gap-3">
+          <EditionBadge />
+          {accessError && (
+            <p className="text-xs font-mono text-amber">{accessError}</p>
+          )}
+        </div>
+
         <StorePanel inner className="p-5 space-y-4">
           <form onSubmit={queuePlatform} className="space-y-3">
             <div className="flex items-center gap-2 text-sm text-white font-medium">
@@ -102,8 +120,13 @@ export default function OperationsImportPage() {
         </StorePanel>
 
         <StoreFilterSection label="Import jobs">
-          {jobs.length === 0 ? (
-            <p className="text-sm store-text-body">No import jobs yet.</p>
+          {refreshing ? (
+            <p className="text-sm store-text-muted font-mono">Loading jobs…</p>
+          ) : jobs.length === 0 ? (
+            <p className="text-sm store-text-body">
+              No import jobs yet. Queue a platform or document above — analyst approval required
+              before tenant commit.
+            </p>
           ) : (
             <ul className="space-y-2">
               {jobs.map((job) => (

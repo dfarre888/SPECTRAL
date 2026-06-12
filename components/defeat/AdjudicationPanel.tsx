@@ -18,6 +18,8 @@ import type {
   DefeatEffectiveness,
   Platform,
 } from '@/lib/types'
+import { EditionBadge } from '@/components/operations/EditionBadge'
+import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import { cn } from '@/lib/utils'
 
 interface AdjudicationPanelProps {
@@ -61,6 +63,7 @@ export function AdjudicationPanel({
 }: AdjudicationPanelProps) {
   if (!platform || !system) return null
 
+  const operations = isOperationsEditionClient()
   const cellValue = resolveCellValue(platform, system, effectiveness ?? undefined)
   const primaryType = getPrimaryDefeatType(system)
 
@@ -82,6 +85,15 @@ export function AdjudicationPanel({
         </SheetHeader>
 
         <div className="space-y-6 mt-4">
+          <div className="flex items-center justify-between">
+            <EditionBadge />
+            {operations && (
+              <p className="text-[10px] font-mono store-text-muted">
+                Map Intel → Spectral Analysis for J/S propagation
+              </p>
+            )}
+          </div>
+
           {!effectiveness ? (
             <div className="store-panel-inner rounded-xl p-4">
               <p className="text-sm store-text-body">

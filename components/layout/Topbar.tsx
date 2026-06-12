@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { Search, Bell, Settings, Zap } from 'lucide-react'
+import { OperationsChrome } from '@/components/operations/OperationsChrome'
 
 export function Topbar() {
   const [query, setQuery] = useState('')
@@ -21,6 +22,8 @@ export function Topbar() {
       </div>
 
       <div className="flex-1" />
+
+      <OperationsChrome />
 
       {process.env.NEXT_PUBLIC_DEMO_MODE === 'true' && (
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]">

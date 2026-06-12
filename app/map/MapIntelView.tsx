@@ -9,6 +9,8 @@ import { SpectralAnalysisPanel } from '@/app/map/components/SpectralAnalysisPane
 import { MapNavigationWheel } from '@/app/map/components/MapNavigationWheel'
 import { EntityInfoPanel } from '@/app/map/components/EntityInfoPanel'
 import { useDefeatOverlap } from '@/app/map/hooks/useDefeatOverlap'
+import { useLaydownAdjudication } from '@/app/map/hooks/useLaydownAdjudication'
+import { usePropagationHeatmap } from '@/app/map/hooks/usePropagationHeatmap'
 import { useLoiterPlanning } from '@/app/map/hooks/useLoiterPlanning'
 import {
   usePlatformPlacement,
@@ -55,6 +57,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const [highlightedIds, setHighlightedIds] = useState<string[]>([])
   const [terrainEpoch, setTerrainEpoch] = useState(0)
   const [spectralOpen, setSpectralOpen] = useState(false)
+  const [heatmapEnabled, setHeatmapEnabled] = useState(false)
 
   const cesiumCtxRef = useRef<CesiumContext | null>(null)
   const getCesium = useCallback(() => cesiumCtxRef.current, [])
@@ -79,7 +82,18 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     setPlacedCuas,
     terrainEpoch,
   )
-  const overlaps = useDefeatOverlap(placedUas, placedCuas)
+  const { overlaps, source: overlapSource } = useDefeatOverlap(placedUas, placedCuas)
+  const adjudication = useLaydownAdjudication(
+    placedUas,
+    placedCuas,
+    overlaps,
+    placedUas.length > 0 && placedCuas.length > 0,
+  )
+  const heatmapJammer =
+    placedCuas.find((c) => c.asset.defeat_methods.includes('RF_jamming')) ?? placedCuas[0] ?? null
+  const heatmapReceiverAlt =
+    placedUas[0]?.discAltitude_m ?? heatmapJammer?.terrainAMSL ?? 100
+  const heatmap = usePropagationHeatmap(heatmapEnabled, heatmapJammer, heatmapReceiverAlt)
   const { windByUas, loading: windLoading } = useWindData(nilWind, placedUas, setPlacedUas)
   useEnvelopeWalls(nilWind, placedUas, getCesium, setPlacedUas)
 
@@ -181,11 +195,31 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         cancelPlacement()
+        return
+      }
+      if (
+        e.key.toLowerCase() === 's' &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        (placedUas.length > 0 || placedCuas.length > 0) &&
+        !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
+      ) {
+        setSpectralOpen(true)
+      }
+      if (
+        e.key.toLowerCase() === 'h' &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        placedCuas.length > 0 &&
+        !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
+      ) {
+        setHeatmapEnabled((v) => !v)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [cancelPlacement])
+  }, [cancelPlacement, placedUas.length, placedCuas.length])
 
   useEffect(() => {
     if (searchParams.get('from') !== 'spectra') return

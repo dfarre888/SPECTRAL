@@ -262,6 +262,11 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         onRemoveUas={handleRemoveUas}
         onRemoveCuas={handleRemoveCuas}
         overlapLegend={overlapLegend}
+        overlapSource={overlapSource}
+        heatmapEnabled={heatmapEnabled}
+        heatmapLoading={heatmap.loading}
+        heatmapError={heatmap.error}
+        onToggleHeatmap={() => setHeatmapEnabled((v) => !v)}
         onOpenSpectralAnalysis={() => setSpectralOpen(true)}
       />
 
@@ -271,6 +276,9 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         placedUas={placedUas}
         placedCuas={placedCuas}
         overlaps={overlaps}
+        analysis={adjudication.analysis}
+        adjudicationSource={adjudication.source}
+        fallbackReason={adjudication.fallbackReason}
       />
 
       <div className="relative flex-1 flex flex-col min-w-0">
@@ -308,6 +316,9 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             placedCuas={placedCuas}
             overlaps={overlaps}
             maskingPolygons={maskingPolygons}
+            heatmapCells={heatmap.cells}
+            heatmapGridSteps={heatmap.gridSteps}
+            heatmapJammer={heatmapJammer}
             windByUas={windByUas}
             nilWind={nilWind}
             placementMode={placementMode}

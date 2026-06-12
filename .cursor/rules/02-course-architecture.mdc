@@ -1,0 +1,123 @@
+---
+description: SPECTRAL PCM course architecture — 3-day timetable, 18 lesson packs, learning objectives structure, workbook format.
+globs: phase7/**, **/*timetable*, **/*lesson*, **/*workbook*
+alwaysApply: false
+---
+
+# SPECTRAL PCM — Course Architecture
+
+## Three-Day Taught Course (Primary Deliverable)
+
+### Day 1 — Platform Landscape & Fundamentals
+**Theme:** Warm orange. The "why now" day. Shock and orient.
+
+| Pack | Code | Title | Slides | LOs |
+|---|---|---|---|---|
+| 1 | D1P1 | The Drone Revolution — Why This Matters Now | 20 | 3 |
+| 2 | D1P2 | Platform Taxonomy — Groups 1–5 & NATO Classes | 22 | 4 |
+| 3 | D1P3 | Western & Allied Platforms — Five Eyes / JP / SG / UAE | 24 | 4 |
+| 4 | D1P4 | Adversary Platforms — Russian, Chinese, Iranian, Turkish | 22 | 4 |
+| 5 | D1P5 | FPV & Small-Tier Revolution — Ukraine's New Paradigm | 20 | 3 |
+
+Day 1 total: ~108 slides across 5 packs. 6 lesson periods × 50 min. 2 syndicate exercises.
+
+### Day 2 — Payloads, Sensors, EW, C-UAS
+**Theme:** Cool cyan. The "what can it do" and "how do you stop it" day. Technical depth.
+
+| Pack | Code | Title | Slides | LOs |
+|---|---|---|---|---|
+| 6 | D2P1 | Sensor Systems — EO/IR, SAR, SIGINT, Radar | 22 | 4 |
+| 7 | D2P2 | Weapons & Precision Munitions — MAM, Hellfire, Brimstone, OWA | 20 | 3 |
+| 8 | D2P3 | Datalinks & C2 — LOS, BLOS, Mesh, Fibre-Optic | 18 | 3 |
+| 9 | D2P4 | Loitering Munitions & One-Way Attack — Shahed to Switchblade | 22 | 4 |
+| 10 | D2P5 | Counter-UAS — Detect, Decide, Defeat | 20 | 4 |
+| 11 | D2P6 | GNSS Denial — Jamming, Spoofing, GPS-Denied Navigation | 18 | 3 |
+
+Day 2 total: ~120 slides across 6 packs. 6 lesson periods × 50 min. 2 tabletop exercises.
+
+### Day 3 — Doctrine, TTPs, Emerging Tech & Integration
+**Theme:** Purple/mixed. The "how it's actually used" day. Operational synthesis.
+
+| Pack | Code | Title | Slides | LOs |
+|---|---|---|---|---|
+| 12 | D3P1 | Doctrine by Nation — Russia, Ukraine, Israel, Türkiye, Iran, China | 24 | 4 |
+| 13 | D3P2 | Conflict Case Studies — Nagorno-Karabakh, Libya, Ukraine, Red Sea, India-Pakistan | 22 | 3 |
+| 14 | D3P3 | Emerging Tech Horizon — AI/Autonomy, Swarms, MUM-T, CCA | 20 | 3 |
+| 15 | D3P4 | Multi-Domain Integration — Air + Maritime + Ground UxS | 18 | 3 |
+| 16 | D3P5 | Planning & Assessment — Mission Planning, Risk, ROE | 16 | 3 |
+| 17 | D3P6 | Synthesis & Assessment Prep | 14 | 2 |
+
+Day 3 total: ~114 slides across 6 packs. 6 lesson periods. Assessment period.
+
+### Scenario Briefing Pack (Days 4–5 bolt-on)
+| Pack | Code | Title | Slides |
+|---|---|---|---|
+| 18 | SCN | Red v Blue — Scenario Overview & DS Brief | 40 |
+
+**Grand total: ~382 slides across 18 packs.**
+
+## Learning Objective Format
+Every lesson pack opens with a LO slide using this format:
+```
+LEARNING OBJECTIVES
+By the end of this lesson you will be able to:
+LO1 — [Action verb + specific capability] (Knowledge / Application / Analysis)
+LO2 — ...
+LO3 — ...
+
+ASSESSMENT: [Knowledge check / Syndicate exercise / Tabletop scenario]
+```
+Bloom's taxonomy levels: Remember → Understand → Apply → Analyse → Evaluate → Create
+Day 1 packs: mostly Remember + Understand
+Day 2 packs: Understand + Apply
+Day 3 packs: Apply + Analyse + Evaluate
+
+## Workbook Format (4 books, PDF)
+
+### Structure per workbook
+```
+Cover page (classification banner, day/module title, SPECTRAL PCM logo)
+Daily timetable
+─── Lesson N ───────────────────────────────
+Lesson title + LOs (1 page)
+Key concepts (2–4 pages — not a copy of the slides, adds depth)
+Worked examples / case study extract (1–2 pages)
+Knowledge check — 10 MCQ + 2 short-answer (1 page)
+Exercise brief (for syndicate/tabletop) (1 page)
+Space for notes (1 page per lesson)
+─────────────────────────────────────────────
+Day summary — 5 key takeaways
+Glossary for the day
+Reference list
+```
+
+### Knowledge Check Answer Format
+MCQ: A / B / C / D — single best answer
+Pass threshold: 80% for knowledge checks (not final assessment)
+Answers in instructor version only — not in student workbook
+
+## Assessment
+- End of Day 3: written knowledge assessment — 50 MCQ, 3 short-answer, 75 min
+- Pass mark: 80% (40/50 MCQ + satisfactory short-answer responses)
+- Assessed by: course instructor (SPECTRAL PCM-certified)
+- Certificate: SPECTRAL PCM Course Completion
+
+## Slide Count Rules
+- Maximum 24 slides per 50-min lesson pack (including title + LO + summary = 3 structural slides, leaving 21 for content)
+- Every slide needs a visual — no text-only slides
+- If content exceeds 21 slides, split into Part A / Part B (two packs)
+- Charts/tables count as visuals
+- Higgsfield placeholders count as visuals
+
+## Higgsfield Prompt Delivery
+One batch per pack, delivered as a markdown file named `[PACKCODE]_higgsfield_prompts.md` in the same directory as the slide build script. Format:
+```markdown
+## [PACK CODE] — [Pack Title]
+### Slide [N] — [Slide Title]
+**Purpose:** [what the image should communicate]
+**Style:** cinematic military documentary, desaturated, [warm/cool] grading, golden hour / NVG-blue
+**Subject:** [specific subject with operational context — aircraft type, terrain, action]
+**Mood:** tense / professional / operational
+**Aspect:** 16:9
+**Negative:** cartoon, low quality, watermark, civilian aesthetic, cheerful, text
+```

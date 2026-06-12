@@ -1,0 +1,127 @@
+---
+description: Spectral — Vercel deployment checklist, environment variables, migration process, rollback procedure.
+globs: vercel.json, .env*, next.config.ts, supabase/migrations/**
+alwaysApply: false
+---
+
+# Spectral — Deployment
+
+## Environment Variables (complete list)
+
+### Production (Vercel dashboard — never commit to repo)
+```
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=          ← server-only, never NEXT_PUBLIC_
+
+# Anthropic
+ANTHROPIC_API_KEY=                  ← server-only, never NEXT_PUBLIC_
+
+# Mapping
+NEXT_PUBLIC_CESIUM_ION_TOKEN=       ← domain-restricted, safe to expose
+NEXT_PUBLIC_MAPBOX_TOKEN=           ← domain-restricted, safe to expose
+
+# App
+NEXT_PUBLIC_APP_URL=https://spectral.a3dm.com.au
+```
+
+### Local (.env.local — gitignored)
+Same keys, pointing to local/staging Supabase instance.
+
+## Pre-Deploy Checklist
+
+Run through every time before `git push` to main:
+
+```
+□ All env vars present in Vercel dashboard (check Settings → Environment Variables)
+□ Supabase migrations applied to production (supabase db push)
+□ No SUPABASE_SERVICE_ROLE_KEY or ANTHROPIC_API_KEY in client-side code
+   grep -r "SERVICE_ROLE\|ANTHROPIC_API" app/
+□ Classification banner present and non-removable in layout
+□ CesiumJS dynamic imports all have ssr:false
+□ No top-level 'cesium' imports (would break SSR)
+   grep -r "from 'cesium'" app/ components/
+□ Build passes locally: npm run build
+□ No TypeScript errors: npm run type-check
+□ Lint clean: npm run lint
+```
+
+## Migration Process
+
+```bash
+# 1. Write migration file
+supabase migration new add_scenario_injects_table
+
+# 2. Edit supabase/migrations/[timestamp]_add_scenario_injects_table.sql
+
+# 3. Test locally
+supabase db reset   # applies all migrations from scratch
+
+# 4. Apply to production
+supabase db push    # apply pending migrations to linked project
+
+# 5. Verify
+supabase db diff    # should show no diff after push
+```
+
+## Vercel Build Settings
+
+```
+Framework Preset: Next.js
+Root Directory: ./
+Build Command: npm run build
+Output Directory: .next
+Install Command: npm install
+Node.js Version: 20.x
+```
+
+## CesiumJS Static Assets (must be in vercel.json)
+
+```json
+{
+  "headers": [
+    {
+      "source": "/static/Cesium/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}
+```
+
+The CopyWebpackPlugin in `next.config.ts` handles copying Cesium assets to `public/static/Cesium/` at build time. Do not modify this config.
+
+## Rollback Procedure
+
+### Code rollback (Vercel)
+1. Go to Vercel dashboard → Deployments
+2. Find last known-good deployment
+3. Click ⋯ → Promote to Production
+4. Takes effect immediately (no rebuild)
+
+### Database rollback
+Supabase does not support automatic migration rollback. Procedure:
+1. Write a reverse migration: `supabase migration new rollback_[feature_name]`
+2. The reverse migration must be the inverse of the forward migration
+3. Apply: `supabase db push`
+4. Always write rollback migrations at the same time as forward migrations
+
+## Post-Deploy Smoke Tests
+
+```
+□ /login — loads, can authenticate
+□ /library — loads platform list (confirms Supabase read working)
+□ /spectrum — D3 chart renders (confirms client-side JS bundle working)
+□ /arena — CesiumJS globe loads (confirms static asset delivery working)
+□ /api/health — returns 200 (basic route handler health)
+□ Classification banner visible on all pages
+□ No console errors in browser
+```
+
+## Monitoring
+
+- Vercel Analytics: enabled for all deployments
+- Supabase Dashboard: watch for query errors and RLS violations after deploy
+- Browser console: no unhandled errors on core module pages

@@ -1,0 +1,156 @@
+---
+description: Spectral Supabase schema, TypeScript types, RLS rules, and query patterns.
+globs: lib/supabase/**, lib/types/**, supabase/**, app/**/page.tsx, app/**/route.ts
+alwaysApply: false
+---
+
+# Database Schema Reference
+
+## Tables (Supabase PostgreSQL)
+
+### `platforms` — Military UAS
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid PK | |
+| `platform_id` | text unique | e.g. `mq-9b-skyguardian` |
+| `name` | text | Display name |
+| `country_of_origin` | text | ISO country name |
+| `manufacturer` | text | |
+| `dod_group` | text | Group 1–5 or NATO class |
+| `role` | text[] | ISR, Strike, EW, Decoy, Relay, Swarm |
+| `max_altitude_ft` | integer | |
+| `max_range_km` | integer | |
+| `max_endurance_hrs` | numeric | |
+| `max_speed_kts` | integer | |
+| `payload_kg` | numeric | |
+| `combat_proven` | boolean | |
+| `combat_theatres` | text[] | Ukraine, Syria, Libya, etc. |
+| `status` | text | Operational / Development / Retired |
+| `description` | text | |
+| `specs` | jsonb | Additional KPIs |
+| `created_at` | timestamptz | |
+
+### `gnss_jammers` — EW Jamming Systems
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid PK | |
+| `jammer_id` | text unique | |
+| `name` | text | |
+| `country_of_origin` | text | |
+| `jammer_tier` | text | `tier_1_military` / `tier_2_sdr` / `tier_3_cots` |
+| `target_frequencies` | jsonb | Array of {band, min_mhz, max_mhz} |
+| `effective_range_m` | integer | |
+| `power_output_w` | numeric | |
+| `spoofing_capable` | boolean | |
+| `procurement` | text | Commercial / Military / DIY |
+| `cost_usd_approx` | integer | |
+| `skill_required` | text | None / Basic / Technical / Expert |
+| `self_jamming_risk` | boolean | |
+| `legal_status` | text | |
+| `description` | text | |
+
+### `gnss_constellations` — Satellite Navigation Systems
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid PK | |
+| `constellation_id` | text | gps / glonass / galileo / beidou / navic |
+| `name` | text | |
+| `operator_country` | text | |
+| `satellites_total` | integer | |
+| `satellites_operational` | integer | |
+| `frequencies` | jsonb | L1, L2, L5, E1, E5, etc. |
+| `accuracy_m` | numeric | Civilian |
+| `military_signal` | text | P(Y), M-code, etc. |
+| `status` | text | |
+
+### `anti_drone_systems` — C-UAS
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid PK | |
+| `system_id` | text unique | e.g. `drone-dome` |
+| `name` | text | |
+| `manufacturer` | text | |
+| `country` | text | |
+| `defeat_methods` | text[] | Kinetic / EW / Laser / Net |
+| `max_range_m` | integer | |
+| `target_groups` | text[] | Group 1–5 |
+| `mobile` | boolean | |
+| `combat_proven` | boolean | |
+| `description` | text | |
+
+### `conflict_incidents` — Case Studies
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid PK | |
+| `incident_id` | text unique | |
+| `title` | text | |
+| `conflict` | text | Ukraine / Red Sea / Libya / etc. |
+| `date_range` | text | |
+| `platforms_used` | text[] | References platform_id |
+| `lessons_learned` | text[] | |
+| `significance` | text | tactical / operational / strategic |
+| `description` | text | |
+
+### `nav_countermeasures` — GPS-Denied Navigation Methods
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid PK | |
+| `method_id` | text unique | |
+| `name` | text | |
+| `type` | text | Visual SLAM / INS / Terrain-Ref / Fiber-Optic / Celestial |
+| `defeats_jamming` | boolean | |
+| `defeats_spoofing` | boolean | |
+| `cost_tier` | text | Low / Medium / High |
+| `description` | text | |
+
+### `scenario_templates` + `scenario_injects`
+- `scenario_templates` — Red/Blue scenario configs with terrain, ORBAT, phase timeline
+- `scenario_injects` — 15 pre-seeded injects (GNSS Degraded, ROE Change, Swarm Detected, Spoof Alert, Fiber Optic FPV, etc.)
+
+## TypeScript Interfaces
+All types live in `lib/types/index.ts`:
+```ts
+Platform, GnssConstellation, GnssJammer, JammerTier,
+AntiDroneSystem, ConflictIncident, NavCountermeasure,
+ScenarioConfig, ScenarioInject
+```
+Always import from `@/lib/types` — never redefine inline.
+
+## Supabase Query Patterns
+
+### Server component (correct)
+```ts
+import { createClient } from '@/lib/supabase/server'
+
+export default async function PlatformsPage() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('platforms')
+    .select('*')
+    .eq('status', 'Operational')
+    .order('name')
+  // ...
+}
+```
+
+### Client component with realtime (correct)
+```ts
+'use client'
+import { createClient } from '@/lib/supabase/client'
+// use inside useEffect or React Query
+```
+
+### NEVER do these
+- `supabaseAdmin` / service role key in any client component or page component
+- `supabase.from('platforms').select('*')` without `.order()` on list pages — always paginate or order
+- Raw SQL via `supabase.rpc()` unless there's a specific reason — prefer the query builder
+- Bypassing RLS with `{ count: 'exact', head: true }` queries in user-facing paths
+
+## RLS Policies
+- Read access is open (anon key is fine for all SELECT)
+- Write access requires authentication
+- Service role key is server-side only (never expose to browser)
+
+## Migration Files
+`supabase/migrations/001_initial_schema.sql` — contains the full schema + 15 scenario injects pre-seeded.
+Never modify this file directly. Create new migration files sequentially: `002_...`, `003_...`

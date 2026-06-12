@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 240" font-family="'JetBrains Mono', 'Courier New', monospace">
+  <!--
+    IR Band Overlay: 1000μm → 0.7μm (1mm to 700nm)  LOG WAVELENGTH SCALE
+    x = 30 + log10(1000/λ_μm) / log10(1000/0.7) * 620
+      = 30 + log10(1000/λ) / 3.1549 * 620
+
+    Key positions:
+    1000μm → x=30    |  100μm → x=227   |  10μm → x=423
+    15μm   → x=388   |  8μm   → x=442   |  3μm  → x=526
+    1.4μm  → x=591   |  1.064μm → x=614 |  0.7μm → x=650
+  -->
+
+  <rect x="0" y="82" width="680" height="66" fill="#0A0A0F" opacity="0.72"/>
+
+  <!-- Sub-band fills on scale area -->
+  <!-- FIR >15μm: x=30 to x=388 -->
+  <rect x="30"  y="92" width="358" height="23" fill="#1E1B4B" opacity="0.18"/>
+  <!-- LWIR 8-15μm: x=388 to x=442 -->
+  <rect x="388" y="92" width="54"  height="23" fill="#7C3AED" opacity="0.20"/>
+  <!-- MWIR 3-8μm: x=442 to x=526 -->
+  <rect x="442" y="92" width="84"  height="23" fill="#DC2626" opacity="0.18"/>
+  <!-- SWIR 1.4-3μm: x=526 to x=591 -->
+  <rect x="526" y="92" width="65"  height="23" fill="#D97706" opacity="0.18"/>
+  <!-- NIR 0.7-1.4μm: x=591 to x=650 -->
+  <rect x="591" y="92" width="59"  height="23" fill="#D97706" opacity="0.28"/>
+
+  <!-- ── BLUE FORCE BADGES ── -->
+  <!-- FLIR LWIR (MQ-9 MTS-B, Apache TADS) 8–12μm -->
+  <rect x="375" y="44" width="120" height="17" rx="2" fill="#7C3AED" opacity="0.88"/>
+  <text x="435" y="55" font-size="7.5" fill="#DDD6FE" text-anchor="middle">FLIR (LWIR)  8–12 μm</text>
+  <line x1="425" y1="61" x2="415" y2="92" stroke="#06B6D4" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- Javelin / Hellfire MWIR seeker 3–5μm -->
+  <rect x="456" y="56" width="118" height="17" rx="2" fill="#DC2626" opacity="0.88"/>
+  <text x="515" y="67" font-size="7.5" fill="#FCA5A5" text-anchor="middle">Javelin/Hellfire  3–5 μm</text>
+  <line x1="505" y1="73" x2="505" y2="92" stroke="#06B6D4" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- Nd:YAG Laser Designator 1.064μm -->
+  <rect x="571" y="35" width="74" height="17" rx="2" fill="#D97706" opacity="0.88"/>
+  <text x="608" y="46" font-size="7.5" fill="#FDE68A" text-anchor="middle">Nd:YAG 1.064μm</text>
+  <line x1="614" y1="52" x2="614" y2="92" stroke="#06B6D4" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- ── SCALE BAR ── -->
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#06B6D4" stroke-width="6" opacity="0.12"/>
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#06B6D4" stroke-width="2"/>
+  <line x1="30"  y1="108" x2="30"  y2="122" stroke="#06B6D4" stroke-width="1.5"/>
+  <line x1="650" y1="108" x2="650" y2="122" stroke="#06B6D4" stroke-width="1.5"/>
+
+  <!-- Ticks: 100μm, 10μm, 1μm (log decades) -->
+  <line x1="227" y1="109" x2="227" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="423" y1="109" x2="423" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="620" y1="109" x2="620" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <!-- Sub-band boundaries -->
+  <line x1="388" y1="110" x2="388" y2="120" stroke="#64748B" stroke-width="0.8" stroke-dasharray="2,2"/>
+  <line x1="442" y1="110" x2="442" y2="120" stroke="#64748B" stroke-width="0.8" stroke-dasharray="2,2"/>
+  <line x1="526" y1="110" x2="526" y2="120" stroke="#64748B" stroke-width="0.8" stroke-dasharray="2,2"/>
+  <line x1="591" y1="110" x2="591" y2="120" stroke="#64748B" stroke-width="0.8" stroke-dasharray="2,2"/>
+
+  <text x="30"  y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1mm</text>
+  <text x="227" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">100μm</text>
+  <text x="423" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">10μm</text>
+  <text x="591" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1.4μm</text>
+  <text x="650" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">700nm</text>
+  <text x="340" y="150" font-size="6.5" fill="#475569" text-anchor="middle">wavelength (log) → frequency increases →</text>
+
+  <!-- ── RED FORCE BADGES ── -->
+  <!-- SA-24 Igla-S IR seeker 1–5μm -->
+  <rect x="452" y="157" width="118" height="17" rx="2" fill="#7F1D1D" opacity="0.88"/>
+  <text x="511" y="168" font-size="7.5" fill="#FCA5A5" text-anchor="middle">SA-24 Igla-S  1–5 μm</text>
+  <line x1="511" y1="157" x2="511" y2="138" stroke="#F97316" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- ── APPLICATION BLOCKS ── -->
+  <!-- (replaces ACMA/NTIA — shows what uses each IR sub-band) -->
+  <rect x="0" y="180" width="680" height="14" fill="#0C0C14" opacity="0.92"/>
+  <rect x="0" y="194" width="680" height="14" fill="#080810" opacity="0.92"/>
+
+  <!-- Row 1: Sub-band names -->
+  <text x="3" y="191" font-size="5.5" fill="#475569" font-weight="bold">BAND</text>
+  <!-- FIR: x=30 to x=388 -->
+  <rect x="30"  y="180" width="358" height="13" fill="#1E1B4B" opacity="0.75"/>
+  <text x="209" y="189" font-size="5.5" fill="#A5B4FC" text-anchor="middle">FIR  &gt;15μm — Atmospheric window, passive surveillance, submm comms</text>
+  <!-- LWIR: x=388 to x=442 -->
+  <rect x="388" y="180" width="54"  height="13" fill="#4C1D95" opacity="0.80"/>
+  <text x="415" y="189" font-size="5" fill="#DDD6FE" text-anchor="middle">LWIR</text>
+  <!-- MWIR: x=442 to x=526 -->
+  <rect x="442" y="180" width="84"  height="13" fill="#7F1D1D" opacity="0.75"/>
+  <text x="484" y="189" font-size="5.5" fill="#FCA5A5" text-anchor="middle">MWIR — Missile seekers</text>
+  <!-- SWIR: x=526 to x=591 -->
+  <rect x="526" y="180" width="65"  height="13" fill="#78350F" opacity="0.80"/>
+  <text x="558" y="189" font-size="5" fill="#FDE68A" text-anchor="middle">SWIR/Laser</text>
+  <!-- NIR: x=591 to x=650 -->
+  <rect x="591" y="180" width="59"  height="13" fill="#064E3B" opacity="0.80"/>
+  <text x="620" y="189" font-size="5" fill="#A7F3D0" text-anchor="middle">NIR/CCD</text>
+
+  <!-- Row 2: Applications -->
+  <text x="3" y="205" font-size="5.5" fill="#475569" font-weight="bold">USE</text>
+  <rect x="30"  y="194" width="358" height="13" fill="#0F0F1A" opacity="0.80"/>
+  <text x="209" y="203" font-size="5" fill="#6B7280" text-anchor="middle">Atmospheric thermal emission — Terahertz / far-infrared systems</text>
+  <rect x="388" y="194" width="54"  height="13" fill="#2E1065" opacity="0.75"/>
+  <text x="415" y="203" font-size="4.5" fill="#C4B5FD" text-anchor="middle">FLIR / Stinger</text>
+  <rect x="442" y="194" width="84"  height="13" fill="#450A0A" opacity="0.75"/>
+  <text x="484" y="203" font-size="4.5" fill="#FCA5A5" text-anchor="middle">Javelin / Hellfire / Igla</text>
+  <rect x="526" y="194" width="65"  height="13" fill="#451A03" opacity="0.80"/>
+  <text x="558" y="203" font-size="4.5" fill="#FED7AA" text-anchor="middle">Nd:YAG / eye-safe</text>
+  <rect x="591" y="194" width="59"  height="13" fill="#022C22" opacity="0.80"/>
+  <text x="620" y="203" font-size="4.5" fill="#6EE7B7" text-anchor="middle">NV / CCD cam</text>
+
+  <line x1="30" y1="194" x2="650" y2="194" stroke="#1E293B" stroke-width="0.5"/>
+
+  <text x="10" y="17" font-size="12" fill="#06B6D4" font-weight="bold">IR</text>
+  <text x="10" y="30" font-size="8.5" fill="#94A3B8">1mm – 700nm</text>
+  <text x="10" y="42" font-size="6" fill="#475569">Infrared (log wavelength)</text>
+</svg>

@@ -1,0 +1,102 @@
+---
+description: SPECTRAL PCM — research methodology and source standards for Phases 3–6. Apply to all phase research markdown files.
+globs: phase3/**, phase4/**, phase5/**, phase6/**
+alwaysApply: false
+---
+
+# SPECTRAL PCM — Research Methodology
+
+## Purpose
+Every phase research file feeds directly into course content. The quality of the research determines whether a Boeing Defence analyst, Thales engineer, or SOCOMD operator finds this credible. Hold every claim to that standard.
+
+## Source Hierarchy (descending authority)
+
+| Tier | Source Type | Examples | Confidence |
+|---|---|---|---|
+| T1 | Official government / military publication | DoD Budget docs, USAF fact sheets, ADF capability releases, parliamentary defence committee reports | HIGH |
+| T2 | Verified defence journalism / specialist press | Jane's Defence Weekly, Defence News, Breaking Defense, The War Zone, Aviation Week | HIGH |
+| T3 | Manufacturer / prime contractor releases | Datasheets, press releases, trade show presentations | MEDIUM — flag marketing inflation |
+| T4 | Academic / think tank analysis | RAND, IISS, RUSI, CSIS, ASPI | MEDIUM — analysis, not primary data |
+| T5 | Verified open-source field reporting | Oryx (equipment losses), UA Weapons Tracker, verified social media with corroboration | MEDIUM — flag if single-source |
+| T6 | Unverified / single-source reporting | Anonymous claims, single social media post, unconfirmed | LOW — include only if operationally significant, flag clearly |
+
+## Confidence Flagging (use in every platform entry)
+
+```
+✅ CONFIRMED — T1 or T2 source, cross-referenced
+⚠️ ESTIMATED — manufacturer claim or analyst estimate, not independently verified
+❓ UNCONFIRMED — single source, significant uncertainty
+🔒 CLASSIFIED LIKELY — capability exists but parameters not public; do not speculate on classified figures
+```
+
+## Research File Structure (standard for every phase)
+
+```markdown
+# Phase N — [Title]
+**Research date:** YYYY-MM-DD
+**Status:** DRAFT / COMPLETE
+**Feeds:** Day X, Pack Y (D[X]P[Y])
+
+---
+
+## Executive Summary (3–5 sentences)
+The operational "so what" — what does this phase tell the student that changes how they think?
+
+---
+
+## [Section 1 title]
+
+### [Platform / System / Concept]
+**Source:** [T-tier] [Publication, date, URL or document ref]
+**Confidence:** [✅ / ⚠️ / ❓ / 🔒]
+
+[Content — specifications, performance, operational context]
+
+**Operational implication:** [What this means for the student's job]
+
+---
+
+## Slide Content Flags
+<!-- Tag content ready for specific slides -->
+- `[SLIDE]` — ready to drop into a slide verbatim
+- `[ADAPT]` — needs simplification for slide format
+- `[INSTRUCTOR]` — too detailed for slides, goes in instructor notes
+- `[WORKBOOK]` — depth level for workbook prose
+
+---
+
+## Sources
+| # | Title | Tier | Date | URL/Ref |
+|---|---|---|---|---|
+| 1 | | | | |
+```
+
+## What Every Research File Must Contain
+
+1. **Platform specs to Jane's standard** — MTOW, endurance, ceiling, payload, datalink type, frequency band, guidance mode, warhead (if applicable), unit cost (if OSINT-available)
+2. **Operational employment context** — how it is actually used, not just what it can do on paper
+3. **Defeat mechanism** — every capability section must include how to counter it
+4. **Conflict evidence** — named engagement, named conflict, approximate date. "Used in Ukraine" is not enough. "Lancet-3 strikes on Ukrainian M109 SPH at Zaporizhzhia front, Sep–Dec 2023, documented by Oryx and field video" is.
+5. **The "so what"** — every section ends with what this means for the student in their job
+
+## What to Avoid
+
+- Copying manufacturer datasheets without operational context
+- Stating estimated performance as confirmed fact
+- Ignoring the countermeasure — every capability has a defeat mechanism
+- Describing what a system *can* do without saying what it *actually did* in combat
+- Padding with background history that doesn't change the operational picture
+
+## Research Scope by Phase
+
+### Phase 3 — Loitering Munitions & OWA
+Cover: Shahed-136/Geran-2 (variants, production volume, defeat rate economics), Lancet-1/3, KUB-BLA, Switchblade 300/600, Phoenix Ghost, Hero series (Hero-30/120/400), WB Warmate, Harop, Harpy, Rotem L. Focus: unit cost vs intercept cost, employment TTPs, signature reduction, swarm employment.
+
+### Phase 4 — C-UAS Taxonomy
+Cover: Detect (RF detection, radar, EO/IR, acoustic), Decide (classification AI, ROE constraints), Defeat (RF jamming, kinetic interceptors, DEW, net/physical). Systems: Drone Dome, Coyote Block 3, SHORAD integration, DroneShield, SMASH 2000, Skyranger 30. Focus: layered defence, magazine depth problem, cost exchange ratio.
+
+### Phase 5 — Emerging Tech Horizon
+Cover: AI/autonomy in terminal guidance (removing RF link = jamming-immune), swarm coordination protocols, MUM-T (AH-64E/MQ-1C), Collaborative Combat Aircraft (Ghost Bat, XQ-58, FCAS NGAD), directed energy maturity (HELIOS, IRON BEAM, DragonFire). Focus: 3–5 year horizon, what changes the tactical equation.
+
+### Phase 6 — Doctrine & TTPs by Nation
+Cover: Russia (attrition OWA model, electronic warfare integration), Ukraine (FPV saturation + rapid innovation cycle, DELTA system), Israel (precision + persistence, Harop SEAD), Turkey (TB2 export model + doctrine package), Iran (proxy swarm employment, Shahed export), China (A2/AD integration, GJ-11 stealth UCAV, swarm doctrine). Include: Nagorno-Karabakh 2020, Libya 2019–2020, Ukraine 2022–2026, Red Sea 2023–2025, India-Pakistan 2025.

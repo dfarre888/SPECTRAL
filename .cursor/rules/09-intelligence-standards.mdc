@@ -1,0 +1,114 @@
+---
+description: SPECTRAL PCM — intelligence product standards. How to present threat assessments, capability estimates, and operational analysis to defence-grade audiences.
+globs: **/*
+alwaysApply: true
+---
+
+# SPECTRAL PCM — Intelligence Standards
+
+## Why This Matters
+Boeing Defence, Thales, SOCOMD, DIO, and DSTG analysts will evaluate this material. They work with properly structured intelligence products daily. Sloppy intelligence presentation destroys credibility instantly. Every threat assessment, capability comparison, and operational lesson in this course must meet the standard they expect.
+
+## Intelligence Confidence Language
+
+Never use vague qualifiers. Use the NATO/Five Eyes approved confidence language:
+
+| Phrase | Meaning | Use when |
+|---|---|---|
+| **Confirmed** | Corroborated by two or more independent T1–T2 sources | Platform in operational service, documented engagement |
+| **Assessed** | Single T1–T2 source or strong T3–T4 analytical consensus | Capability estimate from reliable source |
+| **Estimated** | Analyst judgment, limited direct evidence | Performance projection, order of battle size |
+| **Reported** | Single source, unverified | Field reporting, single open-source claim |
+| **Suspected** | Circumstantial evidence only | Unconfirmed capability, alleged employment |
+
+**Rule:** Never state `confirmed` when the source is a manufacturer datasheet alone.
+
+## Threat Assessment Structure (for conflict case studies and platform entries)
+
+```
+THREAT ASSESSMENT — [System/Actor]
+Classification: UNCLASSIFIED // SPECTRAL PCM — FOR OFFICIAL TRAINING USE ONLY
+Date of information: [most recent source date]
+
+CAPABILITY SUMMARY
+[2–3 sentences: what it can do, to whom, under what conditions]
+
+CONFIDENCE: [Confirmed / Assessed / Estimated]
+SOURCE BASIS: [T-tier description without naming classified sources]
+
+EMPLOYMENT PATTERN
+[How it has actually been used in named conflicts]
+
+LIMITATIONS
+[What it cannot do, when it fails, what defeats it]
+
+THREAT LEVEL TO [ADF/Coalition/NATO FORCES]:
+  ☐ LOW — limited capability or readily defeated
+  ☑ MEDIUM — significant capability, manageable with appropriate TTPs
+  ☐ HIGH — capable of causing serious effect, limited defeat options
+  ☐ CRITICAL — peer/near-peer capability with limited counters
+
+COUNTERMEASURE SUMMARY
+[What works against it, what doesn't, at what cost]
+```
+
+## Order of Battle (ORBAT) Presentation
+
+All ORBATs must use NATO APP-6 / MIL-STD-2525 symbolic conventions where possible in diagrams. In text:
+
+```
+Format: [Quantity]× [Platform] ([Variant if known]) — [Unit/Actor] — [Confidence]
+Example: ~57,000× Shahed-136/Geran-2 (variants A/B/C) — Russian VKS/Wagner proxy — Confirmed (Oryx/OSINT tracking, Mar 2026)
+```
+
+## Capability Matrix Format
+
+Use when comparing multiple systems (platform comparisons, C-UAS options, etc.):
+
+```markdown
+| Capability | System A | System B | System C |
+|---|---|---|---|
+| Max range (km) | 2,500 ✅ | 300 ✅ | 150 ⚠️ |
+| Warhead (kg) | 50 ✅ | 3 ✅ | 8 ✅ |
+| Guidance | INS+GPS ✅ | RF ✅ | INS+EO ✅ |
+| Unit cost (USD) | ~$20K ⚠️ | ~$500 ⚠️ | ~$6K ⚠️ |
+| Operational use | Confirmed | Confirmed | Reported |
+
+Legend: ✅ Confirmed ⚠️ Estimated ❓ Unconfirmed
+```
+
+## Source Attribution in Course Materials
+
+In workbook text, attribute sources in-line using superscript-style notes:
+```
+Russia launched an estimated 57,000 Shahed-136/Geran-2 drones at Ukraine between September 2022 and March 2026 [OSINT: Oryx/Ukraine War map tracking; cross-referenced Defence Express Ukraine].
+```
+
+In slide speaker notes, include the full source reference so instructors can answer questions.
+
+## What Defence-Grade Audiences Will Challenge
+
+Boeing/Thales/SOCOMD analysts will push back hard on:
+
+1. **Unattributed performance figures** — "up to 2,500km range" with no source is dismissed
+2. **Missing confidence qualifiers** — stating unconfirmed capability as fact
+3. **Missing countermeasures** — any threat assessment without a defeat section is incomplete
+4. **Outdated information** — the Ukraine conflict changes every quarter; flag information dates
+5. **Missing cost/exchange ratio analysis** — capability without cost context is tactically useless
+6. **Conflating variants** — Shahed-136 and Shahed-238 are different systems; Lancet-1 and Lancet-3 are different systems
+7. **Missing EMCON implications** — any platform that radiates has a SIGINT signature; this matters
+
+## The "Analyst Test"
+
+Before committing any research or slide content, ask: **Would a DIO or DSTG analyst accept this in a formal product?**
+
+If the answer is no — because the source is too weak, the claim too strong, or the context missing — fix it before it goes into the course.
+
+## Classification Handling
+
+All SPECTRAL PCM materials are UNCLASSIFIED. This means:
+- No classified sources, ever
+- No speculation about classified parameters ("the classified version probably has...")
+- No aggregation of OSINT that approaches classified conclusions
+- If a capability cannot be adequately described with OSINT, acknowledge the limitation: "Full performance parameters are not publicly available. Assessed minimum capability based on OSINT is..."
+- The classification banner is a legal statement, not a formality. Treat it as one.

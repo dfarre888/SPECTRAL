@@ -1,0 +1,139 @@
+---
+description: Spectral — page structure and data flow patterns for all 7 modules. Apply when building or modifying module pages.
+globs: app/(modules)/**, components/library/**, components/spectrum/**, components/gnss/**, components/defeat/**, components/intel/**, components/arena/**, components/overlay/**
+alwaysApply: false
+---
+
+# Spectral — Module Patterns
+
+## Module Directory Structure
+```
+app/
+├── (modules)/
+│   ├── layout.tsx          ← shared module layout (sidebar, classification banner)
+│   ├── library/
+│   │   ├── page.tsx        ← server component, fetches platform list
+│   │   ├── [id]/
+│   │   │   └── page.tsx    ← server component, fetches single platform
+│   │   └── components/     ← client components for this module only
+│   ├── spectrum/
+│   ├── gnss/
+│   ├── defeat/
+│   ├── intel/
+│   ├── arena/
+│   └── overlay/
+```
+
+## Standard Page Pattern (server component)
+
+```tsx
+// app/(modules)/library/page.tsx
+import { createClient } from '@/lib/supabase/server'
+import { PlatformGrid } from './components/PlatformGrid'
+
+export default async function LibraryPage() {
+  const supabase = await createClient()
+  const { data: platforms, error } = await supabase
+    .from('platforms')
+    .select('*')
+    .order('name')
+
+  if (error) throw error  // Next.js error boundary catches this
+
+  return (
+    <div className="min-h-screen bg-[#0A0A0F]">
+      <PlatformGrid platforms={platforms} />
+    </div>
+  )
+}
+```
+
+## Module 1 — Platform Library
+**Purpose:** Searchable database of platforms, jammers, constellations, defeat systems
+**Data:** `platforms`, `gnss_jammers`, `gnss_constellations`, `anti_drone_systems`
+**Key components:** `PlatformCard`, `PlatformGrid`, `PlatformDetail`, `FilterSidebar`, `TierBadge`
+**Interactions:** Filter by type/tier/nation, search by name, click to detail view
+**Performance:** Paginate at 50 items, virtualize lists > 100 items
+
+## Module 2 — Spectrum View
+**Purpose:** Log-scale EW spectrum chart 400MHz–6GHz
+**Data:** `platforms` (freq_min/freq_max), `gnss_jammers` (jam_freq_min/max), static PRESET_BANDS
+**Key components:** `SpectrumChart` (D3, client-only), `BandLegend`, `PlatformSelector`
+**Non-negotiables:** D3 log scale only, BAND_COLORS locked, jammer overlay amber #F59E0B opacity 0.25
+**See:** `06-spectrum-chart.mdc` for full spec
+
+## Module 3 — GNSS Intelligence
+**Purpose:** Constellation vulnerability mapping — which platforms are affected by which jammers
+**Data:** `gnss_constellations`, `gnss_jammers`, `nav_countermeasures`
+**Key components:** `ConstellationMap`, `JammerThreatMatrix`, `CountermeasurePanel`
+**Interactions:** Select constellation → show vulnerable platforms → show countermeasures
+**Colour:** Cyan (#06B6D4) primary — this is the ISR/data module
+
+## Module 4 — Defeat Matrix
+**Purpose:** Match platform threats to defeat systems — what kills what
+**Data:** `platforms`, `anti_drone_systems`, junction logic in app layer
+**Key components:** `DefeatMatrix` (grid), `SystemCard`, `EffectivenessIndicator`
+**Logic:** Effectiveness = f(platform RCS, speed, altitude, jammer_tier) — computed in route handler, not client
+**Colour:** Green (#10B981) for confirmed defeat, Amber (#F59E0B) for marginal, Red (#EF4444) for ineffective
+
+## Module 5 — Conflict Intel
+**Purpose:** Timeline and map of conflict incidents with platform involvement
+**Data:** `conflict_incidents` (with geolocation, platform refs, date, outcome)
+**Key components:** `IncidentTimeline`, `IncidentMap` (Mapbox, client-only), `IncidentCard`
+**Non-negotiables:** Mapbox ALWAYS `'use client'`, ALWAYS check NEXT_PUBLIC_MAPBOX_TOKEN exists before init
+**Colour:** Mixed — use incident severity to drive colour (amber warning, red critical)
+
+## Module 6 — Red/Blue Arena (WOPR)
+**Purpose:** CesiumJS 3D wargame — Red v Blue UAS engagement simulation
+**Data:** `scenario_templates`, `scenario_injects`, ORBAT built from `platforms`
+**Key components:** `ArenaGlobe` (CesiumJS, ALWAYS ssr:false), `ForcePanel`, `TurnControl`, `AARPanel`
+**Non-negotiables:** See `04-cesium-arena.mdc` — all CesiumJS rules apply
+**Architecture:** Turn data flows server→client via route handler, never direct DB from client
+
+## Module 7 — 1v1 Overlay
+**Purpose:** Single-platform engagement analysis — one threat vs one defeat system
+**Data:** `platforms` + `anti_drone_systems`, computed engagement envelope
+**Key components:** `EngagementDiagram`, `PlatformSelector` (×2), `OutcomePanel`
+**Logic:** Engagement probability = f(platform speed, altitude, RCS, defeat system range, Pk) — route handler
+**Colour:** Red force #EF4444, Blue force #3B82F6 — strict, never reversed
+
+## Shared Patterns Across All Modules
+
+### Loading state
+```tsx
+// Use Suspense at page level, skeleton at component level
+<Suspense fallback={<ModuleSkeleton />}>
+  <ModuleContent />
+</Suspense>
+```
+
+### Error handling
+```tsx
+// app/(modules)/[module]/error.tsx — required in every module
+'use client'
+export default function ModuleError({ error, reset }) {
+  return (
+    <div className="flex items-center justify-center h-96">
+      <div className="text-center">
+        <p className="text-red-400 font-mono text-sm">{error.message}</p>
+        <button onClick={reset} className="mt-4 text-orange-500 hover:text-orange-400">
+          Retry
+        </button>
+      </div>
+    </div>
+  )
+}
+```
+
+### Empty state
+```tsx
+// Every module must handle zero results gracefully
+<EmptyState
+  icon={<RadarIcon />}
+  title="No platforms found"
+  description="Adjust your filters or add platforms to the library."
+/>
+```
+
+### Classification banner
+The banner in `(modules)/layout.tsx` covers all modules automatically. Do not add it again in individual module pages.

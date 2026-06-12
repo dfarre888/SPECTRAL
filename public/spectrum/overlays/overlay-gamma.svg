@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 240" font-family="'JetBrains Mono', 'Courier New', monospace">
+  <!--
+    Gamma Ray Band Overlay: 10pm → 0.001pm  LOG WAVELENGTH
+    x = 30 + log10(10/λ_pm) / log10(10/0.001) * 620
+      = 30 + log10(10/λ_pm) / 4 * 620
+
+    10pm   → x=30    |  1pm  → x=185   |  0.1pm → x=340   |  0.01pm → x=495   |  0.001pm → x=650
+    Energy: E = 1240 keV·pm / λ_pm
+    10pm → 124 keV  |  1pm → 1.24 MeV  |  0.1pm → 12.4 MeV  |  0.01pm → 124 MeV
+  -->
+
+  <rect x="0" y="82" width="680" height="66" fill="#0A0A0F" opacity="0.72"/>
+
+  <!-- Sub-band fills -->
+  <!-- Low-energy gamma: 10–1pm → x=30 to x=185 -->
+  <rect x="30"  y="92" width="155" height="23" fill="#7C3AED" opacity="0.20"/>
+  <!-- Mid gamma: 1–0.1pm → x=185 to x=340 -->
+  <rect x="185" y="92" width="155" height="23" fill="#5B21B6" opacity="0.22"/>
+  <!-- High-energy gamma: 0.1–0.01pm → x=340 to x=495 -->
+  <rect x="340" y="92" width="155" height="23" fill="#4C1D95" opacity="0.25"/>
+  <!-- Ultra-HE / Cosmic: <0.01pm → x=495 to x=650 -->
+  <rect x="495" y="92" width="155" height="23" fill="#3B0764" opacity="0.28"/>
+
+  <!-- ── SCALE BAR ── -->
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#A78BFA" stroke-width="6" opacity="0.08"/>
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#C084FC" stroke-width="1.5"/>
+  <line x1="30"  y1="108" x2="30"  y2="122" stroke="#C084FC" stroke-width="1.5"/>
+  <line x1="650" y1="108" x2="650" y2="122" stroke="#C084FC" stroke-width="1.5"/>
+
+  <!-- Ticks at 1pm, 0.1pm, 0.01pm -->
+  <line x1="185" y1="109" x2="185" y2="121" stroke="#C084FC" stroke-width="1"/>
+  <line x1="340" y1="109" x2="340" y2="121" stroke="#C084FC" stroke-width="1"/>
+  <line x1="495" y1="109" x2="495" y2="121" stroke="#C084FC" stroke-width="1"/>
+
+  <text x="30"  y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">10pm</text>
+  <text x="185" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1pm</text>
+  <text x="340" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">0.1pm</text>
+  <text x="495" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">0.01pm</text>
+  <text x="650" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">0.001pm</text>
+  <text x="340" y="150" font-size="6.5" fill="#475569" text-anchor="middle">pm  (← wavelength decreases | energy increases →)</text>
+
+  <!-- Energy labels -->
+  <text x="30"  y="130" font-size="5.5" fill="#6B7280" text-anchor="middle">124 keV</text>
+  <text x="185" y="130" font-size="5.5" fill="#6B7280" text-anchor="middle">1.2 MeV</text>
+  <text x="340" y="130" font-size="5.5" fill="#6B7280" text-anchor="middle">12 MeV</text>
+  <text x="495" y="130" font-size="5.5" fill="#6B7280" text-anchor="middle">124 MeV</text>
+  <text x="650" y="130" font-size="5.5" fill="#6B7280" text-anchor="middle">1.2 GeV</text>
+
+  <!-- Sub-band labels -->
+  <text x="107" y="110" font-size="5.5" fill="#C4B5FD" text-anchor="middle">LOW γ</text>
+  <text x="262" y="110" font-size="5.5" fill="#C084FC" text-anchor="middle">MID γ</text>
+  <text x="417" y="110" font-size="5.5" fill="#A855F7" text-anchor="middle">HIGH γ</text>
+  <text x="572" y="110" font-size="5.5" fill="#9333EA" text-anchor="middle">COSMIC / UHE</text>
+
+  <!-- Context block (no platform badges) -->
+  <rect x="30" y="157" width="620" height="17" rx="2" fill="#0D0D1A" stroke="#334155" stroke-width="0.5"/>
+  <text x="340" y="164" font-size="6" fill="#64748B" text-anchor="middle">GAMMA BAND — No military drone platform operates in this band</text>
+  <text x="340" y="172" font-size="5.5" fill="#475569" text-anchor="middle">Applications: nuclear weapon detection (SNM identification), dirty bomb / CBRN response, cosmic ray research</text>
+
+  <!-- ── APPLICATION BLOCKS ── -->
+  <rect x="0" y="180" width="680" height="14" fill="#0C0C14" opacity="0.92"/>
+  <rect x="0" y="194" width="680" height="14" fill="#080810" opacity="0.92"/>
+  <text x="3" y="191" font-size="5.5" fill="#475569" font-weight="bold">BAND</text>
+  <text x="3" y="205" font-size="5.5" fill="#475569" font-weight="bold">USE</text>
+
+  <!-- Band row -->
+  <rect x="30"  y="180" width="155" height="13" fill="#2E1065" opacity="0.80"/>
+  <text x="107" y="189" font-size="5.5" fill="#DDD6FE" text-anchor="middle">Low γ  10–1pm</text>
+  <rect x="185" y="180" width="155" height="13" fill="#3B0764" opacity="0.80"/>
+  <text x="262" y="189" font-size="5.5" fill="#E9D5FF" text-anchor="middle">Mid γ  1–0.1pm</text>
+  <rect x="340" y="180" width="155" height="13" fill="#4C0882" opacity="0.80"/>
+  <text x="417" y="189" font-size="5.5" fill="#F0ABFC" text-anchor="middle">High γ  0.1–0.01pm</text>
+  <rect x="495" y="180" width="155" height="13" fill="#581C87" opacity="0.80"/>
+  <text x="572" y="189" font-size="5.5" fill="#F5D0FE" text-anchor="middle">Cosmic / UHE γ</text>
+
+  <!-- Application row -->
+  <rect x="30"  y="194" width="155" height="13" fill="#1A0A30" opacity="0.80"/>
+  <text x="107" y="203" font-size="4.5" fill="#DDD6FE" text-anchor="middle">Nuclear medicine, SNM detect, PET</text>
+  <rect x="185" y="194" width="155" height="13" fill="#200B38" opacity="0.80"/>
+  <text x="262" y="203" font-size="4.5" fill="#E9D5FF" text-anchor="middle">Gamma spectroscopy, reactor safety</text>
+  <rect x="340" y="194" width="155" height="13" fill="#280D42" opacity="0.80"/>
+  <text x="417" y="203" font-size="4.5" fill="#F0ABFC" text-anchor="middle">Particle accelerator, CBRN detection</text>
+  <rect x="495" y="194" width="155" height="13" fill="#30104C" opacity="0.80"/>
+  <text x="572" y="203" font-size="4.5" fill="#F5D0FE" text-anchor="middle">Cosmic ray observatories, space physics</text>
+
+  <line x1="30" y1="194" x2="650" y2="194" stroke="#1E293B" stroke-width="0.5"/>
+
+  <text x="10" y="17" font-size="12" fill="#A855F7" font-weight="bold">γ</text>
+  <text x="10" y="30" font-size="8.5" fill="#94A3B8">10 – 0.001pm</text>
+  <text x="10" y="42" font-size="6" fill="#475569">Gamma ray</text>
+</svg>

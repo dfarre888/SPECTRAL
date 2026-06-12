@@ -1,0 +1,123 @@
+---
+description: CesiumJS Arena module — implementation rules, import patterns, and Red/Blue scenario rendering.
+globs: components/arena/**, app/arena/**
+alwaysApply: false
+---
+
+# CesiumJS Arena — Rules and Patterns
+
+## The Non-Negotiables
+1. **NEVER import CesiumJS at the top level of any file.** It uses browser-only APIs (WebGL, DOM) that crash Next.js SSR.
+2. **ALWAYS use dynamic import with `ssr: false`** for the arena component.
+3. **ALWAYS set `CESIUM_BASE_URL`** before Cesium initialises — it tells Cesium where to find its static assets.
+
+## Correct Dynamic Import Pattern
+```ts
+// In the parent page (app/arena/page.tsx):
+import dynamic from 'next/dynamic'
+
+const CesiumArena = dynamic(
+  () => import('@/components/arena/CesiumArena'),
+  { ssr: false, loading: () => <div className="text-spectral-secondary">Loading arena...</div> }
+)
+```
+
+## Correct Cesium Initialisation Pattern
+```ts
+// Inside CesiumArena.tsx — useEffect only
+useEffect(() => {
+  const initCesium = async () => {
+    const Cesium = await import('cesium')
+    window.CESIUM_BASE_URL = '/static/Cesium'
+
+    const viewer = new Cesium.Viewer(containerRef.current, {
+      terrainProvider: await Cesium.createWorldTerrainAsync(),
+      // ...
+    })
+  }
+  initCesium()
+}, [])
+```
+
+## Force Colour Rules
+```ts
+// Red Force (adversary)
+Color.RED.withAlpha(0.9)           // point entities
+Color.RED.withAlpha(0.15)          // area fills / ellipsoids
+
+// Blue Force (friendly)
+Color.BLUE.withAlpha(0.9)          // point entities
+Color.BLUE.withAlpha(0.15)         // area fills
+
+// Neutral / White (referee / unknown)
+Color.WHITE.withAlpha(0.6)
+```
+
+## Label Typography
+All entity labels use JetBrains Mono:
+```ts
+label: {
+  text: `${platform.name}\n${platform.altitude_ft}ft`,
+  font: '13px JetBrains Mono',
+  fillColor: Color.WHITE,
+  outlineColor: Color.BLACK,
+  outlineWidth: 2,
+  style: LabelStyle.FILL_AND_OUTLINE,
+  pixelOffset: new Cartesian2(0, -20),
+}
+```
+
+## Engagement Envelope Rendering
+Radar / EW / weapons envelopes are rendered as `EllipsoidGraphics` or `CylinderGraphics`:
+```ts
+entity.ellipsoid = {
+  radii: new Cartesian3(rangeM, rangeM, altitudeCeilingM),
+  material: Color.RED.withAlpha(0.08),
+  outline: true,
+  outlineColor: Color.RED.withAlpha(0.4),
+}
+```
+
+## Click Handler Pattern
+```ts
+const handler = new ScreenSpaceEventHandler(viewer.scene.canvas)
+handler.setInputAction((click: ScreenSpaceEventHandler.PositionedEvent) => {
+  const picked = viewer.scene.pick(click.position)
+  if (picked?.id) {
+    // Entity clicked — dispatch to Zustand store
+    useScenarioStore.getState().setSelectedEntity(picked.id)
+  }
+}, ScreenSpaceEventType.LEFT_CLICK)
+```
+
+## Performance Rules
+- Keep entity count under 200 simultaneously rendered — use LOD or cluster beyond that
+- For swarm simulations (50+ FPVs), use `PointPrimitiveCollection` not individual `Entity` objects
+- Destroy viewer in useEffect cleanup: `return () => { viewer.destroy() }`
+- Never create a new Viewer on re-render — use a ref to track init state
+
+## CZML Animation
+For pre-computed scenario playback (replay mode):
+```ts
+const czmlDataSource = new CzmlDataSource()
+await czmlDataSource.load(czmlDocument)
+viewer.dataSources.add(czmlDataSource)
+```
+CZML documents live in `public/scenarios/*.czml`
+
+## Background / Atmosphere
+```ts
+viewer.scene.backgroundColor = new Color(0.04, 0.04, 0.06, 1.0)  // matches #0A0A0F
+viewer.scene.skyAtmosphere.show = false   // disable blue atmosphere for tactical look
+viewer.scene.skyBox.show = false          // disable stars (performance)
+viewer.scene.sun.show = false             // disable sun glare
+viewer.scene.moon.show = false
+viewer.scene.fog.enabled = false          // disable fog (tactical clarity)
+```
+
+## Integration with Scenario Store (Zustand)
+The arena component reads from and writes to `useScenarioStore`:
+```ts
+const { redOrbat, blueOrbat, activeInjects, currentPhase } = useScenarioStore()
+```
+Never manage scenario state inside the arena component itself — always delegate to the store.

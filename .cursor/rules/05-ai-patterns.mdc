@@ -1,0 +1,86 @@
+---
+description: Claude AI integration patterns — how to use the Spectral Intelligence AI correctly.
+globs: lib/claude/**, app/**/route.ts, app/**/actions.ts
+alwaysApply: false
+---
+
+# Spectral AI — Claude Integration Rules
+
+## The Wrapper
+Always use `lib/claude/client.ts` — never call `@anthropic-ai/sdk` directly from components or pages.
+
+```ts
+// lib/claude/client.ts signature
+export async function querySpectral({
+  question,
+  context,
+}: SpectralQuery): Promise<string>
+
+// SpectralQuery type
+interface SpectralQuery {
+  question: string
+  context?: string[]  // optional array of platform/system descriptions for grounding
+}
+```
+
+## System Prompt (fixed — do not change without discussion)
+```
+You are Spectral Intelligence, an AI analyst for the Spectral drone threat platform.
+You provide military-grade analysis of unmanned aerial systems, electronic warfare,
+and counter-drone capabilities. All your analysis is based on open-source intelligence.
+You do not speculate about classified capabilities. You provide precise, direct answers
+in the style of an experienced intelligence analyst briefing operators.
+```
+
+## Correct Usage Pattern (Server Action)
+```ts
+// app/platforms/actions.ts
+'use server'
+import { querySpectral } from '@/lib/claude/client'
+
+export async function analyzeePlatform(platformId: string, question: string) {
+  const platform = await getPlatformById(platformId)
+  return querySpectral({
+    question,
+    context: [
+      `Platform: ${platform.name} (${platform.country_of_origin})`,
+      `Role: ${platform.role.join(', ')}`,
+      `Max range: ${platform.max_range_km}km`,
+      `Status: ${platform.status}`,
+    ],
+  })
+}
+```
+
+## Model & Limits
+- Model: `claude-sonnet-4-6`
+- Max tokens: 2048 (AI answers should be briefing-length, not essays)
+- Temperature: default (do not adjust)
+- No streaming in this codebase yet — returns full string
+
+## ITAR / Data Compliance Rules for AI
+The AI **must not** be given:
+- Classified signal parameters
+- Specific weapons system vulnerabilities that aren't public knowledge
+- Personnel information
+- Real-time operational data
+
+The AI **should** receive as context:
+- Platform specs from the `platforms` table
+- GNSS jammer characteristics from `gnss_jammers`
+- Conflict case study summaries from `conflict_incidents`
+- Anti-drone system capabilities from `anti_drone_systems`
+
+## Rate Limiting
+Wrap AI calls in server actions or API routes — never call from the browser directly (exposes API key). The ANTHROPIC_API_KEY is a server-only environment variable.
+
+## Error Handling
+```ts
+try {
+  const result = await querySpectral({ question })
+  return result
+} catch (error) {
+  // Return a safe degraded message — never surface API errors to the user
+  return 'Analysis temporarily unavailable. Please consult the platform database directly.'
+}
+```

@@ -1,0 +1,87 @@
+---
+description: A3DM zinc canvas + orange accent design reference for SPECTRAL shell work. Merges Spectral purple brand with A3DM Pro Shop patterns.
+globs: app/**/*.tsx, components/**/*.tsx, app/globals.css, tailwind.config.ts, lib/ui/store-theme.ts
+alwaysApply: false
+---
+
+# A3DM Design Reference (SPECTRAL)
+
+Source project: `/Users/davidfarrell/Desktop/CASA RPAS STUFF/CASA RPAS STUFF/project`  
+Live reference route: `/store` on A3DM localhost:3000
+
+## Visual Language — Zinc Canvas + Orange Accent
+
+| Token | Value | Use |
+|---|---|---|
+| `--store-bg` | `#080808` | Page canvas |
+| `--store-surface` | `#0f0f10` | Panels, sidebar, topbar |
+| `--store-surface-2` | `#161618` | Inner wells, inputs, hover |
+| `--store-line` | `rgba(255,255,255,0.08)` | Borders |
+| `--store-ink-soft` | `rgba(244,244,245,0.62)` | Body text — not white, not blue |
+| `--store-ink-mute` | `rgba(244,244,245,0.38)` | Muted labels |
+| `--store-accent` | `#F97316` | Active nav, CTAs, tabs, prices |
+| `--store-accent-glow` | `rgba(249,115,22,0.12)` | Active nav background |
+| `--store-accent-border` | `rgba(249,115,22,0.35)` | Active nav border, eyebrow |
+
+Canvas: `hub-page-canvas` — radial orange glow bottom-left + `--store-bg`.
+
+## SPECTRAL ↔ A3DM Brand Mapping
+
+| SPECTRAL | Rule |
+|---|---|
+| Purple `#A855F7` | Wordmark, EW/AI indicators only — not primary nav active state |
+| Orange `#F97316` | Primary CTA, active sidebar item, tabs (A3DM pattern) |
+| Cyan `#06B6D4` | Data/spectrum/science UI only — charts, spectrum rail links |
+| SPECTRA Liquid Glass rail | **Do not merge** — align tokens only (`/spectrum`) |
+
+A3DM branding: subtle only — footer "Powered by A3DM", login/about credit.
+
+## Layout
+
+- Sidebar: `w-72` / `xl:w-80`, zinc surface, orange active nav
+- Main: scrollable; `hub-page-canvas` on `(main)` layout
+- Full-bleed (`/map`): `FullBleedShell` slim top bar; `/spectrum` keeps own rail
+
+## Component Patterns
+
+```tsx
+// Hub page wrapper
+<HubPageShell eyebrow="…" title="…" subtitle="…" headerAction={…} tabs={…}>
+
+// Surfaces
+<StorePanel>           // card
+<StorePanel inner>     // nested well
+<StoreEyebrow>         // orange pill chip
+
+// Primary button
+className="store-btn-primary"  // orange bg, #0a0a0a text, rounded-xl
+
+// Active sidebar
+className="nav-item-active"
+```
+
+## Key SPECTRAL Files
+
+| Purpose | Path |
+|---|---|
+| CSS tokens | `app/globals.css` (`--store-*`, `.hub-page-canvas`, `.store-panel`) |
+| TS tokens | `lib/ui/store-theme.ts` |
+| Surfaces | `components/ui/store-surface.tsx` |
+| Hub shell | `components/hub/HubPageShell.tsx` |
+| Hub tabs | `components/hub/HubUrlTabBar.tsx` |
+| Hub cards | `components/hub/HubLinkCard.tsx` |
+| App shell | `app/(main)/layout.tsx` |
+| Sidebar | `components/layout/Sidebar.tsx` |
+| Topbar | `components/layout/Topbar.tsx` |
+| Full-bleed | `components/layout/FullBleedShell.tsx` |
+
+## Do Not Copy (Legacy A3DM)
+
+- Slate-blue gradients
+- `text-blue-200/80`
+- Sky-steel `#0EA5E9` as platform chrome
+- Heavy blue glass blur on hub cards
+
+## A3DM Source Files (for pattern reference)
+
+`lib/ui/store-theme.ts`, `components/ShopPage.tsx`, `components/hub/HubPageShell.tsx`, `components/dashboard/spatial-sidebar.tsx`, `app/(spatial-shell)/layout.tsx`

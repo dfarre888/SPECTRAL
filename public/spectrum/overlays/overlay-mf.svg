@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 230" font-family="'JetBrains Mono', 'Courier New', monospace">
+  <!-- MF Band Overlay: 300–3000 kHz  |  x = 30 + (f_kHz - 300) / 2700 * 620 -->
+
+  <rect x="0" y="82" width="680" height="66" fill="#0A0A0F" opacity="0.72"/>
+
+  <!-- NDB/ARN beacons 190–1750 kHz — Blue Force span (190–300 starts before our range, show from left) -->
+  <rect x="30"  y="92" width="328" height="23" fill="#7D1128" opacity="0.22"/>
+  <!-- Maritime distress 2182 kHz marker -->
+  <rect x="460" y="92" width="6"   height="23" fill="#064E3B" opacity="0.60"/>
+
+  <!-- Russian maritime shore stations 1600–3000 kHz (Red Force) -->
+  <rect x="305" y="115" width="345" height="23" fill="#7F1D1D" opacity="0.22"/>
+
+  <!-- ── BLUE FORCE BADGES ── -->
+  <!-- NDB Aviation Navigation Beacons 190–1750 kHz -->
+  <rect x="80"  y="44" width="128" height="17" rx="2" fill="#7D1128" opacity="0.88"/>
+  <text x="144" y="55" font-size="7.5" fill="#FCA5A5" text-anchor="middle">NDB / ARN  190–1750</text>
+  <line x1="144" y1="61" x2="144" y2="92" stroke="#06B6D4" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- Maritime Distress 2182 kHz → x=462 -->
+  <rect x="402" y="56" width="118" height="17" rx="2" fill="#064E3B" opacity="0.88"/>
+  <text x="461" y="67" font-size="7.5" fill="#A7F3D0" text-anchor="middle">Maritime Distress 2182</text>
+  <line x1="463" y1="73" x2="463" y2="92" stroke="#06B6D4" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- ── SCALE BAR ── -->
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#06B6D4" stroke-width="6" opacity="0.12"/>
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#06B6D4" stroke-width="2"/>
+  <line x1="30"  y1="108" x2="30"  y2="122" stroke="#06B6D4" stroke-width="1.5"/>
+  <line x1="650" y1="108" x2="650" y2="122" stroke="#06B6D4" stroke-width="1.5"/>
+
+  <!-- Ticks: 500, 1000, 1500, 2000, 2500 kHz -->
+  <!-- 500  → x = 30 + 200/2700*620 = 76  -->
+  <!-- 1000 → x = 30 + 700/2700*620 = 191 -->
+  <!-- 1500 → x = 30 + 1200/2700*620= 305 -->
+  <!-- 2000 → x = 30 + 1700/2700*620= 420 -->
+  <!-- 2500 → x = 30 + 2200/2700*620= 535 -->
+  <line x1="76"  y1="109" x2="76"  y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="191" y1="109" x2="191" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="305" y1="109" x2="305" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="420" y1="109" x2="420" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="535" y1="109" x2="535" y2="121" stroke="#06B6D4" stroke-width="1"/>
+
+  <text x="30"  y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">300</text>
+  <text x="76"  y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">500</text>
+  <text x="191" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1000</text>
+  <text x="305" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1500</text>
+  <text x="420" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">2000</text>
+  <text x="535" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">2500</text>
+  <text x="650" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">3000</text>
+  <text x="340" y="150" font-size="6.5" fill="#475569" text-anchor="middle">kHz</text>
+
+  <!-- ── RED FORCE BADGES ── -->
+  <!-- Russian maritime/coastal HF/MF shore stations -->
+  <rect x="350" y="157" width="160" height="17" rx="2" fill="#7F1D1D" opacity="0.88"/>
+  <text x="430" y="168" font-size="7.5" fill="#FCA5A5" text-anchor="middle">RU Shore Stn  1600–3000</text>
+  <line x1="430" y1="157" x2="430" y2="138" stroke="#F97316" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- ── ALLOCATION BARS ── -->
+  <rect x="0" y="183" width="680" height="12" fill="#0C0C14" opacity="0.90"/>
+  <rect x="0" y="195" width="680" height="12" fill="#0A0A10" opacity="0.90"/>
+  <text x="3" y="192" font-size="6" fill="#475569" font-weight="bold">ACMA</text>
+  <text x="3" y="204" font-size="6" fill="#475569" font-weight="bold">NTIA</text>
+
+  <!-- ACMA -->
+  <!-- ARN 300–535 kHz (aeronautical radionavigation, NDB) -->
+  <rect x="30"  y="183" width="46"  height="11" fill="#7D1128" opacity="0.88"/>
+  <text x="53"  y="192" font-size="5.5" fill="#FCA5A5" text-anchor="middle">ARN</text>
+  <!-- MM 300–500 kHz (maritime mobile) -->
+  <rect x="76"  y="183" width="115" height="11" fill="#164E63" opacity="0.88"/>
+  <text x="133" y="192" font-size="5.5" fill="#BAE6FD" text-anchor="middle">MM</text>
+  <!-- AM broadcast 520–1710 kHz -->
+  <!-- 520 kHz → x = 30 + 220/2700*620 = 80 -->
+  <!-- 1710 kHz → x = 30 + 1410/2700*620 = 354 -->
+  <rect x="80"  y="183" width="274" height="11" fill="#92400E" opacity="0.70"/>
+  <text x="217" y="192" font-size="5.5" fill="#FDE68A" text-anchor="middle">AM BROADCAST</text>
+  <!-- MM 1605–4000 kHz maritime MF -->
+  <rect x="305" y="183" width="345" height="11" fill="#164E63" opacity="0.70"/>
+  <text x="477" y="192" font-size="5.5" fill="#BAE6FD" text-anchor="middle">MM / Maritime</text>
+
+  <!-- NTIA -->
+  <!-- NGV 520–1710 kHz (AM broadcast, non-gov) -->
+  <rect x="80"  y="195" width="274" height="11" fill="#14532D" opacity="0.80"/>
+  <text x="217" y="204" font-size="5.5" fill="#A7F3D0" text-anchor="middle">NGV  AM Broadcast</text>
+  <!-- GOV 300–520 kHz and 1710–3000 kHz -->
+  <rect x="30"  y="195" width="50"  height="11" fill="#92400E" opacity="0.80"/>
+  <text x="55"  y="204" font-size="5" fill="#FDE68A" text-anchor="middle">GOV</text>
+  <rect x="354" y="195" width="296" height="11" fill="#92400E" opacity="0.80"/>
+  <text x="502" y="204" font-size="5.5" fill="#FDE68A" text-anchor="middle">GOV  Maritime / Military</text>
+
+  <line x1="30" y1="195" x2="650" y2="195" stroke="#1E293B" stroke-width="0.5"/>
+
+  <text x="10" y="17" font-size="12" fill="#06B6D4" font-weight="bold">MF</text>
+  <text x="10" y="30" font-size="8.5" fill="#94A3B8">300 – 3000 kHz</text>
+</svg>

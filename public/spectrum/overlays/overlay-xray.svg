@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 240" font-family="'JetBrains Mono', 'Courier New', monospace">
+  <!--
+    X-ray Band Overlay: 10nm → 0.01nm  LOG WAVELENGTH (reverse — freq increases left to right)
+    x = 30 + log10(10/λ_nm) / log10(10/0.01) * 620
+      = 30 + log10(10/λ_nm) / 3 * 620
+
+    10nm   → x=30    |  1nm  → x=237   |  0.1nm → x=443   |  0.01nm → x=650
+  -->
+
+  <rect x="0" y="82" width="680" height="66" fill="#0A0A0F" opacity="0.72"/>
+
+  <!-- Sub-band fills -->
+  <!-- Soft X-ray 0.1–10nm → x=30 to x=443 -->
+  <rect x="30"  y="92" width="413" height="23" fill="#1E3A8A" opacity="0.18"/>
+  <!-- Hard X-ray 0.01–0.1nm → x=443 to x=650 -->
+  <rect x="443" y="92" width="207" height="23" fill="#5B21B6" opacity="0.22"/>
+
+  <!-- ── SCALE BAR ── -->
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#A78BFA" stroke-width="6" opacity="0.10"/>
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#C4B5FD" stroke-width="1.5"/>
+  <line x1="30"  y1="108" x2="30"  y2="122" stroke="#C4B5FD" stroke-width="1.5"/>
+  <line x1="650" y1="108" x2="650" y2="122" stroke="#C4B5FD" stroke-width="1.5"/>
+
+  <!-- Ticks -->
+  <line x1="237" y1="109" x2="237" y2="121" stroke="#C4B5FD" stroke-width="1"/>
+  <line x1="443" y1="109" x2="443" y2="121" stroke="#C4B5FD" stroke-width="1"/>
+
+  <text x="30"  y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">10nm</text>
+  <text x="237" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1nm</text>
+  <text x="443" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">0.1nm</text>
+  <text x="650" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">0.01nm</text>
+  <text x="340" y="150" font-size="6.5" fill="#475569" text-anchor="middle">nm  (← wavelength decreases | frequency / energy increases →)</text>
+
+  <!-- Sub-band labels -->
+  <text x="236" y="110" font-size="6.5" fill="#93C5FD" text-anchor="middle">SOFT X-RAY  0.1–10nm</text>
+  <text x="546" y="110" font-size="6.5" fill="#C4B5FD" text-anchor="middle">HARD X-RAY  0.01–0.1nm</text>
+
+  <!-- Energy scale keV (X-ray is typically described in keV) -->
+  <!-- E = hc/λ = 1240 eV·nm / λ_nm  -->
+  <!-- 10nm → 124 eV (0.12 keV) -->
+  <!-- 1nm  → 1.24 keV -->
+  <!-- 0.1nm → 12.4 keV -->
+  <!-- 0.01nm → 124 keV -->
+  <text x="30"  y="130" font-size="5.5" fill="#6B7280" text-anchor="middle">0.12 keV</text>
+  <text x="237" y="130" font-size="5.5" fill="#6B7280" text-anchor="middle">1.2 keV</text>
+  <text x="443" y="130" font-size="5.5" fill="#6B7280" text-anchor="middle">12 keV</text>
+  <text x="650" y="130" font-size="5.5" fill="#6B7280" text-anchor="middle">124 keV</text>
+
+  <!-- No platform badges — band + allocation only per user instruction -->
+
+  <!-- ── APPLICATION BLOCKS ── -->
+  <rect x="0" y="180" width="680" height="14" fill="#0C0C14" opacity="0.92"/>
+  <rect x="0" y="194" width="680" height="14" fill="#080810" opacity="0.92"/>
+  <text x="3" y="191" font-size="5.5" fill="#475569" font-weight="bold">BAND</text>
+  <text x="3" y="205" font-size="5.5" fill="#475569" font-weight="bold">USE</text>
+
+  <!-- Band row -->
+  <rect x="30"  y="180" width="413" height="13" fill="#1E3A5F" opacity="0.80"/>
+  <text x="236" y="189" font-size="5.5" fill="#93C5FD" text-anchor="middle">SOFT X-RAY  (0.1–10nm)</text>
+  <rect x="443" y="180" width="207" height="13" fill="#3B0764" opacity="0.80"/>
+  <text x="546" y="189" font-size="5.5" fill="#E9D5FF" text-anchor="middle">HARD X-RAY  (0.01–0.1nm)</text>
+
+  <!-- Application row -->
+  <rect x="30"  y="194" width="413" height="13" fill="#0F1A2E" opacity="0.80"/>
+  <text x="236" y="203" font-size="4.5" fill="#93C5FD" text-anchor="middle">Synchrotron, EUV lithography, astronomy, plasma physics</text>
+  <rect x="443" y="194" width="207" height="13" fill="#1A0030" opacity="0.80"/>
+  <text x="546" y="203" font-size="4.5" fill="#E9D5FF" text-anchor="middle">Medical CT, industrial NDT, nuclear detection, baggage scan</text>
+
+  <line x1="30" y1="194" x2="650" y2="194" stroke="#1E293B" stroke-width="0.5"/>
+
+  <!-- Additional context block — mid-panel -->
+  <rect x="30" y="157" width="620" height="17" rx="2" fill="#0D0D1A" stroke="#334155" stroke-width="0.5"/>
+  <text x="340" y="164" font-size="6" fill="#64748B" text-anchor="middle">X-RAY BAND — No military drone platform operates in this band</text>
+  <text x="340" y="172" font-size="5.5" fill="#475569" text-anchor="middle">Applications: nuclear/radiological threat detection, backscatter scan (border security), medical / cargo inspection</text>
+
+  <text x="10" y="17" font-size="12" fill="#C4B5FD" font-weight="bold">X-RAY</text>
+  <text x="10" y="30" font-size="8.5" fill="#94A3B8">10 – 0.01nm</text>
+  <text x="10" y="42" font-size="6" fill="#475569">0.12 – 124 keV</text>
+</svg>

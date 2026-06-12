@@ -1,0 +1,421 @@
+---
+description: SPECTRAL PCM — slide production workflow. pptxgenjs patterns, Higgsfield workflow, QA process. Apply to all phase7/ build scripts.
+globs: phase7/**, **/*.js, **/build_*, **/slide_*
+alwaysApply: false
+---
+
+# SPECTRAL PCM — Slide Production System
+
+## Toolchain
+- **pptxgenjs** — Node.js PowerPoint build tool. All slides are generated programmatically.
+- **Higgsfield** — AI image generation for all slide photography
+- **LibreOffice / pdftoppm** — Visual QA: convert PPTX → PDF → JPEGs for inspection
+
+## File Structure for Phase 7 Production
+```
+phase7/
+├── _master/
+│   ├── BUILD_CONSTANTS.js      ← brand tokens, shared layout helpers
+│   ├── SLIDE_MASTER.pptx       ← reference template (do not edit programmatically)
+│   └── img16x9.js              ← Higgsfield image helper function
+├── d1/
+│   ├── d1p1_build.js           ← build script for D1P1
+│   ├── d1p1_higgsfield.md      ← Higgsfield prompt batch for D1P1
+│   ├── d1p1_output.pptx        ← generated output
+│   ├── img/                    ← Higgsfield renders for this pack
+│   └── [repeat for d1p2–d1p5]
+├── d2/
+│   └── [d2p1–d2p6]
+├── d3/
+│   └── [d3p1–d3p6]
+└── scn/
+    └── scn_build.js
+```
+
+## BUILD_CONSTANTS.js (import into every build script)
+```js
+// phase7/_master/BUILD_CONSTANTS.js
+
+const BRAND = {
+  bg:            '#080808',
+  surface1:      '#0F0F0F',
+  surface2:      '#1A1A1A',
+  textPrimary:   '#F5F5F5',
+  textSecondary: '#9CA3AF',
+  textTertiary:  '#6B7280',
+  divider:       '#262626',
+
+  orange:        '#F97316',
+  orangeGlow:    '#FB923C',
+  orangeDim:     '#9A3412',
+
+  cyan:          '#06B6D4',
+  blue:          '#3B82F6',
+  blueGlow:      '#60A5FA',
+  blueDeep:      '#1E3A8A',
+
+  green:         '#10B981',
+  amber:         '#F59E0B',
+  red:           '#DC2626',
+  purple:        '#A78BFA',
+}
+
+const FONT = {
+  display: 'Arial Black',
+  header:  'Arial',
+  body:    'Calibri',
+  data:    'Courier New',
+  classif: 'Courier New',
+}
+
+const CLASSIF_TEXT = 'UNCLASSIFIED // SPECTRAL PCM — FOR OFFICIAL TRAINING USE ONLY'
+
+const SLIDE = { w: '10', h: '5.625' }  // 16:9, inches
+
+module.exports = { BRAND, FONT, CLASSIF_TEXT, SLIDE }
+```
+
+## img16x9() Helper
+```js
+// phase7/_master/img16x9.js
+// Returns a pptxgenjs image object ready to drop as a full-bleed background
+// with optional dark overlay for text legibility
+
+function img16x9(pptx, slide, imgPath, { overlayOpacity = 0.5, overlayColor = '000000' } = {}) {
+  // Full-bleed image
+  slide.addImage({ path: imgPath, x: 0, y: 0, w: '100%', h: '100%' })
+  // Dark overlay
+  if (overlayOpacity > 0) {
+    slide.addShape(pptx.ShapeType.rect, {
+      x: 0, y: 0, w: '100%', h: '100%',
+      fill: { color: overlayColor, transparency: Math.round((1 - overlayOpacity) * 100) },
+      line: { color: overlayColor, transparency: 100 },
+    })
+  }
+}
+
+module.exports = { img16x9 }
+```
+
+## Classification Banner (mandatory, every slide)
+```js
+// Add to EVERY slide — no exceptions
+function addClassifBanner(slide, BRAND, FONT, CLASSIF_TEXT) {
+  slide.addText(CLASSIF_TEXT, {
+    x: 0.3, y: 5.35, w: 9.4, h: 0.2,
+    fontFace: FONT.classif,
+    fontSize: 8,
+    color: BRAND.textSecondary,
+    align: 'left',
+    valign: 'middle',
+  })
+}
+```
+
+## Slide Layout Patterns
+
+### COVER slide
+```js
+// Full-bleed Higgsfield image + overlay + logo + title + classif
+function buildCover(pptx, slide, { imgPath, title, subtitle }) {
+  const { BRAND, FONT, CLASSIF_TEXT } = require('./_master/BUILD_CONSTANTS')
+  const { img16x9 } = require('./_master/img16x9')
+
+  img16x9(pptx, slide, imgPath, { overlayOpacity: 0.65 })
+
+  // Logo placeholder (top-left)
+  slide.addText('SPECTRAL PCM', {
+    x: 0.4, y: 0.3, w: 3, h: 0.4,
+    fontFace: FONT.display, fontSize: 14,
+    color: BRAND.orange, bold: true,
+  })
+
+  // Main title (centre, lower third)
+  slide.addText(title, {
+    x: 0.5, y: 2.8, w: 9, h: 1.2,
+    fontFace: FONT.display, fontSize: 48,
+    color: BRAND.textPrimary, bold: true,
+    align: 'center',
+  })
+
+  if (subtitle) {
+    slide.addText(subtitle, {
+      x: 0.5, y: 4.1, w: 9, h: 0.5,
+      fontFace: FONT.body, fontSize: 18,
+      color: BRAND.textSecondary, align: 'center',
+    })
+  }
+
+  addClassifBanner(slide, BRAND, FONT, CLASSIF_TEXT)
+}
+```
+
+### SECTION DIVIDER slide
+```js
+function buildSectionDivider(pptx, slide, { dayNum, dayTitle, subtitle }) {
+  // Solid orange left panel (40% width)
+  slide.addShape(pptx.ShapeType.rect, {
+    x: 0, y: 0, w: '40%', h: '100%',
+    fill: { color: BRAND.orange },
+    line: { color: BRAND.orange },
+  })
+  // Day number
+  slide.addText(`DAY ${dayNum}`, {
+    x: 0.3, y: 1.8, w: 3.7, h: 1.2,
+    fontFace: FONT.display, fontSize: 72,
+    color: BRAND.bg, bold: true, align: 'center',
+  })
+  // Title right panel
+  slide.addShape(pptx.ShapeType.rect, {
+    x: '40%', y: 0, w: '60%', h: '100%',
+    fill: { color: BRAND.bg },
+    line: { color: BRAND.bg },
+  })
+  slide.addText(dayTitle, {
+    x: 4.2, y: 1.5, w: 5.5, h: 1.5,
+    fontFace: FONT.display, fontSize: 32,
+    color: BRAND.textPrimary, bold: true,
+  })
+  if (subtitle) {
+    slide.addText(subtitle, {
+      x: 4.2, y: 3.1, w: 5.5, h: 0.8,
+      fontFace: FONT.body, fontSize: 16,
+      color: BRAND.textSecondary,
+    })
+  }
+  addClassifBanner(slide, BRAND, FONT, CLASSIF_TEXT)
+}
+```
+
+### LEARNING OBJECTIVES slide
+```js
+function buildLOs(pptx, slide, { lessonTitle, los, assessmentType }) {
+  // Header bar
+  slide.addShape(pptx.ShapeType.rect, {
+    x: 0, y: 0, w: '100%', h: 0.7,
+    fill: { color: BRAND.orange }, line: { color: BRAND.orange },
+  })
+  slide.addText('LEARNING OBJECTIVES', {
+    x: 0.3, y: 0, w: 9.4, h: 0.7,
+    fontFace: FONT.header, fontSize: 18, bold: true,
+    color: BRAND.bg, valign: 'middle',
+  })
+  slide.addText(`By the end of this lesson you will be able to:`, {
+    x: 0.5, y: 0.85, w: 9, h: 0.35,
+    fontFace: FONT.body, fontSize: 14, color: BRAND.textSecondary,
+  })
+  // LO items
+  los.forEach((lo, i) => {
+    slide.addText(`LO${i + 1}  —  ${lo}`, {
+      x: 0.5, y: 1.3 + i * 0.65, w: 9, h: 0.55,
+      fontFace: FONT.body, fontSize: 15, color: BRAND.textPrimary,
+    })
+  })
+  // Assessment line
+  slide.addText(`ASSESSMENT:  ${assessmentType}`, {
+    x: 0.5, y: 4.7, w: 9, h: 0.35,
+    fontFace: FONT.classif, fontSize: 11,
+    color: BRAND.cyan, bold: true,
+  })
+  addClassifBanner(slide, BRAND, FONT, CLASSIF_TEXT)
+}
+```
+
+### CONTENT slide (two-column)
+```js
+function buildTwoColumn(pptx, slide, { title, leftContent, rightImgPath }) {
+  // Title
+  slide.addText(title, {
+    x: 0.4, y: 0.2, w: 9.2, h: 0.6,
+    fontFace: FONT.header, fontSize: 24, bold: true,
+    color: BRAND.textPrimary,
+  })
+  // Divider line
+  slide.addShape(pptx.ShapeType.line, {
+    x: 0.4, y: 0.9, w: 9.2, h: 0,
+    line: { color: BRAND.divider, width: 1 },
+  })
+  // Left text
+  slide.addText(leftContent, {
+    x: 0.4, y: 1.0, w: 4.6, h: 4.0,
+    fontFace: FONT.body, fontSize: 14,
+    color: BRAND.textPrimary, valign: 'top',
+  })
+  // Right image
+  if (rightImgPath) {
+    slide.addImage({ path: rightImgPath, x: 5.2, y: 1.0, w: 4.5, h: 3.8 })
+  }
+  addClassifBanner(slide, BRAND, FONT, CLASSIF_TEXT)
+}
+```
+
+### FULL-BLEED IMAGE slide
+```js
+// For high-impact Higgsfield slides — image fills the frame
+function buildFullBleed(pptx, slide, { imgPath, title, caption, overlayOpacity = 0.45 }) {
+  img16x9(pptx, slide, imgPath, { overlayOpacity })
+  if (title) {
+    slide.addText(title, {
+      x: 0.5, y: 3.5, w: 9, h: 1.2,
+      fontFace: FONT.display, fontSize: 36, bold: true,
+      color: BRAND.textPrimary, align: 'left',
+    })
+  }
+  if (caption) {
+    slide.addText(caption, {
+      x: 0.5, y: 4.7, w: 8, h: 0.35,
+      fontFace: FONT.body, fontSize: 11,
+      color: BRAND.textSecondary,
+    })
+  }
+  addClassifBanner(slide, BRAND, FONT, CLASSIF_TEXT)
+}
+```
+
+### KEY STAT callout
+```js
+// Large number + label — for spine facts and data emphasis
+function buildKeyStat(pptx, slide, { stat, label, context, accentColor }) {
+  const color = accentColor || BRAND.orange
+  slide.addText(stat, {
+    x: 0.5, y: 0.8, w: 9, h: 2.5,
+    fontFace: FONT.display, fontSize: 96, bold: true,
+    color: color, align: 'center',
+  })
+  slide.addText(label, {
+    x: 0.5, y: 3.3, w: 9, h: 0.7,
+    fontFace: FONT.header, fontSize: 22, bold: true,
+    color: BRAND.textPrimary, align: 'center',
+  })
+  if (context) {
+    slide.addText(context, {
+      x: 1.0, y: 4.1, w: 8, h: 0.6,
+      fontFace: FONT.body, fontSize: 13,
+      color: BRAND.textSecondary, align: 'center',
+    })
+  }
+  addClassifBanner(slide, BRAND, FONT, CLASSIF_TEXT)
+}
+```
+
+## Build Script Skeleton
+```js
+// phase7/d1/d1p1_build.js
+const pptx = new PptxGenJS()
+const { BRAND, FONT, CLASSIF_TEXT, SLIDE } = require('../_master/BUILD_CONSTANTS')
+const { img16x9 } = require('../_master/img16x9')
+
+pptx.layout = 'LAYOUT_WIDE'  // 16:9
+
+// Slide 1 — Cover
+const s1 = pptx.addSlide()
+buildCover(pptx, s1, {
+  imgPath: './img/d1p1_cover.jpg',
+  title: 'THE DRONE REVOLUTION',
+  subtitle: 'Why This Matters Now — Day 1, Pack 1',
+})
+
+// Slide 2 — Learning Objectives
+const s2 = pptx.addSlide()
+buildLOs(pptx, s2, {
+  lessonTitle: 'The Drone Revolution',
+  los: [
+    'Articulate why UAS dominance is the defining characteristic of 2020s warfare',
+    'Classify five spine facts by operational domain',
+    'Assess threat implications for their own operating environment',
+  ],
+  assessmentType: 'Knowledge check — 10 MCQ + class discussion',
+})
+
+// ... continue for remaining slides
+
+pptx.writeFile({ fileName: './d1p1_output.pptx' })
+  .then(() => console.log('D1P1 written'))
+  .catch(console.error)
+```
+
+## Higgsfield Workflow
+
+### Step 1 — Generate prompts file alongside the build script
+File: `phase7/d1/d1p1_higgsfield.md`
+```markdown
+## D1P1 — The Drone Revolution
+
+### Slide 1 (Cover) — The Drone Revolution
+**Purpose:** Establish the operational weight of modern UAS — not toys, not gadgets, war-decisive systems
+**Style:** cinematic military documentary, desaturated, warm golden hour grading, high contrast
+**Subject:** Shahed-136 OWA drone in low-level flight over Eastern European farmland, sunset horizon,
+           burning wreckage visible in background, second drone visible high right frame
+**Mood:** tense, operationally credible, ominous
+**Aspect:** 16:9
+**Negative:** cartoon, low quality, watermark, civilian aesthetic, cheerful, text overlay
+
+### Slide 5 (Full-bleed) — Ukraine 4 Million Drones
+**Purpose:** Communicate the industrial scale of Ukraine's drone production
+**Style:** cinematic documentary, desaturated, cool blue-grey factory lighting
+**Subject:** Military drone production line, dozens of FPV frames being assembled by technicians in
+           industrial facility, overhead lighting, blue/grey tones
+**Mood:** industrial, determined, scaled
+**Aspect:** 16:9
+**Negative:** cartoon, low quality, watermark, cheerful, bright colours, text
+```
+
+### Step 2 — Generate images in Higgsfield
+- One batch per pack
+- Download as numbered JPEGs: `cover.jpg`, `slide05.jpg`, etc.
+- Place in `phase7/d1/img/` (or `d2/img/`, etc.)
+
+### Step 3 — Reference in build script
+```js
+imgPath: path.join(__dirname, './img/cover.jpg')
+```
+
+## QA Process
+
+### Step 1 — Content check
+```bash
+cd phase7/d1
+extract-text d1p1_output.pptx
+```
+Verify: all slides present, no placeholder text (XXXX, TODO, [insert]), LOs on slide 2, classif banner on every slide.
+
+### Step 2 — Visual check (via LibreOffice + pdftoppm)
+```bash
+soffice --headless --convert-to pdf d1p1_output.pptx
+rm -f slide-*.jpg
+pdftoppm -jpeg -r 150 d1p1_output.pdf slide
+ls -1 "$PWD"/slide-*.jpg
+```
+Then inspect images for: overflow, overlapping elements, missing content, dark-enough overlay on Higgsfield images.
+
+### Step 3 — Anti-pattern check
+Before approving any pack:
+- [ ] No white/cream/light backgrounds
+- [ ] No decorative lines under titles
+- [ ] No numeric data in Calibri (must be Courier New)
+- [ ] Classification banner on every slide
+- [ ] No same layout three times in a row
+- [ ] Dark overlay on every Higgsfield image (min 40% opacity)
+- [ ] All text fits within its text box (no overflow)
+- [ ] Slide count: max 24 per pack
+
+## Numeric Data Rule
+All numeric values on slides — ranges (km), altitudes (ft/m), speeds (kts), frequencies (MHz/GHz), counts, percentages — must use `fontFace: FONT.data` (Courier New). No exceptions.
+
+```js
+// Correct
+slide.addText('4,000,000', { fontFace: FONT.data, fontSize: 96, ... })
+
+// Wrong
+slide.addText('4,000,000', { fontFace: FONT.body, fontSize: 96, ... })
+```
+
+## Pack Completion Checklist
+Before committing a pack as complete:
+- [ ] Build script runs without errors: `node d1p1_build.js`
+- [ ] PPTX opens in PowerPoint without corruption
+- [ ] All Higgsfield prompts written and images generated
+- [ ] Visual QA complete (LibreOffice → pdftoppm → image inspect)
+- [ ] Content matches pack LOs and slide count ≤ 24
+- [ ] Higgsfield prompt file committed alongside build script
+- [ ] Output PPTX committed to `phase7/d1/d1p1_output.pptx`

@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 230" font-family="'JetBrains Mono', 'Courier New', monospace">
+  <!--
+    GNSS L-band Overlay: 1100–1700 MHz  |  x = 30 + (f_MHz - 1100) / 600 * 620
+    GPS L1=1575.42, L2=1227.6, L5=1176.45
+    GLONASS L1=1602, L2=1246
+    Galileo E1=1575.42, E5a=1176.45, E6=1278.75
+    BeiDou B1=1561.098, B2=1207.14, B3=1268.52
+  -->
+
+  <rect x="0" y="82" width="680" height="66" fill="#0A0A0F" opacity="0.72"/>
+
+  <!-- ── SUB-BAND HIGHLIGHTS (constellation bands) ── -->
+  <!-- L5 / E5a / B2 cluster ~1164–1215 MHz  → x=79 to x=133 -->
+  <rect x="79"  y="92" width="54"  height="23" fill="#F97316" opacity="0.18"/>
+  <!-- L2 / GLONASS L2 / E6 / B3 cluster ~1215–1300 MHz  → x=133 to x=220 -->
+  <rect x="133" y="92" width="87"  height="23" fill="#4B1D96" opacity="0.18"/>
+  <!-- L1 / E1 / B1 / GLONASS L1 cluster ~1550–1620 MHz  → x=490 to x=573 -->
+  <rect x="490" y="92" width="83"  height="23" fill="#1E3A8A" opacity="0.22"/>
+
+  <!-- ── CONSTELLATION FREQUENCY MARKERS ── -->
+  <!-- GPS L5 1176.45 → x=30+76.45/600*620=109 -->
+  <line x1="109" y1="93" x2="109" y2="115" stroke="#4287f5" stroke-width="1.2" opacity="0.9"/>
+  <!-- Galileo E5a 1176.45 (same) -->
+  <!-- BeiDou B2 1207.14 → x=30+107.14/600*620=141 -->
+  <line x1="141" y1="93" x2="141" y2="115" stroke="#F97316" stroke-width="1.2" opacity="0.9"/>
+  <!-- GPS L2 1227.6 → x=30+127.6/600*620=162 -->
+  <line x1="162" y1="93" x2="162" y2="115" stroke="#4287f5" stroke-width="1.2" opacity="0.9"/>
+  <!-- GLONASS L2 1246 → x=30+146/600*620=181 -->
+  <line x1="181" y1="93" x2="181" y2="115" stroke="#f54242" stroke-width="1.2" opacity="0.9"/>
+  <!-- BeiDou B3 1268.52 → x=30+168.52/600*620=204 -->
+  <line x1="204" y1="93" x2="204" y2="115" stroke="#F97316" stroke-width="1.2" opacity="0.9"/>
+  <!-- Galileo E6 1278.75 → x=30+178.75/600*620=215 -->
+  <line x1="215" y1="93" x2="215" y2="115" stroke="#003399" stroke-width="1.2" opacity="0.9"/>
+  <!-- BeiDou B1 1561.098 → x=30+461.1/600*620=506 -->
+  <line x1="506" y1="93" x2="506" y2="115" stroke="#F97316" stroke-width="1.2" opacity="0.9"/>
+  <!-- GPS L1 1575.42 → x=30+475.42/600*620=521 -->
+  <line x1="521" y1="93" x2="521" y2="115" stroke="#4287f5" stroke-width="1.2" opacity="0.9"/>
+  <!-- Galileo E1 1575.42 (same) -->
+  <!-- GLONASS L1 1602 → x=30+502/600*620=549 -->
+  <line x1="549" y1="93" x2="549" y2="115" stroke="#f54242" stroke-width="1.2" opacity="0.9"/>
+
+  <!-- ── BLUE FORCE BADGES ── -->
+  <!-- GPS L5 / Galileo E5a / BeiDou B2 1164–1215 MHz -->
+  <rect x="60"  y="44" width="122" height="17" rx="2" fill="#065F46" opacity="0.88"/>
+  <text x="121" y="55" font-size="7.5" fill="#A7F3D0" text-anchor="middle">L5/E5a/B2  1164–1215</text>
+  <line x1="109" y1="61" x2="109" y2="92" stroke="#06B6D4" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- GPS L1 / Galileo E1 / BeiDou B1 / GLONASS L1 1559–1610 MHz -->
+  <rect x="465" y="44" width="128" height="17" rx="2" fill="#1E3A8A" opacity="0.88"/>
+  <text x="529" y="55" font-size="7.5" fill="#BFDBFE" text-anchor="middle">L1/E1/B1  1559–1610</text>
+  <line x1="521" y1="61" x2="521" y2="92" stroke="#06B6D4" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- ── SCALE BAR ── -->
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#06B6D4" stroke-width="6" opacity="0.12"/>
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#06B6D4" stroke-width="2"/>
+  <line x1="30"  y1="108" x2="30"  y2="122" stroke="#06B6D4" stroke-width="1.5"/>
+  <line x1="650" y1="108" x2="650" y2="122" stroke="#06B6D4" stroke-width="1.5"/>
+
+  <!-- Ticks: 1200, 1300, 1400, 1500, 1600 MHz -->
+  <!-- 1200 → x=30+100/600*620=133 -->
+  <!-- 1300 → x=30+200/600*620=237 -->
+  <!-- 1400 → x=30+300/600*620=340 -->
+  <!-- 1500 → x=30+400/600*620=444 -->
+  <!-- 1600 → x=30+500/600*620=547 -->
+  <line x1="133" y1="109" x2="133" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="237" y1="109" x2="237" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="340" y1="109" x2="340" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="444" y1="109" x2="444" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="547" y1="109" x2="547" y2="121" stroke="#06B6D4" stroke-width="1"/>
+
+  <text x="30"  y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1100</text>
+  <text x="133" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1200</text>
+  <text x="237" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1300</text>
+  <text x="340" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1400</text>
+  <text x="444" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1500</text>
+  <text x="547" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1600</text>
+  <text x="650" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1700</text>
+  <text x="340" y="150" font-size="6.5" fill="#475569" text-anchor="middle">MHz</text>
+
+  <!-- ── RED FORCE BADGES ── -->
+  <!-- GPS jamming / spoofing (broadband L-band jammer) -->
+  <rect x="140" y="157" width="130" height="17" rx="2" fill="#7F1D1D" opacity="0.88"/>
+  <text x="205" y="168" font-size="7.5" fill="#FCA5A5" text-anchor="middle">GPS Jammer  L1/L2/L5</text>
+  <line x1="205" y1="157" x2="205" y2="138" stroke="#F97316" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- ── L2 ZOOM INSET (bottom-right ~30% width) ── -->
+  <!-- Inset covers GPS L2 cluster: 1220–1290 MHz (70 MHz window) -->
+  <!-- Inset box: x=468 to x=650 (182px wide), y=155 to y=212 -->
+  <rect x="468" y="155" width="182" height="57" rx="3" fill="#080810" stroke="#06B6D4" stroke-width="0.8" opacity="0.95"/>
+  <text x="559" y="165" font-size="6" fill="#06B6D4" text-anchor="middle" font-weight="bold">L2 ZOOM — 1220–1290 MHz</text>
+
+  <!-- Inset scale bar at y=188 -->
+  <!-- Inset x formula: ix = 474 + (f_MHz - 1220) / 70 * 170 -->
+  <!-- GPS L2C 1227.6   → ix = 474 + 7.6/70*170  = 492 -->
+  <!-- GLONASS L2 1246  → ix = 474 + 26/70*170   = 537 -->
+  <!-- BeiDou B3 1268.52 → ix = 474 + 48.52/70*170= 592 -->
+  <!-- Galileo E6 1278.75 → ix = 474 + 58.75/70*170= 617 -->
+  <line x1="474" y1="188" x2="644" y2="188" stroke="#06B6D4" stroke-width="1.2"/>
+  <line x1="474" y1="183" x2="474" y2="193" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="644" y1="183" x2="644" y2="193" stroke="#06B6D4" stroke-width="1"/>
+
+  <!-- GPS L2C 1227.6 -->
+  <line x1="492" y1="169" x2="492" y2="188" stroke="#4287f5" stroke-width="1.4"/>
+  <text x="492" y="200" font-size="5" fill="#4287f5" text-anchor="middle">GPS L2C</text>
+  <text x="492" y="207" font-size="4.5" fill="#6B8FCC" text-anchor="middle">1227.6</text>
+
+  <!-- GLONASS L2 1246 -->
+  <line x1="537" y1="169" x2="537" y2="188" stroke="#f54242" stroke-width="1.4"/>
+  <text x="537" y="200" font-size="5" fill="#f54242" text-anchor="middle">GLO L2</text>
+  <text x="537" y="207" font-size="4.5" fill="#CC6B6B" text-anchor="middle">1246.0</text>
+
+  <!-- BeiDou B3 1268.52 -->
+  <line x1="592" y1="169" x2="592" y2="188" stroke="#F97316" stroke-width="1.4"/>
+  <text x="592" y="200" font-size="5" fill="#F97316" text-anchor="middle">BDS B3</text>
+  <text x="592" y="207" font-size="4.5" fill="#CC8040" text-anchor="middle">1268.5</text>
+
+  <!-- Galileo E6 1278.75 -->
+  <line x1="617" y1="169" x2="617" y2="188" stroke="#4169E1" stroke-width="1.4"/>
+  <text x="617" y="200" font-size="5" fill="#4169E1" text-anchor="middle">GAL E6</text>
+  <text x="617" y="207" font-size="4.5" fill="#6080CC" text-anchor="middle">1278.8</text>
+
+  <!-- Inset tick labels 1220 and 1290 -->
+  <text x="474" y="196" font-size="4.5" fill="#475569" text-anchor="middle">1220</text>
+  <text x="644" y="196" font-size="4.5" fill="#475569" text-anchor="middle">1290</text>
+
+  <!-- Constellation legend dots (inset) -->
+  <circle cx="476" cy="167" r="2.2" fill="#4287f5"/>
+  <text x="481" y="169" font-size="4.5" fill="#4287f5">GPS</text>
+  <circle cx="500" cy="167" r="2.2" fill="#f54242"/>
+  <text x="505" y="169" font-size="4.5" fill="#f54242">GLONASS</text>
+  <circle cx="532" cy="167" r="2.2" fill="#F97316"/>
+  <text x="537" y="169" font-size="4.5" fill="#F97316">BeiDou</text>
+  <circle cx="561" cy="167" r="2.2" fill="#4169E1"/>
+  <text x="566" y="169" font-size="4.5" fill="#4169E1">Galileo</text>
+
+  <!-- ── ALLOCATION BARS ── -->
+  <rect x="0" y="215" width="680" height="8"  fill="#0C0C14" opacity="0.90"/>
+  <rect x="0" y="223" width="680" height="7"  fill="#0A0A10" opacity="0.90"/>
+  <text x="3" y="222" font-size="5.5" fill="#475569" font-weight="bold">ACMA</text>
+  <text x="3" y="229" font-size="5.5" fill="#475569" font-weight="bold">NTIA</text>
+
+  <!-- ACMA: RNS (radionavigation satellite) across full band -->
+  <rect x="30"  y="215" width="620" height="7" fill="#4B1D96" opacity="0.80"/>
+  <text x="340" y="221" font-size="5" fill="#DDD6FE" text-anchor="middle">RNS — Radionavigation Satellite (GNSS L-band)</text>
+
+  <!-- NTIA: GOV across full band (GPS is US government) -->
+  <rect x="30"  y="223" width="620" height="7" fill="#92400E" opacity="0.75"/>
+  <text x="340" y="229" font-size="5" fill="#FDE68A" text-anchor="middle">GOV — GPS / Navigation Satellite Service</text>
+
+  <text x="10" y="17" font-size="12" fill="#06B6D4" font-weight="bold">GNSS</text>
+  <text x="10" y="30" font-size="8.5" fill="#94A3B8">1100 – 1700 MHz</text>
+
+  <!-- Constellation legend (main band) -->
+  <circle cx="56"  cy="20" r="3" fill="#4287f5"/>
+  <text x="61"  y="23" font-size="6.5" fill="#4287f5">GPS</text>
+  <circle cx="90"  cy="20" r="3" fill="#f54242"/>
+  <text x="95"  y="23" font-size="6.5" fill="#f54242">GLONASS</text>
+  <circle cx="140" cy="20" r="3" fill="#F97316"/>
+  <text x="145" y="23" font-size="6.5" fill="#F97316">BeiDou</text>
+  <circle cx="183" cy="20" r="3" fill="#4169E1"/>
+  <text x="188" y="23" font-size="6.5" fill="#4169E1">Galileo</text>
+</svg>

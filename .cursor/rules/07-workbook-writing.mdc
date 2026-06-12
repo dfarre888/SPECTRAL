@@ -1,0 +1,136 @@
+---
+description: SPECTRAL PCM — workbook writing standards. Prose depth, MCQ construction, knowledge checks. Apply to all workbook content generation.
+globs: phase7/**/workbook*, phase7/**/*_wb*, phase7/**/*workbook*
+alwaysApply: false
+---
+
+# SPECTRAL PCM — Workbook Writing Standards
+
+## The Workbook vs The Slide
+
+The slide shows the headline. The workbook explains the mechanism.
+
+| Slide | Workbook |
+|---|---|
+| "Fibre-optic FPVs are immune to RF jamming" | Explains *why* — the signal travels down a physical filament not through RF, so no RF environment can disrupt it. Then explains what the defeat options actually are (kinetic only, visual detection, wire cutting). |
+| Stat: "90% Shahed intercept rate" | Explains the cost exchange ratio — each Shahed costs ~$20K, each Patriot intercept costs $3–4M. 90% intercept rate is a tactical success and a strategic failure. |
+| Diagram: detect-decide-defeat layers | Prose explaining how each layer works, its limitations, what happens when one fails, and why layering exists. |
+
+## Prose Register
+
+- **Journal of Military Technology meets War on the Rocks** — technically precise, operationally grounded, readable by a sharp professional who is not a PhD
+- No jargon without definition on first use
+- No padding — every sentence adds information
+- Active voice. Actor does thing. Not "it was determined that."
+- Present tense for current capabilities, past tense for historical events
+
+## Knowledge Check Construction (10 MCQ per lesson)
+
+### MCQ Anatomy
+```
+Stem: [scenario or direct question — one clear question, no trick]
+A) [Correct answer — plausible, specific, not obviously right]
+B) [Distractor — plausible but wrong for a specific reason]
+C) [Distractor — common misconception]
+D) [Distractor — partially correct but misses the key point]
+
+Correct: A
+Bloom's: [Remember / Understand / Apply / Analyse]
+Instructor note: [Why the wrong answers are wrong — for instructor guide only]
+```
+
+### MCQ Rules
+- One clearly correct answer. Never "A and C" or "all of the above."
+- The stem must be answerable without reading the options (self-contained question)
+- Distractors must be plausible — a student who didn't pay attention might choose them
+- No trick questions, double negatives, or "which of these is NOT"
+- Each MCQ maps to exactly one Learning Objective
+- Difficulty mix per 10-question set: 3 Remember, 4 Understand/Apply, 3 Analyse
+- Day 1 sets: weighted Remember/Understand. Day 3 sets: weighted Apply/Analyse.
+
+### MCQ Stems — Approved Formats
+```
+"A Blue Force commander observes [situation]. What is the most likely [decision/implication/risk]?"
+"Which characteristic of [platform/system] makes it most effective against [target/environment]?"
+"[Scenario]. The most effective first response is to:"
+"What distinguishes [System A] from [System B] in [operational context]?"
+"[Doctrine claim]. This approach is most limited by:"
+```
+
+### MCQ Stems — Prohibited Formats
+```
+"What is the maximum range of..." (pure memorisation, not operationally useful)
+"Who invented..." (irrelevant)
+"In what year did..." (irrelevant unless operationally significant)
+"Which of the following is NOT..." (double negative, confusing)
+"All of the following are true EXCEPT..." (same problem)
+```
+
+## Short-Answer Questions (2 per lesson, in student workbook)
+
+Format:
+```
+Q: [Open-ended scenario or analytical question]
+Expected response: [3–5 key points the answer should cover — instructor guide only]
+Marks: 5 (1 per key point)
+Bloom's: Apply / Analyse / Evaluate
+```
+
+Example:
+```
+Q: Your unit has detected a mixed swarm of 12 FPV drones and 4 Shahed-pattern OWA drones inbound
+   at 2km. You have one RF jammer and six kinetic interceptors available. Describe your prioritisation
+   decision and justify it.
+
+Expected response (instructor guide):
+1. Shahed OWA is the higher lethality threat — prioritise kinetics on these (2 pts)
+2. RF jammer effective against FPV (RC-link), not against Shahed (pre-programmed) (1 pt)
+3. Magazine depth problem — 6 interceptors vs 16 threats requires prioritisation (1 pt)
+4. Accepts that some FPVs will get through — decision under scarcity (1 pt)
+```
+
+## Workbook Section Structure per Lesson
+
+```
+[Lesson Title] ─────────────────────────────────────
+Learning Objectives (restated from slides)
+
+CORE CONCEPTS (2–4 pages)
+  — not a transcript of the slides
+  — explains mechanisms, not just facts
+  — includes worked examples and named conflict references
+
+CASE STUDY EXTRACT (1 page)
+  — named engagement, named system, named outcome
+  — "so what" paragraph at the end
+
+KNOWLEDGE CHECK (1 page)
+  — 10 MCQ (answers in instructor version only)
+  — 2 short-answer questions
+
+SYNDICATE EXERCISE BRIEF (1 page, where applicable)
+  — scenario, roles, time limit, output required
+
+NOTES SPACE (1 page)
+─────────────────────────────────────────────────────
+```
+
+## Case Study Standards
+
+Every case study must have:
+- **Named conflict and date range** (not "recent conflict")
+- **Named platform(s)** — not "enemy drones"
+- **Documented outcome** — sourced from T1–T3 sources (see research methodology)
+- **Operational lesson** — what changed after this event? What did commanders do differently?
+- **Counter-lesson** — what did the other side do to adapt?
+
+## Tone Examples
+
+**Too vague (reject):**
+"Drones have been used effectively in modern conflicts, demonstrating their importance on the battlefield."
+
+**Too technical / academic (reject):**
+"The proliferation of low-cost COTS sUAS platforms exhibiting sub-kilogram MTOW characteristics has precipitated a paradigm shift in the character of contemporary armed conflict."
+
+**Correct register:**
+"The Shahed-136 cost approximately USD $20,000 per unit. A single AIM-9X Sidewinder intercept costs roughly $380,000. When Ukraine's air defences fired three Sidewinders at a single Shahed in September 2023, the exchange ratio was 57:1 in Russia's favour. The drone doesn't need to hit anything to impose cost — it just needs to fly."

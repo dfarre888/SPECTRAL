@@ -1,0 +1,117 @@
+---
+description: Spectral design system — colour tokens, typography, component patterns. Apply to all component and page files.
+globs: app/**/*.tsx, components/**/*.tsx, app/globals.css, tailwind.config.ts
+alwaysApply: false
+---
+
+# Spectral Design System
+
+## Brand Identity
+Dark military intelligence aesthetic. Think: **Mission Operations Centre meets classified briefing room**. Not Silicon Valley, not government GIS portal. Credible, tense, data-dense.
+
+## Colour Tokens (Tailwind config)
+
+### Foundation
+| Token | Hex | Use |
+|---|---|---|
+| `bg-spectral-bg` | `#0A0A0F` | Primary page background |
+| `bg-spectral-surf1` | `#0F0F1A` | Card / panel surface |
+| `bg-spectral-surf2` | `#14141F` | Nested panel, hover state |
+| `bg-spectral-surf3` | `#1A1A2E` | Deepest panel, modal overlay |
+| `text-spectral-primary` | `#F5F5F5` | Body copy, headings |
+| `text-spectral-secondary` | `#9CA3AF` | Labels, metadata, captions |
+| `text-spectral-muted` | `#6B7280` | Disabled, footnotes |
+| `border-spectral-divider` | `#1E1E2E` | Hairlines, dividers |
+
+### Force Colours
+| Token | Hex | Use |
+|---|---|---|
+| `text-red-force` | `#EF4444` | Red Force labels, adversary overlays |
+| `bg-red-force` | `#7F1D1D` | Red Force area fills |
+| `text-blue-force` | `#3B82F6` | Blue Force labels, friendly overlays |
+| `bg-blue-force` | `#1E3A8A` | Blue Force area fills |
+
+### Spectrum Type Colours
+| Token | Hex | Frequency Band Use |
+|---|---|---|
+| `text-spec-gnss` | `#06B6D4` | GNSS (1.2–1.6 GHz) |
+| `text-spec-c2` | `#F97316` | C2 / datalink bands |
+| `text-spec-video` | `#EF4444` | FPV video (5.8 GHz) |
+| `text-spec-radar` | `#10B981` | Radar emissions |
+| `text-spec-comms` | `#A855F7` | Comms / SATCOM |
+| `text-spec-jammer` | `#F59E0B` | Jammer overlay |
+
+### Semantic / Status
+| Token | Hex | Use |
+|---|---|---|
+| `text-status-green` | `#10B981` | Operational, safe |
+| `text-status-amber` | `#F59E0B` | Warning, marginal |
+| `text-status-red` | `#EF4444` | Critical, hostile |
+| `text-status-purple` | `#A855F7` | EW, special category |
+
+## Typography
+- **Display / headings**: `font-display` (JetBrains Mono) — all data values, coordinates, frequencies, ranges
+- **Body**: `font-sans` (Inter or system-ui) — prose, labels, descriptions
+- **Mono data**: `font-mono` (JetBrains Mono) — ALWAYS use for: ranges in km, altitudes in ft/m, frequencies in MHz/GHz, coordinates, speed in kts/km/h, ID codes, hex values, timestamps
+
+## Jammer Tier Badges
+Three tiers with distinct visual treatment:
+```tsx
+// tier_1_military — solid red outline
+<span className="tier-badge tier-1">TIER 1 MIL</span>
+
+// tier_2_sdr — amber outline
+<span className="tier-badge tier-2">TIER 2 SDR</span>
+
+// tier_3_cots — muted grey outline
+<span className="tier-badge tier-3">TIER 3 COTS</span>
+```
+CSS classes are in `app/globals.css`.
+
+## Classification Banner
+Top of every page layout. Fixed position. Full-width.
+```tsx
+<div className="classification-banner">
+  UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
+</div>
+```
+Background: `#1a1a00`, text: `#ffd700`, border-bottom: `1px solid #ffd700`.
+Font: JetBrains Mono, uppercase, letter-spacing 0.1em.
+
+## Component Patterns
+
+### Module Card (Dashboard)
+```tsx
+<div className="rounded-lg border border-spectral-divider bg-spectral-surf1 p-6 hover:border-purple-500/30 transition-colors cursor-pointer">
+  <div className="flex items-center gap-3 mb-3">
+    <Icon className="h-5 w-5 text-purple-400" />
+    <h3 className="text-spectral-primary font-semibold">{title}</h3>
+  </div>
+  <p className="text-spectral-secondary text-sm">{description}</p>
+</div>
+```
+
+### Data Value Display
+Always JetBrains Mono for numbers:
+```tsx
+<span className="font-mono text-spec-gnss">1575.42 MHz</span>
+<span className="font-mono text-spectral-primary">850 km/h</span>
+<span className="font-mono text-status-red">JAMMED</span>
+```
+
+### Stat Card
+```tsx
+<div className="bg-spectral-surf1 border border-spectral-divider rounded p-4">
+  <p className="text-spectral-secondary text-xs uppercase tracking-wider">{label}</p>
+  <p className="font-mono text-2xl text-spectral-primary mt-1">{value}</p>
+</div>
+```
+
+## Anti-patterns — NEVER DO THESE
+- No white or light backgrounds anywhere in the app
+- No generic blue buttons (use `purple-600` or `spectral-accent` for primary actions)
+- No default Tailwind colours without spectral prefix where spectral tokens exist
+- No `text-gray-*` — use `text-spectral-secondary` or `text-spectral-muted`
+- No inline styles for colours — use Tailwind tokens only
+- No emoji in UI (unless a deliberate status indicator)
+- Classification banner must never be hidden, overflowed, or obscured

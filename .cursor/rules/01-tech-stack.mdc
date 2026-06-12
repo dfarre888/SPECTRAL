@@ -1,0 +1,105 @@
+---
+description: Spectral tech stack, package versions, and architectural constraints. Apply to all TS/TSX/JS files.
+globs: **/*.ts, **/*.tsx, **/*.js, next.config.ts, package.json
+alwaysApply: false
+---
+
+# Tech Stack Reference
+
+## Core Framework
+- **Next.js 14.2.29** — App Router only. No Pages Router. No `getServerSideProps` / `getStaticProps`.
+- **TypeScript strict mode** — all files, no `any` unless absolutely justified with a comment
+- **React 18** — server components by default, client components explicitly marked with `"use client"`
+
+## Database & Auth
+- **Supabase** with `@supabase/ssr` (NOT the legacy `@supabase/auth-helpers-nextjs`)
+- Two clients:
+  - `lib/supabase/client.ts` → browser client (use in client components)
+  - `lib/supabase/server.ts` → server client (use in server components, API routes)
+- Never import the server client in a client component. Never import the browser client in a server component.
+- RLS is enabled on all tables — never bypass with service role key in client-side code
+
+## AI
+- `@anthropic-ai/sdk` — model: `claude-sonnet-4-6`
+- System prompt: `"You are Spectral Intelligence, an AI analyst for the Spectral drone threat platform."`
+- Wrapper: `lib/claude/client.ts` — use `querySpectral()`, don't call the SDK directly from components
+- Max tokens: 2048
+
+## 3D Globe / Scenario Engine
+- **CesiumJS 1.116.0** — used for the Red/Blue Arena module only
+- **Critical**: CesiumJS requires `ssr: false` dynamic import. NEVER import CesiumJS at the top level.
+- CESIUM_BASE_URL must be set and webpack config must copy Workers/Assets/ThirdParty/Widgets
+- See `next.config.ts` for the CopyWebpackPlugin configuration — do not break it
+- `components/arena/CesiumArena.tsx` is the only CesiumJS consumer
+
+## Visualisation
+- **D3.js 7.9.0** — EW spectrum chart (`components/spectrum/SpectrumChart.tsx`)
+- **Recharts 2.12.7** — secondary charts (platform comparisons, radar range plots)
+- **Mapbox GL JS 3.4.0** — 2D intel overview panel only (secondary to Cesium)
+
+## UI Libraries
+- **Tailwind CSS** with custom Spectral design tokens (see `tailwind.config.ts`)
+- **Radix UI** primitives — use for accessible dialogs, dropdowns, tooltips
+- **Lucide React 0.383.0** — icons only (no Heroicons, no FontAwesome)
+- **Framer Motion** — route transitions and module card animations
+- **Zustand** — global state (scenario config, selected platform, active filters)
+- **react-hot-toast** — notifications
+
+## Package Manager
+- `npm` — use `npm install`, not `yarn` or `pnpm`
+
+## Key File Locations
+```
+app/                    # Next.js App Router pages
+  layout.tsx            # Root shell with classification banner + sidebar
+  page.tsx              # Dashboard
+  (auth)/               # Auth routes (login, register)
+  platforms/            # Platform Library module
+  spectrum/             # Spectrum View module
+  gnss/                 # GNSS Intelligence module
+  defeat/               # Defeat Matrix module
+  conflicts/            # Conflict Intel module
+  arena/                # Red/Blue Arena module
+  compare/              # 1v1 Overlay module
+components/
+  layout/               # Sidebar, Topbar
+  spectrum/             # D3 spectrum chart
+  arena/                # CesiumJS arena (ssr:false)
+  gnss/                 # GNSS threat map
+  defeat/               # Capability grid
+  platforms/            # Platform cards and table
+  ui/                   # Reusable components
+lib/
+  supabase/             # client.ts + server.ts
+  claude/               # AI wrapper
+  types/                # TypeScript interfaces
+  utils/                # Shared helpers
+supabase/
+  migrations/           # SQL migrations (001_initial_schema.sql)
+```
+
+## Environment Variables (required)
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY          # server-side only
+ANTHROPIC_API_KEY                  # server-side only
+NEXT_PUBLIC_CESIUM_ION_TOKEN
+NEXT_PUBLIC_MAPBOX_TOKEN
+NEXT_PUBLIC_APP_URL
+```
+
+## CesiumJS Webpack Config (DO NOT MODIFY)
+The `next.config.ts` contains a CopyWebpackPlugin that copies Cesium static assets. If you modify `next.config.ts`, preserve this block exactly:
+```ts
+new CopyWebpackPlugin({
+  patterns: [
+    { from: path.join(cesiumSource, 'Workers'),    to: 'static/Cesium/Workers' },
+    { from: path.join(cesiumSource, 'ThirdParty'), to: 'static/Cesium/ThirdParty' },
+    { from: path.join(cesiumSource, 'Assets'),     to: 'static/Cesium/Assets' },
+    { from: path.join(cesiumSource, 'Widgets'),    to: 'static/Cesium/Widgets' },
+  ],
+})
+config.resolve.alias['cesium'] = path.resolve(__dirname, cesiumSource)
+config.module.unknownContextCritical = false
+```

@@ -1,0 +1,41 @@
+---
+description: Spectral Platform — master project context. Apply to all files in this project.
+globs: **/*
+alwaysApply: true
+---
+
+# Spectral — Military Drone Intelligence Platform
+
+## What This Is
+Spectral is a commercial SaaS military drone intelligence platform built by David (A3DM founder) to sell to defence training providers and contractors. It is a **standalone product** — OSINT-only, ITAR-compliant, no air gap required.
+
+## Seven Core Modules
+1. **Platform Library** — world military UAS database (39+ platforms, all tiers)
+2. **Spectrum View** — EW spectrum visualiser (D3.js log-scale, 400 MHz–6 GHz)
+3. **GNSS Intelligence** — jamming/spoofing threat map, constellation status, defeat methods
+4. **Defeat Matrix** — platform × c-UAS effector capability grid
+5. **Conflict Intel** — live case studies (Ukraine, Red Sea, Nagorno-Karabakh, India-Pakistan)
+6. **Red/Blue Arena** — 3D adversarial scenario engine (CesiumJS globe)
+7. **1v1 Overlay** — single drone vs single counter-system comparison
+
+## Classification Banner
+Every page renders the banner at the top:
+```
+UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
+```
+This is non-negotiable on every route. See `app/globals.css` for `.classification-banner` class.
+
+## Audience
+Defence training providers, contractors, allied military liaison staff, Five Eyes and friendly nations (SG, ID, UAE, JP, EU partners).
+
+## Data Policy
+- All data is **OSINT only** — no classified sources
+- ITAR compliance: no export-controlled technical data in the database
+- Seed data: `spectral_seed_data.json` (39 UAS platforms, 5 GNSS constellations, 12 jammers, 12 anti-drone systems, 7 conflict case studies, 9 nav countermeasures)
+
+## Owner Context
+David is a 22-year RAAF veteran, ATPL(A)/CPL(H), B737/777/787 and C-17/C-130 operator, current Chief Remote Pilot (DREPL). He is also the developer of A3DM (Next.js 14, 170+ Supabase tables, CesiumJS, ~150K LOC). Talk to him as a senior peer. Do not over-explain aviation or military concepts.
+
+## Related Projects
+- **A3DM** — companion enterprise RPAS management platform (separate codebase)
+- **Milskil Military Drone Course** — content source that feeds Spectral's database

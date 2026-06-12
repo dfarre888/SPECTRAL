@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+/* Cesium widget overrides */
+@import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
+
+:root {
+  /* Legacy aliases — map to store tokens for backward compat */
+  --bg: #080808;
+  --surf1: #0f0f10;
+  --surf2: #161618;
+  --border: rgba(255, 255, 255, 0.08);
+  --t-primary: rgba(244, 244, 245, 0.92);
+  --t-secondary: rgba(244, 244, 245, 0.62);
+  --t-muted: rgba(244, 244, 245, 0.38);
+  --red: #EF4444;
+  --blue: #3B82F6;
+  --orange: #F97316;
+  --green: #10B981;
+  --purple: #A855F7;
+  --cyan: #06B6D4;
+
+  /* A3DM zinc canvas + orange accent (canonical) */
+  --store-bg:             #080808;
+  --store-surface:        #0f0f10;
+  --store-surface-2:      #161618;
+  --store-line:           rgba(255, 255, 255, 0.08);
+  --store-ink-soft:       rgba(244, 244, 245, 0.62);
+  --store-ink-mute:       rgba(244, 244, 245, 0.38);
+  --store-accent:         #f97316;
+  --store-accent-glow:    rgba(249, 115, 22, 0.12);
+  --store-accent-border:  rgba(249, 115, 22, 0.35);
+  --store-success:        #4ade80;
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background-color: var(--store-bg);
+  color: var(--store-ink-soft);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden; /* App shell handles scroll */
+}
+
+/* ── Hub / main shell — zinc canvas + orange glow ─────────────────────── */
+.hub-page-canvas {
+  background:
+    radial-gradient(80rem 50rem at 0% 100%, rgba(249, 115, 22, 0.09), transparent 60%),
+    var(--store-bg);
+  color: var(--store-ink-soft);
+}
+
+.store-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+
+.store-text-body {
+  color: var(--store-ink-soft);
+}
+
+.store-text-muted {
+  color: var(--store-ink-mute);
+}
+
+.store-panel {
+  background: var(--store-surface);
+  border: 1px solid var(--store-line);
+}
+
+.store-panel-inner {
+  background: var(--store-surface-2);
+  border: 1px solid var(--store-line);
+}
+
+.store-btn-primary {
+  background: var(--store-accent);
+  color: #0a0a0a;
+  border-radius: 0.75rem;
+  font-weight: 600;
+}
+
+.store-btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.nav-item-active {
+  background: var(--store-accent-glow);
+  border-color: var(--store-accent-border);
+  color: rgba(244, 244, 245, 0.92);
+}
+
+.nav-item-active .nav-icon {
+  color: var(--store-accent);
+}
+
+.hub-tab-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+  background: var(--store-surface);
+  border: 1px solid var(--store-line);
+}
+
+.hub-tab-active {
+  background: var(--store-accent);
+  color: #0a0a0a;
+}
+
+.hub-tab-inactive {
+  color: var(--store-ink-mute);
+}
+
+.hub-tab-inactive:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--store-ink-soft);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surf1); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3A3A5A; }
+
+/* Mono data values */
+.data-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+/* Force colour utilities */
+.red-force   { color: var(--red); }
+.blue-force  { color: var(--blue); }
+.red-glow    { box-shadow: 0 0 12px rgba(239,68,68,0.3); }
+.blue-glow   { box-shadow: 0 0 12px rgba(59,130,246,0.3); }
+
+/* Classification banner */
+.classification-banner {
+  background: linear-gradient(90deg, #1a1a0a 0%, #2a2a0a 50%, #1a1a0a 100%);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: #F59E0B;
+  text-align: center;
+  padding: 2px 0;
+}
+
+/* Tier badge colours */
+.tier-1 { background: rgba(239,68,68,0.15); color: #EF4444; border: 1px solid rgba(239,68,68,0.3); }
+.tier-2 { background: rgba(245,158,11,0.15); color: #F59E0B; border: 1px solid rgba(245,158,11,0.3); }
+.tier-3 { background: rgba(16,185,129,0.15); color: #10B981; border: 1px solid rgba(16,185,129,0.3); }
+
+/* Priority badges */
+.priority-a { background: rgba(239,68,68,0.15); color: #EF4444; }
+.priority-b { background: rgba(245,158,11,0.15); color: #F59E0B; }
+.priority-c { background: rgba(59,130,246,0.15); color: #3B82F6; }

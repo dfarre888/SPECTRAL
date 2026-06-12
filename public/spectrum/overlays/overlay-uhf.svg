@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 230" font-family="'JetBrains Mono', 'Courier New', monospace">
+  <!-- UHF Band Overlay: 300 MHz – 3 GHz  |  x = 30 + (f_MHz - 300) / 2700 * 620 -->
+
+  <rect x="0" y="82" width="680" height="66" fill="#0A0A0F" opacity="0.72"/>
+
+  <!-- Military UHF SATCOM 300–400 MHz: x=30 to x=53 -->
+  <rect x="30"  y="92" width="23"  height="23" fill="#4C1D95" opacity="0.45"/>
+  <!-- JTIDS / Link-16 / IFF 960–1215 MHz: x=149 to x=207 -->
+  <rect x="149" y="92" width="58"  height="23" fill="#1E3A8A" opacity="0.35"/>
+  <!-- Switchblade / loitering munition control ~900 MHz: x=138 to x=149 -->
+  <rect x="30"  y="115" width="150" height="23" fill="#7F1D1D" opacity="0.20"/>
+
+  <!-- FPV 433 MHz: x=30+(433-300)/2700*620=30+30.5=61 -->
+  <rect x="56"  y="115" width="11"  height="23" fill="#7F1D1D" opacity="0.50"/>
+  <!-- FPV 2.4 GHz: x=30+(2400-300)/2700*620=30+482=512 -->
+  <rect x="507" y="115" width="23"  height="23" fill="#7F1D1D" opacity="0.45"/>
+
+  <!-- ── BLUE FORCE BADGES ── -->
+  <!-- JTIDS / Link-16 tactical datalink 960–1215 MHz -->
+  <rect x="118" y="35" width="120" height="17" rx="2" fill="#1E3A8A" opacity="0.88"/>
+  <text x="178" y="46" font-size="7.5" fill="#BFDBFE" text-anchor="middle">Link-16 / JTIDS 960–1215</text>
+  <line x1="178" y1="52" x2="178" y2="92" stroke="#06B6D4" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- Military UHF SATCOM 300–400 MHz -->
+  <rect x="28"  y="56" width="92"  height="17" rx="2" fill="#4C1D95" opacity="0.88"/>
+  <text x="74"  y="67" font-size="7.5" fill="#DDD6FE" text-anchor="middle">UHF SATCOM 300–400</text>
+  <line x1="41"  y1="73" x2="41"  y2="92" stroke="#06B6D4" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- IFF Mode S 1030/1090 MHz -->
+  <rect x="248" y="56" width="92"  height="17" rx="2" fill="#065F46" opacity="0.88"/>
+  <text x="294" y="67" font-size="7.5" fill="#A7F3D0" text-anchor="middle">IFF Mode S  1030/1090</text>
+  <!-- 1030 MHz: x=30+(1030-300)/2700*620=30+167.6=198 -->
+  <!-- 1090 MHz: x=30+(1090-300)/2700*620=30+181.3=211 -->
+  <line x1="198" y1="73" x2="198" y2="92" stroke="#06B6D4" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- ── SCALE BAR ── -->
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#06B6D4" stroke-width="6" opacity="0.12"/>
+  <line x1="30" y1="115" x2="650" y2="115" stroke="#06B6D4" stroke-width="2"/>
+  <line x1="30"  y1="108" x2="30"  y2="122" stroke="#06B6D4" stroke-width="1.5"/>
+  <line x1="650" y1="108" x2="650" y2="122" stroke="#06B6D4" stroke-width="1.5"/>
+
+  <!-- Ticks: 500, 1000, 1500, 2000, 2500 MHz -->
+  <!-- 500  → x=30+(500-300)/2700*620=30+45.9=76   -->
+  <!-- 1000 → x=30+(1000-300)/2700*620=30+160.7=191 -->
+  <!-- 1500 → x=30+(1500-300)/2700*620=30+275.6=306 -->
+  <!-- 2000 → x=30+(2000-300)/2700*620=30+390.4=420 -->
+  <!-- 2500 → x=30+(2500-300)/2700*620=30+505.2=535 -->
+  <line x1="76"  y1="109" x2="76"  y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="191" y1="109" x2="191" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="306" y1="109" x2="306" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="420" y1="109" x2="420" y2="121" stroke="#06B6D4" stroke-width="1"/>
+  <line x1="535" y1="109" x2="535" y2="121" stroke="#06B6D4" stroke-width="1"/>
+
+  <text x="30"  y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">300</text>
+  <text x="76"  y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">500</text>
+  <text x="191" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1000</text>
+  <text x="306" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">1500</text>
+  <text x="420" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">2000</text>
+  <text x="535" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">2500</text>
+  <text x="650" y="140" font-size="7.5" fill="#94A3B8" text-anchor="middle">3000</text>
+  <text x="340" y="150" font-size="6.5" fill="#475569" text-anchor="middle">MHz</text>
+
+  <!-- ── RED FORCE BADGES ── -->
+  <!-- FPV control 433 MHz (x=61) -->
+  <rect x="27"  y="157" width="82"  height="17" rx="2" fill="#7F1D1D" opacity="0.88"/>
+  <text x="68"  y="168" font-size="7.5" fill="#FCA5A5" text-anchor="middle">FPV RC  433 MHz</text>
+  <line x1="62"  y1="157" x2="62"  y2="138" stroke="#F97316" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- Lancet / Switchblade comms 900 MHz (x=138) -->
+  <rect x="100" y="177" width="104" height="15" rx="2" fill="#78350F" opacity="0.88"/>
+  <text x="152" y="187" font-size="7" fill="#FED7AA" text-anchor="middle">Lancet/Loitering  900MHz</text>
+
+  <!-- FPV 2.4 GHz (x=512) -->
+  <rect x="484" y="157" width="82"  height="17" rx="2" fill="#7F1D1D" opacity="0.75"/>
+  <text x="525" y="168" font-size="7.5" fill="#FCA5A5" text-anchor="middle">FPV 2.4 GHz</text>
+  <line x1="519" y1="157" x2="519" y2="138" stroke="#F97316" stroke-width="0.6" stroke-dasharray="2,2"/>
+
+  <!-- ── ALLOCATION BARS ── -->
+  <rect x="0" y="183" width="680" height="12" fill="#0C0C14" opacity="0.90"/>
+  <rect x="0" y="195" width="680" height="12" fill="#0A0A10" opacity="0.90"/>
+  <text x="3" y="192" font-size="6" fill="#475569" font-weight="bold">ACMA</text>
+  <text x="3" y="204" font-size="6" fill="#475569" font-weight="bold">NTIA</text>
+
+  <!-- ACMA -->
+  <!-- MIL 300–400 MHz (UHF SATCOM) -->
+  <rect x="30"  y="183" width="23"  height="11" fill="#5B3A29" opacity="0.88"/>
+  <!-- ISM 433 MHz (industrial/amateur) -->
+  <rect x="56"  y="183" width="8"   height="11" fill="#374151" opacity="0.88"/>
+  <!-- ARN 960–1215 MHz (Link-16/IFF) -->
+  <rect x="149" y="183" width="58"  height="11" fill="#7D1128" opacity="0.88"/>
+  <text x="178" y="192" font-size="5.5" fill="#FCA5A5" text-anchor="middle">ARN</text>
+  <!-- RNS 1215–1400 MHz (GNSS L-band) -->
+  <rect x="207" y="183" width="42"  height="11" fill="#4B1D96" opacity="0.88"/>
+  <text x="228" y="192" font-size="5" fill="#DDD6FE" text-anchor="middle">RNS</text>
+  <!-- MM 1400–1700 MHz (meteorological, aeronautical) -->
+  <rect x="249" y="183" width="69"  height="11" fill="#164E63" opacity="0.88"/>
+  <text x="283" y="192" font-size="5.5" fill="#BAE6FD" text-anchor="middle">MM/Met</text>
+  <!-- ISM 2400–2483 MHz -->
+  <rect x="504" y="183" width="23"  height="11" fill="#374151" opacity="0.88"/>
+  <text x="515" y="192" font-size="5" fill="#9CA3AF" text-anchor="middle">ISM</text>
+  <!-- MM/cellular 1700–3000 MHz -->
+  <rect x="318" y="183" width="186" height="11" fill="#164E63" opacity="0.60"/>
+  <text x="411" y="192" font-size="5.5" fill="#BAE6FD" text-anchor="middle">Cellular / Mobile</text>
+  <!-- SAT 2500–3000 MHz -->
+  <rect x="527" y="183" width="123" height="11" fill="#1E1B4B" opacity="0.75"/>
+  <text x="588" y="192" font-size="5.5" fill="#C7D2FE" text-anchor="middle">SAT / SHF boundary</text>
+
+  <!-- NTIA -->
+  <!-- GOV 300–400 MHZ (mil SATCOM) -->
+  <rect x="30"  y="195" width="23"  height="11" fill="#92400E" opacity="0.80"/>
+  <!-- SHR 400–960 MHz (cellular/UHF TV shared) -->
+  <rect x="53"  y="195" width="96"  height="11" fill="#1E3A5F" opacity="0.80"/>
+  <text x="101" y="204" font-size="5.5" fill="#BFDBFE" text-anchor="middle">SHR (TV/cellular)</text>
+  <!-- SHR 960–1215 MHz (ARN/Link-16) -->
+  <rect x="149" y="195" width="58"  height="11" fill="#1E3A5F" opacity="0.80"/>
+  <text x="178" y="204" font-size="5.5" fill="#BFDBFE" text-anchor="middle">SHR</text>
+  <!-- GOV 1215–1400 MHz (GNSS) -->
+  <rect x="207" y="195" width="42"  height="11" fill="#92400E" opacity="0.75"/>
+  <text x="228" y="204" font-size="5" fill="#FDE68A" text-anchor="middle">GOV</text>
+  <!-- NGV 1700–3000 MHz (commercial 4G/5G) -->
+  <rect x="318" y="195" width="332" height="11" fill="#14532D" opacity="0.75"/>
+  <text x="484" y="204" font-size="5.5" fill="#A7F3D0" text-anchor="middle">NGV — Commercial 4G/5G</text>
+
+  <line x1="30" y1="195" x2="650" y2="195" stroke="#1E293B" stroke-width="0.5"/>
+
+  <text x="10" y="17" font-size="12" fill="#06B6D4" font-weight="bold">UHF</text>
+  <text x="10" y="30" font-size="8.5" fill="#94A3B8">300 MHz – 3 GHz</text>
+</svg>

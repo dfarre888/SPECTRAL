@@ -1,0 +1,70 @@
+---
+description: Security, ITAR compliance, and data handling rules — applies to all files.
+globs: **/*
+alwaysApply: true
+---
+
+# Security & Compliance Rules
+
+## ITAR Compliance
+Spectral is designed to be ITAR-compliant. This means:
+
+1. **No classified technical data** — all platform specs, sensor parameters, and weapons data must come from publicly available sources (manufacturer datasheets, official government releases, verified open-source reporting).
+
+2. **No export-controlled algorithms** — do not implement or reference algorithms that fall under ECCN categories 7D994, 7E994, or similar. Guidance, targeting, and fire control logic is out of scope.
+
+3. **No real-time operational data** — Spectral is a training and reference platform, not a live operations system. Do not integrate live tracking data (ADS-B, AIS, live satellite feeds) without legal review.
+
+4. **Seed data is OSINT** — all data in `spectral_seed_data.json` and the database is sourced from publicly available intelligence. When adding new platforms or systems, document the OSINT source in the `description` field.
+
+## Authentication & Authorisation
+- All routes except `/login` and `/register` are protected by `middleware.ts`
+- Service role key (`SUPABASE_SERVICE_ROLE_KEY`) must NEVER appear in client-side code
+- API key (`ANTHROPIC_API_KEY`) must NEVER appear in client-side code
+- Mapbox and Cesium tokens are `NEXT_PUBLIC_` — these are acceptable to expose (they are domain-restricted)
+
+## Environment Variable Rules
+```
+# Server-only (never prefix with NEXT_PUBLIC_)
+SUPABASE_SERVICE_ROLE_KEY
+ANTHROPIC_API_KEY
+
+# Client-safe (domain-restricted tokens only)
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+NEXT_PUBLIC_CESIUM_ION_TOKEN
+NEXT_PUBLIC_MAPBOX_TOKEN
+NEXT_PUBLIC_APP_URL
+```
+
+## Classification Banner (Legal Requirement)
+The banner `UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY` must appear on every page. This is a legal / contractual requirement for operating in defence-adjacent markets, not a design choice. Do not remove it, hide it, or make it toggleable.
+
+## Data Entry Validation
+When users add platforms or scenarios:
+- All text fields should be sanitised (no HTML injection)
+- Frequency values must be validated as positive numbers within 1 MHz – 100 GHz
+- Range values must be validated as positive integers (0 – 20,000 km)
+- No file uploads from users (this could be a vector for malicious payloads)
+
+## Audit Logging
+Any write operation (scenario creation, platform edit) should log:
+- User ID (from Supabase auth)
+- Timestamp
+- Action type
+- Resource ID
+This can be a simple Supabase table `audit_log` — don't over-engineer.
+
+## No Publicly Accessible Write Endpoints
+All mutation routes must check authentication before processing. The middleware handles page routes, but API routes at `app/api/**/route.ts` must also validate the session:
+```ts
+const supabase = await createClient()
+const { data: { user } } = await supabase.auth.getUser()
+if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+```
+
+## Sensitive Data — Never Store
+- Real names of personnel associated with platforms
+- Coordinates of actual military installations
+- Financial or procurement details beyond general cost estimates
+- Personal information of course participants

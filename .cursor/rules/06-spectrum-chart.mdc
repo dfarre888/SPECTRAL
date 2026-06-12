@@ -1,0 +1,74 @@
+---
+description: D3.js Spectrum View module — frequency bands, colour coding, chart patterns.
+globs: components/spectrum/**, app/spectrum/**
+alwaysApply: false
+---
+
+# EW Spectrum View — D3.js Rules
+
+## Chart Configuration
+- **X-axis**: Log scale, 400 MHz – 6,000 MHz (6 GHz)
+- **Y-axis**: Signal strength / threat level (0–100 normalised)
+- **Width**: Full container width, responsive
+- **Height**: Minimum 300px
+
+## Frequency Gridlines (always rendered)
+| Frequency | Label | Why |
+|---|---|---|
+| 433 MHz | 433 | Common ISM / FPV band |
+| 900 MHz | 900 | Long-range RC (ExpressLRS, ELRS) |
+| 1,227 MHz | L2 | GPS L2 |
+| 1,575 MHz | L1 | GPS L1 (primary civilian) |
+| 2,400 MHz | 2.4G | DJI C2, WiFi |
+| 5,800 MHz | 5.8G | FPV video, DJI Occusync |
+
+## Band Colour Coding (fixed — do not change)
+```ts
+const BAND_COLORS = {
+  gnss:   '#06B6D4',  // cyan   — GPS, GLONASS, Galileo, BeiDou
+  c2:     '#F97316',  // orange — command & control / datalink
+  video:  '#EF4444',  // red    — FPV video feeds
+  radar:  '#10B981',  // green  — radar emissions
+  comms:  '#A855F7',  // purple — comms / SATCOM
+  jammer: '#F59E0B',  // amber  — jammer overlay bands
+}
+```
+
+## Preset Platform Bands
+```ts
+export const PRESET_BANDS = {
+  'dji-mavic-3': [
+    { type: 'c2',    label: 'OcuSync 3',  minMhz: 2400, maxMhz: 2483 },
+    { type: 'c2',    label: 'OcuSync 3',  minMhz: 5725, maxMhz: 5850 },
+    { type: 'gnss',  label: 'GPS L1',     minMhz: 1565, maxMhz: 1585 },
+    { type: 'gnss',  label: 'GPS L2',     minMhz: 1217, maxMhz: 1237 },
+  ],
+  'shahed-136': [
+    { type: 'c2',    label: 'OFDM C2',    minMhz: 868,  maxMhz: 870 },
+    { type: 'gnss',  label: 'GNSS',       minMhz: 1565, maxMhz: 1585 },
+  ],
+  // add new platforms here — don't hard-code in the component
+}
+```
+
+## Interaction Requirements
+- **Hover**: Show tooltip with band label, frequency range, type
+- **Click**: Dispatch selected band to parent / Zustand store (for 1v1 overlay integration)
+- **Band width**: Min 8px rendered width even if frequency range is narrow (visibility)
+
+## Label Rendering Rule
+Only render band labels if the rendered pixel width is >= 40px. Otherwise show a dot indicator only. This prevents text overlap on narrow bands.
+
+## Jammer Overlay
+When a jammer is selected (from the GNSS module or Defeat Matrix), render its affected bands as semi-transparent amber overlays ON TOP of the existing bands:
+```ts
+// Jammer overlay — always on top, semi-transparent
+fill: '#F59E0B'
+opacity: 0.25
+stroke: '#F59E0B'
+strokeWidth: 1
+strokeDasharray: '4,2'
+```
+
+## Integration with Platform Selector
+The spectrum chart should accept a `platformId` prop that auto-loads that platform's preset bands. If no platform selected, render a default "all threats" overlay showing all known band types.

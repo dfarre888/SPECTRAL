@@ -1,0 +1,102 @@
+---
+description: SPECTRAL PCM — formal assessment standards, Bloom's alignment, marking rubrics, certification criteria.
+globs: phase7/**/assessment*, phase7/**/exam*, phase7/**/certif*
+alwaysApply: false
+---
+
+# SPECTRAL PCM — Assessment Standards
+
+## Assessment Architecture
+
+| Assessment | Format | When | Pass Mark | Duration |
+|---|---|---|---|---|
+| Daily knowledge checks | 10 MCQ per lesson | End of each lesson | 70% (7/10) | 10 min |
+| Day 1 end-of-day review | 20 MCQ | End of Day 1 | 70% (14/20) | 20 min |
+| Day 2 end-of-day review | 20 MCQ | End of Day 2 | 70% (14/20) | 20 min |
+| Final written assessment | 50 MCQ + 3 short-answer | End of Day 3 | 80% (see below) | 75 min |
+| Scenario assessment | DS observation rubric | Days 4–5 | Satisfactory | Ongoing |
+
+## Final Assessment Pass Criteria
+
+To receive SPECTRAL PCM Course Completion certificate:
+- MCQ component: ≥ 40/50 (80%)
+- Short-answer component: ≥ 10/15 (2 of 3 questions at satisfactory standard)
+- **Both** components must be passed independently — a perfect MCQ score does not compensate for a failed short-answer
+
+## Bloom's Taxonomy Distribution
+
+### Final Assessment (50 MCQ)
+| Level | Questions | % | Descriptor |
+|---|---|---|---|
+| Remember | 8 | 16% | Recall of specific facts, definitions, platform specs |
+| Understand | 12 | 24% | Explain mechanism, describe relationship |
+| Apply | 15 | 30% | Use knowledge in a given scenario |
+| Analyse | 10 | 20% | Break down a situation, identify components/causes |
+| Evaluate | 5 | 10% | Judge options, justify a decision |
+
+Note: Create level not assessed in written format — this is the scenario days.
+
+### Bloom's by Day (lesson checks)
+| Day | Primary levels | Rationale |
+|---|---|---|
+| Day 1 | Remember + Understand | Establishing the knowledge base — orientation phase |
+| Day 2 | Understand + Apply | Technical depth requires application, not just recall |
+| Day 3 | Apply + Analyse + Evaluate | Operational synthesis — this is where the course pays off |
+
+## Final Assessment — Short-Answer Rubric
+
+### Marking Scale (per question, 5 marks)
+| Mark | Standard |
+|---|---|
+| 5 | All key points present, operationally grounded, accurate |
+| 4 | All key points present, minor error or missing operational grounding |
+| 3 | Most key points present, one significant gap |
+| 2 | Partial understanding, significant gaps or one major error |
+| 1 | Minimal relevant content, attempt made |
+| 0 | No relevant content or not attempted |
+
+### Pass threshold per question
+- Satisfactory: ≥ 3/5
+- Unsatisfactory: ≤ 2/5
+- Both must be satisfactory to pass the short-answer component
+
+## Scenario Assessment Rubric (Days 4–5)
+
+DS observes and scores each student / team across four decision points per scenario:
+
+| Decision Point | Criteria | Weight |
+|---|---|---|
+| Situational Awareness | Did they correctly interpret the sensor picture before deciding? | 25% |
+| Decision Quality | Was the decision logical given available information (not perfect information)? | 30% |
+| Justification | Could they articulate *why* they decided that, citing doctrine or TTPs? | 25% |
+| Adaptation | When injected with new information, did they update their decision appropriately? | 20% |
+
+**Pass standard:** Satisfactory (≥ 60%) across all four criteria. A single 0% on any criterion triggers a mandatory debrief regardless of overall score.
+
+## Assessment Question Bank Requirements
+
+The question bank must contain 3× the number of questions needed for any assessment (minimum 150 MCQ for a 50-question final). This allows:
+- Randomisation between student groups (prevents answer sharing)
+- Version A / Version B for retake management
+- Annual refresh without full rebuild
+
+## Retake Policy
+
+- Daily knowledge checks: no formal retake — DS decision on student readiness to progress
+- End-of-day reviews: one retake available, different question set
+- Final assessment: one retake within 30 days, different question set, same pass standard
+- Scenario assessment: re-run one scenario (DS selects which), assessed by same rubric
+
+## Certification
+
+Certificate issued by: David Farrell / A3DM (SPECTRAL PCM program owner)
+Certificate states:
+```
+[Student Name] has successfully completed the
+SPECTRAL PCM — Military Drone Operations Course
+3-day taught program (Fundamentals, Payloads/C-UAS, Doctrine/TTPs)
+Assessment result: [PASS] — [Score]/50 MCQ, Short-answer: Satisfactory
+Date: [DD Month YYYY]
+```
+
+Certificates are numbered sequentially (SPCM-YYYY-NNNN) and recorded in the SPECTRAL PCM graduate register.

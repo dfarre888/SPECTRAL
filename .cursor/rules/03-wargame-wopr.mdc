@@ -1,0 +1,163 @@
+---
+description: SPECTRAL PCM — WOPR Red v Blue wargame engine architecture. Apply to all scenario, wargame, and Red/Blue files.
+globs: phase7/scenarios/**, **/scenario*, **/red_*, **/blue_*, **/referee_*, **/wargame*
+alwaysApply: false
+---
+
+# SPECTRAL PCM — WOPR Wargame Engine
+
+## Concept
+Inspired by WarGames (1983) — WOPR (War Operation Plan Response). Claude runs Red Force and Blue Force simultaneously as adversarial AI instances, with a third Referee instance adjudicating outcomes. Neither side knows the other's true state. Human players can take over either role at any decision point.
+
+## Three-Layer Architecture
+
+### Layer 1 — World Model (Referee-only ground truth)
+```json
+{
+  "battlespace": {
+    "terrain": "grid_ref, elevation_m, urban_density, choke_points",
+    "weather": "wind_kts, visibility_km, cloud_base_ft, temp_c",
+    "time": "mission_elapsed_min, day_night"
+  },
+  "red_orbat": {
+    "platforms": [],
+    "weapons_state": {},
+    "fuel_state": {},
+    "comms_status": {}
+  },
+  "blue_orbat": {
+    "platforms": [],
+    "weapons_state": {},
+    "fuel_state": {},
+    "comms_status": {}
+  },
+  "civilian_presence": {},
+  "iads_picture": {}
+}
+```
+
+### Layer 2 — Three Claude Instances
+```
+REFEREE (master instance)
+├── Holds: full world state
+├── Receives: decisions from Red and Blue
+├── Adjudicates: hit/miss, detection, kill, EW effect
+├── Updates: world state after each turn
+├── Issues: each side's sensor picture (fog of war applied)
+└── Generates: random injects from inject library
+
+RED FORCE AI
+├── Receives: own ORBAT + what Red sensors detect (fog of war)
+├── Makes: platform tasking, weapon release, EW decisions, COA selection
+├── Outputs: orders in FRAGO/OPORD structure
+└── Does NOT see: Blue's true state
+
+BLUE FORCE AI
+├── Same architecture, opposite side
+└── Does NOT see: Red's true state
+```
+
+### Layer 3 — Fog of War Engine
+Before passing information to each side, Referee applies:
+```
+DETECTION MODEL:
+  Radar:   range × RCS × altitude × clutter × EW_degradation
+  EO/IR:   range × cloud_cover × thermal_contrast × time_of_day
+  RF/SIGINT: only if platform is radiating (emcon matters)
+  Visual:  range × lighting × terrain_masking
+  Reports: delayed by 2–10 min, degraded, occasional misidentification
+```
+
+## Turn Structure (15-min game turns)
+```
+1. REFEREE:   Update world state from last turn outcomes
+2. REFEREE:   Generate Red sensor picture (fog of war applied)
+3. REFEREE:   Generate Blue sensor picture (fog of war applied)
+4. RED AI:    Receive sensor picture → decide → output orders
+5. BLUE AI:   Receive sensor picture → decide → output orders
+6. REFEREE:   Adjudicate simultaneous decisions → compute outcomes
+7. REFEREE:   Update world state → generate turn AAR fragment
+8. REPEAT or issue inject
+```
+
+**Human override:** At any step 4 or 5, a human player takes over from the AI. AI yields. This is the teaching moment — DS (Directing Staff) pauses and facilitates the decision.
+
+## Inject Library Categories
+
+### Environmental (weather / conditions)
+- Unexpected thunderstorm — EO/IR degraded, RF range reduced, FPV comms disrupted
+- Dust/sand storm — visual nil, radar clutter up, FPV impossible
+- Night transition — thermal advantage shifts, GPS-denied FPV now dominant
+- Fog — EO/IR nil, radar primary sensor
+- Strong crosswind — FPV handling degraded, loitering munition accuracy reduced
+
+### Red Force Injects
+- Shahed/Geran swarm launch detected — Blue must split c-UAS resources
+- EW jamming surge on Blue frequencies — datalinks degraded, autonomous mode triggered
+- Fibre-optic FPV detected — Blue jamming ineffective, kinetic response only
+- Decoy swarm mixed with real OWA — Blue must sort the picture under time pressure
+- New Red reinforcements from east — Blue targeting picture now incomplete
+- Red GCS location identified — strike opportunity for Blue
+
+### Blue Force Injects
+- MALE ISR platform lost to SAM — targeting picture degrades
+- GCS comms disrupted — platform goes autonomous, Blue loses fine control
+- Intercept magazine exhausted — must re-prioritise with remaining kinetics
+- Allied asset enters battlespace unannounced — deconfliction required
+- CASEVAC required — assets diverted from primary mission
+- Battery warning — FPV swarm endurance limited
+
+### Doctrine / ROE Injects
+- ROE change — weapons free expanded or restricted
+- Media presence detected — targeting decision has escalation risk
+- New intelligence — Red force structure different from pre-mission estimate
+- Friendly fire alert — misidentification risk, stand-down ordered
+- Civilian drone enters battlespace — NCAS or hold-fire?
+- Swarm detected — NCAS / EW / kinetic priority decision
+
+### Capability Injects (advanced players)
+- Spoof alert — Blue GPS readings inconsistent with INS (spoofing attack)
+- Fibre-optic FPV swarm — RF jamming confirmed ineffective
+- AI autonomous terminal guidance — Red FPVs no longer responsive to jamming
+- Multi-constellation GNSS activated — Blue platforms now jam-resistant
+
+## Scenario Library (6 vignettes, escalating difficulty)
+
+| # | Code | Title | Difficulty | Terrain | Phase |
+|---|---|---|---|---|---|
+| 1 | SCN-01 | Permissive ISR | Easy | Open rural | Day 3 PM tabletop |
+| 2 | SCN-02 | Contested Strike | Moderate | Mixed urban/rural | Day 4 desktop |
+| 3 | SCN-03 | Peer SEAD Support | Hard | Urban | Day 4 desktop |
+| 4 | SCN-04 | Swarm Defence | Hard | Coastal | Day 4 blind |
+| A | SCN-A | Indo-Pacific Alternate | Variable | Island/maritime | Optional |
+| B | SCN-B | Middle East Hybrid | Variable | Arid/urban | Optional |
+
+## File Structure for Wargame Materials
+```
+phase7/scenarios/
+├── WOPR_ENGINE_GUIDE.md         ← DS guide to running the WOPR engine
+├── WORLD_MODEL_TEMPLATE.json    ← blank world state schema
+├── ORBAT_BUILDER.md             ← how to build Red/Blue ORBATs
+├── DETECTION_MODEL.md           ← fog of war physics rules
+├── ADJUDICATION_TABLES.md       ← hit probability, EW effect, detection %
+├── INJECT_LIBRARY.md            ← all 40+ injects, categorised
+├── AAR_TEMPLATE.md              ← After Action Review output format
+├── scn-01-permissive-isr/
+│   ├── SCENARIO_BRIEF_DS.md     ← DS-eyes-only brief
+│   ├── RED_FORCE_BRIEF.md       ← Red player brief (METT-TC, tasking)
+│   ├── BLUE_FORCE_BRIEF.md      ← Blue player brief
+│   ├── INJECT_TIMELINE.md       ← scripted inject schedule
+│   └── ASSESSMENT_CRITERIA.md  ← decision point rubric
+└── [repeat for scn-02 through scn-b]
+```
+
+## DS (Directing Staff) Rules
+1. Never give either side information they couldn't realistically collect
+2. The inject timer is DS's primary tool — don't let either side achieve comfortable certainty
+3. Force decisions under time pressure — the clock runs even when players are deliberating
+4. AAR is mandatory after every scenario — 30 min minimum
+5. The learning objective is the *decision process*, not who wins
+6. In the blind scenario (Day 5), DS is the only one who sees the full picture — maintain strict information separation
+
+## Integration with Spectral Platform
+The WOPR engine scenario data structure mirrors the Spectral platform's `scenario_templates` and `scenario_injects` tables. Scenario files designed here can be imported directly into Spectral via the Arena module. This is a deliberate architectural link — SPECTRAL PCM course → Spectral platform → same data model.

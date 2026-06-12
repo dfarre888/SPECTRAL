@@ -1,0 +1,132 @@
+---
+description: SPECTRAL PCM visual identity — colour tokens, typography, slide design system. Apply to all slide build scripts, HTML exports, PDF templates.
+globs: phase7/**, brand/**, **/*.js, **/*.pptx
+alwaysApply: false
+---
+
+# SPECTRAL PCM — Brand & Design System
+
+## Brand Identity
+Dark, technical, premium military aesthetic. **Flight-deck adjacent. Contractor-grade. Signals expertise without ostentation.**
+
+Deliberately avoids:
+- "Cartoon military" (camo patterns, AK silhouettes, exploding fonts)
+- "Corporate defence prime" (bland sans-serif, generic stock photography)
+- "Silicon Valley defence-tech" (oversaturated neon, glitch effects, AI hype)
+
+Target feel: **Block-Time / MOC (Mission Operations Centre) / professional cockpit** — a system a real military operator finds credible.
+
+## Colour System
+
+### Foundation (always present)
+| Token | Hex | Use |
+|---|---|---|
+| `--bg` | `#080808` | Primary background — slides, workbook pages, exports |
+| `--surface-1` | `#0F0F0F` | Card / panel surface |
+| `--surface-2` | `#1A1A1A` | Third-tier glass, hover state |
+| `--text-primary` | `#F5F5F5` | Body text, headlines |
+| `--text-secondary` | `#9CA3AF` | Labels, metadata, captions |
+| `--text-tertiary` | `#6B7280` | Disabled, footnote |
+| `--divider` | `#262626` | Hairlines, dividers, grid |
+
+### Warm Mode — Orange (kinetic / strike / chapter dividers)
+| Token | Hex | Use |
+|---|---|---|
+| `--orange` | `#F97316` | Primary brand orange — logos, callouts, key emphasis |
+| `--orange-glow` | `#FB923C` | Backlit neon, glow halo |
+| `--orange-dim` | `#9A3412` | Subdued / aged variant |
+
+**Use Warm mode for:**
+- Cover slides, chapter/day dividers (Day 1, Day 2, Day 3)
+- Loitering munitions, kinetic strike content
+- Adversary / Red Force slides
+- Critical warnings, BOLO callouts
+- Final summary / call-to-action slides
+
+### Cool Mode — Cyan/Blue (technical / ISR / data / friendly)
+| Token | Hex | Use |
+|---|---|---|
+| `--cyan` | `#06B6D4` | ISR data, coordinates, sensor feeds |
+| `--blue` | `#3B82F6` | HUD overlays, wireframe |
+| `--blue-glow` | `#60A5FA` | Backlit, holographic |
+| `--blue-deep` | `#1E3A8A` | Deep technical backgrounds |
+
+**Use Cool mode for:**
+- Sensor / payload / radar content
+- Datalink / C2 / Order of Battle slides
+- Blue Force in scenarios
+- Charts and graphs (default palette)
+
+### Semantic Colours
+| Token | Hex | Use |
+|---|---|---|
+| `--green` | `#10B981` | Operational, friendly, valid |
+| `--amber` | `#F59E0B` | Caution, warning, marginal |
+| `--red` | `#DC2626` | Critical, hostile, denied |
+| `--purple` | `#A78BFA` | Night ops, EW, special category |
+
+## Typography
+
+### Type Stack
+| Role | Font | Weight | Use |
+|---|---|---|---|
+| Display / hero | Arial Black | 900 | Cover slides, chapter dividers, 3D metallic treatment |
+| Section headers | Arial Bold | 700 | Lesson titles, module headers |
+| Body | Calibri | 400 | Slide body text, workbook prose |
+| Data / numerics | Courier New | 400/700 | ALL numeric data — ranges, altitudes, frequencies, speeds, coordinates |
+| Classification | Courier New | 700 | Classification banners — ALL CAPS |
+
+### Sizing (PowerPoint)
+| Element | Size |
+|---|---|
+| Hero / cover title | 44–54 pt |
+| Section title | 32–40 pt |
+| Slide title | 24–28 pt |
+| Body text | 16–18 pt |
+| Captions / metadata | 12–14 pt |
+| Footnotes | 10–11 pt |
+
+## Slide Layouts (14 types in master template)
+1. **COVER** — Full-bleed Higgsfield image, logo top-left, title centred, classification banner
+2. **SECTION DIVIDER** — Warm orange, day/chapter number in display font, subtitle
+3. **CONTENT** — Title + body (text, bullets, or image right)
+4. **TWO COLUMN** — Equal split or 60/40 (text left, visual right)
+5. **FULL-BLEED IMAGE** — Higgsfield behind text, dark overlay for legibility
+6. **TABLE** — Data table with header row in cyan, alternating row shading
+7. **CHART PLACEHOLDER** — Grey box with chart type label and caption
+8. **QUOTE / KEY STAT** — Large display number or pull-quote, minimal surrounding content
+9. **MAP / GRAPHIC** — Full-bleed graphic with annotation overlays
+10. **ORBAT** — Order of Battle layout, two forces, symbolic notation
+11. **TIMELINE** — Horizontal event line with date nodes and descriptions
+12. **COMPARISON** — Side-by-side platform or system comparison grid
+13. **SUMMARY** — Lesson summary — 3–5 key takeaways as numbered cards
+14. **INSTRUCTOR NOTE** — Dark amber border, "INSTRUCTOR NOTE" stamp, teaching guidance
+
+## Higgsfield Image Prompts
+Every prompt must include:
+```
+Style: cinematic military documentary, desaturated, [warm/cool] grading
+Subject: [specific subject with operational context]
+Mood: tense / professional / operational
+Aspect: 16:9
+Negative: cartoon, low quality, watermark, civilian aesthetic, cheerful, text
+```
+
+**Warm mode** (chapter dividers, strike content): `golden hour, orange atmospheric haze`
+**Cool mode** (ISR, sensors, data): `night ops, blue-tinted NVG aesthetic, FLIR colouration`
+
+## Classification Banner (all slides)
+Bottom footer on every slide:
+```
+UNCLASSIFIED // SPECTRAL PCM — FOR OFFICIAL TRAINING USE ONLY
+```
+Font: Courier New 10pt, colour `#9CA3AF`, left-aligned in footer zone.
+
+## Anti-Patterns
+- Never use white or light backgrounds
+- Never use decorative accent lines under titles (AI slop tell)
+- Never use cream/beige backgrounds
+- Never centre body text (left-align prose and lists)
+- Never use the same layout more than twice in a row
+- All numeric data must be in Courier New — no exceptions
+- Never put text directly over a Higgsfield image without a dark overlay (min 40% opacity)

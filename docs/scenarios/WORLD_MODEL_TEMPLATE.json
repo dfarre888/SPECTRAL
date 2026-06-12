@@ -1,0 +1,142 @@
+{
+  "_meta": {
+    "schema_version": "1.0",
+    "classification": "UNCLASSIFIED // SPECTRAL PCM — FOR OFFICIAL TRAINING USE ONLY",
+    "description": "WOPR Wargame Engine — Referee world state template. This object is referee-only ground truth. Never pass this directly to Red or Blue AI instances.",
+    "usage": "Copy this template, populate fields, then generate Red/Blue sensor pictures using the detection model before passing to AI instances."
+  },
+
+  "scenario": {
+    "id": "SCN-XX",
+    "title": "",
+    "version": "1.0",
+    "difficulty": "EASY | MODERATE | HARD",
+    "terrain_type": "open_rural | urban | coastal | island | arid",
+    "duration_turns": 12,
+    "turn_length_min": 15
+  },
+
+  "time": {
+    "mission_elapsed_min": 0,
+    "zulu_start": "0600Z",
+    "phase": "PLANNING | INSERTION | EXECUTION | EXTRACTION | ENDEX",
+    "light_state": "DAY | DUSK | NIGHT | DAWN"
+  },
+
+  "weather": {
+    "wind_direction_deg": 270,
+    "wind_speed_kts": 10,
+    "visibility_km": 15,
+    "cloud_base_ft": 3000,
+    "cloud_cover_oktas": 3,
+    "temperature_c": 22,
+    "precipitation": "NONE | LIGHT_RAIN | HEAVY_RAIN | SNOW | DUST_STORM",
+    "notes": ""
+  },
+
+  "terrain": {
+    "reference_grid": "MGRS or lat/lon bounding box",
+    "elevation_range_m": [0, 500],
+    "urban_density": "NONE | LOW | MEDIUM | HIGH",
+    "key_terrain": [],
+    "choke_points": [],
+    "cover_concealment": "OPEN | PARTIAL | GOOD"
+  },
+
+  "red_orbat": {
+    "commander_intent": "",
+    "mission": "",
+    "platforms": [
+      {
+        "id": "RED-01",
+        "type": "Shahed-136 | FPV | Lancet-3 | other",
+        "callsign": "",
+        "status": "ACTIVE | DESTROYED | RTB | DEGRADED",
+        "position_grid": "",
+        "altitude_m": 0,
+        "heading_deg": 0,
+        "speed_kts": 0,
+        "fuel_pct": 100,
+        "weapons_state": {
+          "warhead": "ARMED | EXPENDED | N/A",
+          "quantity": 1
+        },
+        "comms_status": "UP | DEGRADED | LOST",
+        "emcon": "ACTIVE | SILENT",
+        "notes": ""
+      }
+    ],
+    "gcs_position": "",
+    "ew_assets": [],
+    "logistics": {
+      "resupply_available": false,
+      "magazine_depth": 0
+    }
+  },
+
+  "blue_orbat": {
+    "commander_intent": "",
+    "mission": "",
+    "platforms": [
+      {
+        "id": "BLUE-01",
+        "type": "MQ-9 | TB-2 | Switchblade | other",
+        "callsign": "",
+        "status": "ACTIVE | DESTROYED | RTB | DEGRADED",
+        "position_grid": "",
+        "altitude_m": 0,
+        "heading_deg": 0,
+        "speed_kts": 0,
+        "fuel_pct": 100,
+        "weapons_state": {
+          "type": "Hellfire | GBU-12 | none",
+          "quantity": 0
+        },
+        "sensor_state": {
+          "eo_ir": "ACTIVE | OFF",
+          "radar": "ACTIVE | OFF",
+          "sigint": "ACTIVE | OFF"
+        },
+        "comms_status": "UP | DEGRADED | LOST",
+        "emcon": "ACTIVE | SILENT",
+        "notes": ""
+      }
+    ],
+    "c_uas_assets": [
+      {
+        "id": "BLUE-CUAS-01",
+        "type": "RF_JAMMER | KINETIC | DEW | NET",
+        "system_name": "",
+        "position_grid": "",
+        "status": "ACTIVE | DEGRADED | EXPENDED",
+        "magazine_remaining": 0,
+        "effective_range_km": 0
+      }
+    ],
+    "isr_picture": "CLEAR | PARTIAL | DEGRADED | BLIND"
+  },
+
+  "civilian_presence": {
+    "density": "NONE | LOW | MEDIUM | HIGH",
+    "key_locations": [],
+    "media_presence": false,
+    "notes": ""
+  },
+
+  "iads_picture": {
+    "threat_radar_active": false,
+    "sam_systems": [],
+    "emitter_positions": []
+  },
+
+  "turn_log": [],
+
+  "score": {
+    "red_objectives_achieved": 0,
+    "blue_objectives_achieved": 0,
+    "red_losses": 0,
+    "blue_losses": 0,
+    "civilian_incidents": 0,
+    "roe_violations": 0
+  }
+}

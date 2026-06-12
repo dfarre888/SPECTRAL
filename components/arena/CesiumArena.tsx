@@ -192,7 +192,7 @@ export default function CesiumArena({ entities, center, onEntityClick }: Props) 
   return (
     <div
       ref={containerRef}
-      className="w-full h-full rounded-xl overflow-hidden border border-border"
+      className="w-full h-full rounded-xl overflow-hidden border border-[var(--store-line)]"
       style={{ minHeight: 480, background: '#0A0A0F' }}
     />
   )

@@ -46,6 +46,8 @@ export interface PlacedUas {
   ceilingAMSL_m: number
   annotationTime_min: number
   effectiveRange_km: number
+  /** Terrain AMSL samples around disc perimeter — drives terrain-following side walls. */
+  wallTerrain_m?: number[]
   loiter?: LoiterPlan
   infoPanelClosed: boolean
 }
@@ -67,6 +69,8 @@ export interface PlacedCuas {
   lat: number
   terrainAMSL: number
   hasTerrainMasking: boolean
+  /** Terrain AMSL samples around defeat sphere equator — terrain-following side walls. */
+  wallTerrain_m?: number[]
 }
 
 export interface OverlapVolume {

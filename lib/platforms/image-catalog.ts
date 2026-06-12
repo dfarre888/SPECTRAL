@@ -28,6 +28,21 @@ export const PLATFORM_IMAGE_SEARCH: Record<string, string> = {
   'mq-25-stingray':   'MQ-25 Stingray UAV',
   'anduril-anvil':    'Anduril Anvil interceptor drone',
   'skydio-x10d':      'Skydio X10 drone',
+  'switchblade-600':  'AeroVironment Switchblade 600',
+  'switchblade-300':  'AeroVironment Switchblade 300',
+  'phoenix-ghost':    'Aevex Phoenix Ghost UAV',
+  'aeronautics-orbiter': 'Aeronautics Orbiter UAV',
+  'rq-4-global-hawk': 'RQ-4 Global Hawk',
+  'millennium-35mm':  'OTO Melara 35mm Millennium naval gun',
+  'phalanx-ciws':     'Phalanx CIWS',
+  'goalkeeper-ciws':  'Goalkeeper CIWS',
+  searam:             'SeaRAM CIWS',
+  'mohajer-6':        'Mohajer-6 UAV Iran',
+  'shahed-129':       'Shahed 129 UAV',
+  'ghost-bat':        'MQ-28 Ghost Bat',
+  'bayraktar-akinci': 'Bayraktar Akinci UCAV',
+  'hermes-900':       'Elbit Hermes 900',
+  'scan-eagle':       'Insitu ScanEagle',
 }
 
 /** Curated Wikimedia Commons file titles (preferred over search when available). */
@@ -46,14 +61,17 @@ export const PLATFORM_IMAGE_COMMONS_FILE: Partial<Record<string, string>> = {
   'skydio-x10d':      'Skydio_X10D.jpg',
 }
 
-import { PLATFORM_IMAGE_SRC } from '@/lib/platforms/image-manifest'
+import {
+  hasResolvedPlatformImage,
+  resolvePlatformImagePath,
+} from '@/lib/platforms/image-resolve'
 
 export function platformImagePath(id: string): string | null {
-  return PLATFORM_IMAGE_SRC[id] ?? null
+  return resolvePlatformImagePath(id)
 }
 
 export function hasPlatformImage(id: string): boolean {
-  return id in PLATFORM_IMAGE_SRC
+  return hasResolvedPlatformImage(id)
 }
 
 export function platformImageSearchTerm(id: string, name: string): string {

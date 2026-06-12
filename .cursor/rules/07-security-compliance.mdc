@@ -6,16 +6,21 @@ alwaysApply: true
 
 # Security & Compliance Rules
 
-## ITAR Compliance
-Spectral is designed to be ITAR-compliant. This means:
+## Product tiers
+
+- **Spectral Training** (default): rules below apply in full.
+- **Spectral Operations** (`SPECTRAL_EDITION=operations`): see `.cursor/rules/11-operations-edition.mdc` and `docs/operations/SPECTRAL_OPERATIONS_CHARTER.md`. Server-side propagation permitted; tenant-isolated customer data permitted; live feeds require per-contract legal review.
+
+## ITAR Compliance (Training tier)
+Spectral Training is designed to be ITAR-compliant. This means:
 
 1. **No classified technical data** — all platform specs, sensor parameters, and weapons data must come from publicly available sources (manufacturer datasheets, official government releases, verified open-source reporting).
 
-2. **No export-controlled algorithms** — do not implement or reference algorithms that fall under ECCN categories 7D994, 7E994, or similar. Guidance, targeting, and fire control logic is out of scope.
+2. **No export-controlled algorithms in client bundles** — Training tier does not ship ECCN 7D994/7E994-class solvers. Operations tier runs approved models server-side only per Operations charter.
 
-3. **No real-time operational data** — Spectral is a training and reference platform, not a live operations system. Do not integrate live tracking data (ADS-B, AIS, live satellite feeds) without legal review.
+3. **No real-time operational data (Training)** — do not integrate live tracking data without legal review. Operations tier uses pluggable feed adapters behind contract gate.
 
-4. **Seed data is OSINT** — all data in `spectral_seed_data.json` and the database is sourced from publicly available intelligence. When adding new platforms or systems, document the OSINT source in the `description` field.
+4. **Seed data is OSINT** — document sources in `description` fields.
 
 ## Authentication & Authorisation
 - All routes except `/login` and `/register` are protected by `middleware.ts`

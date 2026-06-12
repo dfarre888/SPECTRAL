@@ -13,7 +13,7 @@ export default async function MapPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex h-full items-center justify-center text-t-muted font-mono text-sm">
+        <div className="flex h-full items-center justify-center store-text-muted font-mono text-sm">
           Loading Map Intel…
         </div>
       }

@@ -3,6 +3,7 @@ import { GitCompare } from 'lucide-react'
 import { HubPageShell } from '@/components/hub/HubPageShell'
 import { StorePanel } from '@/components/ui/store-surface'
 import { Badge } from '@/components/ui/badge'
+import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { getPlatformsByIds } from '@/lib/platforms/queries'
 
 interface ComparePageProps {
@@ -38,7 +39,10 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {platforms.map((p) => (
               <StorePanel key={p.id} className="p-4 space-y-2">
-                <h2 className="font-bold text-white">{p.name}</h2>
+                <div className="flex items-center gap-3">
+                  <PlatformThumbnail id={p.id} name={p.name} size="lg" />
+                  <h2 className="font-bold text-white">{p.name}</h2>
+                </div>
                 <p className="text-sm store-text-body">{p.country_of_origin}</p>
                 <Badge variant="outline">{p.category}</Badge>
                 <div className="text-xs font-mono store-text-body space-y-1 pt-2">

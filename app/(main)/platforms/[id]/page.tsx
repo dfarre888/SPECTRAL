@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { CompareButton } from '@/components/platforms/CompareButton'
+import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { CountermeasuresPanel } from '@/components/platforms/CountermeasuresPanel'
 import { PlatformSpecSheet } from '@/components/platforms/PlatformSpecSheet'
 import { CATEGORY_LABELS } from '@/lib/platforms/constants'
@@ -29,22 +30,25 @@ export default async function PlatformDetailPage({ params }: PlatformDetailPageP
       <div className="mb-6">
         <Link
           href="/platforms"
-          className="inline-flex items-center gap-1.5 text-sm text-t-secondary hover:text-orange transition-colors mb-4"
+          className="inline-flex items-center gap-1.5 text-sm store-text-body hover:text-[var(--store-accent)] transition-colors mb-4"
         >
           <ArrowLeft className="h-4 w-4" />
           Platform Library
         </Link>
 
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-t-primary">{platform.name}</h1>
-            <p className="text-t-secondary mt-1">
+          <div className="flex gap-4 items-start">
+            <PlatformThumbnail id={platform.id} name={platform.name} size="xl" rounded="lg" />
+            <div>
+            <h1 className="text-2xl font-bold text-white">{platform.name}</h1>
+            <p className="store-text-body mt-1">
               {countryFlag(platform.country_of_origin)}{' '}
               {platform.country_of_origin ?? 'Unknown'}
               {platform.manufacturer && ` · ${platform.manufacturer}`}
             </p>
             <div className="mt-2">
               <Badge variant="outline">{CATEGORY_LABELS[platform.category]}</Badge>
+            </div>
             </div>
           </div>
           <CompareButton platformId={platform.id} />

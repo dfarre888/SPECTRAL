@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
 import { readMapStaging, clearMapStaging } from '@/lib/spectrum/map-staging'
 import { AssetSidebar } from '@/app/map/components/AssetSidebar'
+import { SpectralAnalysisPanel } from '@/app/map/components/SpectralAnalysisPanel'
 import { MapNavigationWheel } from '@/app/map/components/MapNavigationWheel'
 import { EntityInfoPanel } from '@/app/map/components/EntityInfoPanel'
 import { useDefeatOverlap } from '@/app/map/hooks/useDefeatOverlap'
@@ -13,6 +14,7 @@ import {
   usePlatformPlacement,
   type CesiumContext,
 } from '@/app/map/hooks/usePlatformPlacement'
+import { useEnvelopeWalls } from '@/app/map/hooks/useEnvelopeWalls'
 import { useTerrainMasking } from '@/app/map/hooks/useTerrainMasking'
 import { useWindData } from '@/app/map/hooks/useWindData'
 import { envelopeDiscAltitudeM } from '@/lib/map/range-declaration'
@@ -22,7 +24,7 @@ import type { MapAssetsPayload, CursorPosition, PlacementMode, PlacedCuas, Place
 const CesiumMapPanel = dynamic(() => import('./CesiumMapPanel'), {
   ssr: false,
   loading: () => (
-    <div className="flex-1 flex items-center justify-center text-t-muted font-mono text-sm">
+    <div className="flex-1 flex items-center justify-center store-text-muted font-mono text-sm">
       Initialising Cesium globe…
     </div>
   ),
@@ -51,6 +53,8 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     matchedCount: number
   } | null>(null)
   const [highlightedIds, setHighlightedIds] = useState<string[]>([])
+  const [terrainEpoch, setTerrainEpoch] = useState(0)
+  const [spectralOpen, setSpectralOpen] = useState(false)
 
   const cesiumCtxRef = useRef<CesiumContext | null>(null)
   const getCesium = useCallback(() => cesiumCtxRef.current, [])
@@ -69,9 +73,15 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     getCesium
   )
 
-  const maskingPolygons = useTerrainMasking(placedCuas, getCesium, setPlacedCuas)
+  const maskingPolygons = useTerrainMasking(
+    placedCuas,
+    getCesium,
+    setPlacedCuas,
+    terrainEpoch,
+  )
   const overlaps = useDefeatOverlap(placedUas, placedCuas)
   const { windByUas, loading: windLoading } = useWindData(nilWind, placedUas, setPlacedUas)
+  useEnvelopeWalls(nilWind, placedUas, getCesium, setPlacedUas)
 
   const panelUas = useMemo(
     () => placedUas.find((u) => !u.infoPanelClosed) ?? null,
@@ -101,6 +111,24 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     setPlacedUas([])
     setPlacedCuas([])
     setPlacementMode({ active: false })
+  }, [])
+
+  const handleRemoveUas = useCallback((instanceId: string) => {
+    setPlacedUas((prev) => prev.filter((u) => u.instanceId !== instanceId))
+    setPlacementMode((mode) => {
+      if (
+        mode.active &&
+        mode.kind === 'loiter' &&
+        mode.uasInstanceId === instanceId
+      ) {
+        return { active: false }
+      }
+      return mode
+    })
+  }, [])
+
+  const handleRemoveCuas = useCallback((instanceId: string) => {
+    setPlacedCuas((prev) => prev.filter((c) => c.instanceId !== instanceId))
   }, [])
 
   const closePanel = useCallback((instanceId: string) => {
@@ -197,12 +225,23 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         onSelectCuas={startCuasPlacement}
         onPlaceLoiter={startLoiterMode}
         onClearLoiter={clearLoiter}
+        onRemoveUas={handleRemoveUas}
+        onRemoveCuas={handleRemoveCuas}
         overlapLegend={overlapLegend}
+        onOpenSpectralAnalysis={() => setSpectralOpen(true)}
+      />
+
+      <SpectralAnalysisPanel
+        open={spectralOpen}
+        onOpenChange={setSpectralOpen}
+        placedUas={placedUas}
+        placedCuas={placedCuas}
+        overlaps={overlaps}
       />
 
       <div className="relative flex-1 flex flex-col min-w-0">
         {stagingBanner && (
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2 rounded bg-surf1/95 border border-orange/40 text-[11px] font-mono text-t-secondary flex items-start justify-between gap-3">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl store-panel border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3 shadow-lg">
             <span>
               AeroCopilot staged {stagingBanner.stagedCount} system
               {stagingBanner.stagedCount === 1 ? '' : 's'} — {stagingBanner.matchedCount} matched
@@ -212,7 +251,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             <button
               type="button"
               onClick={dismissStagingBanner}
-              className="text-t-muted hover:text-orange shrink-0"
+              className="store-text-muted hover:text-[var(--store-accent)] shrink-0"
               aria-label="Dismiss staging banner"
             >
               ✕
@@ -220,7 +259,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           </div>
         )}
         {placementMode.active && (
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-3 py-1 rounded bg-surf1/90 border border-cyan/30 text-[10px] font-mono text-cyan">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-xl store-panel-inner border-[var(--store-accent-border)] text-[11px] text-[var(--store-accent)] font-medium">
             {placementMode.kind === 'loiter'
               ? 'Place Loiter — click globe for loiter point · Esc to cancel'
               : placementMode.kind === 'uas'
@@ -244,6 +283,9 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             onCursorMove={setCursor}
             onPanelScreenPos={setPanelScreenPos}
             onTerrainHeightsResolved={handleTerrainHeightsResolved}
+            onTerrainEpochChange={setTerrainEpoch}
+            setPlacedUas={setPlacedUas}
+            setPlacedCuas={setPlacedCuas}
           />
 
           <MapNavigationWheel getCesium={getCesium} />

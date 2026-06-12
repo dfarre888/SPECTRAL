@@ -1,0 +1,59 @@
+global:
+  classification: "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY"
+  edition: operations
+
+image:
+  repository: spectral/operations
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+spectral:
+  env:
+    SPECTRAL_EDITION: operations
+    SPECTRAL_DEFAULT_TENANT: default
+    # Matches scripts/copy-cesium-public.mjs → public/static/Cesium (served at /static/Cesium)
+    NEXT_PUBLIC_CESIUM_BASE_URL: /static/Cesium
+  oidc:
+    enabled: false
+    issuer: ""
+    clientId: ""
+
+ingress:
+  enabled: true
+  className: nginx
+  host: spectral.operations.local
+  tls: false
+
+postgres:
+  enabled: true
+  image: postgres:16
+  storage: 50Gi
+  database: spectral
+  user: spectral
+
+redis:
+  enabled: true
+  image: redis:7-alpine
+
+minio:
+  enabled: true
+  storage: 100Gi
+
+propagationWorkers:
+  enabled: true
+  replicaCount: 2
+
+terrainBundle:
+  enabled: true
+  mountPath: /data/terrain
+
+resources:
+  web:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 4Gi

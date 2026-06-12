@@ -39,6 +39,7 @@ export function useDefeatOverlap(placedUas: PlacedUas[], placedCuas: PlacedCuas[
             )
             if (!res.ok) return
             const json = (await res.json()) as { data: DefeatCheckResult }
+            if (json.data.kind === 'empty') return
             volumes.push(
               buildOverlapVolume(
                 uas,

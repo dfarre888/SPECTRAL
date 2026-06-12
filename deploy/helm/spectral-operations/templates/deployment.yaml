@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-web
+  labels:
+    app: spectral-operations
+    component: web
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: spectral-operations
+      component: web
+  template:
+    metadata:
+      labels:
+        app: spectral-operations
+        component: web
+    spec:
+      containers:
+        - name: web
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: SPECTRAL_EDITION
+              value: {{ .Values.spectral.env.SPECTRAL_EDITION | quote }}
+            - name: SPECTRAL_DEFAULT_TENANT
+              value: {{ .Values.spectral.env.SPECTRAL_DEFAULT_TENANT | quote }}
+            - name: NEXT_PUBLIC_CESIUM_BASE_URL
+              value: {{ .Values.spectral.env.NEXT_PUBLIC_CESIUM_BASE_URL | quote }}
+            - name: SPECTRAL_OIDC_ENABLED
+              value: {{ .Values.spectral.oidc.enabled | quote }}
+            - name: SPECTRAL_OIDC_ISSUER
+              value: {{ .Values.spectral.oidc.issuer | quote }}
+            - name: SPECTRAL_OIDC_CLIENT_ID
+              value: {{ .Values.spectral.oidc.clientId | quote }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: database-url
+          resources:
+            {{- toYaml .Values.resources.web | nindent 12 }}
+          {{- if .Values.terrainBundle.enabled }}
+          volumeMounts:
+            - name: terrain
+              mountPath: {{ .Values.terrainBundle.mountPath }}
+              readOnly: true
+          {{- end }}
+      {{- if .Values.terrainBundle.enabled }}
+      volumes:
+        - name: terrain
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-terrain
+      {{- end }}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
+import { ClassificationBanner } from '@/components/operations/ClassificationBanner'
 
 export const metadata: Metadata = {
   title: 'Spectral — Drone Threat Intelligence',
@@ -11,9 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body className="hub-page-canvas overflow-hidden">
-        <div className="classification-banner">
-          UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
-        </div>
+        <ClassificationBanner />
         {children}
         <Toaster
           position="bottom-right"

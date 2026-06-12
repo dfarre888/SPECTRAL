@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { ConfidenceBadge } from '@/components/platforms/ConfidenceBadge'
+import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { ImmuneBadge } from '@/components/defeat/ImmuneBadge'
 import {
   Sheet,
@@ -39,12 +40,12 @@ function PctRow({
   return (
     <div
       className={cn(
-        'flex justify-between items-center py-2 px-3 rounded border border-border',
-        highlight && 'border-orange/40 bg-orange/5'
+        'flex justify-between items-center py-2 px-3 rounded-xl store-panel-inner',
+        highlight && 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
       )}
     >
-      <span className="text-sm text-t-secondary">{label}</span>
-      <span className="font-mono text-sm text-t-primary">
+      <span className="text-sm store-text-body">{label}</span>
+      <span className="font-mono text-sm text-white">
         {pct != null ? `${pct}%` : '—'}
       </span>
     </div>
@@ -68,20 +69,27 @@ export function AdjudicationPanel({
       <SheetContent side="right" className="overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Adjudication Detail</SheetTitle>
-          <SheetDescription>
-            {platform.name} × {system.name}
+          <SheetDescription asChild>
+            <div className="flex items-center gap-3 pt-1">
+              <PlatformThumbnail id={platform.id} name={platform.name} size="sm" />
+              <span className="store-text-muted">×</span>
+              <PlatformThumbnail id={system.id} name={system.name} size="sm" variant="cuas" />
+              <span className="text-sm store-text-body">
+                {platform.name} × {system.name}
+              </span>
+            </div>
           </SheetDescription>
         </SheetHeader>
 
         <div className="space-y-6 mt-4">
           {!effectiveness ? (
-            <div className="bg-surf2 border border-border rounded-lg p-4">
-              <p className="text-sm text-t-secondary">
+            <div className="store-panel-inner rounded-xl p-4">
+              <p className="text-sm store-text-body">
                 No adjudication data — effectiveness not assessed for this pairing.
               </p>
               <Link
                 href={`/platforms/${platform.id}`}
-                className="text-orange text-sm hover:underline mt-2 inline-block"
+                className="text-[var(--store-accent)] text-sm hover:underline mt-2 inline-block"
               >
                 View platform spec →
               </Link>
@@ -98,7 +106,7 @@ export function AdjudicationPanel({
               )}
 
               <div className="space-y-2">
-                <p className="text-xs font-mono text-t-muted uppercase tracking-wider">
+                <p className="text-xs store-text-muted uppercase tracking-wider font-semibold">
                   Effectiveness
                 </p>
                 <PctRow
@@ -126,17 +134,17 @@ export function AdjudicationPanel({
 
               {(effectiveness.adjudication_rationale || effectiveness.special_notes) && (
                 <div>
-                  <p className="text-xs font-mono text-t-muted uppercase tracking-wider mb-2">
+                  <p className="text-xs store-text-muted uppercase tracking-wider font-semibold mb-2">
                     Rationale
                   </p>
-                  <p className="text-sm text-t-secondary leading-relaxed">
+                  <p className="text-sm store-text-body leading-relaxed">
                     {effectiveness.adjudication_rationale ?? effectiveness.special_notes}
                   </p>
                 </div>
               )}
 
               <div className="flex items-center gap-2">
-                <p className="text-xs font-mono text-t-muted uppercase tracking-wider">
+                <p className="text-xs store-text-muted uppercase tracking-wider font-semibold">
                   Confidence
                 </p>
                 <ConfidenceBadge confidence={effectiveness.data_confidence} />
@@ -144,19 +152,19 @@ export function AdjudicationPanel({
 
               {effectiveness.modifiers && effectiveness.modifiers.length > 0 && (
                 <div>
-                  <p className="text-xs font-mono text-t-muted uppercase tracking-wider mb-2">
+                  <p className="text-xs store-text-muted uppercase tracking-wider font-semibold mb-2">
                     Modifiers
                   </p>
                   <div className="space-y-2">
                     {effectiveness.modifiers.map((mod, i) => (
                       <div
                         key={i}
-                        className="bg-surf2 border border-border rounded px-3 py-2"
+                        className="store-panel-inner rounded-xl px-3 py-2"
                       >
-                        <p className="text-xs font-mono text-cyan uppercase">
+                        <p className="text-xs font-mono text-[var(--store-accent)] uppercase">
                           {mod.type} — {mod.label}
                         </p>
-                        <p className="text-sm text-t-secondary mt-0.5">{mod.impact}</p>
+                        <p className="text-sm store-text-body mt-0.5">{mod.impact}</p>
                       </div>
                     ))}
                   </div>
@@ -165,10 +173,10 @@ export function AdjudicationPanel({
 
               {effectiveness.recommended_response && (
                 <div>
-                  <p className="text-xs font-mono text-t-muted uppercase tracking-wider mb-2">
+                  <p className="text-xs store-text-muted uppercase tracking-wider font-semibold mb-2">
                     Recommended Response
                   </p>
-                  <p className="text-sm text-t-primary leading-relaxed">
+                  <p className="text-sm text-white leading-relaxed">
                     {effectiveness.recommended_response}
                   </p>
                 </div>

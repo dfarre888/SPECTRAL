@@ -1,4 +1,5 @@
 import { ConfidenceBadge } from '@/components/platforms/ConfidenceBadge'
+import { StorePanel } from '@/components/ui/store-surface'
 import { CATEGORY_LABELS } from '@/lib/platforms/constants'
 import { formatFrequencyBand } from '@/lib/platforms/format'
 import type { Platform } from '@/lib/types'
@@ -71,23 +72,23 @@ export function PlatformSpecSheet({ platform }: PlatformSpecSheetProps) {
   const rows = buildSpecRows(platform)
 
   return (
-    <div className="bg-surf1 border border-border rounded-lg overflow-hidden">
-      <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-        <h2 className="font-semibold text-t-primary">Specifications</h2>
+    <StorePanel className="overflow-hidden">
+      <div className="px-4 py-3 border-b border-[var(--store-line)] flex items-center justify-between">
+        <h2 className="font-semibold text-white">Specifications</h2>
         <ConfidenceBadge confidence={platform.data_confidence} />
       </div>
-      <dl className="divide-y divide-border">
+      <dl className="divide-y divide-[var(--store-line)]">
         {rows.map((row) => (
           <div key={row.label} className="flex items-start justify-between gap-4 px-4 py-2.5">
-            <dt className="text-xs text-t-secondary uppercase tracking-wider shrink-0 w-36">
+            <dt className="text-xs store-text-muted uppercase tracking-wider shrink-0 w-36">
               {row.label}
             </dt>
-            <dd className="text-sm font-mono text-t-primary text-right flex-1 break-all">
+            <dd className="text-sm font-mono text-white text-right flex-1 break-all">
               {row.value}
             </dd>
           </div>
         ))}
       </dl>
-    </div>
+    </StorePanel>
   )
 }

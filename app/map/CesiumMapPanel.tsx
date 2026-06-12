@@ -16,6 +16,7 @@ import {
   type TerrainHeightUpdate,
 } from '@/lib/map/terrain'
 import { formatCoord } from '@/lib/map/format'
+import { usePlatformDrag } from '@/app/map/hooks/usePlatformDrag'
 import type { CesiumContext } from '@/app/map/hooks/usePlatformPlacement'
 import type {
   CursorPosition,
@@ -40,6 +41,9 @@ interface CesiumMapPanelProps {
   onCursorMove: (cursor: CursorPosition) => void
   onPanelScreenPos: (pos: { x: number; y: number } | null) => void
   onTerrainHeightsResolved?: (update: TerrainHeightUpdate) => void
+  onTerrainEpochChange?: (epoch: number) => void
+  setPlacedUas: React.Dispatch<React.SetStateAction<PlacedUas[]>>
+  setPlacedCuas: React.Dispatch<React.SetStateAction<PlacedCuas[]>>
 }
 
 export default function CesiumMapPanel({
@@ -56,6 +60,9 @@ export default function CesiumMapPanel({
   onCursorMove,
   onPanelScreenPos,
   onTerrainHeightsResolved,
+  onTerrainEpochChange,
+  setPlacedUas,
+  setPlacedCuas,
 }: CesiumMapPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const viewerRef = useRef<CesiumViewer | null>(null)
@@ -71,15 +78,21 @@ export default function CesiumMapPanel({
   const onCursorMoveRef = useRef(onCursorMove)
   const onPanelScreenPosRef = useRef(onPanelScreenPos)
   const onTerrainHeightsResolvedRef = useRef(onTerrainHeightsResolved)
+  const onTerrainEpochChangeRef = useRef(onTerrainEpochChange)
   const placedUasRef = useRef(placedUas)
   const placedCuasRef = useRef(placedCuas)
+  const placementModeRef = useRef(placementMode)
   onCesiumReadyRef.current = onCesiumReady
   onGlobeClickRef.current = onGlobeClick
   onCursorMoveRef.current = onCursorMove
   onPanelScreenPosRef.current = onPanelScreenPos
   onTerrainHeightsResolvedRef.current = onTerrainHeightsResolved
+  onTerrainEpochChangeRef.current = onTerrainEpochChange
   placedUasRef.current = placedUas
   placedCuasRef.current = placedCuas
+  placementModeRef.current = placementMode
+
+  usePlatformDrag(cesiumReady, viewerRef, cesiumRef, terrainRef, placementModeRef, setPlacedUas, setPlacedCuas)
 
   const stalePlacementCount =
     placedUas.filter(
@@ -163,7 +176,11 @@ export default function CesiumMapPanel({
 
       viewer.scene.globe.tileLoadProgressEvent.addEventListener((queued: number) => {
         if (queued === 0) {
-          setTerrainEpoch((n) => n + 1)
+          setTerrainEpoch((n) => {
+            const next = n + 1
+            onTerrainEpochChangeRef.current?.(next)
+            return next
+          })
           viewer.scene.requestRender()
         }
       })
@@ -282,15 +299,10 @@ export default function CesiumMapPanel({
     }
   }, [cesiumReady, terrainEpoch, stalePlacementCount])
 
-  // Native terrain shadows — active when stationary C-UAS defeat spheres are on the map.
-  useEffect(() => {
-    const viewer = viewerRef.current
-    const Cesium = cesiumRef.current
-    if (!cesiumReady || !viewer || !Cesium || viewer.isDestroyed?.()) return
-
-    setTerrainShadowsActive(viewer, Cesium, placedCuas.length > 0)
-    viewer.scene.requestRender()
-  }, [cesiumReady, placedCuas.length])
+  // Native sun shadow map is kept OFF permanently — it darkens the whole terrain tile
+  // uniformly which is too aggressive at typical viewing angles (southern hemisphere sun
+  // casting long shadows over large terrain areas).  Terrain-blocked defeat zones are
+  // visualised instead via the LOS masking polygon (useTerrainMasking / computeTerrainMasking).
 
   useEffect(() => {
     const viewer = viewerRef.current
@@ -387,13 +399,13 @@ export function MapBottomBar({
   onClearAll: () => void
 }) {
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-10 flex items-center justify-between gap-3 px-3 py-2 bg-surf1/90 border-t border-border backdrop-blur">
+    <div className="absolute bottom-0 left-0 right-0 z-10 flex items-center justify-between gap-3 px-3 py-2 bg-[var(--store-surface)]/90 border-t border-[var(--store-line)] backdrop-blur">
       <div className="flex items-center gap-2">
         <WindToggleInline nilWind={nilWind} loading={windLoading} onChange={onNilWindChange} />
         <button
           type="button"
           onClick={onClearAll}
-          className="px-3 py-1.5 rounded border border-border bg-surf2 text-t-muted text-xs font-mono hover:text-orange hover:border-orange/30 transition-colors"
+          className="px-3 py-1.5 rounded-xl store-panel-inner store-text-muted text-xs font-mono hover:text-[var(--store-accent)] hover:border-[var(--store-accent-border)] transition-colors"
         >
           Clear All
         </button>
@@ -420,9 +432,9 @@ function WindToggleInline({
     <button
       type="button"
       onClick={() => onChange(!nilWind)}
-      className={`px-3 py-1.5 rounded border text-xs font-mono transition-colors ${
+      className={`px-3 py-1.5 rounded-xl border text-xs font-mono transition-colors ${
         nilWind
-          ? 'border-border bg-surf2 text-t-secondary'
+          ? 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-body'
           : 'border-cyan/40 bg-cyan/10 text-cyan'
       }`}
     >

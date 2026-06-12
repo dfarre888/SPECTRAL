@@ -4,7 +4,9 @@ let loadPromise: Promise<CesiumModule> | null = null
 
 /**
  * Load Cesium via script tag — avoids webpack parsing Cesium.js (import.meta).
- * Cesium.js must be copied to /_next/static/Cesium/ by next.config.mjs.
+ * Cesium.js is served from NEXT_PUBLIC_CESIUM_BASE_URL:
+ *   - Dev/build default: /_next/static/Cesium (webpack CopyWebpackPlugin)
+ *   - Helm / air-gap:     /static/Cesium (copy-cesium-public.mjs → public/)
  */
 export function loadCesium(): Promise<CesiumModule> {
   if (typeof window === 'undefined') {

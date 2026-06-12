@@ -6,9 +6,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const cesiumSource = 'node_modules/cesium/Build/Cesium'
 const cesiumBaseUrl = '_next/static/Cesium'
 
+const cesiumWorkers = path.resolve(__dirname, 'node_modules/cesium/Build/Cesium/Workers')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack: (config, { isServer }) => {
+  // SWC minifier chokes on Cesium worker ES modules — use Terser with exclude
+  swcMinify: false,
+  webpack: (config, { isServer, dev }) => {
     if (!isServer) {
       config.plugins.push(
         new CopyWebpackPlugin({
@@ -31,6 +35,35 @@ const nextConfig = {
 
     config.module.unknownContextCritical = false
     config.module.exprContextCritical = false
+
+    // Emit Cesium Workers as static assets — do not bundle/minify worker ES modules
+    config.module.rules.unshift({
+      test: /\.js$/,
+      include: cesiumWorkers,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/Cesium/Workers/[name][ext]',
+      },
+    })
+
+    const cesiumExclude = /(static\/Cesium|node_modules[\\/]cesium|Cesium[\\/]Workers)/
+    if (!dev && !isServer && config.optimization?.minimizer) {
+      config.optimization.minimizer = config.optimization.minimizer.map((plugin) => {
+        const name = plugin.constructor?.name ?? ''
+        if (name === 'TerserPlugin' || name.includes('Swc')) {
+          const prevExclude = plugin.options?.exclude
+          plugin.options = {
+            ...plugin.options,
+            exclude: prevExclude
+              ? Array.isArray(prevExclude)
+                ? [...prevExclude, cesiumExclude]
+                : [prevExclude, cesiumExclude]
+              : cesiumExclude,
+          }
+        }
+        return plugin
+      })
+    }
 
     return config
   },

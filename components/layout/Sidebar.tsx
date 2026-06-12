@@ -3,11 +3,12 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   Database, Radio, Satellite, Shield, Globe,
-  Swords, GitCompare, LayoutDashboard, ChevronRight, Map
+  Swords, GitCompare, LayoutDashboard, ChevronRight, Map, FileUp
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 
-const NAV = [
+const BASE_NAV = [
   { href: '/',          icon: LayoutDashboard, label: 'Dashboard',         sub: 'Overview' },
   { href: '/platforms', icon: Database,         label: 'Platform Library', sub: '39 platforms' },
   { href: '/map',       icon: Map,              label: 'Map Intel',        sub: 'Terrain & envelopes' },
@@ -17,10 +18,20 @@ const NAV = [
   { href: '/conflicts', icon: Globe,            label: 'Conflict Intel',   sub: 'Case studies' },
   { href: '/arena',     icon: Swords,           label: 'Red/Blue Arena',   sub: 'Scenario engine' },
   { href: '/compare',   icon: GitCompare,       label: '1v1 Overlay',      sub: 'Head-to-head' },
-]
+] as const
+
+const OPERATIONS_NAV = {
+  href: '/operations/import',
+  icon: FileUp,
+  label: 'Data Import',
+  sub: 'Tenant ingest',
+} as const
 
 export function Sidebar() {
   const pathname = usePathname()
+  const nav = isOperationsEditionClient()
+    ? [...BASE_NAV.slice(0, 3), OPERATIONS_NAV, ...BASE_NAV.slice(3)]
+    : BASE_NAV
 
   return (
     <aside className="w-72 xl:w-80 flex-shrink-0 store-panel border-r border-[var(--store-line)] border-t-0 border-b-0 border-l-0 rounded-none flex flex-col bg-[var(--store-surface)]">

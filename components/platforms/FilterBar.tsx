@@ -58,8 +58,8 @@ export function FilterBar({
             onClick={() => handlePillClick(pill.id)}
             className={cn(
               categoryPill === pill.id && pill.id !== 'gnss_shortcut' && pill.id !== 'cuas_shortcut'
-                ? 'border-orange text-orange'
-                : 'border-border text-t-secondary'
+                ? 'border-[var(--store-accent)] text-[var(--store-accent)]'
+                : 'border-[var(--store-line)] store-text-body'
             )}
           >
             {pill.label}
@@ -69,7 +69,7 @@ export function FilterBar({
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-t-muted" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 store-text-muted" />
           <Input
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}

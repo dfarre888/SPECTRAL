@@ -2,9 +2,20 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ChevronDown, ChevronRight, Crosshair, Shield, Plane } from 'lucide-react'
-import { clsx } from 'clsx'
+import {
+  ChevronDown,
+  ChevronRight,
+  Crosshair,
+  Map,
+  Radio,
+  Shield,
+  Plane,
+  X,
+} from 'lucide-react'
 import { LoiterControls } from '@/app/map/components/LoiterControls'
+import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
+import { StoreFilterSection } from '@/components/catalog/StoreFilterSidebar'
+import { StoreEyebrow, StorePanel } from '@/components/ui/store-surface'
 import { operationalEnvelopeRadiusKm } from '@/lib/map/range-declaration'
 import type {
   MapAssetsPayload,
@@ -14,6 +25,7 @@ import type {
   PlacedUas,
   PlacementMode,
 } from '@/lib/map/types'
+import { cn } from '@/lib/utils'
 
 interface AssetSidebarProps {
   assets: MapAssetsPayload
@@ -25,7 +37,10 @@ interface AssetSidebarProps {
   onSelectCuas: (asset: MapCuasAsset) => void
   onPlaceLoiter: (uas: PlacedUas) => void
   onClearLoiter: (uasInstanceId: string) => void
+  onRemoveUas: (instanceId: string) => void
+  onRemoveCuas: (instanceId: string) => void
   overlapLegend?: { defeat: number; survivable: number }
+  onOpenSpectralAnalysis?: () => void
 }
 
 export function AssetSidebar({
@@ -38,11 +53,15 @@ export function AssetSidebar({
   onSelectCuas,
   onPlaceLoiter,
   onClearLoiter,
+  onRemoveUas,
+  onRemoveCuas,
   overlapLegend,
+  onOpenSpectralAnalysis,
 }: AssetSidebarProps) {
   const [uasOpen, setUasOpen] = useState(true)
   const [cuasOpen, setCuasOpen] = useState(true)
   const [placedOpen, setPlacedOpen] = useState(true)
+  const [legendOpen, setLegendOpen] = useState(false)
 
   const placingUasId =
     placementMode.active && placementMode.kind === 'uas' ? placementMode.asset.id : null
@@ -58,93 +77,119 @@ export function AssetSidebar({
   )
 
   return (
-    <aside className="w-[280px] flex-shrink-0 flex flex-col bg-surf1 border-r border-border h-full">
-      <div className="px-3 py-2 border-b border-border flex items-center justify-between">
+    <aside
+      className={cn(
+        'w-72 xl:w-80 flex-shrink-0 flex flex-col h-full',
+        'store-panel border-r border-[var(--store-line)] border-t-0 border-b-0 border-l-0 rounded-none',
+        'bg-[var(--store-surface)]',
+      )}
+    >
+      {/* Header — matches main Sidebar / store catalog */}
+      <div className="px-5 py-4 border-b border-[var(--store-line)]">
         <Link
           href="/"
-          className="text-[10px] font-mono text-t-muted hover:text-cyan transition-colors"
+          className="text-[11px] store-text-muted hover:text-[var(--store-accent)] transition-colors mb-3 inline-block"
         >
           ← Dashboard
         </Link>
-        <span className="text-[10px] font-mono text-t-muted uppercase tracking-wider">
-          Map Intel
-        </span>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-purple/15 border border-purple/35 flex items-center justify-center shrink-0">
+            <Map className="w-4 h-4 text-purple" />
+          </div>
+          <div className="min-w-0">
+            <p className="store-display font-bold text-white tracking-wide text-sm">Map Intel</p>
+            <p className="text-[10px] store-text-muted">Terrain laydown & envelopes</p>
+          </div>
+        </div>
+        <div className="mt-3">
+          <StoreEyebrow icon={<Crosshair size={12} />}>Place assets on globe</StoreEyebrow>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-2 space-y-1">
-        <SectionHeader
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+        <CollapsibleSection
           open={uasOpen}
           onToggle={() => setUasOpen(!uasOpen)}
-          icon={Plane}
-          label="UAS Platforms"
+          label="Threat platforms"
           count={assets.uas.length}
-        />
-        {uasOpen && (
-          <div className="px-2 space-y-1 max-h-48 overflow-y-auto">
+          icon={<Plane size={14} className="text-[var(--store-accent)]" />}
+        >
+          <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
             {assets.uas.map((asset) => (
-              <AssetTile
+              <MapAssetPickCard
                 key={asset.id}
+                id={asset.id}
+                kicker="UAS"
                 name={asset.name}
                 sub={formatUasSubline(asset)}
                 active={placingUasId === asset.id}
                 highlighted={highlightedIds.includes(asset.id)}
                 onClick={() => onSelectUas(asset)}
+                accent="threat"
+                thumbnailVariant="uas"
               />
             ))}
           </div>
-        )}
+        </CollapsibleSection>
 
-        <SectionHeader
+        <CollapsibleSection
           open={cuasOpen}
           onToggle={() => setCuasOpen(!cuasOpen)}
-          icon={Shield}
-          label="C-UAS Systems"
+          label="Defeat systems"
           count={assets.cuas.length}
-        />
-        {cuasOpen && (
-          <div className="px-2 space-y-1 max-h-48 overflow-y-auto">
+          icon={<Shield size={14} className="text-[var(--store-success)]" />}
+        >
+          <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
             {assets.cuas.map((asset) => (
-              <AssetTile
-                key={asset.id}
+              <MapAssetPickCard
+                key={`${asset.id}-${asset.name}`}
+                id={asset.id}
+                kicker={asset.categoryLabel}
                 name={asset.name}
-                sub={`${asset.defeat_range_km.toFixed(1)} km · ${asset.categoryLabel}`}
+                sub={`${asset.defeat_range_km.toFixed(1)} km defeat envelope`}
                 active={placingCuasId === asset.id}
                 highlighted={highlightedIds.includes(asset.id)}
                 onClick={() => onSelectCuas(asset)}
-                variant="orange"
+                accent="defeat"
+                thumbnailVariant="cuas"
               />
             ))}
           </div>
-        )}
+        </CollapsibleSection>
 
         {(placedUas.length > 0 || placedCuas.length > 0) && (
-          <>
-            <SectionHeader
-              open={placedOpen}
-              onToggle={() => setPlacedOpen(!placedOpen)}
-              icon={Crosshair}
-              label="Placed Assets"
-              count={placedUas.length + placedCuas.length}
-            />
-            {placedOpen && (
-              <div className="px-2 space-y-2">
-                {placedUas.map((u) => (
+          <CollapsibleSection
+            open={placedOpen}
+            onToggle={() => setPlacedOpen(!placedOpen)}
+            label="On map"
+            count={placedUas.length + placedCuas.length}
+            icon={<Crosshair size={14} className="store-text-muted" />}
+          >
+            <div className="space-y-2">
+              {placedUas.map((u) => (
+                <StorePanel key={u.instanceId} inner className="relative p-3 pl-9">
+                  <RemoveButton
+                    label={`Remove ${u.asset.name}`}
+                    onClick={() => onRemoveUas(u.instanceId)}
+                  />
+                  <div className="flex items-start gap-3">
+                    <PlatformThumbnail id={u.asset.id} name={u.asset.name} size="md" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-semibold text-white truncate">{u.asset.name}</p>
+                      <p className="text-[11px] store-text-muted font-mono mt-0.5">
+                        {u.lat.toFixed(4)}°, {u.lon.toFixed(4)}°
+                      </p>
+                      <p className="text-[11px] store-text-body mt-1">
+                        {(u.lateralRadius_m / 1000).toFixed(1)} km combat envelope
+                      </p>
+                    </div>
+                  </div>
                   <div
-                    key={u.instanceId}
-                    className={clsx(
-                      'p-2 rounded border bg-surf2 text-[10px]',
-                      loiterPlacingId === u.instanceId
-                        ? 'border-cyan/50 ring-1 ring-cyan/30'
-                        : 'border-border',
+                    className={cn(
+                      'mt-2',
+                      loiterPlacingId === u.instanceId && 'ring-1 ring-[var(--store-accent-border)] rounded-xl',
                     )}
                   >
-                    <p className="font-mono text-cyan truncate">{u.asset.name}</p>
-                    <p className="font-mono text-t-muted">
-                      {u.lat.toFixed(4)}°, {u.lon.toFixed(4)}°
-                    </p>
-                    <p className="font-mono text-t-muted">
-                      {(u.lateralRadius_m / 1000).toFixed(1)} km envelope
-                    </p>
                     <LoiterControls
                       uas={u}
                       loiterPlacing={loiterPlacingId === u.instanceId}
@@ -152,117 +197,185 @@ export function AssetSidebar({
                       onClearLoiter={() => onClearLoiter(u.instanceId)}
                     />
                   </div>
-                ))}
-                {placedCuas.map((c) => (
-                  <div
-                    key={c.instanceId}
-                    className="p-2 rounded border border-border bg-surf2 text-[10px]"
-                  >
-                    <p className="font-mono text-orange truncate">{c.asset.name}</p>
-                    <p className="font-mono text-t-muted">
-                      {c.lat.toFixed(4)}°, {c.lon.toFixed(4)}°
-                    </p>
-                    {c.hasTerrainMasking && (
-                      <p className="font-mono text-t-muted mt-1">Terrain masking active</p>
-                    )}
+                </StorePanel>
+              ))}
+              {placedCuas.map((c) => (
+                <StorePanel key={c.instanceId} inner className="relative p-3 pl-9">
+                  <RemoveButton
+                    label={`Remove ${c.asset.name}`}
+                    onClick={() => onRemoveCuas(c.instanceId)}
+                  />
+                  <div className="flex items-start gap-3">
+                    <PlatformThumbnail
+                      id={c.asset.id}
+                      name={c.asset.name}
+                      size="md"
+                      variant="cuas"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-semibold text-white truncate">{c.asset.name}</p>
+                      <p className="text-[11px] store-text-muted font-mono mt-0.5">
+                        {c.lat.toFixed(4)}°, {c.lon.toFixed(4)}°
+                      </p>
+                      {c.hasTerrainMasking && (
+                        <p className="text-[11px] text-[var(--store-accent)] mt-1">
+                          Terrain masking active
+                        </p>
+                      )}
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </>
+                </StorePanel>
+              ))}
+            </div>
+          </CollapsibleSection>
+        )}
+
+        {(placedUas.length > 0 || placedCuas.length > 0) && (
+          <div>
+            <button
+              type="button"
+              onClick={onOpenSpectralAnalysis}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl store-btn-primary text-sm"
+            >
+              <Radio className="w-4 h-4" />
+              Spectral Analysis
+            </button>
+            <p className="text-[11px] store-text-muted text-center mt-2 leading-relaxed">
+              Band overlap, defeat tactics, and AeroCopilot assessment
+            </p>
+          </div>
         )}
       </div>
 
-      <div className="px-3 py-3 border-t border-border space-y-2">
-        <p className="text-[10px] font-mono text-t-muted uppercase tracking-wider">Legend</p>
-        <LegendRow colour="bg-cyan/40" label="Combat envelope (altitude disc)" />
-        <LegendRow colour="bg-cyan/20" label="Faint disc = OSINT ferry max / wind spec" />
-        <LegendRow colour="bg-orange/40" label="C-UAS defeat range (sphere)" />
-        <LegendRow colour="bg-slate-500/40" label="Terrain LOS mask (hill blockers)" />
-        <LegendRow colour="bg-orange/20" label="Sun shadow on defeat sphere (Cesium)" />
-        <LegendRow colour="bg-red-500/40" label="Defeat overlap ≥50%" />
-        <LegendRow colour="bg-green-500/40" label="Survivable overlap <50%" />
-        {overlapLegend && (overlapLegend.defeat > 0 || overlapLegend.survivable > 0) && (
-          <p className="text-[10px] font-mono text-t-muted pt-1">
-            {overlapLegend.defeat} defeat / {overlapLegend.survivable} survivable
-          </p>
-        )}
-        {dualRoleIds.size > 0 && (
-          <p className="text-[10px] font-mono text-t-muted pt-1 leading-snug">
-            Dual-role assets (e.g. Anduril Anvil): UAS list → combat disc; C-UAS list → defeat
-            sphere.
-          </p>
+      <div className="px-4 py-3 border-t border-[var(--store-line)]">
+        <button
+          type="button"
+          onClick={() => setLegendOpen(!legendOpen)}
+          className="w-full flex items-center justify-between text-[10px] font-semibold tracking-widest uppercase store-text-muted mb-2"
+        >
+          <span>Map legend</span>
+          {legendOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        </button>
+        {legendOpen && (
+          <StorePanel inner className="p-3 space-y-2">
+            <LegendRow colour="bg-cyan/40" label="Combat envelope" />
+            <LegendRow colour="bg-cyan/20" label="Ferry max / wind spec (faint)" />
+            <LegendRow colour="bg-orange/40" label="C-UAS defeat dome" />
+            <LegendRow colour="bg-slate-500/40" label="Terrain shield & dead ground" />
+            <LegendRow colour="bg-red-500/40" label="Defeat adjudication (≥50%)" />
+            <LegendRow colour="bg-green-500/40" label="Survivable (&lt;50%)" />
+            {overlapLegend && (overlapLegend.defeat > 0 || overlapLegend.survivable > 0) && (
+              <p className="text-[11px] store-text-body pt-1 border-t border-[var(--store-line)]">
+                {overlapLegend.defeat} defeat · {overlapLegend.survivable} survivable
+              </p>
+            )}
+            {dualRoleIds.size > 0 && (
+              <p className="text-[10px] store-text-muted leading-snug pt-1">
+                Dual-role assets (e.g. Anvil): pick UAS for combat disc, C-UAS for defeat sphere.
+              </p>
+            )}
+          </StorePanel>
         )}
       </div>
     </aside>
   )
 }
 
-function SectionHeader({
+function CollapsibleSection({
   open,
   onToggle,
-  icon: Icon,
   label,
   count,
+  icon,
+  children,
 }: {
   open: boolean
   onToggle: () => void
-  icon: React.ComponentType<{ className?: string }>
   label: string
   count: number
+  icon: React.ReactNode
+  children: React.ReactNode
 }) {
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className="w-full flex items-center gap-2 px-3 py-1.5 text-left hover:bg-surf2 transition-colors"
-    >
-      {open ? (
-        <ChevronDown className="w-3 h-3 text-t-muted" />
-      ) : (
-        <ChevronRight className="w-3 h-3 text-t-muted" />
-      )}
-      <Icon className="w-3.5 h-3.5 text-t-muted" />
-      <span className="text-xs text-t-secondary flex-1">{label}</span>
-      <span className="text-[10px] font-mono text-t-muted">{count}</span>
-    </button>
+    <StoreFilterSection label={label}>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-2.5 py-2 -mt-1 mb-2 rounded-lg store-text-body hover:bg-[var(--store-surface-2)] hover:text-white transition-all"
+      >
+        <span className="flex items-center gap-2 text-[13px]">
+          {icon}
+          <span>{open ? 'Collapse' : 'Expand'}</span>
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="font-mono text-[11px] store-text-muted">{count}</span>
+          {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        </span>
+      </button>
+      {open ? children : null}
+    </StoreFilterSection>
   )
 }
 
-function AssetTile({
+function MapAssetPickCard({
+  id,
+  kicker,
   name,
   sub,
   active,
   highlighted,
   onClick,
-  variant = 'cyan',
+  accent,
+  thumbnailVariant,
 }: {
+  id: string
+  kicker: string
   name: string
   sub: string
   active: boolean
   highlighted?: boolean
   onClick: () => void
-  variant?: 'cyan' | 'orange'
+  accent: 'threat' | 'defeat'
+  thumbnailVariant: 'uas' | 'cuas'
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={clsx(
-        'w-full text-left px-2 py-1.5 rounded border transition-colors',
+      className={cn(
+        'w-full text-left rounded-xl overflow-hidden transition-all border',
         active
-          ? variant === 'cyan'
-            ? 'border-cyan/50 bg-cyan/10'
-            : 'border-orange/50 bg-orange/10'
+          ? 'nav-item-active'
           : highlighted
-            ? variant === 'cyan'
-              ? 'border-cyan/30 bg-cyan/5 ring-1 ring-cyan/25'
-              : 'border-orange/30 bg-orange/5 ring-1 ring-orange/25'
-            : 'border-transparent hover:border-border hover:bg-surf2'
+            ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
+            : 'store-panel-inner border-[var(--store-line)] hover:border-[var(--store-accent-border)]',
       )}
     >
-      <p className="text-[11px] text-t-primary truncate">{name}</p>
-      <p className="text-[10px] font-mono text-t-muted truncate">{sub}</p>
+      <div className="flex gap-3 p-2.5">
+        <div
+          className={cn(
+            'relative w-14 h-14 rounded-lg overflow-hidden shrink-0 store-panel-inner border border-[var(--store-line)]',
+            accent === 'threat'
+              ? 'shadow-[inset_0_-12px_24px_rgba(6,182,212,0.12)]'
+              : 'shadow-[inset_0_-12px_24px_rgba(249,115,22,0.12)]',
+          )}
+        >
+          <PlatformThumbnail
+            id={id}
+            name={name}
+            size="fill"
+            variant={thumbnailVariant}
+            className="w-full h-full"
+          />
+        </div>
+        <div className="min-w-0 flex-1 py-0.5">
+          <p className="text-[10px] font-semibold tracking-widest uppercase store-text-muted truncate">
+            {kicker}
+          </p>
+          <p className="text-[13px] font-semibold text-white leading-snug truncate">{name}</p>
+          <p className="text-[11px] store-text-body mt-0.5 line-clamp-2">{sub}</p>
+        </div>
+      </div>
     </button>
   )
 }
@@ -273,17 +386,32 @@ function formatUasSubline(asset: MapUasAsset): string {
   const ferry = op.declaredSpecKm
   const rangeStr =
     ferry > opKm + 0.05
-      ? `${opKm.toFixed(1)} km (${ferry.toFixed(0)} km ferry)`
-      : `${opKm.toFixed(1)} km`
+      ? `${opKm.toFixed(1)} km ops · ${ferry.toFixed(0)} km ferry`
+      : `${opKm.toFixed(1)} km envelope`
   const altRef = asset.altitude_reference === 'AMSL' ? 'AMSL' : 'AGL'
   return `${rangeStr} · ${asset.max_altitude_agl_m} m ${altRef}`
 }
 
+function RemoveButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className="absolute top-2.5 left-2.5 w-6 h-6 rounded-full grid place-items-center store-panel-inner border border-[var(--store-line)] store-text-muted hover:text-red-400 hover:border-red-400/40 transition-colors"
+    >
+      <X className="w-3 h-3" />
+    </button>
+  )
+}
+
 function LegendRow({ colour, label }: { colour: string; label: string }) {
   return (
-    <div className="flex items-center gap-2">
-      <span className={clsx('w-3 h-3 rounded-sm border border-border', colour)} />
-      <span className="text-[10px] font-mono text-t-muted">{label}</span>
+    <div className="flex items-center gap-2.5">
+      <span
+        className={cn('w-3 h-3 rounded-md border border-[var(--store-line)] shrink-0', colour)}
+      />
+      <span className="text-[11px] store-text-body">{label}</span>
     </div>
   )
 }

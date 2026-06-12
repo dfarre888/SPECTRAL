@@ -1,0 +1,31 @@
+---
+description: Spectral Operations (Defence Edition) — tiered compliance, server-side propagation, tenant isolation.
+globs: lib/operations/**, lib/propagation/**, lib/buildings/**, lib/wopr/**, app/api/v1/**, deploy/**
+alwaysApply: false
+---
+
+# Spectral Operations Edition
+
+## Edition detection
+
+`SPECTRAL_EDITION=operations` enables Operations features. Default `training` preserves OSINT-only SaaS behaviour.
+
+## Tiered compliance
+
+| Lane | Propagation | Fire-control | Data |
+|------|-------------|--------------|------|
+| Training | Band overlap only | Out of scope | OSINT |
+| Operations | Server-side ITU-R models in `lib/propagation/` | Adjudication + J/S for customer planning — not weapon release | Tenant-scoped |
+
+## Mandatory patterns (Operations)
+
+1. **Propagation math server-only** — `lib/propagation/` consumed by `app/api/v1/propagation/**` only; never import propagation into client components except types.
+2. **Tenant guard** — every v1 API calls `requireTenantContext()` from `lib/operations/tenant.ts`.
+3. **Audit** — propagation analyze, laydown adjudication, imports log to `audit_log`.
+4. **Confidence** — every `PropagationResult` includes `confidence` and `model_tier`.
+5. **Classification** — session classification from `lib/operations/classification.ts`; banner reflects marking.
+
+## Customer data
+
+- Platform/document imports scoped to `tenant_id`
+- `source: customer_proprietary` with `confidence: Reported` until analyst approves

@@ -73,7 +73,7 @@ const cuasSamples = [
 ]
 console.log('')
 for (const [name, km] of cuasSamples) {
-  console.log(`C-UAS ${name.padEnd(28)} sphere ${km.toFixed(1)} km defeat range  ✓ tactical zoom`)
+  console.log(`C-UAS ${String(name).padEnd(28)} sphere ${Number(km).toFixed(1)} km defeat range  ✓ tactical zoom`)
 }
 
 console.log('\n--- INVISIBLE AT TACTICAL ZOOM (too large) ---')

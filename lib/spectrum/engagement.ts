@@ -59,6 +59,18 @@ function overlap1D(
  * Only RF/GNSS jamming-type interactions produce overlaps; HPM and kinetic are
  * handled separately because they don't act through a specific band.
  */
+/** Operations edition: band overlap alone is insufficient if propagation blocks the link. */
+export function propagationEngagementViable(
+  bandOverlaps: BandOverlap[],
+  propagation: { los_state: string; jam_to_signal_db: number | null } | null | undefined,
+): boolean {
+  if (bandOverlaps.length === 0) return false;
+  if (!propagation) return true;
+  if (propagation.los_state === 'NLOS') return false;
+  if (propagation.jam_to_signal_db != null && propagation.jam_to_signal_db < 3) return false;
+  return true;
+}
+
 export function computeOverlaps(
   red: Platform,
   blue: Platform

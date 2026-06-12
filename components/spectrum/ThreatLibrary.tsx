@@ -11,7 +11,8 @@
 import React, { useMemo, useState } from 'react';
 import type { Platform, Side, UASGroup, GnssDependency } from '@/lib/spectrum/types';
 import { usePlatforms } from './data';
-import { GlassCard, SideBadge, FootprintStrip, PlatformSilhouette } from '@/components/ui/primitives';
+import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail';
+import { GlassCard, SideBadge, FootprintStrip } from '@/components/ui/primitives';
 
 // ─── GNSS badge config ─────────────────────────────────────────────────────────
 const GNSS_BADGE: Record<GnssDependency, { label: string; color: string }> = {
@@ -181,7 +182,7 @@ export function ThreatLibrary({
                   overflow: 'hidden',
                 }}
               >
-                <PlatformSilhouette platform={p} size={76} />
+                <PlatformThumbnail id={p.id} name={p.name} size="xl" />
                 <div style={{ position: 'absolute', top: 12, right: 12 }}>
                   <SideBadge side={p.side} group={p.group} category={p.category} />
                 </div>

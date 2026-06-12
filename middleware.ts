@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import type { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies'
 
 const isDemoMode = () => process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
+const isOperationsEdition = () => process.env.SPECTRAL_EDITION === 'operations'
 
 export async function middleware(request: NextRequest) {
   if (isDemoMode()) {
@@ -47,6 +48,19 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
+  }
+
+  if (isOperationsEdition() && user) {
+    const requestHeaders = new Headers(request.headers)
+    if (!requestHeaders.get('x-spectral-tenant-id')) {
+      const tenantId = process.env.SPECTRAL_TENANT_ID ?? '00000000-0000-0000-0000-000000000001'
+      requestHeaders.set('x-spectral-tenant-id', tenantId)
+    }
+    const res = NextResponse.next({ request: { headers: requestHeaders } })
+    supabaseResponse.cookies.getAll().forEach((c) => {
+      res.cookies.set(c.name, c.value)
+    })
+    return res
   }
 
   return supabaseResponse

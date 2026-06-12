@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail';
 import type { Platform, SpectrumCapability, Side } from '@/lib/spectrum/types';
 import { LAYER_COLOR, SIDE_COLOR, capabilityExtent, getAxisConfig, makeLogScale } from '@/lib/spectrum/scale';
 
@@ -180,19 +181,20 @@ export function PlatformIcon({ platform, size = 54 }: { platform: Platform; size
       style={{
         width: size,
         height: size,
-        borderRadius: size * 0.26,
-        background: red
-          ? 'linear-gradient(135deg,#2a1416,#160a0c)'
-          : 'linear-gradient(135deg,#0e2236,#0a1018)',
-        border: `1px solid ${red ? 'rgba(248,113,113,0.3)' : 'rgba(74,158,255,0.3)'}`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: size * 0.44,
         flexShrink: 0,
+        borderRadius: size * 0.26,
+        overflow: 'hidden',
+        border: `1px solid ${red ? 'rgba(248,113,113,0.3)' : 'rgba(74,158,255,0.3)'}`,
       }}
     >
-      {platform.icon ?? (red ? '⊹' : '⊺')}
+      <PlatformThumbnail
+        id={platform.id}
+        name={platform.name}
+        size="fill"
+        variant={red ? 'uas' : 'auto'}
+        rounded="none"
+        className="h-full w-full"
+      />
     </div>
   );
 }

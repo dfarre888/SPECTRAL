@@ -18,6 +18,7 @@ import { assessEngagement } from '@/lib/spectrum/engagement';
 import { LAYER_COLOR } from '@/lib/spectrum/scale';
 import { OutcomePanel } from './OutcomePanel';
 import { BandTileGrid } from './BandTileGrid';
+import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail';
 
 type Mode = 'reference' | 'platform' | 'engagement' | 'tiles';
 
@@ -267,15 +268,7 @@ export function SpectrumWorkspace() {
                       : 'rgba(74,158,255,0.25)',
                 }}
               >
-                <span
-                  className="sx-dot"
-                  style={{
-                    width: 8,
-                    height: 8,
-                    color: p.side === 'red' ? 'var(--sx-red)' : 'var(--sx-blue)',
-                    background: p.side === 'red' ? 'var(--sx-red)' : 'var(--sx-blue)',
-                  }}
-                />
+                <PlatformThumbnail id={p.id} name={p.name} size="xs" rounded="sm" />
                 {p.name}
               </div>
             ))}

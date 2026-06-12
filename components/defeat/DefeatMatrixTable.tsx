@@ -1,7 +1,7 @@
 'use client'
 
+import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { MatrixCell } from '@/components/defeat/MatrixCell'
-import { getSystemIcon } from '@/lib/defeat/defeat-types'
 import type { DefeatTypeFilter } from '@/lib/defeat/defeat-types'
 import type {
   AntiDroneSystem,
@@ -36,8 +36,8 @@ export function DefeatMatrixTable({
 }: DefeatMatrixTableProps) {
   if (platforms.length === 0 || systems.length === 0) {
     return (
-      <div className="bg-surf1 border border-border rounded-lg p-12 text-center">
-        <p className="text-t-secondary font-mono text-sm">
+      <div className="store-panel rounded-2xl p-12 text-center">
+        <p className="store-text-body text-sm">
           No data matches current filters.
         </p>
       </div>
@@ -45,44 +45,49 @@ export function DefeatMatrixTable({
   }
 
   return (
-    <div className="w-full overflow-x-auto border border-border rounded-lg">
+    <div className="w-full overflow-x-auto store-panel rounded-2xl">
       <table className="w-max min-w-full border-collapse">
         <thead>
           <tr>
-            <th className="sticky left-0 z-30 bg-surf1 border border-border px-4 py-3 text-left min-w-[180px]">
-              <span className="text-xs font-mono text-t-muted uppercase tracking-wider">
+            <th className="sticky left-0 z-30 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 text-left min-w-[180px]">
+              <span className="text-xs store-text-muted uppercase tracking-wider font-semibold">
                 Platform
               </span>
             </th>
-            {systems.map((system) => {
-              const Icon = getSystemIcon(system)
-              return (
+            {systems.map((system) => (
                 <th
                   key={system.id}
-                  className="sticky top-0 z-20 bg-surf1 border border-border px-3 py-3 text-center min-w-[100px]"
+                  className="sticky top-0 z-20 bg-[var(--store-surface)] border border-[var(--store-line)] px-3 py-3 text-center min-w-[100px]"
                 >
                   <div className="flex flex-col items-center gap-1">
-                    <Icon className="h-4 w-4 text-cyan" />
-                    <span className="text-xs font-medium text-t-primary leading-tight">
+                    <PlatformThumbnail
+                      id={system.id}
+                      name={system.name}
+                      size="sm"
+                      variant="cuas"
+                    />
+                    <span className="text-xs font-medium text-white leading-tight">
                       {system.name}
                     </span>
-                    <span className="text-[10px] font-mono text-t-muted">
+                    <span className="text-[10px] font-mono store-text-muted">
                       {system.country}
                     </span>
                   </div>
                 </th>
-              )
-            })}
+            ))}
           </tr>
         </thead>
         <tbody>
           {platforms.map((platform) => (
             <tr key={platform.id}>
-              <td className="sticky left-0 z-10 bg-surf1 border border-border px-4 py-3">
-                <p className="font-semibold text-t-primary text-sm leading-tight">
-                  {platform.name}
-                </p>
-                <p className="text-xs font-mono text-t-muted mt-0.5">
+              <td className="sticky left-0 z-10 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <PlatformThumbnail id={platform.id} name={platform.name} size="sm" />
+                  <p className="font-semibold text-white text-sm leading-tight">
+                    {platform.name}
+                  </p>
+                </div>
+                <p className="text-xs font-mono store-text-muted mt-0.5">
                   {platform.country_of_origin ?? '—'}
                 </p>
               </td>

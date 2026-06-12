@@ -12,6 +12,7 @@
 import React, { useState, useMemo } from 'react';
 import type { EffectorSystem, EffectorTier, EffectType } from '@/lib/spectrum/effector-types';
 import { useEffectors, effectorsByTier } from './effector-data';
+import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail';
 import { GlassCard } from '@/components/ui/primitives';
 
 const TIER_LABEL: Record<EffectorTier, string> = {
@@ -110,6 +111,7 @@ function EffectorCard({ effector: e, selected, onClick }: { effector: EffectorSy
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+        <PlatformThumbnail id={e.id} name={e.name} size="md" variant="cuas" rounded="lg" />
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.2 }}>{e.name}</div>
           {e.nato_name && <div className="sx-faint sx-mono" style={{ fontSize: 9.5, marginTop: 2 }}>{e.nato_name}</div>}

@@ -7,7 +7,8 @@
 
 import React, { useMemo } from 'react';
 import type { Platform, SpectrumCapability, DefeatResistance } from '@/lib/spectrum/types';
-import { GlassCard, SideBadge, PlatformIcon } from '@/components/ui/primitives';
+import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail';
+import { GlassCard, SideBadge } from '@/components/ui/primitives';
 import { LAYER_COLOR, capabilityExtent } from '@/lib/spectrum/scale';
 
 export function PlatformDetail({ platform }: { platform: Platform }) {
@@ -39,7 +40,7 @@ export function PlatformDetail({ platform }: { platform: Platform }) {
         <div style={{ position: 'relative' }}>
           <SideBadge side={platform.side} group={platform.group} category={platform.role ?? platform.category} />
           <div style={{ margin: '20px 0' }}>
-            <PlatformIcon platform={platform} size={96} />
+            <PlatformThumbnail id={platform.id} name={platform.name} size="xl" rounded="lg" />
           </div>
           <div className="sx-display" style={{ fontWeight: 700, fontSize: 24, letterSpacing: '-0.01em' }}>
             {platform.name}

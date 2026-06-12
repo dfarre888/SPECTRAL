@@ -1,4 +1,5 @@
 import { CATEGORY_LABELS } from '@/lib/platforms/constants'
+import { resolvePlatformImagePath } from '@/lib/platforms/image-resolve'
 import type { AntiDroneSystem, Platform } from '@/lib/types'
 import type { MapCuasAsset, MapUasAsset } from '@/lib/map/types'
 
@@ -11,7 +12,7 @@ export function toMapUasAsset(platform: Platform): MapUasAsset {
     slug: platform.id,
     category: platform.category,
     categoryLabel: CATEGORY_LABELS[platform.category] ?? platform.category,
-    image_url: null,
+    image_url: resolvePlatformImagePath(platform.id),
     max_altitude_agl_m: platform.service_ceiling_m ?? 500,
     altitude_reference: 'AGL',
     max_range_km: platform.range_km ?? 10,
@@ -35,7 +36,7 @@ export function toMapCuasAsset(system: AntiDroneSystem): MapCuasAsset {
     id: system.id,
     name: system.name,
     categoryLabel: primary,
-    image_url: null,
+    image_url: resolvePlatformImagePath(system.id),
     defeat_range_m: system.effective_range_m ?? 1000,
     defeat_range_km: (system.effective_range_m ?? 1000) / 1000,
     defeat_methods: methods,

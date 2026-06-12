@@ -1,7 +1,7 @@
 'use client'
 
 import { Wind } from 'lucide-react'
-import { clsx } from 'clsx'
+import { cn } from '@/lib/utils'
 
 interface WindToggleProps {
   nilWind: boolean
@@ -14,16 +14,16 @@ export function WindToggle({ nilWind, loading, onChange }: WindToggleProps) {
     <button
       type="button"
       onClick={() => onChange(!nilWind)}
-      className={clsx(
-        'flex items-center gap-2 px-3 py-1.5 rounded border text-xs font-mono transition-colors',
+      className={cn(
+        'flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-colors border',
         nilWind
-          ? 'border-border bg-surf2 text-t-secondary hover:text-t-primary'
-          : 'border-cyan/40 bg-cyan/10 text-cyan'
+          ? 'store-panel-inner store-text-body hover:text-white border-[var(--store-line)]'
+          : 'nav-item-active',
       )}
       title={nilWind ? 'Nil-wind assumption (click for live wind)' : 'Live wind from Windy API'}
     >
       <Wind className="w-3.5 h-3.5" />
-      {loading ? 'Fetching wind…' : nilWind ? 'Nil-Wind' : 'Live Wind'}
+      {loading ? 'Fetching wind…' : nilWind ? 'Nil wind' : 'Live wind'}
     </button>
   )
 }

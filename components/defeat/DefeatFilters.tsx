@@ -25,7 +25,7 @@ export function DefeatFilters({
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <p className="text-xs font-mono text-t-muted uppercase tracking-wider mb-2">
+        <p className="text-xs font-semibold store-text-muted uppercase tracking-wider mb-2">
           Platform category (rows)
         </p>
         <div className="flex flex-wrap gap-2">
@@ -37,8 +37,8 @@ export function DefeatFilters({
               onClick={() => onCategoryPillChange(pill.id)}
               className={cn(
                 categoryPill === pill.id
-                  ? 'border-orange text-orange'
-                  : 'border-border text-t-secondary'
+                  ? 'border-[var(--store-accent)] text-[var(--store-accent)]'
+                  : 'border-[var(--store-line)] store-text-body'
               )}
             >
               {pill.label}
@@ -48,7 +48,7 @@ export function DefeatFilters({
       </div>
 
       <div>
-        <p className="text-xs font-mono text-t-muted uppercase tracking-wider mb-2">
+        <p className="text-xs font-semibold store-text-muted uppercase tracking-wider mb-2">
           Defeat type (columns)
         </p>
         <div className="flex flex-wrap gap-2">
@@ -61,7 +61,7 @@ export function DefeatFilters({
               className={cn(
                 defeatType === filter.id
                   ? 'border-cyan text-cyan'
-                  : 'border-border text-t-secondary'
+                  : 'border-[var(--store-line)] store-text-body'
               )}
             >
               {filter.label}

@@ -1,4 +1,8 @@
-import { groundTangentDomeCentreM } from '@/lib/map/cesium-sync'
+import {
+  sphereDomeTopM,
+  sphereEpicenterOnTerrainM,
+} from '@/lib/map/cesium-sync'
+import { TERRAIN_SURFACE_AGL_M } from '@/lib/map/terrain'
 import {
   CASA_RANGE_CONTAINMENT_RATIO,
   SPECTRAL_SPEC_RANGE_RATIO,
@@ -83,8 +87,12 @@ ck('wind shrinks disc radius', headwind.sphereRadiusM < 300_000)
 ck('wind flag set', headwind.windAdjusted === true)
 
 ck(
-  'C-UAS dome centre is terrain + radius (ground-tangent)',
-  groundTangentDomeCentreM(318, 300_000) === 318 + 300_000,
+  'C-UAS sphere epicenter on terrain (+ surface offset)',
+  sphereEpicenterOnTerrainM(318) === 318 + TERRAIN_SURFACE_AGL_M,
+)
+ck(
+  'C-UAS dome top is epicenter + radius',
+  sphereDomeTopM(318, 500) === 318 + TERRAIN_SURFACE_AGL_M + 500,
 )
 
 console.log(`\n${pass} passed, ${fail} failed`)

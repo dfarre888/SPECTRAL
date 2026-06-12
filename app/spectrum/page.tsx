@@ -22,6 +22,7 @@ import { SpectrumWorkspace } from '@/components/spectrum/SpectrumWorkspace';
 import { EvolutionArc } from '@/components/spectrum/EvolutionArc';
 import { RadarSpectrum } from '@/components/spectrum/RadarSpectrum';
 import { EffectorMatrix } from '@/components/spectrum/EffectorMatrix';
+import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail';
 import { AeroCopilotDock } from '@/components/spectrum/AeroCopilotDock';
 import { usePlatform, usePlatforms } from '@/components/spectrum/data';
 import { useRadars } from '@/components/spectrum/radar-data';
@@ -245,7 +246,13 @@ function MapPlaceholder({
           const isRadar = 'bands' in it;
           return (
             <div key={it.id} className="sx-glass" style={{ padding: '12px 14px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span className="sx-dot" style={{ width: 9, height: 9, color: it.side === 'red' ? 'var(--sx-red)' : 'var(--sx-blue)', background: it.side === 'red' ? 'var(--sx-red)' : 'var(--sx-blue)' }} />
+              <PlatformThumbnail
+                id={it.id}
+                name={it.name}
+                size="sm"
+                variant={isEffector ? 'cuas' : 'uas'}
+                rounded="lg"
+              />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 500 }}>{it.name}</div>
                 <div className="sx-faint sx-mono" style={{ fontSize: 10 }}>

@@ -13,7 +13,9 @@ import {
   X,
 } from 'lucide-react'
 import { LoiterControls } from '@/app/map/components/LoiterControls'
+import { EditionBadge } from '@/components/operations/EditionBadge'
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
+import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import { StoreFilterSection } from '@/components/catalog/StoreFilterSidebar'
 import { StoreEyebrow, StorePanel } from '@/components/ui/store-surface'
 import { operationalEnvelopeRadiusKm } from '@/lib/map/range-declaration'
@@ -40,6 +42,11 @@ interface AssetSidebarProps {
   onRemoveUas: (instanceId: string) => void
   onRemoveCuas: (instanceId: string) => void
   overlapLegend?: { defeat: number; survivable: number }
+  overlapSource?: 'defeat-check' | 'adjudication' | 'geometry'
+  heatmapEnabled?: boolean
+  heatmapLoading?: boolean
+  heatmapError?: string | null
+  onToggleHeatmap?: () => void
   onOpenSpectralAnalysis?: () => void
 }
 

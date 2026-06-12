@@ -50,7 +50,7 @@ export function Sidebar() {
 
       {/* Nav — orange active state (A3DM pattern) */}
       <nav className="flex-1 py-3 overflow-y-auto">
-        {NAV.map(({ href, icon: Icon, label, sub }) => {
+        {nav.map(({ href, icon: Icon, label, sub }) => {
           const active = pathname === href || (href !== '/' && pathname.startsWith(href))
           return (
             <Link

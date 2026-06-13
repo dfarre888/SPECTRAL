@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { syncMapEntities, type CesiumSyncState, type MaskingPolygon } from '@/lib/map/cesium-sync'
+import { syncBuildingExtrusions } from '@/lib/map/building-layer'
 import { syncHeatmapLayer } from '@/lib/map/heatmap-layer'
+import type { BuildingFootprint } from '@/lib/buildings/types'
 import type { HeatmapCell } from '@/lib/propagation/types'
 import type { CesiumModule, CesiumTerrainProvider, CesiumViewer } from '@/lib/map/cesium-types'
 import { loadCesium } from '@/lib/map/load-cesium'
@@ -37,6 +39,7 @@ interface CesiumMapPanelProps {
   heatmapCells?: HeatmapCell[]
   heatmapGridSteps?: number
   heatmapJammer?: PlacedCuas | null
+  buildingFootprints?: BuildingFootprint[]
   windByUas: Record<string, WindSample>
   nilWind: boolean
   placementMode: PlacementMode
@@ -59,6 +62,7 @@ export default function CesiumMapPanel({
   heatmapCells = [],
   heatmapGridSteps = 0,
   heatmapJammer = null,
+  buildingFootprints = [],
   windByUas,
   nilWind,
   placementMode,
@@ -339,6 +343,8 @@ export default function CesiumMapPanel({
       syncHeatmapLayer(Cesium, viewer, [], 0)
     }
 
+    syncBuildingExtrusions(Cesium, viewer, buildingFootprints)
+
     viewer.scene.requestRender()
   }, [
     cesiumReady,
@@ -349,6 +355,7 @@ export default function CesiumMapPanel({
     heatmapCells,
     heatmapGridSteps,
     heatmapJammer,
+    buildingFootprints,
     windByUas,
     nilWind,
     terrainEpoch,

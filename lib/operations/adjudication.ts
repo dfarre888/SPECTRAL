@@ -1,10 +1,11 @@
-import { pathBuildingObstructed } from '@/lib/buildings/ray-intersect'
+import { pathBuildingObstructed, rayBuildingHit } from '@/lib/buildings/ray-intersect'
 import { loadBuildingsForTenant } from '@/lib/buildings/store'
 import { analyzePropagation } from '@/lib/propagation/analyze'
 import { assessEngagement } from '@/lib/spectrum/engagement'
+import { resolveJamFromEngagement } from '@/lib/spectrum/erp-resolve'
 import { cuasAssetToSpectrumBlue, resolveSpectrumUas } from '@/lib/map/spectrum-bridge'
 import type { MapCuasAsset, MapUasAsset, OverlapVolume } from '@/lib/map/types'
-import type { PropagationResult } from '@/lib/propagation/types'
+import type { DiffractionEdgeInput, PropagationResult } from '@/lib/propagation/types'
 import type { EngagementResult } from '@/lib/spectrum/types'
 
 export interface LaydownPairInput {
@@ -13,6 +14,8 @@ export interface LaydownPairInput {
   defeatMatrixPk: number | null
   inDefeatRange: boolean
   terrainMasked: boolean
+  /** Client-computed Deygout chain from pair-path terrain ray-march. */
+  diffraction_edges?: DiffractionEdgeInput[]
   tenantId: string
 }
 
@@ -24,12 +27,6 @@ export interface AdjudicatedPair {
   combinedBlueSuccessPct: number
   propagationGated: boolean
   buildingObstructed: boolean
-}
-
-function defaultJamErp(cuas: MapCuasAsset): number {
-  if (cuas.defeat_methods.includes('RF_jamming')) return 40
-  if (cuas.defeat_methods.includes('kinetic')) return 0
-  return 35
 }
 
 export async function adjudicatePair(input: LaydownPairInput): Promise<AdjudicatedPair> {
@@ -45,25 +42,43 @@ export async function adjudicatePair(input: LaydownPairInput): Promise<Adjudicat
   }
 
   const buildings = await loadBuildingsForTenant(input.tenantId)
-  const buildingObstructed = pathBuildingObstructed(
+  const emitterAlt = input.cuas.terrainAMSL + 2
+
+  const jamTransmit =
+    blue && input.cuas.asset.defeat_methods.includes('RF_jamming')
+      ? resolveJamFromEngagement(blue, spectrum.overlaps)
+      : null
+
+  const buildingHit = rayBuildingHit(
     input.cuas.lat,
     input.cuas.lon,
-    input.cuas.terrainAMSL + 2,
+    emitterAlt,
     input.uas.lat,
     input.uas.lon,
     input.uas.discAltitude_m,
     buildings,
+    jamTransmit?.freq_hz ?? 2.4e9,
   )
-
+  const buildingObstructed =
+    buildingHit?.obstructed ??
+    pathBuildingObstructed(
+      input.cuas.lat,
+      input.cuas.lon,
+      emitterAlt,
+      input.uas.lat,
+      input.uas.lon,
+      input.uas.discAltitude_m,
+      buildings,
+    )
   const propagation = analyzePropagation({
     emitter: {
       position: {
         lat: input.cuas.lat,
         lon: input.cuas.lon,
-        alt_m: input.cuas.terrainAMSL + 2,
+        alt_m: emitterAlt,
       },
-      freq_hz: 2.4e9,
-      erp_dbm: defaultJamErp(input.cuas.asset),
+      freq_hz: jamTransmit?.freq_hz ?? 2.4e9,
+      erp_dbm: jamTransmit?.erp_dbm ?? 0,
     },
     receiver: {
       position: {
@@ -77,10 +92,10 @@ export async function adjudicatePair(input: LaydownPairInput): Promise<Adjudicat
       urban_density: buildingObstructed ? 'urban' : 'suburban',
       terrain_obstructed: input.terrainMasked,
       building_obstructed: buildingObstructed,
+      building_penetration_loss_db: buildingHit?.penetration_loss_db,
+      diffraction_edges: input.diffraction_edges,
     },
-    jammer_erp_dbm: input.cuas.asset.defeat_methods.includes('RF_jamming')
-      ? defaultJamErp(input.cuas.asset)
-      : undefined,
+    jammer_erp_dbm: jamTransmit?.erp_dbm,
   })
 
   const propagationGated =

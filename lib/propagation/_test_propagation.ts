@@ -2,6 +2,7 @@ import { analyzePropagation } from '@/lib/propagation/analyze'
 import { freeSpacePathLossDb } from '@/lib/propagation/friis'
 import { computeHeatmap } from '@/lib/propagation/heatmap'
 import { deygoutChainLossDb, knifeEdgeLossDb } from '@/lib/propagation/knife-edge'
+import { extractDiffractionEdges } from '@/lib/propagation/terrain-edges'
 
 let pass = 0
 let fail = 0
@@ -96,6 +97,10 @@ const chainAnalyze = analyzePropagation({
   },
 })
 check('deygout_chain in model_tier', chainAnalyze.model_tier.includes('deygout_chain'))
+
+const syntheticHeights = [5, 8, 25, 40, 35, 20, 10, 5]
+const edges = extractDiffractionEdges(10, 50, syntheticHeights, 100)
+check('terrain-edges extracts obstructions', edges.length >= 1, `count=${edges.length}`)
 
 console.log(`\n${pass}/${pass + fail} propagation tests passed`)
 if (fail > 0) process.exit(1)

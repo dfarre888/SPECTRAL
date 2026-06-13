@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { cuasAssetToSpectrumBlue } from '@/lib/map/spectrum-bridge'
 import type { HeatmapCell } from '@/lib/propagation/types'
+import { resolveJamTransmit } from '@/lib/spectrum/erp-resolve'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import type { PlacedCuas } from '@/lib/map/types'
 
@@ -19,11 +21,6 @@ const EMPTY: HeatmapLayerState = {
   error: null,
   confidence: null,
   gridSteps: 0,
-}
-
-function jamErpDbm(cuas: PlacedCuas): number {
-  if (cuas.asset.defeat_methods.includes('RF_jamming')) return 40
-  return 35
 }
 
 export function usePropagationHeatmap(
@@ -49,58 +46,104 @@ export function usePropagationHeatmap(
 
     setState((s) => ({ ...s, loading: true, error: null }))
     const controller = new AbortController()
+    const blue = cuasAssetToSpectrumBlue(jammer.asset)
+    const jam = resolveJamTransmit(blue, null)
 
-    fetch('/api/v1/propagation/heatmap', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        emitter: {
-          position: {
-            lat: jammer.lat,
-            lon: jammer.lon,
-            alt_m: jammer.terrainAMSL + 2,
-          },
-          freq_hz: 2.4e9,
-          erp_dbm: jamErpDbm(jammer),
+    const payload = {
+      emitter: {
+        position: {
+          lat: jammer.lat,
+          lon: jammer.lon,
+          alt_m: jammer.terrainAMSL + 2,
         },
-        bounds,
-        grid_steps: 12,
-        receiver_alt_m: receiverAltM,
-        environment: {
-          urban_density: jammer.hasTerrainMasking ? 'suburban' : 'open',
-          terrain_obstructed: jammer.hasTerrainMasking,
-        },
-      }),
-      signal: controller.signal,
-    })
-      .then(async (r) => {
-        if (r.status === 403) {
-          return { error: 'Operations propagation required (403)' }
+        freq_hz: jam.freq_hz,
+        erp_dbm: jam.erp_dbm,
+      },
+      bounds,
+      grid_steps: 20,
+      receiver_alt_m: receiverAltM,
+      environment: {
+        urban_density: jammer.hasTerrainMasking ? 'suburban' : 'open',
+        terrain_obstructed: jammer.hasTerrainMasking,
+      },
+    }
+
+    const useAsyncJob = payload.grid_steps > 16
+
+    async function pollJob(jobId: string) {
+      for (let i = 0; i < 40; i++) {
+        await new Promise((r) => setTimeout(r, 400))
+        const pr = await fetch(`/api/v1/propagation/heatmap/jobs/${jobId}`, {
+          signal: controller.signal,
+        })
+        if (!pr.ok) continue
+        const pj = await pr.json()
+        if (pj.status === 'complete' && pj.data) {
+          return pj.data as { cells: HeatmapCell[]; confidence: string; grid_steps: number }
         }
-        if (!r.ok) {
-          return { error: `Heatmap ${r.status}` }
-        }
-        const json = await r.json()
-        return { data: json.data as { cells: HeatmapCell[]; confidence: string; grid_steps: number } }
-      })
-      .then((result) => {
-        if ('error' in result && result.error) {
-          setState({ ...EMPTY, error: result.error })
-          return
-        }
-        if ('data' in result && result.data) {
+        if (pj.status === 'failed') throw new Error(pj.error ?? 'Job failed')
+      }
+      throw new Error('Heatmap job timeout')
+    }
+
+    ;(async () => {
+      try {
+        if (useAsyncJob) {
+          const jr = await fetch('/api/v1/propagation/heatmap/jobs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: controller.signal,
+          })
+          if (jr.status === 403) {
+            setState({ ...EMPTY, error: 'Operations propagation required (403)' })
+            return
+          }
+          if (!jr.ok) {
+            setState({ ...EMPTY, error: `Heatmap job ${jr.status}` })
+            return
+          }
+          const { jobId } = await jr.json()
+          const data = await pollJob(jobId)
           setState({
-            cells: result.data.cells,
+            cells: data.cells,
             loading: false,
             error: null,
-            confidence: result.data.confidence,
-            gridSteps: result.data.grid_steps,
+            confidence: data.confidence,
+            gridSteps: data.grid_steps,
           })
+          return
         }
-      })
-      .catch(() => {
-        setState({ ...EMPTY, error: 'Heatmap request failed' })
-      })
+
+        const r = await fetch('/api/v1/propagation/heatmap', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        })
+        if (r.status === 403) {
+          setState({ ...EMPTY, error: 'Operations propagation required (403)' })
+          return
+        }
+        if (!r.ok) {
+          setState({ ...EMPTY, error: `Heatmap ${r.status}` })
+          return
+        }
+        const json = await r.json()
+        const data = json.data as { cells: HeatmapCell[]; confidence: string; grid_steps: number }
+        setState({
+          cells: data.cells,
+          loading: false,
+          error: null,
+          confidence: data.confidence,
+          gridSteps: data.grid_steps,
+        })
+      } catch {
+        if (!controller.signal.aborted) {
+          setState({ ...EMPTY, error: 'Heatmap request failed' })
+        }
+      }
+    })()
 
     return () => controller.abort()
   }, [enabled, jammer, receiverAltM])

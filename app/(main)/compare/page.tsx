@@ -3,6 +3,7 @@ import { GitCompare } from 'lucide-react'
 import { HubPageShell } from '@/components/hub/HubPageShell'
 import { StorePanel } from '@/components/ui/store-surface'
 import { Badge } from '@/components/ui/badge'
+import { CompareEngagement } from '@/components/compare/CompareEngagement'
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { getPlatformsByIds } from '@/lib/platforms/queries'
 
@@ -59,9 +60,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
               </StorePanel>
             ))}
           </div>
-          <p className="text-xs font-mono store-text-muted">
-            Full engagement analysis UI — coming in 1v1 Overlay module.
-          </p>
+          <CompareEngagement platforms={platforms} />
         </div>
       )}
     </HubPageShell>

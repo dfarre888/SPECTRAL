@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { writeAuditLog } from '@/lib/operations/audit'
 import { requireTenantContext } from '@/lib/operations/tenant'
+import { worldStateFromTemplate } from '@/lib/wopr/scenario-templates'
+import { createClient } from '@/lib/supabase/server'
 import { createScenario, listScenarios } from '@/lib/wopr/store'
 
 export async function GET(request: Request) {
@@ -14,9 +16,22 @@ export async function POST(request: Request) {
   const ctx = await requireTenantContext(request)
   if (!ctx.userId) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
-  const body = (await request.json()) as { name?: string }
+  const body = (await request.json()) as { name?: string; templateId?: string }
   if (!body.name?.trim()) {
     return NextResponse.json({ error: 'name required' }, { status: 400 })
+  }
+
+  let worldState
+  if (body.templateId) {
+    const supabase = await createClient()
+    const { data: tpl } = await supabase
+      .from('scenario_templates')
+      .select('id, name, description, red_platforms, blue_systems, duration_mins')
+      .eq('id', body.templateId)
+      .maybeSingle()
+    if (tpl) {
+      worldState = worldStateFromTemplate(tpl as Parameters<typeof worldStateFromTemplate>[0])
+    }
   }
 
   const scenario = await createScenario(
@@ -24,6 +39,7 @@ export async function POST(request: Request) {
     ctx.userId,
     body.name.trim(),
     ctx.classification,
+    worldState,
   )
 
   await writeAuditLog({

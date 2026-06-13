@@ -4,6 +4,7 @@ import {
   systemIsRfType,
   type DefeatTypeFilter,
 } from '@/lib/defeat/defeat-types'
+import type { LaydownSessionPair } from '@/lib/map/laydown-session'
 import type {
   AntiDroneSystem,
   DefeatEffectiveness,
@@ -14,8 +15,16 @@ export type CellColour = 'red' | 'amber' | 'green' | 'immune' | 'none'
 
 export type CellValue =
   | { kind: 'immune'; reason: string | null }
-  | { kind: 'pct'; value: number; colour: CellColour }
+  | { kind: 'pct'; value: number; colour: CellColour; laydown?: LaydownPropagationBadge }
   | { kind: 'empty' }
+
+export interface LaydownPropagationBadge {
+  operationsPk: number | null
+  jamToSignal_db: number | null
+  los_state: string
+  propagationGated: boolean
+  mapHref: string
+}
 
 export function getCellColour(pct: number): Exclude<CellColour, 'immune' | 'none'> {
   if (pct <= 30) return 'red'
@@ -49,7 +58,8 @@ export function resolveCellValue(
   platform: Platform,
   system: AntiDroneSystem,
   row: DefeatEffectiveness | undefined,
-  defeatTypeFilter: DefeatTypeFilter = 'all'
+  defeatTypeFilter: DefeatTypeFilter = 'all',
+  laydownPair?: LaydownSessionPair | null,
 ): CellValue {
   if (row?.is_immune) {
     return { kind: 'immune', reason: row.immune_reason }
@@ -81,7 +91,17 @@ export function resolveCellValue(
   const pct = getPctForSystem(row, system, defeatTypeFilter)
   if (pct === null) return { kind: 'empty' }
 
-  return { kind: 'pct', value: pct, colour: getCellColour(pct) }
+  const badge: LaydownPropagationBadge | undefined = laydownPair
+    ? {
+        operationsPk: laydownPair.operationsPk,
+        jamToSignal_db: laydownPair.jamToSignal_db,
+        los_state: laydownPair.los_state,
+        propagationGated: laydownPair.propagationGated,
+        mapHref: `/map?stage=${platform.id}&cuas=${system.id}&from=defeat`,
+      }
+    : undefined
+
+  return { kind: 'pct', value: pct, colour: getCellColour(pct), laydown: badge }
 }
 
 export function cellValueToDisplay(value: CellValue): string {

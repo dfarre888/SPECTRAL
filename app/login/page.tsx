@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Radio } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getOidcLoginHref, isOidcEnabledClient } from '@/lib/operations/oidc-client'
 import { StorePanel } from '@/components/ui/store-surface'
 
 export default function LoginPage() {
@@ -86,6 +87,22 @@ export default function LoginPage() {
             {loading ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}
           </button>
         </form>
+
+        {mode === 'login' && isOidcEnabledClient() && getOidcLoginHref() && (
+          <>
+            <div className="my-4 flex items-center gap-3">
+              <div className="flex-1 h-px bg-[var(--store-line)]" />
+              <span className="text-[10px] store-text-muted font-mono">OR</span>
+              <div className="flex-1 h-px bg-[var(--store-line)]" />
+            </div>
+            <a
+              href={getOidcLoginHref()!}
+              className="block w-full text-center py-2.5 rounded-xl border border-cyan/30 text-cyan text-sm font-medium hover:bg-cyan/10 transition-colors"
+            >
+              Sign in with organisation SSO
+            </a>
+          </>
+        )}
 
         <button
           type="button"

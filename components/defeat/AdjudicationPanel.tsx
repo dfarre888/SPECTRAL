@@ -19,6 +19,7 @@ import type {
   Platform,
 } from '@/lib/types'
 import { EditionBadge } from '@/components/operations/EditionBadge'
+import { mapIntelDeepLink } from '@/lib/map/laydown-session'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import { cn } from '@/lib/utils'
 
@@ -88,9 +89,12 @@ export function AdjudicationPanel({
           <div className="flex items-center justify-between">
             <EditionBadge />
             {operations && (
-              <p className="text-[10px] font-mono store-text-muted">
-                Map Intel → Spectral Analysis for J/S propagation
-              </p>
+              <Link
+                href={mapIntelDeepLink(platform.id, system.id)}
+                className="text-[10px] font-mono text-cyan hover:underline"
+              >
+                Open in Map Intel →
+              </Link>
             )}
           </div>
 

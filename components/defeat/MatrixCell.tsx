@@ -1,6 +1,7 @@
 'use client'
 
 import { resolveCellValue, type CellValue } from '@/lib/defeat/cell-value'
+import { findSessionPair, readLaydownSession } from '@/lib/map/laydown-session'
 import type { DefeatTypeFilter } from '@/lib/defeat/defeat-types'
 import type {
   AntiDroneSystem,
@@ -31,7 +32,9 @@ export function MatrixCell({
   defeatTypeFilter,
   onSelect,
 }: MatrixCellProps) {
-  const value = resolveCellValue(platform, system, row, defeatTypeFilter)
+  const session = readLaydownSession()
+  const laydownPair = findSessionPair(session, platform.id, system.id)
+  const value = resolveCellValue(platform, system, row, defeatTypeFilter, laydownPair)
 
   return (
     <td className="border border-[var(--store-line)] p-0 min-w-[88px]">
@@ -59,9 +62,16 @@ function CellContent({ value }: { value: CellValue }) {
   const colour = value.colour
   if (colour === 'red' || colour === 'amber' || colour === 'green') {
     return (
-      <span className={cn('font-mono text-sm font-medium', COLOUR_CLASSES[colour].split(' ')[0])}>
-        {value.value}%
-      </span>
+      <div className="flex flex-col items-center gap-0.5 px-1">
+        <span className={cn('font-mono text-sm font-medium', COLOUR_CLASSES[colour].split(' ')[0])}>
+          {value.value}%
+        </span>
+        {value.laydown?.operationsPk != null && (
+          <span className="text-[9px] font-mono text-cyan leading-none">
+            Ops {value.laydown.operationsPk}% · {value.laydown.los_state}
+          </span>
+        )}
+      </div>
     )
   }
   return <span className="font-mono text-sm">{value.value}%</span>

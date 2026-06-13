@@ -29,7 +29,7 @@ export function advanceScenario(scenario: WoprScenario): { scenario: WoprScenari
   const bluePicture = buildSensorPicture(redPlatforms, bluePlatforms, 30)
 
   const events: string[] = [
-    `Turn ${turn}: ${TURN_MINUTES} min elapsed — propagation refresh queued for laydown pairs`,
+    `Turn ${turn}: ${TURN_MINUTES} min elapsed — adjudicating ORBAT propagation pairs`,
   ]
 
   if (world.battlespace.time.mission_elapsed_min >= 60 && world.battlespace.time.day_night === 'day') {
@@ -52,7 +52,7 @@ export function advanceScenario(scenario: WoprScenario): { scenario: WoprScenari
       red_picture: redPicture,
       blue_picture: bluePicture,
       events,
-      propagation_refreshed: true,
+      propagation_refreshed: false,
     },
   }
 }

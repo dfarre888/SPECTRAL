@@ -40,8 +40,9 @@ export async function createScenario(
   userId: string,
   name: string,
   classification: string,
+  worldState = createDefaultWorldState(),
 ): Promise<WoprScenario> {
-  const world = createDefaultWorldState()
+  const world = worldState
   try {
     const supabase = await createClient()
     const { data, error } = await supabase

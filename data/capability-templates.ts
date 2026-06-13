@@ -168,9 +168,13 @@ export function capsNavalUsv(pid: string, rangeKm: number): SpectrumCapability[]
 /** Blue RF jammer effector */
 export function capsRfJammer(pid: string, rangeKm: number): SpectrumCapability[] {
   return [
-    rf(pid, 'jam_control', 'comms', 'Jam 2.4 GHz', BANDS.ISM_24, { range_km: rangeKm }),
-    rf(pid, 'jam_video', 'comms', 'Jam 5.8 GHz', BANDS.ISM_58),
-    rf(pid, 'jam_gnss', 'navigation', 'GNSS denial', BANDS.GNSS_WIDE),
+    rf(pid, 'jam_control', 'comms', 'Jam 2.4 GHz', BANDS.ISM_24, {
+      range_km: rangeKm,
+      power_dbm: 40,
+      note: 'Assessed — typical man-portable C-UAS jammer ERP (OSINT)',
+    }),
+    rf(pid, 'jam_video', 'comms', 'Jam 5.8 GHz', BANDS.ISM_58, { power_dbm: 38 }),
+    rf(pid, 'jam_gnss', 'navigation', 'GNSS denial', BANDS.GNSS_WIDE, { power_dbm: 42 }),
   ];
 }
 

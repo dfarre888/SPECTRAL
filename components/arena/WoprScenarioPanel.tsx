@@ -18,6 +18,8 @@ export function WoprScenarioPanel() {
   const [loading, setLoading] = useState(false)
   const [apiStatus, setApiStatus] = useState<'idle' | 'loading' | 'ok' | 'fallback'>('idle')
   const [newName, setNewName] = useState('')
+  const [templateId, setTemplateId] = useState('')
+  const [templates, setTemplates] = useState<{ id: string; name: string }[]>([])
   const streamRef = useRef<EventSource | null>(null)
 
   const selected = scenarios.find((s) => s.id === selectedId) ?? null
@@ -38,6 +40,14 @@ export function WoprScenarioPanel() {
   useEffect(() => {
     refresh()
   }, [refresh])
+
+  useEffect(() => {
+    if (!operations) return
+    fetch('/api/v1/wopr/templates')
+      .then((r) => (r.ok ? r.json() : { data: [] }))
+      .then((json) => setTemplates(json.data ?? []))
+      .catch(() => setTemplates([]))
+  }, [operations])
 
   useEffect(() => {
     if (!selectedId || !operations) return
@@ -73,7 +83,10 @@ export function WoprScenarioPanel() {
     const res = await fetch('/api/v1/wopr/scenarios', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newName.trim() }),
+      body: JSON.stringify({
+        name: newName.trim(),
+        templateId: templateId || undefined,
+      }),
     })
     if (res.ok) {
       const json = await res.json()
@@ -130,20 +143,34 @@ export function WoprScenarioPanel() {
           fallbackReason="WOPR API unavailable — authenticate and enable Operations edition"
         />
 
-        <form onSubmit={createScenario} className="flex gap-2">
+        <form onSubmit={createScenario} className="space-y-2">
           <input
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Scenario name"
-            className="flex-1 store-panel-inner rounded-xl px-3 py-2 text-xs text-white placeholder:store-text-muted focus:outline-none focus:border-[var(--store-accent-border)]"
+            className="w-full store-panel-inner rounded-xl px-3 py-2 text-xs text-white placeholder:store-text-muted focus:outline-none focus:border-[var(--store-accent-border)]"
           />
+          {templates.length > 0 && (
+            <select
+              value={templateId}
+              onChange={(e) => setTemplateId(e.target.value)}
+              className="w-full store-panel-inner rounded-xl px-3 py-2 text-xs text-white"
+            >
+              <option value="">Empty ORBAT</option>
+              {templates.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          )}
           <button
             type="submit"
             disabled={loading}
-            className="store-btn-primary px-3 py-2 rounded-xl text-xs flex items-center gap-1"
+            className="store-btn-primary w-full px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-1"
           >
             <Plus className="w-3.5 h-3.5" />
-            New
+            New scenario
           </button>
         </form>
 

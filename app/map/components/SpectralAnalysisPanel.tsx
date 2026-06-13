@@ -13,7 +13,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import { cuasAssetToSpectrumBlue } from '@/lib/map/spectrum-bridge'
 import type { LaydownSpectralAnalysis, PairLaydownAssessment } from '@/lib/map/laydown-analysis'
+import { resolveJamTransmit } from '@/lib/spectrum/erp-resolve'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import type { OverlapVolume, PlacedCuas, PlacedUas } from '@/lib/map/types'
 import { clsx } from 'clsx'
@@ -49,12 +51,13 @@ function centreFreqGHz(pair: PairLaydownAssessment): string {
   return `${((lo + hi) / 2 / 1e9).toFixed(2)} GHz`
 }
 
-function jamErpLabel(cuasName: string, placedCuas: PlacedCuas[]): string {
-  const cuas = placedCuas.find((c) => c.asset.name === cuasName)
+function jamErpLabel(pair: PairLaydownAssessment, placedCuas: PlacedCuas[]): string {
+  const cuas = placedCuas.find((c) => c.asset.name === pair.cuasName)
   if (!cuas) return '—'
-  if (cuas.asset.defeat_methods.includes('RF_jamming')) return '40 dBm (Assessed)'
-  if (cuas.asset.defeat_methods.includes('kinetic')) return 'N/A — kinetic'
-  return '35 dBm (Estimated)'
+  if (!cuas.asset.defeat_methods.includes('RF_jamming')) return 'N/A — non-RF effector'
+  const blue = cuasAssetToSpectrumBlue(cuas.asset)
+  const jam = resolveJamTransmit(blue, pair.bandOverlaps[0] ?? null)
+  return `${jam.erp_dbm} dBm (${jam.confidence})`
 }
 
 export function SpectralAnalysisPanel({
@@ -230,7 +233,7 @@ function PairAssessmentCard({
               Centre freq: <span className="text-cyan">{centreFreqGHz(pair)}</span>
             </span>
             <span className="store-text-muted">
-              Jam ERP: <span className="text-orange">{jamErpLabel(pair.cuasName, placedCuas)}</span>
+              Jam ERP: <span className="text-orange">{jamErpLabel(pair, placedCuas)}</span>
             </span>
             <span className="store-text-muted">
               LOS: <span className="text-cyan">{pair.propagation.los_state}</span>

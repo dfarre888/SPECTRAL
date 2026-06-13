@@ -1,0 +1,27 @@
+{{- if .Values.propagationWorkers.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-propagation-worker
+  labels:
+    app.kubernetes.io/component: propagation-worker
+spec:
+  replicas: {{ .Values.propagationWorkers.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: propagation-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: propagation-worker
+    spec:
+      containers:
+        - name: worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: ["node", "workers/propagation-heatmap.js"]
+          env:
+            - name: REDIS_URL
+              value: "redis://{{ .Release.Name }}-redis:6379"
+            - name: SPECTRAL_EDITION
+              value: operations
+{{- end }}

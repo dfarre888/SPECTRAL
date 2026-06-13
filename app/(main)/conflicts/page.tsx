@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
 import { HubPageShell } from '@/components/hub/HubPageShell'
 import { StorePanel } from '@/components/ui/store-surface'
@@ -72,12 +73,13 @@ export default function ConflictsPage() {
                 <h3 className="text-xs font-semibold store-text-muted uppercase mb-2">Related platforms</h3>
                 <div className="flex flex-wrap gap-2">
                   {selected.related_platform_ids.map((id) => (
-                    <span
+                    <Link
                       key={id}
-                      className="px-2 py-0.5 rounded-lg store-panel-inner text-[11px] font-mono text-cyan"
+                      href={`/platforms/${id}`}
+                      className="px-2 py-0.5 rounded-lg store-panel-inner text-[11px] font-mono text-cyan hover:border-[var(--store-accent-border)]"
                     >
                       {id}
-                    </span>
+                    </Link>
                   ))}
                 </div>
               </div>

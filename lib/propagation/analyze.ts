@@ -77,6 +77,13 @@ export function analyzePropagation(req: PropagationRequest): PropagationResult {
     notes.push('Rain attenuation modifier (Estimated)')
   }
 
+  if (env.building_penetration_loss_db && env.building_penetration_loss_db > 0) {
+    pathLoss += env.building_penetration_loss_db
+    notes.push(
+      `Building penetration +${env.building_penetration_loss_db.toFixed(1)} dB (Estimated)`,
+    )
+  }
+
   const rxPower = receivedPowerDbm(req.emitter.erp_dbm, pathLoss)
   const margin = multipathMarginDb(urban, los === 'LOS')
 

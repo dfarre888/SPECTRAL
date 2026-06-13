@@ -19,11 +19,20 @@ export interface Battlespace {
   time: { mission_elapsed_min: number; day_night: 'day' | 'night' }
 }
 
+export interface PropagationCacheEntry {
+  pairKey: string
+  jam_to_signal_db: number | null
+  los_state: string
+  combinedBlueSuccessPct: number
+  propagationGated: boolean
+}
+
 export interface WorldState {
   battlespace: Battlespace
   red_orbat: { platforms: WoprPlatform[] }
   blue_orbat: { platforms: WoprPlatform[] }
   comms_status: Record<string, 'up' | 'degraded' | 'down'>
+  propagation_cache?: Record<string, PropagationCacheEntry>
   last_tick_at?: string
 }
 
@@ -43,6 +52,7 @@ export interface TickResult {
   blue_picture: SensorTrack[]
   events: string[]
   propagation_refreshed: boolean
+  propagation_cache?: Record<string, PropagationCacheEntry>
 }
 
 export interface WoprScenario {

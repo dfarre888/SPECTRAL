@@ -18,7 +18,9 @@ import {
 } from '@/app/map/hooks/usePlatformPlacement'
 import { useEnvelopeWalls } from '@/app/map/hooks/useEnvelopeWalls'
 import { useTerrainMasking } from '@/app/map/hooks/useTerrainMasking'
+import { useMapBuildings } from '@/app/map/hooks/useMapBuildings'
 import { useWindData } from '@/app/map/hooks/useWindData'
+import { writeLaydownSession } from '@/lib/map/laydown-session'
 import { envelopeDiscAltitudeM } from '@/lib/map/range-declaration'
 import type { TerrainHeightUpdate } from '@/lib/map/terrain'
 import type { MapAssetsPayload, CursorPosition, PlacementMode, PlacedCuas, PlacedUas } from '@/lib/map/types'
@@ -88,12 +90,40 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     placedCuas,
     overlaps,
     placedUas.length > 0 && placedCuas.length > 0,
+    maskingPolygons,
+    getCesium,
   )
   const heatmapJammer =
     placedCuas.find((c) => c.asset.defeat_methods.includes('RF_jamming')) ?? placedCuas[0] ?? null
   const heatmapReceiverAlt =
     placedUas[0]?.discAltitude_m ?? heatmapJammer?.terrainAMSL ?? 100
   const heatmap = usePropagationHeatmap(heatmapEnabled, heatmapJammer, heatmapReceiverAlt)
+  const buildingBounds = useMemo(() => {
+    const pts = [
+      ...placedUas.map((u) => ({ lat: u.lat, lon: u.lon })),
+      ...placedCuas.map((c) => ({ lat: c.lat, lon: c.lon })),
+    ]
+    if (pts.length === 0 && cursor.lon) {
+      const pad = 0.02
+      return {
+        south: cursor.lat - pad,
+        north: cursor.lat + pad,
+        west: cursor.lon - pad,
+        east: cursor.lon + pad,
+      }
+    }
+    if (pts.length === 0) return null
+    const lats = pts.map((p) => p.lat)
+    const lons = pts.map((p) => p.lon)
+    const pad = 0.015
+    return {
+      south: Math.min(...lats) - pad,
+      north: Math.max(...lats) + pad,
+      west: Math.min(...lons) - pad,
+      east: Math.max(...lons) + pad,
+    }
+  }, [placedUas, placedCuas, cursor.lat, cursor.lon])
+  const mapBuildings = useMapBuildings(buildingBounds, placedCuas.length > 0 || placedUas.length > 0)
   const { windByUas, loading: windLoading } = useWindData(nilWind, placedUas, setPlacedUas)
   useEnvelopeWalls(nilWind, placedUas, getCesium, setPlacedUas)
 
@@ -247,6 +277,26 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     clearMapStaging()
   }, [])
 
+  useEffect(() => {
+    if (placedUas.length === 0 && placedCuas.length === 0) return
+    const pairs = adjudication.analysis.pairs.map((p) => {
+      const uas = placedUas.find((u) => u.instanceId === p.uasInstanceId)
+      const cuas = placedCuas.find((c) => c.instanceId === p.cuasInstanceId)
+      return {
+        platformId: uas?.asset.id ?? '',
+        systemId: cuas?.asset.id ?? '',
+        uasInstanceId: p.uasInstanceId,
+        cuasInstanceId: p.cuasInstanceId,
+        staticPk: p.defeatMatrixPk,
+        operationsPk: p.propagation ? p.blueSuccessPct : null,
+        jamToSignal_db: p.propagation?.jam_to_signal_db ?? null,
+        los_state: p.propagation?.los_state ?? '—',
+        propagationGated: p.propagation?.propagationGated ?? false,
+      }
+    })
+    writeLaydownSession({ updatedAt: new Date().toISOString(), pairs })
+  }, [adjudication.analysis, placedUas, placedCuas])
+
   return (
     <div className="flex h-full w-full overflow-hidden">
       <AssetSidebar
@@ -319,6 +369,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             heatmapCells={heatmap.cells}
             heatmapGridSteps={heatmap.gridSteps}
             heatmapJammer={heatmapJammer}
+            buildingFootprints={mapBuildings.buildings}
             windByUas={windByUas}
             nilWind={nilWind}
             placementMode={placementMode}

@@ -12,7 +12,10 @@
     "test:spectral:watch": "vitest lib/pcm/_test_phase1.test.ts",
     "test:spectral:phase2": "vitest run lib/pcm/_test_phase2.test.ts",
     "test:spectral:phase3": "vitest run lib/pcm/_test_phase3.test.ts",
-    "test:spectral:all": "vitest run lib/pcm/_test_phase1.test.ts lib/pcm/_test_phase2.test.ts lib/pcm/_test_phase3.test.ts"
+    "test:spectral:phase4": "vitest run lib/pcm/_test_phase4-adjudication.test.ts",
+    "test:moat": "vitest run lib/moat/_test_moat.test.ts",
+    "test:gnss": "vitest run lib/gnss/_test_gnss-incidents.test.ts",
+    "test:spectral:all": "vitest run lib/pcm/_test_phase1.test.ts lib/pcm/_test_phase2.test.ts lib/pcm/_test_phase3.test.ts lib/pcm/_test_phase4-adjudication.test.ts lib/moat/_test_moat.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
@@ -41,6 +44,7 @@
     "react-hot-toast": "^2.4.1",
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.3.0",
+    "ws": "^8.21.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
@@ -49,6 +53,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/ws": "^8.18.1",
     "@vitest/ui": "^4.1.8",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",

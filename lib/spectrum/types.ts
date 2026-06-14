@@ -175,6 +175,15 @@ export interface EngagementResult {
   /** capabilities the threat retains that Blue cannot touch */
   uncovered: SpectrumCapability[];
   recommendations: string[];
+  /**
+   * Continuous effective coverage score 0–1 (defeat-resistance weighted).
+   * 0 = no RF coverage, detect-only, or no-engagement.
+   * 1 = all threat RF/GNSS dependencies fully defeatable with no hardening.
+   * HPM uses 0.92 (band-agnostic electronic attack — not link-based).
+   * Used by the adjudication engine as a higher-fidelity Pk input than
+   * the 4-bucket verdict alone.
+   */
+  effectiveCoverage: number;
 }
 
 /* ----------------------------- RENDER MODEL ----------------------------- */

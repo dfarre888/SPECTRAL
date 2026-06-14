@@ -164,6 +164,7 @@ export function assessEngagement(
       recommendations: rfSilent
         ? ['Use radar + acoustic + EO/IR fusion (SAPIENT-style) to detect.', 'Pair with an HPM or kinetic effector to defeat.']
         : ['Hand the track to a jammer, HPM, or kinetic effector.'],
+      effectiveCoverage: 0, // detection only — contributes no defeat probability
     };
   }
 
@@ -180,6 +181,7 @@ export function assessEngagement(
         'Defeat with a direct-electronics effect — High-Power Microwave (HPM).',
         'Consider kinetic interception (net, interceptor UAS, gun).',
       ],
+      effectiveCoverage: 0,
     };
   }
 
@@ -198,6 +200,8 @@ export function assessEngagement(
         'HPM effective within its engagement envelope (~2 km class).',
         rfSilent ? 'No RF/GNSS effect available — HPM/kinetic is the path.' : 'Layer with RF/GNSS jamming for graduated response.',
       ],
+      // HPM is band-agnostic (not a link-coverage score), use fixed high-confidence value
+      effectiveCoverage: 0.92,
     };
   }
 
@@ -237,6 +241,7 @@ export function assessEngagement(
         'Layer a terminal-phase effector — HPM or kinetic interception.',
         'Hardened GNSS (CRPA) further reduces jamming effectiveness.',
       ],
+      effectiveCoverage,
     };
   }
 
@@ -251,6 +256,7 @@ export function assessEngagement(
         'Monitor for return-to-home flight that may transit sensitive airspace.',
         'Confirm defeat — jammed drones can recover when out of range.',
       ],
+      effectiveCoverage,
     };
   }
 
@@ -265,6 +271,7 @@ export function assessEngagement(
         'Expect degraded jamming effectiveness against hardened navigation.',
         'Escalate to HPM or kinetic for a reliable defeat.',
       ],
+      effectiveCoverage,
     };
   }
 
@@ -275,6 +282,7 @@ export function assessEngagement(
     overlaps,
     uncovered,
     recommendations: ['Select an effector matched to the threat bands, or use HPM/kinetic.'],
+    effectiveCoverage: 0,
   };
 }
 

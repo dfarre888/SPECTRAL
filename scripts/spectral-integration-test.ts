@@ -9,8 +9,24 @@
  * Run: npx tsx scripts/spectral-integration-test.ts
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { worldStateEngine } from '../lib/pcm/worldStateEngine';
+import { readFileSync, existsSync } from 'fs';
+import { resolve } from 'path';
+
+function loadEnvLocal(): void {
+  const path = resolve(process.cwd(), '.env.local');
+  if (!existsSync(path)) return;
+  for (const line of readFileSync(path, 'utf8').split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq <= 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    const value = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, '');
+    if (!process.env[key]) process.env[key] = value;
+  }
+}
+
+loadEnvLocal();
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -22,9 +38,11 @@ if (!url || !serviceKey) {
   process.exit(1);
 }
 
-const supabase = createClient(url, serviceKey, { auth: { persistSession: false } });
+import { createServiceRoleNodeClient } from '../lib/supabase/service-role-node';
 
 async function main() {
+  const { worldStateEngine } = await import('../lib/pcm/worldStateEngine');
+  const supabase = createServiceRoleNodeClient(url, serviceKey);
   console.log('SPECTRAL PCM Phase 1 — integration test');
   console.log('Ensure migration 20260613120000_spectral_world_state_engine.sql has been applied.\n');
 
@@ -116,11 +134,37 @@ async function main() {
     raw_text: 'Integration test order',
   };
 
+  const redOrder = {
+    ...mockOrder,
+    platform_tasks: [
+      {
+        platform_id: 'RED-UAS-01',
+        task: 'OWA saturation wave launch',
+        priority: 1 as const,
+      },
+    ],
+  };
+
+  const blueOrder = {
+    ...mockOrder,
+    order_id: 'ORD-002',
+    issued_by: 'BLUE' as const,
+    issued_by_role: 'blue_commander' as const,
+    platform_tasks: [
+      {
+        platform_id: 'BLUE-CUAS-02',
+        task: 'Kinetic intercept inbound OWA',
+        weapon_release: 'kinetic',
+        priority: 1 as const,
+      },
+    ],
+  };
+
   const redOrders = await worldStateEngine.submitOrders({
     exercise_id: exerciseId,
     force: 'RED',
     player_id: redPlayer.id,
-    orders: mockOrder,
+    orders: redOrder,
   });
 
   if (redOrders.error) {
@@ -133,7 +177,7 @@ async function main() {
     exercise_id: exerciseId,
     force: 'BLUE',
     player_id: bluePlayer.id,
-    orders: { ...mockOrder, order_id: 'ORD-002', issued_by: 'BLUE', issued_by_role: 'blue_commander' },
+    orders: blueOrder,
   });
 
   if (!blueOrders.turn_complete) {
@@ -167,6 +211,24 @@ async function main() {
     advance.adjudication.events.length,
     '(training core active)',
   );
+  if (advance.adjudication.blue_win_probability !== undefined) {
+    console.log('✓ Blue win probability:', advance.adjudication.blue_win_probability);
+  }
+
+  const { loadCompetencyRecord } = await import('../lib/moat/moatStore');
+  const competency = await loadCompetencyRecord(supabase, bluePlayer.id, 'INTEGRATION-BLUE');
+  if (competency.total_turns < 1) {
+    console.error('Moat learner model not updated — total_turns:', competency.total_turns);
+    process.exit(1);
+  }
+  const hasEvidence = Object.values(competency.competencies).some(
+    (c) => c.evidence_count > 0,
+  );
+  if (!hasEvidence) {
+    console.error('Moat competency record has no evidence trail');
+    process.exit(1);
+  }
+  console.log('✓ Learner model updated — total_turns:', competency.total_turns);
   if (!advance.adjudication.ds_briefing) {
     console.error('Missing DS briefing from REF orchestrator');
     process.exit(1);

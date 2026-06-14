@@ -4,29 +4,20 @@
  */
 
 import { PLATFORMS } from '@/data/seed-platforms';
-import { PLATFORM_ID_ALIASES } from '@/data/osint-platform-enrichment';
-import { capsNavalCiws, capsRfJammer } from '@/data/capability-templates';
+import { capsHel, capsNavalCiws, capsRfJammer } from '@/data/capability-templates';
 import { resolveCapabilities } from '@/lib/spectrum/fallback';
-import { assessEngagement } from '@/lib/spectrum/engagement';
+import {
+  resolvePcmPlatformId,
+} from '@/lib/pcm/pcm-platform-ids';
+import { assessEngagement, propagationEngagementViable } from '@/lib/spectrum/engagement';
+import { resolveJamFromEngagement } from '@/lib/spectrum/erp-resolve';
 import { analyzePropagation } from '@/lib/propagation/analyze';
 import type { PCM } from '@/lib/pcm/spectral.types';
 import type { Platform as SpectrumPlatform } from '@/lib/spectrum/types';
 
 type PcmPlatform = PCM.Platform;
 
-const TYPE_TO_PLATFORM_ID: Record<string, string> = {
-  'Shahed-136': 'shahed-136',
-  'Shahed-238': 'shahed-238',
-  'Lancet-3': 'lancet-3',
-  'Gerbera': 'gerbera-parody',
-  'Bayraktar TB2': 'bayraktar-tb2',
-  'Coyote Block 2': 'coyote-block-2',
-  'FPV_fibre_optic': 'fpv-fibre-optic',
-  'Magura V5': 'magura-v5',
-  'GJ-11': 'gj-11-sharp-sword',
-};
-
-/** Pedagogical kinetic Pk defaults (OSINT training — not classified). */
+/** Pedagogical kinetic Pk fallback when DB row missing. */
 const KINETIC_PK_DEFAULTS: Record<string, Record<string, number>> = {
   'coyote-block-2': {
     'shahed-136': 72,
@@ -63,10 +54,7 @@ export function gridRef(platform: PcmPlatform): string {
 }
 
 function resolvePlatformId(typeName: string): string | null {
-  const key = TYPE_TO_PLATFORM_ID[typeName] ?? typeName.toLowerCase().replace(/\s+/g, '-');
-  const normalized = PLATFORM_ID_ALIASES[key] ?? key;
-  const found = PLATFORMS.find((p) => p.id === normalized || p.name === typeName);
-  return found?.id ?? null;
+  return resolvePcmPlatformId(typeName);
 }
 
 export function pcmToSpectrumRed(platform: PcmPlatform): SpectrumPlatform | null {
@@ -100,6 +88,16 @@ export function pcmToSpectrumBlue(platform: PcmPlatform): SpectrumPlatform | nul
       side: 'blue',
       category: 'counter_uas',
       capabilities: capsRfJammer(platform.id, rangeKm),
+    };
+  }
+  if (platform.group === 'c_uas_defeat_dew') {
+    const rangeKm = platform.range_km || 2;
+    return {
+      id: platform.id,
+      name: platform.type,
+      side: 'blue',
+      category: 'counter_uas',
+      capabilities: capsHel(platform.id, rangeKm),
     };
   }
   return pcmToSpectrumRed(platform);
@@ -138,40 +136,63 @@ export function adjudicatePcmPair(
     overlaps: [],
     uncovered: [],
     recommendations: [],
+    effectiveCoverage: 0,
   };
 
   const matrixPk =
     defeatMatrixPk ??
     lookupKineticPk(threat.type, defender.type);
 
+  // P0-A: resolve actual jam freq/ERP from the spectrum overlap, not hardcoded constants
+  const isRfJammer = defender.group === 'c_uas_defeat_ew';
+  const jamTransmit = blue && isRfJammer
+    ? resolveJamFromEngagement(blue, spectrum.overlaps)
+    : null;
+
+  // P0-C: Red GCS transmit ERP is the signal the jammer must overpower (J/S denominator).
+  // Using GCS co-located with jammer = maximally conservative training approximation.
+  const redControl = red?.capabilities?.find((c) => c.fn === 'control');
+  const gcsErp_dbm = redControl?.power_dbm ?? 23; // 200 mW GCS EIRP default
+
   const propagation = analyzePropagation({
     emitter: {
       position: { ...gridToLatLon(defenderGrid), alt_m: 102 },
-      freq_hz: 2.4e9,
-      erp_dbm: defender.group === 'c_uas_defeat_ew' ? 40 : 0,
+      freq_hz: jamTransmit?.freq_hz ?? 2.4e9,
+      erp_dbm: gcsErp_dbm, // GCS control-link ERP — J/S signal baseline (P0-C)
     },
     receiver: {
       position: { ...gridToLatLon(threatGrid), alt_m: threat.altitude_m ?? 200 },
       sensitivity_dbm: -90,
     },
     environment: { urban_density: 'suburban', terrain_obstructed: false },
-    jammer_erp_dbm: defender.group === 'c_uas_defeat_ew' ? 40 : undefined,
+    jammer_erp_dbm: jamTransmit?.erp_dbm, // actual jammer ERP for J/S numerator (P0-A)
   });
 
-  const spectrumScore =
-    spectrum.verdict === 'defeat_likely'
-      ? 82
-      : spectrum.verdict === 'partial'
-        ? 48
-        : spectrum.verdict === 'detect_only'
-          ? 22
-          : 12;
-
-  let combined = inRange
-    ? Math.round(matrixPk * 0.4 + spectrumScore * 0.35 + 50 * 0.25)
+  const jts = propagation.jam_to_signal_db ?? 0;
+  // P0-A: gate on propagation viability — NLOS or J/S < 3 dB means band overlap is irrelevant
+  const rfViable = isRfJammer
+    ? propagationEngagementViable(spectrum.overlaps, propagation)
+    : true;
+  // jamBonus only applies to RF jammers; kinetic/DEW use neutral 0 (50 * 0.25 component)
+  const jamBonus = isRfJammer
+    ? (rfViable ? (jts > 10 ? 15 : jts > 0 ? 5 : -10) : -10)
     : 0;
 
-  if (defender.group === 'c_uas_defeat_ew' && propagation.los_state === 'NLOS') {
+  // Continuous spectrum score gated on RF link viability (P0-A)
+  const spectrumScore = rfViable
+    ? spectrum.verdict === 'defeat_likely' || spectrum.verdict === 'partial'
+      ? Math.round(spectrum.effectiveCoverage * 90)
+      : spectrum.verdict === 'detect_only'
+        ? 22
+        : 12
+    : 12; // NLOS or J/S < 3 dB → band overlap is irrelevant; use kinetic floor
+
+  let combined = inRange
+    ? Math.round(matrixPk * 0.4 + spectrumScore * 0.35 + Math.min(100, 50 + jamBonus) * 0.25)
+    : 0;
+
+  // RF jammer with no viable propagation path — sharply reduce effectiveness (P0-A)
+  if (!rfViable && isRfJammer) {
     combined = Math.round(combined * 0.55);
   }
 

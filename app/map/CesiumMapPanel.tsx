@@ -21,6 +21,7 @@ import {
 } from '@/lib/map/terrain'
 import { formatCoord } from '@/lib/map/format'
 import { usePlatformDrag } from '@/app/map/hooks/usePlatformDrag'
+import { usePlatformContextMenu, type PlatformContextTarget } from '@/app/map/hooks/usePlatformContextMenu'
 import type { CesiumContext } from '@/app/map/hooks/usePlatformPlacement'
 import type {
   CursorPosition,
@@ -52,6 +53,7 @@ interface CesiumMapPanelProps {
   onTerrainEpochChange?: (epoch: number) => void
   setPlacedUas: React.Dispatch<React.SetStateAction<PlacedUas[]>>
   setPlacedCuas: React.Dispatch<React.SetStateAction<PlacedCuas[]>>
+  onPlatformContextMenu: (target: PlatformContextTarget | null) => void
 }
 
 export default function CesiumMapPanel({
@@ -75,6 +77,7 @@ export default function CesiumMapPanel({
   onTerrainEpochChange,
   setPlacedUas,
   setPlacedCuas,
+  onPlatformContextMenu,
 }: CesiumMapPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const viewerRef = useRef<CesiumViewer | null>(null)
@@ -91,6 +94,7 @@ export default function CesiumMapPanel({
   const onPanelScreenPosRef = useRef(onPanelScreenPos)
   const onTerrainHeightsResolvedRef = useRef(onTerrainHeightsResolved)
   const onTerrainEpochChangeRef = useRef(onTerrainEpochChange)
+  const onPlatformContextMenuRef = useRef(onPlatformContextMenu)
   const placedUasRef = useRef(placedUas)
   const placedCuasRef = useRef(placedCuas)
   const placementModeRef = useRef(placementMode)
@@ -100,11 +104,22 @@ export default function CesiumMapPanel({
   onPanelScreenPosRef.current = onPanelScreenPos
   onTerrainHeightsResolvedRef.current = onTerrainHeightsResolved
   onTerrainEpochChangeRef.current = onTerrainEpochChange
+  onPlatformContextMenuRef.current = onPlatformContextMenu
   placedUasRef.current = placedUas
   placedCuasRef.current = placedCuas
   placementModeRef.current = placementMode
 
   usePlatformDrag(cesiumReady, viewerRef, cesiumRef, terrainRef, placementModeRef, setPlacedUas, setPlacedCuas)
+
+  usePlatformContextMenu(
+    cesiumReady,
+    viewerRef,
+    cesiumRef,
+    placementModeRef,
+    placedUasRef,
+    placedCuasRef,
+    (target) => onPlatformContextMenuRef.current(target),
+  )
 
   const stalePlacementCount =
     placedUas.filter(

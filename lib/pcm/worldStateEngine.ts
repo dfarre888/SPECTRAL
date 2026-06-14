@@ -8,7 +8,8 @@
  * Players receive filtered sensor pictures only — never raw world state.
  */
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { createServiceRoleNodeClient } from '@/lib/supabase/service-role-node';
 import type { PCM } from '@/lib/pcm/spectral.types';
 import {
   calculatePhase,
@@ -17,6 +18,8 @@ import {
 import { fogOfWarEngine } from '@/lib/pcm/fogOfWarEngine';
 import { SpectralRefOrchestrator } from '@/lib/pcm/spectralRefOrchestrator';
 import { hashTurnSeed } from '@/lib/pcm/seeded-rng';
+import { buildAdjudicationContext } from '@/lib/pcm/adjudication-preload';
+import { processMoatAfterTurn } from '@/lib/moat/moatStore';
 
 type WorldState = PCM.WorldState;
 type Exercise = PCM.Exercise;
@@ -34,16 +37,7 @@ type SubmitOrdersResponse = PCM.SubmitOrdersResponse;
 type AdvanceTurnRequest = PCM.AdvanceTurnRequest;
 type AdvanceTurnResponse = PCM.AdvanceTurnResponse;
 
-const getServiceClient = (): SupabaseClient => {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) {
-    throw new Error('SPECTRAL WSE: Missing Supabase environment variables');
-  }
-  return createClient(url, serviceKey, {
-    auth: { persistSession: false },
-  });
-};
+const getServiceClient = (): SupabaseClient => createServiceRoleNodeClient();
 
 export class WorldStateEngine {
   private supabase: SupabaseClient;
@@ -263,12 +257,20 @@ export class WorldStateEngine {
 
       const orchestrator = new SpectralRefOrchestrator();
       const seed = hashTurnSeed(req.exercise_id, newTurn, 42);
+      const tenantId =
+        (exercise as { tenant_id?: string | null }).tenant_id ?? null;
+      const adjudicationCtx = await buildAdjudicationContext(
+        this.supabase,
+        updatedWorldState,
+        tenantId,
+      );
       const gate = await orchestrator.adjudicateTurn(
         updatedWorldState,
         exercise.red_orders_current,
         exercise.blue_orders_current,
         seed,
         req.ds_player_id,
+        adjudicationCtx,
       );
 
       const adjudication = gate.proposed_result;
@@ -305,6 +307,20 @@ export class WorldStateEngine {
         exercise.blue_orders_current,
         adjudication,
       );
+
+      if (exercise.blue_player_id) {
+        await processMoatAfterTurn(this.supabase, {
+          exerciseId: req.exercise_id,
+          bluePlayerId: exercise.blue_player_id,
+          preState: updatedWorldState,
+          postState: resolvedWorldState,
+          redOrders: exercise.red_orders_current,
+          blueOrders: exercise.blue_orders_current,
+          events: adjudication.events,
+          exerciseComplete,
+          blueWinProbability: adjudication.blue_win_probability ?? 0.5,
+        });
+      }
 
       return {
         new_turn: newTurn,

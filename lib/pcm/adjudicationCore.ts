@@ -17,7 +17,12 @@ export interface AdjudicationCore {
     redOrders: Order | null,
     blueOrders: Order | null,
     seed: number,
-  ): { resolvedState: WorldState; events: AdjudicationEvent[] };
+    ctx?: import('@/lib/pcm/adjudication-context').AdjudicationContext,
+  ): {
+    resolvedState: WorldState;
+    events: AdjudicationEvent[];
+    blueWinProbability?: number;
+  };
 }
 
 export const placeholderAdjudicationCore: AdjudicationCore = {
@@ -46,6 +51,7 @@ export function composeAdjudicationResult(
   dsBriefing: string,
   blueSuggestion: string | null,
   injectsFired: string[],
+  blueWinProbability = 0.5,
 ): AdjudicationResult {
   return {
     turn: resolvedState.turn,
@@ -58,7 +64,7 @@ export function composeAdjudicationResult(
     ds_briefing: dsBriefing,
     blue_suggestion: blueSuggestion,
     outcome: resolvedState.outcome,
-    blue_win_probability: 0.5,
+    blue_win_probability: blueWinProbability,
     key_decision_this_turn: false,
   };
 }

@@ -48,6 +48,26 @@ export function evaluateOutcome(worldState: PCM.WorldState): PCM.TurnOutcome {
   return 'continues';
 }
 
+/** Red objective hooks — logistics degradation via impacts and magazine exhaustion. */
+export function evaluateRedObjectiveProgress(
+  worldState: PCM.WorldState,
+  leakers: number,
+): void {
+  const redObj = worldState.objectives.find((o) => o.id === 'OBJ-RED-01');
+  const blueObj = worldState.objectives.find((o) => o.id === 'OBJ-BLUE-01');
+  if (!redObj || redObj.status !== 'active') return;
+
+  if (blueObj?.status === 'failed') {
+    redObj.status = 'succeeded';
+    return;
+  }
+
+  const magEmpty = (worldState.blue_force.magazine_remaining ?? 0) <= 0;
+  if (magEmpty && leakers >= 6) {
+    redObj.status = 'succeeded';
+  }
+}
+
 export function classifyPlatformGroup(group: string): string {
   const classifications: Record<string, string> = {
     MALE_strike: 'MALE_UAV',

@@ -335,8 +335,8 @@ CREATE INDEX idx_turns_key_decision ON spectral_turn_records(exercise_id, key_de
 CREATE INDEX idx_profiles_player ON spectral_player_profiles(player_id);
 
 -- Platform catalogue
-CREATE INDEX idx_platforms_group ON spectral_platform_catalogue(platform_group);
-CREATE INDEX idx_platforms_country ON spectral_platform_catalogue(country_of_origin);
+CREATE INDEX idx_spectral_platform_catalogue_group ON spectral_platform_catalogue(platform_group);
+CREATE INDEX idx_spectral_platform_catalogue_country ON spectral_platform_catalogue(country_of_origin);
 
 -- SPECTRAL-INT
 CREATE INDEX idx_int_status ON spectral_int_updates(status);
@@ -737,7 +737,7 @@ INSERT INTO spectral_inject_library (id, name, category, description, effect_sum
  'Third actor now present. Rules of engagement do not cover this actor. Escalation risk is real.',
  'Escalation management, third-party deconfliction',
  'Third-party entry — escalation management and ROE gaps',
- '{"third_party_entry": {"contact_id": "UNKNOWN-01", "bearing": 005, "classification": "unknown_military"}}'),
+ '{"third_party_entry": {"contact_id": "UNKNOWN-01", "bearing": 5, "classification": "unknown_military"}}'),
 
 ('DOC-008', 'Coalition withdrawal', 'doctrine_strategic',
  'Coalition partner withdraws support — citing national caveats. Blue ORBAT immediately reduced.',

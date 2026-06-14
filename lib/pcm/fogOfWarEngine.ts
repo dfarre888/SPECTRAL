@@ -158,8 +158,10 @@ export class FogOfWarEngine {
   generateSensorPicture(
     worldState: WorldState,
     detectingForce: ForceId,
+    options?: { rng?: () => number },
   ): Contact[] {
     const contacts: Contact[] = [];
+    const roll = options?.rng ?? (() => Math.random());
 
     const detectingOrbat = detectingForce === 'RED'
       ? worldState.red_force
@@ -204,11 +206,11 @@ export class FogOfWarEngine {
       if (!bestPdComponents) continue;
 
       // Monte Carlo detection roll
-      const detectionRoll = Math.random();
+      const detectionRoll = roll();
       if (detectionRoll > bestPdComponents.final_pd) continue; // Not detected this turn
 
       // Platform detected — now apply classification and delay
-      const misclassResult = this.applyMisclassification(platform, bestPdComponents.sensor_type);
+      const misclassResult = this.applyMisclassification(platform, bestPdComponents.sensor_type, roll);
       const delayTurns = this.applyDelay(detectingOrbat.c2.comms_status, bestPdComponents.sensor_type);
       const timeToImpact = this.computeTimeToImpact(platform, rangeKm);
       const confidence = this.pdToConfidence(bestPdComponents.final_pd);
@@ -226,12 +228,12 @@ export class FogOfWarEngine {
         classification: misclassResult.reported_classification,
         true_type: platform.type,          // SPECTRAL-REF only
         bearing_deg: this.estimateBearing(worldState, detectingForce, platform),
-        range_km: rangeKm + this.rangeError(bestPdComponents.final_pd),
+        range_km: rangeKm + this.rangeError(bestPdComponents.final_pd, roll),
         altitude_m: platform.altitude_m !== null
-          ? platform.altitude_m + this.altitudeError(bestPdComponents.final_pd)
+          ? platform.altitude_m + this.altitudeError(bestPdComponents.final_pd, roll)
           : null,
         speed_kt: platform.speed_kt
-          ? platform.speed_kt + this.speedError(bestPdComponents.final_pd)
+          ? platform.speed_kt + this.speedError(bestPdComponents.final_pd, roll)
           : null,
         detection_method: bestPdComponents.sensor_type,
         detection_probability: bestPdComponents.final_pd,
@@ -544,6 +546,7 @@ export class FogOfWarEngine {
   private applyMisclassification(
     platform: Platform,
     sensorType: DetectionMethod,
+    roll: () => number = () => Math.random(),
   ): { misclassified: boolean; reported_classification: string; true_classification: string } {
     const trueClassification = this.getTrueClassification(platform);
 
@@ -556,7 +559,7 @@ export class FogOfWarEngine {
       misclassRate = misclassRate * 1.4; // acoustic classification is worse
     }
 
-    const misclassRoll = Math.random();
+    const misclassRoll = roll();
     if (misclassRoll > misclassRate) {
       // Correctly classified
       return {
@@ -567,7 +570,7 @@ export class FogOfWarEngine {
     }
 
     // Misclassified — determine what it's reported as
-    const reportedClassification = this.getMisclassifiedAs(platform);
+    const reportedClassification = this.getMisclassifiedAs(platform, roll);
     return {
       misclassified: true,
       reported_classification: reportedClassification,
@@ -587,9 +590,9 @@ export class FogOfWarEngine {
     }
   }
 
-  private getMisclassifiedAs(platform: Platform): string {
+  private getMisclassifiedAs(platform: Platform, roll: () => number = () => Math.random()): string {
     switch (platform.group) {
-      case 'OWA':              return Math.random() > 0.5 ? 'civilian_drone' : 'large_bird';
+      case 'OWA':              return roll() > 0.5 ? 'civilian_drone' : 'large_bird';
       case 'FPV':              return 'large_bird';
       case 'decoy':            return 'OWA_munition'; // decoy successfully fools sensor
       case 'loitering_munition': return 'FPV_drone';
@@ -761,22 +764,19 @@ export class FogOfWarEngine {
    * Lower Pd = more uncertainty = larger error band.
    */
 
-  private rangeError(pd: number): number {
-    // ±X km error on range estimate
+  private rangeError(pd: number, roll: () => number = () => Math.random()): number {
     const maxError = pd < 0.5 ? 8 : pd < 0.8 ? 3 : 1;
-    return (Math.random() * 2 - 1) * maxError;
+    return (roll() * 2 - 1) * maxError;
   }
 
-  private altitudeError(pd: number): number {
-    // ±X metres error on altitude estimate
+  private altitudeError(pd: number, roll: () => number = () => Math.random()): number {
     const maxError = pd < 0.5 ? 200 : pd < 0.8 ? 100 : 30;
-    return (Math.random() * 2 - 1) * maxError;
+    return (roll() * 2 - 1) * maxError;
   }
 
-  private speedError(pd: number): number {
-    // ±X knots error on speed estimate
+  private speedError(pd: number, roll: () => number = () => Math.random()): number {
     const maxError = pd < 0.5 ? 30 : pd < 0.8 ? 15 : 5;
-    return (Math.random() * 2 - 1) * maxError;
+    return (roll() * 2 - 1) * maxError;
   }
 
   // ─────────────────────────────────────────────────────────────────────────

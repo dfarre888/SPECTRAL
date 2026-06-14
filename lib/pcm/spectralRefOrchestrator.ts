@@ -9,6 +9,7 @@ import {
   composeAdjudicationResult,
 } from '@/lib/pcm/adjudicationCore';
 import { trainingAdjudicationCore } from '@/lib/pcm/trainingAdjudicationCore';
+import type { AdjudicationContext } from '@/lib/pcm/adjudication-context';
 import { fogOfWarEngine } from '@/lib/pcm/fogOfWarEngine';
 import {
   generateRefNarrative,
@@ -41,12 +42,14 @@ export class SpectralRefOrchestrator {
     blueOrders: Order | null,
     seed: number,
     dsPlayerId: string | null = null,
+    ctx?: AdjudicationContext,
   ): Promise<OversightGate> {
-    const { resolvedState, events } = this.core.resolveTurn(
+    const { resolvedState, events, blueWinProbability } = this.core.resolveTurn(
       worldState,
       redOrders,
       blueOrders,
       seed,
+      ctx,
     );
 
     let dsBriefing = 'Adjudication complete.';
@@ -73,6 +76,7 @@ export class SpectralRefOrchestrator {
       dsBriefing,
       blueSuggestion,
       injectsFired,
+      blueWinProbability ?? 0.5,
     );
 
     return wrapInOversightGate(result, true, dsPlayerId);

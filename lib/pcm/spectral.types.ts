@@ -285,7 +285,7 @@ export interface PlatformTask {
   task: string;               // e.g. "ISR northern sector grid 447-512"
   target_grid?: string;
   target_contact_id?: string;
-  weapon_release?: string;
+  weapon_release?: string; // 'kinetic' | 'rf_jam' | 'dew' | 'ew_jam'
   priority: 1 | 2 | 3;
 }
 

@@ -1,26 +1,36 @@
 /**
- * SPECTRAL PCM — Training-tier pedagogical adjudication core.
- * OSINT platforms, magazine math, heuristic Pk via pcm-spectrum-bridge.
- * Not strike-planning grade — suitable for IRON CROW teaching.
+ * SPECTRAL PCM — Full combat adjudication core (extends training implementation).
+ * OSINT defeat matrix, layered defence, swarm saturation, EW effects.
+ * Edition-gated: Training grid physics | Operations buildings/terrain.
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';
 import type { AdjudicationCore } from '@/lib/pcm/adjudicationCore';
+import type { AdjudicationContext } from '@/lib/pcm/adjudication-context';
+import { DefeatMatrixCache } from '@/lib/pcm/defeat-matrix-lookup';
+import { resolveRedOrders } from '@/lib/pcm/red-order-resolver';
+import {
+  advanceAllInboundThreats,
+} from '@/lib/pcm/threat-kinematics';
+import {
+  buildInboundQueue,
+  isInboundThreat,
+  applyWaveActivation,
+} from '@/lib/pcm/swarm-saturation';
+import {
+  runSalvoCoordinator,
+  resolveImpacts,
+  computeBlueWinProbability,
+} from '@/lib/pcm/salvo-coordinator';
+import { resolveEwCombat } from '@/lib/pcm/ew-combat-resolver';
 import { fogOfWarEngine } from '@/lib/pcm/fogOfWarEngine';
 import { createSeededRng } from '@/lib/pcm/seeded-rng';
-import {
-  adjudicatePcmPair,
-  estimateGridRangeKm,
-  gridRef,
-} from '@/lib/pcm/pcm-spectrum-bridge';
-import { evaluateOutcome } from '@/lib/pcm/turn-logic';
+import { evaluateOutcome, evaluateRedObjectiveProgress } from '@/lib/pcm/turn-logic';
 
 type WorldState = PCM.WorldState;
 type Order = PCM.Order;
-type Platform = PCM.Platform;
 type AdjudicationEvent = PCM.AdjudicationEvent;
 
-const THREAT_GROUPS = new Set(['OWA', 'FPV', 'loitering_munition', 'decoy']);
 const DEFENCE_GROUPS = new Set([
   'c_uas_defeat_kinetic',
   'c_uas_defeat_ew',
@@ -31,36 +41,12 @@ function cloneState(ws: WorldState): WorldState {
   return JSON.parse(JSON.stringify(ws)) as WorldState;
 }
 
-function findPlatform(force: PCM.ForceOrbat, id: string): Platform | undefined {
-  return force.platforms.find((p) => p.id === id);
-}
-
-function isInboundThreat(p: Platform): boolean {
-  if (p.status === 'destroyed') return false;
-  return (
-    THREAT_GROUPS.has(p.group) &&
-    ['airborne_tasked', 'airborne_loiter', 'pre_launch'].includes(p.status)
-  );
-}
-
-function isDefenceReady(p: Platform): boolean {
+function isDefenceReady(p: PCM.Platform): boolean {
   return (
     DEFENCE_GROUPS.has(p.group) &&
     p.status !== 'destroyed' &&
     (p.status === 'ground_ready' || p.status === 'airborne_tasked')
   );
-}
-
-function activateThreats(state: WorldState, redOrders: Order | null): void {
-  if (!redOrders?.platform_tasks?.length) return;
-  for (const task of redOrders.platform_tasks) {
-    const p = findPlatform(state.red_force, task.platform_id);
-    if (p && p.status === 'pre_launch') {
-      p.status = 'airborne_tasked';
-      p.altitude_m = p.altitude_m ?? 200;
-      state.red_force.platforms_active = (state.red_force.platforms_active || 0) + 0;
-    }
-  }
 }
 
 function refreshForceTotals(force: PCM.ForceOrbat): void {
@@ -72,150 +58,158 @@ function refreshForceTotals(force: PCM.ForceOrbat): void {
   force.platforms_destroyed = destroyed;
 }
 
-function refreshSensorPicture(state: WorldState): void {
-  const red = fogOfWarEngine.generateSensorPicture(state, 'RED');
-  const blue = fogOfWarEngine.generateSensorPicture(state, 'BLUE');
+function defaultContext(seed: number): AdjudicationContext {
+  return {
+    defeatMatrix: DefeatMatrixCache.createOffline(),
+    pairResults: new Map(),
+    tenantId: null,
+    turnMinutes: 15,
+    ewInterceptPenalty: 0,
+  };
+}
+
+/**
+ * Adaptive Red Force — training-grade behaviour heuristics.
+ * Modifies Red platform states after each turn based on cumulative battle
+ * damage and Blue posture.  Three mechanisms (all deterministic / seeded):
+ *
+ *  1. Saturation surge  — activate reserve platforms when Red has taken >30%
+ *     losses, flooding Blue defences before the next intercept window.
+ *
+ *  2. Altitude adaptation — descend inbound threats to a nap-of-earth profile
+ *     (≥40 m AGL) when Blue EW systems are active, reducing exposure to
+ *     the jammer's horizontal beam.
+ *
+ *  3. Bearing jitter — randomise the grid-row approach axis by ±2 squares
+ *     from turn 3 onward, preventing Blue from pre-stacking interceptors on
+ *     a single axis.
+ *
+ * All heuristics are OSINT-grade training behaviours only.
+ */
+function adaptRedForce(state: WorldState, seed: number): void {
+  const turn = (state.turn as number | undefined) ?? 1;
+  const redPlatforms = state.red_force.platforms;
+  const activePlatforms = redPlatforms.filter(
+    (p) => p.status !== 'destroyed' && p.status !== 'mission_complete',
+  );
+  if (activePlatforms.length === 0) return;
+
+  const totalRed = redPlatforms.length;
+  const destroyed = state.red_force.platforms_destroyed ?? 0;
+  const lossRate = totalRed > 0 ? destroyed / totalRed : 0;
+  const blueHasEw = state.blue_force.platforms.some((p) =>
+    DEFENCE_GROUPS.has(p.group),
+  );
+
+  // 1 — Saturation surge on heavy losses
+  if (lossRate > 0.3 && turn >= 2) {
+    const reserves = activePlatforms.filter((p) => p.status === 'pre_launch');
+    const surgeCount = Math.min(Math.ceil(reserves.length * 0.5), 4);
+    reserves.slice(0, surgeCount).forEach((p) => {
+      p.status = 'airborne_tasked';
+    });
+  }
+
+  // 2 — Drop to NOE profile to reduce jammer exposure
+  if (turn >= 3 && blueHasEw) {
+    activePlatforms
+      .filter((p) => p.status === 'airborne_tasked' && isInboundThreat(p))
+      .forEach((p) => {
+        p.altitude_m = Math.max(40, (p.altitude_m ?? 200) - 80);
+      });
+  }
+
+  // 3 — Bearing jitter to deny Blue predictive stacking
+  if (turn > 2) {
+    const rng = createSeededRng(seed + 7919);
+    activePlatforms
+      .filter((p) => p.status === 'airborne_tasked' && p.location_grid)
+      .forEach((p) => {
+        const grid = typeof p.location_grid === 'string' ? p.location_grid : p.location_grid[0];
+        if (!grid) return;
+        const jitter = Math.round((rng() - 0.5) * 4);
+        if (jitter === 0) return;
+        const m = grid.match(/^([A-Z]+)(\d+)-(\d+)$/);
+        if (m) {
+          const newRow = Math.max(1, Math.min(20, parseInt(m[2], 10) + jitter));
+          p.location_grid = `${m[1]}${newRow}-${m[3]}`;
+        }
+      });
+  }
+}
+
+function resolveTurnInternal(
+  worldState: WorldState,
+  redOrders: Order | null,
+  blueOrders: Order | null,
+  seed: number,
+  ctx?: AdjudicationContext,
+): { resolvedState: WorldState; events: AdjudicationEvent[]; blueWinProbability: number } {
+  const state = cloneState(worldState);
+  const context = ctx ?? defaultContext(seed);
+  const rng = createSeededRng(seed);
+  const events: AdjudicationEvent[] = [];
+  const turnMinutes = context.turnMinutes || 15;
+  const blueC2 = state.blue_force.c2?.gcs_location ?? 'ALPHA-4';
+
+  const waveActivated = applyWaveActivation(state, 8);
+  if (waveActivated > 0) {
+    events.push({
+      event_id: `EVT-WAVE-${state.turn}`,
+      type: 'weapon_release',
+      description: `Red wave activated ${waveActivated} platforms inbound.`,
+      affected_platform_ids: [],
+      visible_to_red: true,
+      visible_to_blue: false,
+      visible_to_ds: true,
+    });
+  }
+
+  const redResult = resolveRedOrders(state, redOrders, context, rng);
+  events.push(...redResult.events);
+  context.ewInterceptPenalty = redResult.ewPressure;
+
+  const defenders = state.blue_force.platforms.filter(isDefenceReady);
+  const queue = buildInboundQueue(state, redOrders);
+
+  const salvo = runSalvoCoordinator(state, queue, blueOrders, defenders, context, rng);
+  events.push(...salvo.events);
+
+  const ewResult = resolveEwCombat(state, blueOrders, context, rng);
+  events.push(...ewResult.events);
+  context.ewInterceptPenalty = ewResult.ewInterceptPenalty;
+
+  events.push(...resolveImpacts(state, queue, salvo.interceptedThreatIds, rng));
+
+  const inbound = state.red_force.platforms.filter(isInboundThreat);
+  advanceAllInboundThreats(inbound, blueC2, turnMinutes);
+
+  evaluateRedObjectiveProgress(state, salvo.leakers);
+
+  refreshForceTotals(state.red_force);
+  refreshForceTotals(state.blue_force);
+
+  const sensorRng = createSeededRng(seed + 1);
+  const red = fogOfWarEngine.generateSensorPicture(state, 'RED', { rng: sensorRng });
+  const blue = fogOfWarEngine.generateSensorPicture(state, 'BLUE', { rng: sensorRng });
   state.all_contacts = [...red, ...blue];
+
+  // Adaptive Red Force — adjust surviving Red platforms for the next turn
+  // based on loss rate, Blue EW posture, and elapsed turn count.
+  adaptRedForce(state, seed);
+
+  state.outcome = evaluateOutcome(state);
+  state.updated_at = new Date().toISOString();
+
+  const blueWinProbability = computeBlueWinProbability(state, salvo.leakers);
+
+  return { resolvedState: state, events, blueWinProbability };
 }
 
 export const trainingAdjudicationCore: AdjudicationCore = {
-  resolveTurn(worldState, redOrders, blueOrders, seed) {
-    const state = cloneState(worldState);
-    const rng = createSeededRng(seed);
-    const events: AdjudicationEvent[] = [];
-
-    activateThreats(state, redOrders);
-
-    const blueTasks = blueOrders?.platform_tasks ?? [];
-    const threats = state.red_force.platforms.filter(isInboundThreat);
-    const defenders = state.blue_force.platforms.filter(isDefenceReady);
-
-    let interceptsFired = 0;
-
-    for (const task of blueTasks) {
-      if (!task.weapon_release && !task.target_contact_id) continue;
-
-      const defender = findPlatform(state.blue_force, task.platform_id);
-      if (!defender || !DEFENCE_GROUPS.has(defender.group)) continue;
-
-      if (defender.group === 'c_uas_defeat_kinetic') {
-        if ((state.blue_force.magazine_remaining ?? 0) <= 0) {
-          events.push({
-            event_id: `EVT-MAG-EMPTY-${state.turn}-${interceptsFired}`,
-            type: 'intercept_fail',
-            description: `${defender.type} attempted intercept but magazine is empty.`,
-            affected_platform_ids: [defender.id],
-            visible_to_red: false,
-            visible_to_blue: true,
-            visible_to_ds: true,
-          });
-          continue;
-        }
-
-        state.blue_force.magazine_remaining = Math.max(
-          0,
-          (state.blue_force.magazine_remaining ?? 0) - 1,
-        );
-        state.blue_force.magazine_expended = (state.blue_force.magazine_expended ?? 0) + 1;
-        interceptsFired += 1;
-      }
-
-      let target: Platform | undefined;
-      if (task.target_contact_id) {
-        const contact = state.all_contacts.find(
-          (c) => c.contact_id === task.target_contact_id && c.detected_by === 'BLUE',
-        );
-        if (contact) {
-          target = findPlatform(state.red_force, contact.true_platform_id);
-          if (contact.misclassified && target?.group === 'decoy') {
-            events.push({
-              event_id: `EVT-DECOY-${state.turn}-${interceptsFired}`,
-              type: 'intercept_success',
-              description: `Intercept expended on misclassified contact (${contact.classification}) — decoy absorbed kinetic round.`,
-              affected_platform_ids: [defender.id],
-              visible_to_red: false,
-              visible_to_blue: true,
-              visible_to_ds: true,
-            });
-            continue;
-          }
-        }
-      }
-
-      if (!target && task.target_grid) {
-        target = threats.find((t) => gridRef(t) === task.target_grid);
-      }
-      if (!target) target = threats[0];
-      if (!target) continue;
-
-      const pair = adjudicatePcmPair(target, defender, null);
-      const roll = rng();
-      const success = roll < pair.combinedBlueSuccessPct / 100;
-
-      if (success) {
-        target.status = 'destroyed';
-        target.quantity_remaining = 0;
-        events.push({
-          event_id: `EVT-INT-OK-${state.turn}-${target.id}`,
-          type: 'intercept_success',
-          description: `${defender.type} intercepted ${target.type} (Pk≈${pair.combinedBlueSuccessPct}%).`,
-          affected_platform_ids: [target.id, defender.id],
-          visible_to_red: false,
-          visible_to_blue: true,
-          visible_to_ds: true,
-        });
-      } else {
-        events.push({
-          event_id: `EVT-INT-FAIL-${state.turn}-${target.id}`,
-          type: 'intercept_fail',
-          description: `${defender.type} missed ${target.type} (Pk≈${pair.combinedBlueSuccessPct}%).`,
-          affected_platform_ids: [target.id, defender.id],
-          visible_to_red: true,
-          visible_to_blue: true,
-          visible_to_ds: true,
-        });
-      }
-    }
-
-    for (const threat of state.red_force.platforms.filter(isInboundThreat)) {
-      if (threat.status === 'destroyed') continue;
-
-      const blueC2Grid = state.blue_force.c2?.gcs_location ?? 'ALPHA-4';
-      const rangeKm = estimateGridRangeKm(gridRef(threat), blueC2Grid);
-      const tti = fogOfWarEngine.computeTimeToImpact(threat, rangeKm);
-
-      if (tti !== null && tti <= 1) {
-        const defended = defenders.some((d) => {
-          const pk = adjudicatePcmPair(threat, d, null);
-          return pk.inRange && pk.combinedBlueSuccessPct > 60;
-        });
-
-        if (!defended) {
-          threat.status = 'mission_complete';
-          const blueObj = state.objectives.find((o) => o.id === 'OBJ-BLUE-01');
-          if (blueObj && blueObj.status === 'active') {
-            blueObj.status = 'failed';
-          }
-          events.push({
-            event_id: `EVT-IMPACT-${state.turn}-${threat.id}`,
-            type: 'impact',
-            description: `${threat.type} impacted Blue objective sector (${gridRef(threat)}).`,
-            affected_platform_ids: [threat.id],
-            visible_to_red: true,
-            visible_to_blue: true,
-            visible_to_ds: true,
-          });
-        }
-      }
-    }
-
-    refreshForceTotals(state.red_force);
-    refreshForceTotals(state.blue_force);
-    refreshSensorPicture(state);
-
-    state.outcome = evaluateOutcome(state);
-    state.updated_at = new Date().toISOString();
-
-    return { resolvedState: state, events };
+  resolveTurn(worldState, redOrders, blueOrders, seed, ctx) {
+    return resolveTurnInternal(worldState, redOrders, blueOrders, seed, ctx);
   },
 };
+
+export { resolveTurnInternal };

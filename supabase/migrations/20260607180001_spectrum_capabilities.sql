@@ -2,7 +2,7 @@
 -- SPECTRAL — Spectrum capabilities (EW Spectrum Map)
 -- ═══════════════════════════════════════════════════════════════════
 
-CREATE TABLE platform_variants (
+CREATE TABLE IF NOT EXISTS platform_variants (
   id                  TEXT PRIMARY KEY,
   platform_id         TEXT NOT NULL REFERENCES platforms(id) ON DELETE CASCADE,
   label               TEXT NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE platform_variants (
   intelligence_note   TEXT
 );
 
-CREATE TABLE spectrum_capabilities (
+CREATE TABLE IF NOT EXISTS spectrum_capabilities (
   id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   platform_id         TEXT REFERENCES platforms(id) ON DELETE CASCADE,
   variant_id          TEXT REFERENCES platform_variants(id) ON DELETE CASCADE,
@@ -34,13 +34,18 @@ CREATE TABLE spectrum_capabilities (
   )
 );
 
-CREATE INDEX idx_spectrum_cap_platform ON spectrum_capabilities(platform_id);
-CREATE INDEX idx_spectrum_cap_variant ON spectrum_capabilities(variant_id);
-CREATE INDEX idx_spectrum_cap_defeat ON spectrum_capabilities(defeat_system_id);
-CREATE INDEX idx_spectrum_cap_layer ON spectrum_capabilities(layer);
+CREATE INDEX IF NOT EXISTS idx_spectrum_cap_platform ON spectrum_capabilities(platform_id);
+CREATE INDEX IF NOT EXISTS idx_spectrum_cap_variant ON spectrum_capabilities(variant_id);
+CREATE INDEX IF NOT EXISTS idx_spectrum_cap_defeat ON spectrum_capabilities(defeat_system_id);
+CREATE INDEX IF NOT EXISTS idx_spectrum_cap_layer ON spectrum_capabilities(layer);
 
 ALTER TABLE platform_variants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE spectrum_capabilities ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "auth_read_variants" ON platform_variants;
+DROP POLICY IF EXISTS "auth_read_spectrum_caps" ON spectrum_capabilities;
+DROP POLICY IF EXISTS "public_read_variants" ON platform_variants;
+DROP POLICY IF EXISTS "public_read_spectrum_caps" ON spectrum_capabilities;
 
 CREATE POLICY "auth_read_variants" ON platform_variants
   FOR SELECT TO authenticated USING (true);

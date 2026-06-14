@@ -8,6 +8,8 @@ import { AssetSidebar } from '@/app/map/components/AssetSidebar'
 import { SpectralAnalysisPanel } from '@/app/map/components/SpectralAnalysisPanel'
 import { MapNavigationWheel } from '@/app/map/components/MapNavigationWheel'
 import { EntityInfoPanel } from '@/app/map/components/EntityInfoPanel'
+import { PlatformContextMenu } from '@/app/map/components/PlatformContextMenu'
+import type { PlatformContextTarget } from '@/app/map/hooks/usePlatformContextMenu'
 import { useDefeatOverlap } from '@/app/map/hooks/useDefeatOverlap'
 import { useLaydownAdjudication } from '@/app/map/hooks/useLaydownAdjudication'
 import { usePropagationHeatmap } from '@/app/map/hooks/usePropagationHeatmap'
@@ -60,6 +62,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const [terrainEpoch, setTerrainEpoch] = useState(0)
   const [spectralOpen, setSpectralOpen] = useState(false)
   const [heatmapEnabled, setHeatmapEnabled] = useState(false)
+  const [platformContextMenu, setPlatformContextMenu] = useState<PlatformContextTarget | null>(null)
 
   const cesiumCtxRef = useRef<CesiumContext | null>(null)
   const getCesium = useCallback(() => cesiumCtxRef.current, [])
@@ -68,8 +71,16 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     cesiumCtxRef.current = ctx
   }, [])
 
-  const { placeAt, startUasPlacement, startCuasPlacement, cancelPlacement } =
-    usePlatformPlacement(placementMode, setPlacementMode, setPlacedUas, setPlacedCuas, getCesium)
+  const { placeAt, startUasPlacement, startCuasPlacement, cancelPlacement, duplicateAdjacent } =
+    usePlatformPlacement(
+      placementMode,
+      setPlacementMode,
+      placedUas,
+      placedCuas,
+      setPlacedUas,
+      setPlacedCuas,
+      getCesium,
+    )
 
   const { startLoiterMode, placeLoiterWaypoint, clearLoiter } = useLoiterPlanning(
     placementMode,
@@ -225,6 +236,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         cancelPlacement()
+        setPlatformContextMenu(null)
         return
       }
       if (
@@ -382,7 +394,18 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             onTerrainEpochChange={setTerrainEpoch}
             setPlacedUas={setPlacedUas}
             setPlacedCuas={setPlacedCuas}
+            onPlatformContextMenu={setPlatformContextMenu}
           />
+
+          {platformContextMenu && (
+            <PlatformContextMenu
+              target={platformContextMenu}
+              onAdd={() =>
+                duplicateAdjacent(platformContextMenu.kind, platformContextMenu.instanceId)
+              }
+              onClose={() => setPlatformContextMenu(null)}
+            />
+          )}
 
           <MapNavigationWheel getCesium={getCesium} />
 

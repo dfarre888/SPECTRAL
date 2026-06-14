@@ -62,7 +62,7 @@ const buildThreat = (overrides: Partial<Platform> = {}): Platform => ({
   group: 'OWA',
   quantity: 1,
   quantity_remaining: 1,
-  location_grid: 'ECHO-7',
+  location_grid: 'CHARLIE-4',
   altitude_m: 200,
   status: 'airborne_tasked',
   fuel_state_percent: 80,
@@ -240,22 +240,27 @@ describe('Phase 3 — Seeded RNG', () => {
 
 describe('Phase 3 — Magazine mathematics', () => {
   it('exhausts magazine at 12 intercept attempts', () => {
-    let state = buildWorldState();
+    const threats = Array.from({ length: 12 }, (_, i) =>
+      buildThreat({ id: `RED-OWA-${i + 1}`, location_grid: 'CHARLIE-4' }),
+    );
+    let state = buildWorldState({
+      red_force: {
+        ...buildWorldState().red_force,
+        platforms: threats,
+      },
+    });
     const seed = hashTurnSeed(state.exercise_id, state.turn, 99);
 
-    for (let i = 0; i < 12; i++) {
-      const order = kineticOrder('BLUE-CUAS-01');
-      const { resolvedState } = trainingAdjudicationCore.resolveTurn(
-        state,
-        null,
-        order,
-        seed + i,
-      );
-      state = resolvedState;
-    }
+    const order = kineticOrder('BLUE-CUAS-01');
+    const { resolvedState } = trainingAdjudicationCore.resolveTurn(
+      state,
+      null,
+      order,
+      seed,
+    );
 
-    expect(state.blue_force.magazine_remaining).toBe(0);
-    expect(state.blue_force.magazine_expended).toBe(12);
+    expect(resolvedState.blue_force.magazine_remaining).toBe(0);
+    expect(resolvedState.blue_force.magazine_expended).toBe(12);
   });
 
   it('emits intercept_fail when magazine empty', () => {
@@ -273,7 +278,9 @@ describe('Phase 3 — Magazine mathematics', () => {
       12345,
     );
     expect(events.some((e) => e.type === 'intercept_fail')).toBe(true);
-    expect(events.some((e) => e.description.includes('magazine is empty'))).toBe(true);
+    expect(events.some((e) => e.description.toLowerCase().includes('magazine empty'))).toBe(
+      true,
+    );
   });
 });
 

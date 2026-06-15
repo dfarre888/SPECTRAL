@@ -152,26 +152,59 @@ export function runSalvoCoordinator(
       spentDefendersThisThreat.set(threat.id, spent);
 
       const roll = rng();
-      const success = roll < pair.combinedBlueSuccessPct / 100;
+      const pk = pair.combinedBlueSuccessPct;
+      const success = roll < pk / 100;
 
       if (success) {
-        threat.status = 'destroyed';
-        threat.quantity_remaining = 0;
-        interceptedThreatIds.add(threat.id);
+        if (pk >= 60) {
+          threat.status = 'destroyed';
+          threat.damage_state = 'destroyed';
+          threat.quantity_remaining = 0;
+          interceptedThreatIds.add(threat.id);
+        } else if (threat.damage_state === 'degraded') {
+          threat.status = 'destroyed';
+          threat.damage_state = 'destroyed';
+          threat.quantity_remaining = 0;
+          interceptedThreatIds.add(threat.id);
+        } else {
+          threat.damage_state = 'degraded';
+          events.push({
+            event_id: 'EVT-DMG-' + state.turn + '-' + threat.id,
+            type: 'platform_damaged',
+            description: defender.type + ' damaged ' + threat.type + ' (Pk~' + pk + '%).',
+            affected_platform_ids: [threat.id, defender.id],
+            visible_to_red: true,
+            visible_to_blue: true,
+            visible_to_ds: true,
+          });
+        }
         events.push({
-          event_id: `EVT-INT-OK-${state.turn}-${threat.id}`,
+          event_id: 'EVT-INT-OK-' + state.turn + '-' + threat.id,
           type: 'intercept_success',
-          description: `${defender.type} intercepted ${threat.type} (Pk≈${pair.combinedBlueSuccessPct}%).`,
+          description: defender.type + ' intercepted ' + threat.type + ' (Pk~' + pk + '%).',
           affected_platform_ids: [threat.id, defender.id],
           visible_to_red: false,
           visible_to_blue: true,
           visible_to_ds: true,
         });
       } else {
+        if (pk > 40) {
+          threat.damage_state = 'degraded';
+          threat.speed_kt = Math.round((threat.speed_kt ?? 100) * 0.7);
+          events.push({
+            event_id: 'EVT-DMG-' + state.turn + '-' + threat.id,
+            type: 'platform_damaged',
+            description: defender.type + ' near-miss damaged ' + threat.type + ' (Pk~' + pk + '%).',
+            affected_platform_ids: [threat.id, defender.id],
+            visible_to_red: true,
+            visible_to_blue: true,
+            visible_to_ds: true,
+          });
+        }
         events.push({
-          event_id: `EVT-INT-FAIL-${state.turn}-${threat.id}`,
+          event_id: 'EVT-INT-FAIL-' + state.turn + '-' + threat.id,
           type: 'intercept_fail',
-          description: `${defender.type} missed ${threat.type} (Pk≈${pair.combinedBlueSuccessPct}%).`,
+          description: defender.type + ' missed ' + threat.type + ' (Pk~' + pk + '%).',
           affected_platform_ids: [threat.id, defender.id],
           visible_to_red: true,
           visible_to_blue: true,

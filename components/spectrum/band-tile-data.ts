@@ -17,7 +17,9 @@ export interface AllocationBox {
   colorHex: string;
 }
 
-export interface BandTile {
+export type SpectrumUnit = 'hz' | 'um';
+
+export interface RawBandTile {
   id: string;
   /** path relative to /public */
   overlay: string;
@@ -39,9 +41,16 @@ export interface BandTile {
   boxes: AllocationBox[];
 }
 
+export interface BandTile extends RawBandTile {
+  /** Native unit for laydown intersection (Hz or µm). */
+  unit: SpectrumUnit;
+  lo: number;
+  hi: number;
+}
+
 /* ─── RF tiles — ACMA/NTIA rows at y=183/195, h=11 ─────────────────────── */
 
-const VLF: BandTile = {
+const VLF: RawBandTile = {
   id: 'vlf',
   overlay: '/spectrum/overlays/overlay-vlf.svg',
   band: 'VLF',
@@ -60,7 +69,7 @@ const VLF: BandTile = {
   ],
 };
 
-const LF: BandTile = {
+const LF: RawBandTile = {
   id: 'lf',
   overlay: '/spectrum/overlays/overlay-lf.svg',
   band: 'LF',
@@ -88,7 +97,7 @@ const LF: BandTile = {
   ],
 };
 
-const MF: BandTile = {
+const MF: RawBandTile = {
   id: 'mf',
   overlay: '/spectrum/overlays/overlay-mf.svg',
   band: 'MF',
@@ -122,7 +131,7 @@ const MF: BandTile = {
   ],
 };
 
-const HF: BandTile = {
+const HF: RawBandTile = {
   id: 'hf',
   overlay: '/spectrum/overlays/overlay-hf.svg',
   band: 'HF',
@@ -150,7 +159,7 @@ const HF: BandTile = {
   ],
 };
 
-const VHF: BandTile = {
+const VHF: RawBandTile = {
   id: 'vhf',
   overlay: '/spectrum/overlays/overlay-vhf.svg',
   band: 'VHF',
@@ -193,7 +202,7 @@ const VHF: BandTile = {
   ],
 };
 
-const UHF: BandTile = {
+const UHF: RawBandTile = {
   id: 'uhf',
   overlay: '/spectrum/overlays/overlay-uhf.svg',
   band: 'UHF',
@@ -245,7 +254,7 @@ const UHF: BandTile = {
   ],
 };
 
-const SHF: BandTile = {
+const SHF: RawBandTile = {
   id: 'shf',
   overlay: '/spectrum/overlays/overlay-shf.svg',
   band: 'SHF',
@@ -282,7 +291,7 @@ const SHF: BandTile = {
   ],
 };
 
-const EHF: BandTile = {
+const EHF: RawBandTile = {
   id: 'ehf',
   overlay: '/spectrum/overlays/overlay-ehf.svg',
   band: 'EHF',
@@ -321,7 +330,7 @@ const EHF: BandTile = {
 
 /* ─── GNSS tile — allocation bars at y=215/223, h=8 (L2 inset panel above) */
 
-const GNSS: BandTile = {
+const GNSS: RawBandTile = {
   id: 'gnss',
   overlay: '/spectrum/overlays/overlay-gnss.svg',
   band: 'GNSS',
@@ -342,7 +351,7 @@ const GNSS: BandTile = {
 
 /* ─── Optical / Radar tiles — BAND/USE rows at y=180/194, h=13 ───────────── */
 
-const IR: BandTile = {
+const IR: RawBandTile = {
   id: 'ir',
   overlay: '/spectrum/overlays/overlay-ir.svg',
   band: 'IR',
@@ -385,7 +394,7 @@ const IR: BandTile = {
   ],
 };
 
-const VIS: BandTile = {
+const VIS: RawBandTile = {
   id: 'visible',
   overlay: '/spectrum/overlays/overlay-visible.svg',
   band: 'Visible',
@@ -410,7 +419,7 @@ const VIS: BandTile = {
   ],
 };
 
-const UV: BandTile = {
+const UV: RawBandTile = {
   id: 'uv',
   overlay: '/spectrum/overlays/overlay-uv.svg',
   band: 'UV',
@@ -453,7 +462,7 @@ const UV: BandTile = {
   ],
 };
 
-const DEW: BandTile = {
+const DEW: RawBandTile = {
   id: 'dew',
   overlay: '/spectrum/overlays/overlay-dew.svg',
   band: 'Laser / DEW',
@@ -496,7 +505,7 @@ const DEW: BandTile = {
   ],
 };
 
-const XRAY: BandTile = {
+const XRAY: RawBandTile = {
   id: 'xray',
   overlay: '/spectrum/overlays/overlay-xray.svg',
   band: 'X-ray',
@@ -521,7 +530,7 @@ const XRAY: BandTile = {
   ],
 };
 
-const GAMMA: BandTile = {
+const GAMMA: RawBandTile = {
   id: 'gamma',
   overlay: '/spectrum/overlays/overlay-gamma.svg',
   band: 'Gamma',
@@ -558,7 +567,7 @@ const GAMMA: BandTile = {
   ],
 };
 
-const RADAR: BandTile = {
+const RADAR: RawBandTile = {
   id: 'radar',
   overlay: '/spectrum/overlays/overlay-radar.svg',
   band: 'Radar',
@@ -651,7 +660,33 @@ export const BAND_TILE_SECTIONS: BandSection[] = [
 
 /* ─── Master export ──────────────────────────────────────────────────────── */
 
-export const BAND_TILES: BandTile[] = [
+
+/** Canonical Hz / µm bounds per tile for laydown intersection. */
+export const TILE_SPECTRUM_BOUNDS: Record<string, { unit: SpectrumUnit; lo: number; hi: number }> = {
+  vlf:     { unit: 'hz', lo: 3e3,       hi: 30e3 },
+  lf:      { unit: 'hz', lo: 30e3,      hi: 300e3 },
+  mf:      { unit: 'hz', lo: 300e3,     hi: 3e6 },
+  hf:      { unit: 'hz', lo: 3e6,       hi: 30e6 },
+  vhf:     { unit: 'hz', lo: 30e6,      hi: 300e6 },
+  uhf:     { unit: 'hz', lo: 300e6,     hi: 3e9 },
+  shf:     { unit: 'hz', lo: 3e9,       hi: 30e9 },
+  ehf:     { unit: 'hz', lo: 30e9,      hi: 300e9 },
+  gnss:    { unit: 'hz', lo: 1.1e9,     hi: 1.7e9 },
+  ir:      { unit: 'um', lo: 0.7,       hi: 1000 },
+  visible: { unit: 'um', lo: 0.38,      hi: 0.78 },
+  uv:      { unit: 'um', lo: 0.01,      hi: 0.4 },
+  dew:     { unit: 'um', lo: 0.35,      hi: 20 },
+  xray:    { unit: 'um', lo: 0.00001,   hi: 0.1 },
+  gamma:   { unit: 'um', lo: 1e-8,       hi: 0.01 },
+  radar:   { unit: 'hz', lo: 2.3e8,     hi: 1.1e11 },
+};
+
+const RAW_TILES = [
   VLF, LF, MF, HF, VHF, UHF, SHF, EHF, GNSS,
   IR, VIS, UV, DEW, XRAY, GAMMA, RADAR,
 ];
+
+export const BAND_TILES: BandTile[] = RAW_TILES.map((t) => ({
+  ...t,
+  ...TILE_SPECTRUM_BOUNDS[t.id],
+}));

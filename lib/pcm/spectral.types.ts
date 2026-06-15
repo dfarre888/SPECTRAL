@@ -178,6 +178,7 @@ export interface Platform {
   ceiling_ft: number;
   range_km: number;
   endurance_hr: number;
+  damage_state?: 'intact' | 'degraded' | 'destroyed';
 }
 
 export interface EWAsset {

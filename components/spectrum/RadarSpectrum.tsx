@@ -13,6 +13,7 @@
 import React, { useMemo, useState } from 'react';
 import type { RadarSystem, RadarBand } from '@/lib/spectrum/radar-types';
 import { RADAR_BAND_HZ } from '@/lib/spectrum/radar-types';
+import { RADAR_BAND_INFO, RADAR_SPECTRUM_BANDS } from '@/lib/spectrum/radar-band-info';
 import { useRadars } from './radar-data';
 import { getAxisConfig, makeLogScale } from '@/lib/spectrum/scale';
 import { GlassCard } from '@/components/ui/primitives';
@@ -20,10 +21,12 @@ import { GlassCard } from '@/components/ui/primitives';
 const VB_W = 960;
 const PAD_L = 70;
 const PAD_R = 30;
+const BAND_HEADER_H = 24;
 
 export function RadarSpectrum({ onSelect, selectedIds = [] }: { onSelect?: (r: RadarSystem) => void; selectedIds?: string[] }) {
   const radars = useRadars();
   const [hover, setHover] = useState<RadarSystem | null>(null);
+  const [hoverBand, setHoverBand] = useState<RadarBand | null>(null);
   const [roleFilter, setRoleFilter] = useState<string>('all');
 
   const cfg = useMemo(() => getAxisConfig('rf', [PAD_L, VB_W - PAD_R]), []);
@@ -49,11 +52,16 @@ export function RadarSpectrum({ onSelect, selectedIds = [] }: { onSelect?: (r: R
   const redH = redRows.length * (ROW_H + ROW_GAP);
   const vbH = redTop + redH + 30;
 
-  const bandGuides = (['HF', 'VHF', 'UHF', 'L', 'S', 'C', 'X', 'Ku', 'K', 'Ka'] as RadarBand[]).map((b) => ({
+  const bandGuides = RADAR_SPECTRUM_BANDS.map((b) => ({
     band: b,
     x0: scale(RADAR_BAND_HZ[b][0]),
     x1: scale(RADAR_BAND_HZ[b][1]),
   }));
+
+  const clearHover = () => {
+    setHover(null);
+    setHoverBand(null);
+  };
 
   const roles = ['all', 'early_warning', 'acquisition', 'engagement', 'multifunction', 'counter_uas', 'counter_battery', 'naval_multifunction', 'airborne_fire_control'];
 
@@ -75,14 +83,43 @@ export function RadarSpectrum({ onSelect, selectedIds = [] }: { onSelect?: (r: R
         </select>
       </div>
 
-      <svg viewBox={`0 0 ${VB_W} ${vbH}`} preserveAspectRatio="xMidYMid meet" style={{ width: '100%', height: 'auto', overflow: 'visible' }} onMouseLeave={() => setHover(null)}>
+      <svg viewBox={`0 0 ${VB_W} ${vbH}`} preserveAspectRatio="xMidYMid meet" style={{ width: '100%', height: 'auto', overflow: 'visible' }} onMouseLeave={clearHover}>
         {/* band guide columns */}
-        {bandGuides.map((g, i) => (
-          <g key={g.band}>
-            <rect x={g.x0} y={20} width={Math.max(g.x1 - g.x0, 2)} height={vbH - 50} fill={i % 2 ? 'rgba(255,255,255,0.015)' : 'rgba(255,255,255,0.03)'} />
-            <text x={(g.x0 + g.x1) / 2} y={16} textAnchor="middle" fontFamily="var(--sx-mono)" fontSize="9" fill="var(--sx-ink-faint)">{g.band}</text>
-          </g>
-        ))}
+        {bandGuides.map((g, i) => {
+          const active = hoverBand === g.band;
+          const info = RADAR_BAND_INFO[g.band];
+          return (
+            <g key={g.band}>
+              <rect x={g.x0} y={20} width={Math.max(g.x1 - g.x0, 2)} height={vbH - 50} fill={i % 2 ? 'rgba(255,255,255,0.015)' : 'rgba(255,255,255,0.03)'} />
+              <rect
+                x={g.x0}
+                y={0}
+                width={Math.max(g.x1 - g.x0, 2)}
+                height={BAND_HEADER_H}
+                fill={active ? 'rgba(6,182,212,0.12)' : 'transparent'}
+                style={{ cursor: 'help' }}
+                onMouseEnter={() => {
+                  setHoverBand(g.band);
+                  setHover(null);
+                }}
+              />
+              <text
+                x={(g.x0 + g.x1) / 2}
+                y={16}
+                textAnchor="middle"
+                fontFamily="var(--sx-mono)"
+                fontSize="9"
+                fill={active ? 'var(--sx-cyan)' : 'var(--sx-ink-faint)'}
+                style={{ pointerEvents: 'none' }}
+              >
+                {g.band}
+              </text>
+              {active && (
+                <title>{`${info.band}-band (${info.frequency}, λ ${info.wavelength}): ${info.summary}`}</title>
+              )}
+            </g>
+          );
+        })}
 
         {/* side labels */}
         <text x={PAD_L - 12} y={blueTop - 8} textAnchor="end" fontFamily="var(--sx-mono)" fontSize="10" fill="var(--sx-blue)">BLUE ▲</text>
@@ -107,7 +144,10 @@ export function RadarSpectrum({ onSelect, selectedIds = [] }: { onSelect?: (r: R
                 stroke={sel ? '#fff' : 'none'}
                 strokeWidth={sel ? 1.2 : 0}
                 style={{ cursor: 'pointer' }}
-                onMouseEnter={() => setHover(r)}
+                onMouseEnter={() => {
+                  setHover(r);
+                  setHoverBand(null);
+                }}
                 onClick={() => onSelect?.(r)}
               />
             );
@@ -139,14 +179,22 @@ export function RadarSpectrum({ onSelect, selectedIds = [] }: { onSelect?: (r: R
                 stroke={sel ? '#fff' : 'none'}
                 strokeWidth={sel ? 1.2 : 0}
                 style={{ cursor: 'pointer' }}
-                onMouseEnter={() => setHover(r)}
+                onMouseEnter={() => {
+                  setHover(r);
+                  setHoverBand(null);
+                }}
                 onClick={() => onSelect?.(r)}
               />
             );
           })
         )}
 
-        {/* hover card */}
+        {/* band hover card */}
+        {hoverBand && !hover && (
+          <BandHoverCard band={hoverBand} bandGuides={bandGuides} />
+        )}
+
+        {/* radar hover card */}
         {hover && (
           <g pointerEvents="none">
             {(() => {
@@ -170,10 +218,54 @@ export function RadarSpectrum({ onSelect, selectedIds = [] }: { onSelect?: (r: R
       <div style={{ display: 'flex', gap: 18, marginTop: 8, flexWrap: 'wrap' }}>
         <Legend color="var(--sx-red)" label={`Red threat radars (${red.length})`} />
         <Legend color="var(--sx-blue)" label={`Blue friendly radars (${blue.length})`} />
-        <span className="sx-faint" style={{ fontSize: 10 }}>Hover a bar for band · range · mobility · detection envelope. Lower bands (left) = longer range & counter-stealth; higher bands (right) = higher resolution, shorter range.</span>
+        <span className="sx-faint" style={{ fontSize: 10 }}>Hover a band header for IEEE doctrine · hover a bar for range · mobility · detection envelope. Lower bands (left) = longer range & counter-stealth; higher bands (right) = higher resolution, shorter range.</span>
       </div>
     </GlassCard>
   );
+}
+
+
+function BandHoverCard({
+  band,
+  bandGuides,
+}: {
+  band: RadarBand;
+  bandGuides: { band: RadarBand; x0: number; x1: number }[];
+}) {
+  const info = RADAR_BAND_INFO[band];
+  const guide = bandGuides.find((g) => g.band === band);
+  const cx = guide ? (guide.x0 + guide.x1) / 2 : VB_W / 2;
+  const cardW = 280;
+  const cardH = 96;
+  const bx = Math.min(Math.max(cx - cardW / 2, 4), VB_W - cardW - 4);
+  const by = 28;
+
+  return (
+    <g pointerEvents="none">
+      <rect x={bx} y={by} width={cardW} height={cardH} rx={9} fill="rgba(8,10,12,0.97)" stroke="var(--sx-cyan)" strokeOpacity={0.45} />
+      <text x={bx + 12} y={by + 18} fontFamily="var(--sx-ui)" fontSize="12" fontWeight="700" fill="var(--sx-cyan)">
+        {info.band}-band
+      </text>
+      <text x={bx + 12} y={by + 32} fontFamily="var(--sx-mono)" fontSize="9" fill="var(--sx-ink-dim)">
+        {info.frequency} · λ {info.wavelength}
+      </text>
+      <text x={bx + 12} y={by + 47} fontFamily="var(--sx-ui)" fontSize="9" fill="var(--sx-ink)">
+        {wrapSvgText(info.summary, 38)}
+      </text>
+      <text x={bx + 12} y={by + 62} fontFamily="var(--sx-ui)" fontSize="9" fill="var(--sx-ink-dim)">
+        {wrapSvgText(`Typical: ${info.typicalRoles}`, 42)}
+      </text>
+      <text x={bx + 12} y={by + 77} fontFamily="var(--sx-ui)" fontSize="9" fill="var(--sx-ink-faint)">
+        {wrapSvgText(info.tradeoff, 42)}
+      </text>
+    </g>
+  );
+}
+
+/** Truncate long tooltip lines for SVG single-line display. */
+function wrapSvgText(text: string, maxChars: number): string {
+  if (text.length <= maxChars) return text;
+  return `${text.slice(0, maxChars - 1)}…`;
 }
 
 function Legend({ color, label }: { color: string; label: string }) {

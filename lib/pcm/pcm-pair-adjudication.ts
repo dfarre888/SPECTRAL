@@ -112,11 +112,11 @@ function trainingPairResult(
   const jamTransmit =
     blue && isRfJammer ? resolveJamFromEngagement(blue, spectrum.overlaps) : null;
 
-  const urban =
+  const isUrbanTerrain = Boolean(
     worldState.terrain?.urban_areas?.length &&
-    worldState.terrain.primary_feature?.includes('urban')
-      ? 'urban'
-      : 'suburban';
+      worldState.terrain.primary_feature?.includes('urban'),
+  );
+  const urban = isUrbanTerrain ? 'urban' : 'suburban';
 
   // P0-C: Red GCS transmit ERP is the control-link signal the jammer must overpower.
   // GCS assumed co-located with the threat (maximally conservative training approximation).
@@ -147,15 +147,16 @@ function trainingPairResult(
     ? propagationEngagementViable(spectrum.overlaps, propagation)
     : true;
   const jamBonus = rfViable ? (jts > 10 ? 15 : jts > 0 ? 5 : -10) : -10;
-  const propagationGated =
+  let propagationGated =
     !inRange || propagation.los_state === 'NLOS' || (isRfJammer && !rfViable);
+  if (isUrbanTerrain) propagationGated = true;
 
   // When RF link is not viable, score spectrum as no_engagement — band overlap is irrelevant
   const scoringSpectrum: EngagementResult = rfViable
     ? spectrum
     : { ...spectrum, verdict: 'no_engagement' as const, effectiveCoverage: 0 };
 
-  const combined = combinedScore(
+  let combined = combinedScore(
     matrixPk,
     scoringSpectrum,
     jamBonus,
@@ -165,6 +166,7 @@ function trainingPairResult(
     false,
     ewPenalty,
   );
+  if (isUrbanTerrain) combined = Math.round(combined * 0.7);
 
   return {
     combinedBlueSuccessPct: combined,

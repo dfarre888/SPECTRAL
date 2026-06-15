@@ -1,40 +1,41 @@
 'use client';
 /**
- * BandTileGrid — Band Tiles view mode for SpectrumWorkspace.
- *
- * Renders all 16 spectrum band overlay tiles in a responsive grid
- * behind a 6-tab section navigator (ALL / RF / Microwave / Optical·DEW / Ionising / Radar).
- *
- * Each tile composites:
- *   - Dark radial-gradient background
- *   - SVG overlay as <img> (preserves crisp vector rendering)
- *   - Absolutely-positioned transparent <div> hit areas over the
- *     allocation bars, computed as viewBox percentage coordinates.
- *
- * Click tile → expands full-width with a larger overlay view.
- * Hover allocation box → tooltip with label + detail text.
+ * BandTileGrid — Band Tiles view mode for SpectrumWorkspace and Map Intel laydown.
  */
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   BAND_TILES,
   BAND_TILE_SECTIONS,
   type AllocationBox,
   type BandTile,
 } from './band-tile-data';
+import {
+  emissionsForTile,
+  kindChipLabel,
+  emissionBarStyle,
+  activeTileIds,
+  type LaydownEmission,
+} from '@/lib/map/laydown-tiles';
 
-/* ─── ViewBox constants ────────────────────────────────────────────────────── */
 const VB_W = 680;
 
-/* ─── Tooltip state ─────────────────────────────────────────────────────────── */
+export interface BandTileGridProps {
+  emissions?: LaydownEmission[];
+  tiles?: BandTile[];
+  compact?: boolean;
+  fullscreenExpand?: boolean;
+  activeOnly?: boolean;
+  showRecommendations?: boolean;
+  onTileClick?: (tile: BandTile) => void;
+}
+
 interface TooltipState {
   box: AllocationBox;
-  /** position relative to the tile card container */
   left: number;
   top: number;
 }
 
-/* ─── Allocation hit area overlay ─────────────────────────────────────────── */
 function AllocationHitAreas({
   tile,
   onHover,
@@ -46,22 +47,18 @@ function AllocationHitAreas({
 }) {
   const imgRef = useRef<HTMLDivElement>(null);
 
-  /** Scale from SVG viewBox coords to rendered percentage */
   const pct = useCallback(
     (svgX: number, svgW: number, svgY: number, svgH_row: number) => ({
-      left:   `${(svgX / VB_W) * 100}%`,
-      width:  `${(svgW / VB_W) * 100}%`,
-      top:    `${(svgY / tile.viewBoxH) * 100}%`,
+      left: `${(svgX / VB_W) * 100}%`,
+      width: `${(svgW / VB_W) * 100}%`,
+      top: `${(svgY / tile.viewBoxH) * 100}%`,
       height: `${(svgH_row / tile.viewBoxH) * 100}%`,
     }),
-    [tile.viewBoxH]
+    [tile.viewBoxH],
   );
 
   return (
-    <div
-      ref={imgRef}
-      style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
-    >
+    <div ref={imgRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
       {tile.boxes.map((box, i) => {
         const y = box.row === 'top' ? tile.rowTopY : tile.rowBotY;
         const pos = pct(box.x, box.w, y, tile.rowH);
@@ -77,9 +74,7 @@ function AllocationHitAreas({
             }}
             onMouseEnter={(e) => {
               const boxRect = e.currentTarget.getBoundingClientRect();
-              const tileRect = e.currentTarget
-                .closest('[data-tile-card]')
-                ?.getBoundingClientRect();
+              const tileRect = e.currentTarget.closest('[data-tile-card]')?.getBoundingClientRect();
               if (tileRect) onHover(box, boxRect, tileRect);
             }}
             onMouseLeave={onLeave}
@@ -90,7 +85,21 @@ function AllocationHitAreas({
   );
 }
 
-/* ─── Tooltip panel ─────────────────────────────────────────────────────────── */
+function AssetEmissionOverlay({ tile, emissions }: { tile: BandTile; emissions: LaydownEmission[] }) {
+  const inTile = emissionsForTile(tile, emissions);
+  if (inTile.length === 0) return null;
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4 }}>
+      {inTile.map((em) => {
+        const style = emissionBarStyle(em, tile, 'top');
+        if (!style) return null;
+        return <div key={em.id} style={style} title={em.capabilityLabel ?? em.label} />;
+      })}
+    </div>
+  );
+}
+
 function Tooltip({ state, expanded }: { state: TooltipState; expanded: boolean }) {
   const MAX_W = expanded ? 320 : 220;
   return (
@@ -122,30 +131,32 @@ function Tooltip({ state, expanded }: { state: TooltipState; expanded: boolean }
       >
         {state.box.label}
       </div>
-      <div
-        style={{
-          fontSize: 11,
-          color: 'rgba(255,255,255,0.75)',
-          lineHeight: 1.55,
-        }}
-      >
+      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', lineHeight: 1.55 }}>
         {state.box.detail}
       </div>
     </div>
   );
 }
 
-/* ─── Single tile card ──────────────────────────────────────────────────────── */
-function TileCard({
+export function TileCard({
   tile,
   expanded,
   onExpand,
+  emissions = [],
+  compact = false,
+  fullscreenExpand = false,
+  onTileClick,
 }: {
   tile: BandTile;
   expanded: boolean;
   onExpand: () => void;
+  emissions?: LaydownEmission[];
+  compact?: boolean;
+  fullscreenExpand?: boolean;
+  onTileClick?: (tile: BandTile) => void;
 }) {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+  const tileEmissions = emissionsForTile(tile, emissions);
 
   const handleHover = useCallback(
     (box: AllocationBox, boxRect: DOMRect, tileRect: DOMRect) => {
@@ -155,17 +166,26 @@ function TileCard({
         top: boxRect.top - tileRect.top,
       });
     },
-    []
+    [],
   );
 
+  const handleCardClick = () => {
+    if (fullscreenExpand && onTileClick) {
+      onTileClick(tile);
+      return;
+    }
+    if (!expanded && !tooltip) onExpand();
+  };
+
   const aspectPad = `${(tile.viewBoxH / VB_W) * 100}%`;
+  const chipKinds = Array.from(new Set(tileEmissions.map((e) => e.kind)));
 
   return (
     <div
       data-tile-card=""
       style={{
         position: 'relative',
-        borderRadius: 12,
+        borderRadius: compact ? 8 : 12,
         overflow: 'hidden',
         border: expanded
           ? '1px solid rgba(249,115,22,0.5)'
@@ -173,14 +193,12 @@ function TileCard({
         background: 'radial-gradient(ellipse at 30% 40%, #0D1B2E 0%, #0A0A0F 70%)',
         cursor: 'pointer',
         transition: 'border-color 0.15s',
-        gridColumn: expanded ? '1 / -1' : undefined,
+        gridColumn: expanded && !fullscreenExpand ? '1 / -1' : undefined,
       }}
-      onClick={() => { if (!expanded && !tooltip) onExpand(); }}
+      onClick={handleCardClick}
       onMouseLeave={() => setTooltip(null)}
     >
-      {/* aspect-ratio wrapper */}
       <div style={{ position: 'relative', paddingBottom: aspectPad }}>
-        {/* SVG overlay image */}
         <img
           src={tile.overlay}
           alt={`${tile.band} spectrum overlay`}
@@ -195,69 +213,98 @@ function TileCard({
           }}
           draggable={false}
         />
-        {/* allocation box hit areas */}
-        <AllocationHitAreas
-          tile={tile}
-          onHover={handleHover}
-          onLeave={() => setTooltip(null)}
-        />
-        {/* tooltip */}
+        <AllocationHitAreas tile={tile} onHover={handleHover} onLeave={() => setTooltip(null)} />
+        {emissions.length > 0 && <AssetEmissionOverlay tile={tile} emissions={emissions} />}
         {tooltip && <Tooltip state={tooltip} expanded={expanded} />}
       </div>
 
-      {/* card footer */}
       <div
         style={{
-          padding: '9px 13px',
+          padding: compact ? '6px 8px' : '9px 13px',
           borderTop: '1px solid rgba(255,255,255,0.05)',
           display: 'flex',
-          alignItems: 'baseline',
-          gap: 10,
+          flexDirection: compact ? 'column' : 'row',
+          alignItems: compact ? 'stretch' : 'baseline',
+          gap: compact ? 4 : 10,
           background: 'rgba(0,0,0,0.35)',
         }}
-        onClick={(e) => { e.stopPropagation(); onExpand(); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (fullscreenExpand && onTileClick) onTileClick(tile);
+          else onExpand();
+        }}
       >
-        <span
-          style={{
-            fontFamily: 'var(--sx-mono, monospace)',
-            fontWeight: 700,
-            fontSize: expanded ? 15 : 12,
-            color: '#F97316',
-            letterSpacing: '0.06em',
-            flexShrink: 0,
-          }}
-        >
-          {tile.band}
-        </span>
-        <span
-          style={{
-            fontFamily: 'var(--sx-mono, monospace)',
-            fontSize: 10,
-            color: 'rgba(255,255,255,0.35)',
-            letterSpacing: '0.04em',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {tile.range}
-        </span>
-        <span
-          style={{
-            fontSize: 10,
-            color: 'rgba(255,255,255,0.4)',
-            marginLeft: 'auto',
-            flexShrink: 0,
-          }}
-        >
-          {expanded ? '▲ collapse' : tile.description}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, minWidth: 0 }}>
+          <span
+            style={{
+              fontFamily: 'var(--sx-mono, monospace)',
+              fontWeight: 700,
+              fontSize: compact ? 10 : expanded ? 15 : 12,
+              color: '#F97316',
+              letterSpacing: '0.06em',
+              flexShrink: 0,
+            }}
+          >
+            {tile.band}
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--sx-mono, monospace)',
+              fontSize: compact ? 9 : 10,
+              color: 'rgba(255,255,255,0.35)',
+              letterSpacing: '0.04em',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {tile.range}
+          </span>
+          {!compact && (
+            <span
+              style={{
+                fontSize: 10,
+                color: 'rgba(255,255,255,0.4)',
+                marginLeft: 'auto',
+                flexShrink: 0,
+              }}
+            >
+              {expanded ? '▲ collapse' : tile.description}
+            </span>
+          )}
+        </div>
+        {tileEmissions.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {chipKinds.map((kind) => {
+              const count = tileEmissions.filter((e) => e.kind === kind).length;
+              return (
+                <span
+                  key={kind}
+                  style={{
+                    fontFamily: 'var(--sx-mono, monospace)',
+                    fontSize: 8,
+                    letterSpacing: '0.08em',
+                    padding: '2px 6px',
+                    borderRadius: 4,
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    color:
+                      kind === 'recommended_detect' || kind === 'recommended_defeat'
+                        ? '#FACC15'
+                        : '#06B6D4',
+                  }}
+                >
+                  {kindChipLabel(kind)}
+                  {count > 1 ? ` ×${count}` : ''}
+                </span>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-/* ─── Section tab bar ────────────────────────────────────────────────────────── */
 function SectionTabs({
   activeId,
   onSelect,
@@ -283,6 +330,7 @@ function SectionTabs({
         return (
           <button
             key={section.id}
+            type="button"
             onClick={() => onSelect(section.id)}
             style={{
               display: 'flex',
@@ -293,9 +341,7 @@ function SectionTabs({
               border: isActive
                 ? '1px solid rgba(249,115,22,0.6)'
                 : '1px solid rgba(255,255,255,0.08)',
-              background: isActive
-                ? 'rgba(249,115,22,0.12)'
-                : 'rgba(255,255,255,0.03)',
+              background: isActive ? 'rgba(249,115,22,0.12)' : 'rgba(255,255,255,0.03)',
               cursor: 'pointer',
               transition: 'border-color 0.12s, background 0.12s',
               outline: 'none',
@@ -340,9 +386,8 @@ function SectionTabs({
   );
 }
 
-/* ─── Main grid ──────────────────────────────────────────────────────────────── */
-export function BandTileGrid() {
-  const [expandedId, setExpandedId]       = useState<string | null>(null);
+function DefaultBandTileGrid() {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeSectionId, setActiveSectionId] = useState<string>('all');
 
   const toggle = useCallback((id: string) => {
@@ -351,10 +396,9 @@ export function BandTileGrid() {
 
   const handleSectionSelect = useCallback((id: string) => {
     setActiveSectionId(id);
-    setExpandedId(null); // collapse any open tile when switching section
+    setExpandedId(null);
   }, []);
 
-  /* Filter tiles by active section */
   const activeSection = BAND_TILE_SECTIONS.find((s) => s.id === activeSectionId)!;
   const visibleTiles = activeSection.tileIds
     ? BAND_TILES.filter((t) => activeSection.tileIds!.includes(t.id))
@@ -362,14 +406,12 @@ export function BandTileGrid() {
 
   return (
     <div>
-      {/* section tabs */}
       <SectionTabs
         activeId={activeSectionId}
         onSelect={handleSectionSelect}
         tileCount={visibleTiles.length}
       />
 
-      {/* info bar */}
       <div
         style={{
           display: 'flex',
@@ -398,20 +440,92 @@ export function BandTileGrid() {
         </span>
       </div>
 
-      {/* tile grid */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 14,
-        }}
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
         {visibleTiles.map((tile) => (
           <TileCard
             key={tile.id}
             tile={tile}
             expanded={expandedId === tile.id}
             onExpand={() => toggle(tile.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function BandTileGrid(props?: BandTileGridProps) {
+  if (!props) {
+    return <DefaultBandTileGrid />;
+  }
+
+  const {
+    emissions = [],
+    tiles,
+    compact = false,
+    fullscreenExpand = false,
+    activeOnly = false,
+    showRecommendations: _showRecommendations,
+    onTileClick,
+  } = props;
+
+  const catalog = tiles ?? BAND_TILES;
+
+  const visibleTiles = useMemo(() => {
+    if (!activeOnly || emissions.length === 0) return catalog;
+    const ids = new Set(activeTileIds(emissions));
+    return catalog.filter((t) => ids.has(t.id));
+  }, [activeOnly, emissions, catalog]);
+
+  return (
+    <div>
+      {!compact && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            marginBottom: 10,
+            padding: '6px 10px',
+            borderRadius: 8,
+            background: 'rgba(6,182,212,0.04)',
+            border: '1px solid rgba(6,182,212,0.08)',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'var(--sx-mono, monospace)',
+              fontSize: 9,
+              letterSpacing: '0.12em',
+              color: '#06B6D4',
+              textTransform: 'uppercase',
+            }}
+          >
+            Laydown EW bands
+          </span>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>
+            {visibleTiles.length} active tile{visibleTiles.length === 1 ? '' : 's'}
+          </span>
+        </div>
+      )}
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: compact ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
+          gap: compact ? 8 : 14,
+        }}
+      >
+        {visibleTiles.map((tile) => (
+          <TileCard
+            key={tile.id}
+            tile={tile}
+            expanded={false}
+            onExpand={() => onTileClick?.(tile)}
+            emissions={emissions}
+            compact={compact}
+            fullscreenExpand={fullscreenExpand}
+            onTileClick={onTileClick}
           />
         ))}
       </div>

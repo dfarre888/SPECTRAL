@@ -10,6 +10,8 @@ import {
   Radio,
   Shield,
   Plane,
+  Radar,
+  Target,
   X,
 } from 'lucide-react'
 import { LoiterControls } from '@/app/map/components/LoiterControls'
@@ -22,8 +24,12 @@ import { operationalEnvelopeRadiusKm } from '@/lib/map/range-declaration'
 import type {
   MapAssetsPayload,
   MapCuasAsset,
+  MapEffectorAsset,
+  MapRadarAsset,
   MapUasAsset,
   PlacedCuas,
+  PlacedEffector,
+  PlacedRadar,
   PlacedUas,
   PlacementMode,
 } from '@/lib/map/types'
@@ -41,6 +47,12 @@ interface AssetSidebarProps {
   onClearLoiter: (uasInstanceId: string) => void
   onRemoveUas: (instanceId: string) => void
   onRemoveCuas: (instanceId: string) => void
+  placedRadars: PlacedRadar[]
+  placedEffectors: PlacedEffector[]
+  onSelectRadar: (asset: MapRadarAsset) => void
+  onSelectEffector: (asset: MapEffectorAsset) => void
+  onRemoveRadar: (instanceId: string) => void
+  onRemoveEffector: (instanceId: string) => void
   overlapLegend?: { defeat: number; survivable: number }
   overlapSource?: 'defeat-check' | 'adjudication' | 'geometry'
   heatmapEnabled?: boolean
@@ -62,6 +74,12 @@ export function AssetSidebar({
   onClearLoiter,
   onRemoveUas,
   onRemoveCuas,
+  placedRadars,
+  placedEffectors,
+  onSelectRadar,
+  onSelectEffector,
+  onRemoveRadar,
+  onRemoveEffector,
   overlapLegend,
   overlapSource,
   heatmapEnabled,
@@ -73,6 +91,8 @@ export function AssetSidebar({
   const operations = isOperationsEditionClient()
   const [uasOpen, setUasOpen] = useState(true)
   const [cuasOpen, setCuasOpen] = useState(true)
+  const [radarsOpen, setRadarsOpen] = useState(true)
+  const [effectorsOpen, setEffectorsOpen] = useState(true)
   const [placedOpen, setPlacedOpen] = useState(true)
   const [legendOpen, setLegendOpen] = useState(false)
 
@@ -80,6 +100,10 @@ export function AssetSidebar({
     placementMode.active && placementMode.kind === 'uas' ? placementMode.asset.id : null
   const placingCuasId =
     placementMode.active && placementMode.kind === 'cuas' ? placementMode.asset.id : null
+  const placingRadarId =
+    placementMode.active && placementMode.kind === 'radar' ? placementMode.asset.id : null
+  const placingEffectorId =
+    placementMode.active && placementMode.kind === 'effector' ? placementMode.asset.id : null
   const loiterPlacingId =
     placementMode.active && placementMode.kind === 'loiter'
       ? placementMode.uasInstanceId
@@ -171,12 +195,75 @@ export function AssetSidebar({
           </div>
         </CollapsibleSection>
 
-        {(placedUas.length > 0 || placedCuas.length > 0) && (
+        {assets.radars.length > 0 && (
+          <CollapsibleSection
+            open={radarsOpen}
+            onToggle={() => setRadarsOpen(!radarsOpen)}
+            label="Radars"
+            count={assets.radars.length}
+            icon={<Radar size={14} className="text-cyan" />}
+          >
+            <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
+              {assets.radars.map((asset) => (
+                <MapAssetPickCard
+                  key={asset.id}
+                  id={asset.id}
+                  kicker={asset.roleLabel}
+                  name={asset.name}
+                  sub={formatRadarSubline(asset)}
+                  active={placingRadarId === asset.id}
+                  highlighted={highlightedIds.includes(asset.id)}
+                  onClick={() => onSelectRadar(asset)}
+                  accent={asset.side === 'red' ? 'hostile' : 'radar'}
+                  thumbnailVariant="cuas"
+                />
+              ))}
+            </div>
+          </CollapsibleSection>
+        )}
+
+        {assets.effectors.length > 0 && (
+          <CollapsibleSection
+            open={effectorsOpen}
+            onToggle={() => setEffectorsOpen(!effectorsOpen)}
+            label="SAM / BMD / effectors"
+            count={assets.effectors.length}
+            icon={<Target size={14} className="text-orange" />}
+          >
+            <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
+              {assets.effectors.map((asset) => (
+                <MapAssetPickCard
+                  key={asset.id}
+                  id={asset.id}
+                  kicker={asset.tierLabel}
+                  name={asset.name}
+                  sub={formatEffectorSubline(asset)}
+                  active={placingEffectorId === asset.id}
+                  highlighted={highlightedIds.includes(asset.id)}
+                  onClick={() => onSelectEffector(asset)}
+                  accent={asset.side === 'red' ? 'hostile' : 'effector'}
+                  thumbnailVariant="cuas"
+                />
+              ))}
+            </div>
+          </CollapsibleSection>
+        )}
+
+        {(placedUas.length > 0 ||
+          placedCuas.length > 0 ||
+          placedRadars.length > 0 ||
+          placedEffectors.length > 0) && (
           <CollapsibleSection
             open={placedOpen}
             onToggle={() => setPlacedOpen(!placedOpen)}
             label="On map"
-            count={placedUas.length + placedCuas.length}
+            count={
+              placedUas.length +
+              placedCuas.length +
+              placedRadars.length +
+              placedEffectors.length
+            }
+
             icon={<Crosshair size={14} className="store-text-muted" />}
           >
             <div className="space-y-2">
@@ -296,6 +383,9 @@ export function AssetSidebar({
             <LegendRow colour="bg-cyan/40" label="Combat envelope" />
             <LegendRow colour="bg-cyan/20" label="Ferry max / wind spec (faint)" />
             <LegendRow colour="bg-orange/40" label="C-UAS defeat dome" />
+            <LegendRow colour="bg-cyan/30" label="Radar detection dome (Blue)" />
+            <LegendRow colour="bg-red-500/25" label="Radar detection dome (Red)" />
+            <LegendRow colour="bg-orange/35" label="SAM / BMD engagement dome" />
             <LegendRow colour="bg-slate-500/40" label="Terrain shield & dead ground" />
             <LegendRow colour="bg-red-500/40" label="Defeat adjudication (≥50%)" />
             <LegendRow colour="bg-green-500/40" label="Survivable (&lt;50%)" />
@@ -378,7 +468,7 @@ function MapAssetPickCard({
   active: boolean
   highlighted?: boolean
   onClick: () => void
-  accent: 'threat' | 'defeat'
+  accent: 'threat' | 'defeat' | 'radar' | 'effector' | 'hostile'
   thumbnailVariant: 'uas' | 'cuas'
 }) {
   return (
@@ -398,9 +488,11 @@ function MapAssetPickCard({
         <div
           className={cn(
             'relative w-14 h-14 rounded-lg overflow-hidden shrink-0 store-panel-inner border border-[var(--store-line)]',
-            accent === 'threat'
+            accent === 'threat' || accent === 'radar'
               ? 'shadow-[inset_0_-12px_24px_rgba(6,182,212,0.12)]'
-              : 'shadow-[inset_0_-12px_24px_rgba(249,115,22,0.12)]',
+              : accent === 'hostile'
+                ? 'shadow-[inset_0_-12px_24px_rgba(239,68,68,0.15)]'
+                : 'shadow-[inset_0_-12px_24px_rgba(249,115,22,0.12)]',
           )}
         >
           <PlatformThumbnail
@@ -433,6 +525,22 @@ function formatUasSubline(asset: MapUasAsset): string {
       : `${opKm.toFixed(1)} km envelope`
   const altRef = asset.altitude_reference === 'AMSL' ? 'AMSL' : 'AGL'
   return `${rangeStr} · ${asset.max_altitude_agl_m} m ${altRef}`
+}
+
+function formatRadarSubline(asset: MapRadarAsset): string {
+  const sector =
+    asset.sector_deg >= 360 ? '360°' : `${asset.sector_deg.toFixed(0)}° sector`
+  const nato = asset.nato_name ? ` · ${asset.nato_name}` : ''
+  return `${asset.detection_range_km.toFixed(0)} km · ${asset.bandsLabel} · ${sector}${nato}`
+}
+
+function formatEffectorSubline(asset: MapEffectorAsset): string {
+  const alt = `${asset.alt_min_km.toFixed(0)}–${asset.alt_max_km.toFixed(0)} km alt`
+  const cue =
+    asset.linkedRadars.length > 0
+      ? ` · cue: ${asset.linkedRadars.map((r) => r.name).join(' + ')}`
+      : ''
+  return `${asset.engagement_max_km.toFixed(0)} km engage · ${alt}${cue}`
 }
 
 function RemoveButton({ label, onClick }: { label: string; onClick: () => void }) {

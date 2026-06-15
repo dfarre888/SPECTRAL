@@ -17,6 +17,8 @@ import {
 import type {
   OverlapVolume,
   PlacedCuas,
+  PlacedEffector,
+  PlacedRadar,
   PlacedUas,
   WindSample,
 } from '@/lib/map/types'
@@ -25,6 +27,7 @@ const CYAN = '#06B6D4'
 const ORANGE = '#F97316'
 const RED = '#EF4444'
 const GREEN = '#22C55E'
+const BLUE_FORCE = '#3B82F6'
 
 export interface MaskingPolygon {
   cuasInstanceId: string
@@ -41,6 +44,8 @@ export interface MaskingPolygon {
 export interface CesiumSyncState {
   placedUas: PlacedUas[]
   placedCuas: PlacedCuas[]
+  placedRadars: PlacedRadar[]
+  placedEffectors: PlacedEffector[]
   overlaps: OverlapVolume[]
   maskingPolygons: MaskingPolygon[]
   windByUas: Record<string, WindSample>
@@ -627,6 +632,147 @@ export function syncMapEntities(
     })
     entity.label = new Cesium.LabelGraphics({
       text: `${cuas.asset.name}\n${(cuas.asset.defeat_range_m / 1000).toFixed(1)} km`,
+      font: '12px JetBrains Mono',
+      fillColor: Cesium.Color.WHITE,
+      outlineColor: Cesium.Color.BLACK,
+      outlineWidth: 2,
+      style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+      pixelOffset: new Cesium.Cartesian2(0, -36),
+      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    })
+  }
+
+
+  for (const radar of state.placedRadars) {
+    const id = `map-radar-mark-${radar.instanceId}`
+    keep.add(id)
+    const radius_m = radar.asset.dome_range_km * 1000
+    const isBlue = radar.asset.side === 'blue'
+    const outlineHex = isBlue ? BLUE_FORCE : RED
+
+    syncRangeSphere(
+      Cesium,
+      viewer,
+      keep,
+      'radar',
+      radar.instanceId,
+      radar.lon,
+      radar.lat,
+      radar.terrainAMSL,
+      radius_m,
+      '',
+      {
+        fillHex: CYAN,
+        fillAlpha: isBlue ? 0.14 : 0.11,
+        outlineHex,
+        outlineAlpha: 0.8,
+        outlineWidth: 2,
+      },
+    )
+
+    const entity = ensureEntity(viewer, id, () =>
+      new Cesium.Entity({ id, name: radar.asset.name }),
+    )
+    entity.position = new Cesium.ConstantPositionProperty(
+      Cesium.Cartesian3.fromDegrees(radar.lon, radar.lat, sphereEpicenterOnTerrainM(radar.terrainAMSL)),
+    )
+    entity.ellipsoid = undefined
+    entity.polygon = undefined
+    entity.billboard = new Cesium.BillboardGraphics({
+      image: PIN_SVG,
+      verticalOrigin: Cesium.VerticalOrigin.CENTER,
+      heightReference: Cesium.HeightReference.NONE,
+      scale: 1.05,
+      color: colour(Cesium, isBlue ? CYAN : RED, 1),
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    })
+    entity.label = new Cesium.LabelGraphics({
+      text: `${radar.asset.name}\n${radar.asset.detection_range_km.toFixed(0)} km detect`,
+      font: '12px JetBrains Mono',
+      fillColor: Cesium.Color.WHITE,
+      outlineColor: Cesium.Color.BLACK,
+      outlineWidth: 2,
+      style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+      pixelOffset: new Cesium.Cartesian2(0, -36),
+      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    })
+  }
+
+  for (const eff of state.placedEffectors) {
+    const id = `map-effector-mark-${eff.instanceId}`
+    keep.add(id)
+    const isBlue = eff.asset.side === 'blue'
+    const engageHex = isBlue ? ORANGE : RED
+
+    for (const linked of eff.asset.linkedRadars) {
+      syncRangeSphere(
+        Cesium,
+        viewer,
+        keep,
+        'effector',
+        eff.instanceId,
+        eff.lon,
+        eff.lat,
+        eff.terrainAMSL,
+        linked.dome_range_km * 1000,
+        `-radar-${linked.id}`,
+        {
+          fillHex: CYAN,
+          fillAlpha: 0.07,
+          outlineHex: CYAN,
+          outlineAlpha: 0.45,
+          outlineWidth: 2,
+        },
+      )
+    }
+
+    syncRangeSphere(
+      Cesium,
+      viewer,
+      keep,
+      'effector',
+      eff.instanceId,
+      eff.lon,
+      eff.lat,
+      eff.terrainAMSL,
+      eff.asset.engagement_dome_km * 1000,
+      '-engage',
+      {
+        fillHex: engageHex,
+        fillAlpha: isBlue ? 0.16 : 0.14,
+        outlineHex: engageHex,
+        outlineAlpha: 0.85,
+        outlineWidth: 3,
+      },
+    )
+
+    const cueLabel =
+      eff.asset.linkedRadars.length > 0
+        ? ` · ${eff.asset.linkedRadars.map((r) => r.name).join(' + ')}`
+        : ''
+
+    const entity = ensureEntity(viewer, id, () =>
+      new Cesium.Entity({ id, name: eff.asset.name }),
+    )
+    entity.position = new Cesium.ConstantPositionProperty(
+      Cesium.Cartesian3.fromDegrees(eff.lon, eff.lat, sphereEpicenterOnTerrainM(eff.terrainAMSL)),
+    )
+    entity.ellipsoid = undefined
+    entity.polygon = undefined
+    entity.billboard = new Cesium.BillboardGraphics({
+      image: SHIELD_SVG,
+      verticalOrigin: Cesium.VerticalOrigin.CENTER,
+      heightReference: Cesium.HeightReference.NONE,
+      scale: 1.15,
+      color: colour(Cesium, engageHex, 1),
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    })
+    entity.label = new Cesium.LabelGraphics({
+      text: `${eff.asset.name}\n${eff.asset.engagement_max_km.toFixed(0)} km engage${cueLabel}`,
       font: '12px JetBrains Mono',
       fillColor: Cesium.Color.WHITE,
       outlineColor: Cesium.Color.BLACK,

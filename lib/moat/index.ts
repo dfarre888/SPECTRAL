@@ -45,3 +45,9 @@ export {
   type IntegrationMode,
   type AdversaryIntent,
 } from '@/lib/moat/interopLayer';
+
+export {
+  trainingCataloguePerformanceResolver,
+  getActivePerformanceResolver,
+} from '@/lib/moat/catalogue-performance-resolver';
+export { MockAfsimAdapter } from '@/lib/moat/mock-afsim-adapter';

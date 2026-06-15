@@ -198,10 +198,15 @@ export const SOVEREIGN_PLATFORM_CATALOGUE: SovereignPlatform[] = [
  * returns the boundary marker so everything runs without controlled data.
  */
 export interface PlatformPerformance {
-  // Intentionally opaque in the open build. Shape defined in the accredited env.
   platform_id: string;
   resolved: boolean;
   note: string;
+  name?: string;
+  rcs_class?: 'very_low' | 'low' | 'medium' | 'high';
+  sensor_detection_range_km?: Partial<Record<string, number>>;
+  defeat_matrix_pk?: number | null;
+  confidence?: 'curated' | 'estimated' | 'derived';
+  source_notes?: string[];
 }
 
 export interface PlatformPerformanceResolver {
@@ -217,3 +222,5 @@ export const openBuildPerformanceResolver: PlatformPerformanceResolver = {
     };
   },
 };
+
+export { getActivePerformanceResolver, trainingCataloguePerformanceResolver } from '@/lib/moat/catalogue-performance-resolver';

@@ -17,15 +17,38 @@ import { cuasAssetToSpectrumBlue } from '@/lib/map/spectrum-bridge'
 import type { LaydownSpectralAnalysis, PairLaydownAssessment } from '@/lib/map/laydown-analysis'
 import { resolveJamTransmit } from '@/lib/spectrum/erp-resolve'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
-import type { OverlapVolume, PlacedCuas, PlacedUas } from '@/lib/map/types'
+import type {
+  MapCuasAsset,
+  OverlapVolume,
+  PlacedCuas,
+  PlacedEffector,
+  PlacedRadar,
+  PlacedUas,
+} from '@/lib/map/types'
+import { BandTileGrid } from '@/components/spectrum/BandTileGrid'
+import { LaydownTileModal } from '@/app/map/components/LaydownTileModal'
+import {
+  mergeLaydownEmissions,
+  resolveLaydownEmissions,
+  resolveRecommendationEmissions,
+} from '@/lib/map/laydown-tiles'
+import type { ThreatAssessment } from '@/lib/map/threat-assessment'
+import type { BandTile } from '@/components/spectrum/band-tile-data'
+import { AdjudicationProvenancePanel } from '@/components/pcm/AdjudicationProvenancePanel'
+import { resolveMapPairProvenance } from '@/lib/map/map-adjudication-provenance'
 import { clsx } from 'clsx'
 import { Plane, Radio, Shield, Sparkles } from 'lucide-react'
+import { useMemo, useState } from 'react'
 
 interface SpectralAnalysisPanelProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   placedUas: PlacedUas[]
   placedCuas: PlacedCuas[]
+  placedRadars?: PlacedRadar[]
+  placedEffectors?: PlacedEffector[]
+  threatAssessments?: ThreatAssessment[]
+  catalogCuas?: MapCuasAsset[]
   overlaps: OverlapVolume[]
   analysis: LaydownSpectralAnalysis
   adjudicationSource: AdjudicationSource
@@ -65,12 +88,41 @@ export function SpectralAnalysisPanel({
   onOpenChange,
   placedUas,
   placedCuas,
+  placedRadars = [],
+  placedEffectors = [],
+  threatAssessments = [],
+  catalogCuas = [],
   overlaps,
   analysis,
   adjudicationSource,
   fallbackReason,
 }: SpectralAnalysisPanelProps) {
-  const hasPlaced = placedUas.length > 0 || placedCuas.length > 0
+  const [showRecommendations, setShowRecommendations] = useState(false)
+  const [expandedTile, setExpandedTile] = useState<BandTile | null>(null)
+
+  const placedEmissions = useMemo(
+    () => resolveLaydownEmissions(placedUas, placedCuas, placedRadars, placedEffectors),
+    [placedUas, placedCuas, placedRadars, placedEffectors],
+  )
+
+  const recommendationEmissions = useMemo(
+    () =>
+      showRecommendations
+        ? resolveRecommendationEmissions(threatAssessments, catalogCuas)
+        : [],
+    [showRecommendations, threatAssessments, catalogCuas],
+  )
+
+  const displayEmissions = useMemo(
+    () => mergeLaydownEmissions(placedEmissions, recommendationEmissions),
+    [placedEmissions, recommendationEmissions],
+  )
+
+  const hasPlaced =
+    placedUas.length > 0 ||
+    placedCuas.length > 0 ||
+    placedRadars.length > 0 ||
+    placedEffectors.length > 0
   const operations = isOperationsEditionClient()
 
   return (
@@ -129,6 +181,43 @@ export function SpectralAnalysisPanel({
               <StatChip label="Out of range" value={analysis.summary.outOfRange} colour="muted" />
             </div>
 
+
+            <section className="space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-[10px] font-semibold uppercase tracking-widest store-text-muted">
+                  Laydown EW bands
+                </h3>
+                {threatAssessments.length > 0 && catalogCuas.length > 0 && (
+                  <label className="flex items-center gap-2 text-[10px] store-text-muted cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      className="rounded border-[var(--store-line)]"
+                      checked={showRecommendations}
+                      onChange={(e) => setShowRecommendations(e.target.checked)}
+                    />
+                    Show recommendations
+                  </label>
+                )}
+              </div>
+              {placedEmissions.length === 0 ? (
+                <p className="text-[10px] store-text-muted">No spectrum emissions resolved for placed assets.</p>
+              ) : (
+                <BandTileGrid
+                  emissions={displayEmissions}
+                  compact
+                  activeOnly
+                  fullscreenExpand
+                  onTileClick={setExpandedTile}
+                />
+              )}
+            </section>
+
+            <LaydownTileModal
+              tile={expandedTile}
+              emissions={displayEmissions}
+              onClose={() => setExpandedTile(null)}
+            />
+
             <section className="space-y-3">
               <h3 className="text-[10px] font-semibold uppercase tracking-widest store-text-muted">
                 Platform bands
@@ -150,7 +239,9 @@ export function SpectralAnalysisPanel({
                   <PairAssessmentCard
                     key={`${pair.uasInstanceId}-${pair.cuasInstanceId}`}
                     pair={pair}
+                    placedUas={placedUas}
                     placedCuas={placedCuas}
+                    placedRadars={placedRadars}
                     operations={operations}
                   />
                 ))}
@@ -172,13 +263,18 @@ export function SpectralAnalysisPanel({
 
 function PairAssessmentCard({
   pair,
+  placedUas,
   placedCuas,
+  placedRadars = [],
   operations,
 }: {
   pair: PairLaydownAssessment
+  placedUas: PlacedUas[]
   placedCuas: PlacedCuas[]
+  placedRadars?: PlacedRadar[]
   operations: boolean
 }) {
+  const provenance = resolveMapPairProvenance(pair, placedUas, placedCuas, placedRadars)
   const gated = pair.propagation?.propagationGated
 
   return (
@@ -318,6 +414,9 @@ function PairAssessmentCard({
           ))}
         </ul>
       </div>
+      {provenance && (
+        <AdjudicationProvenancePanel pd={provenance.pd} pair={provenance.pair} />
+      )}
     </div>
   )
 }

@@ -8,24 +8,12 @@ import type { PCM } from '@/lib/pcm/spectral.types';
 import type { AdjudicationCore } from '@/lib/pcm/adjudicationCore';
 import type { AdjudicationContext } from '@/lib/pcm/adjudication-context';
 import { DefeatMatrixCache } from '@/lib/pcm/defeat-matrix-lookup';
-import { resolveRedOrders } from '@/lib/pcm/red-order-resolver';
-import {
-  advanceAllInboundThreats,
-} from '@/lib/pcm/threat-kinematics';
-import {
-  buildInboundQueue,
-  isInboundThreat,
-  applyWaveActivation,
-} from '@/lib/pcm/swarm-saturation';
-import {
-  runSalvoCoordinator,
-  resolveImpacts,
-  computeBlueWinProbability,
-} from '@/lib/pcm/salvo-coordinator';
-import { resolveEwCombat } from '@/lib/pcm/ew-combat-resolver';
-import { fogOfWarEngine } from '@/lib/pcm/fogOfWarEngine';
+import { isInboundThreat } from '@/lib/pcm/swarm-saturation';
 import { createSeededRng } from '@/lib/pcm/seeded-rng';
-import { evaluateOutcome, evaluateRedObjectiveProgress } from '@/lib/pcm/turn-logic';
+import { runDetectionPhase } from '@/lib/pcm/engines/detection-engine';
+import { runEngagementPhase } from '@/lib/pcm/engines/engagement-engine';
+import { runAssessmentPhase } from '@/lib/pcm/engines/assessment-engine';
+import { evaluateOutcome } from '@/lib/pcm/turn-logic';
 
 type WorldState = PCM.WorldState;
 type Order = PCM.Order;
@@ -47,15 +35,6 @@ function isDefenceReady(p: PCM.Platform): boolean {
     p.status !== 'destroyed' &&
     (p.status === 'ground_ready' || p.status === 'airborne_tasked')
   );
-}
-
-function refreshForceTotals(force: PCM.ForceOrbat): void {
-  const active = force.platforms.filter(
-    (p) => p.status !== 'destroyed' && p.status !== 'mission_complete',
-  ).length;
-  const destroyed = force.platforms.filter((p) => p.status === 'destroyed').length;
-  force.platforms_active = active;
-  force.platforms_destroyed = destroyed;
 }
 
 function defaultContext(seed: number): AdjudicationContext {
@@ -149,59 +128,17 @@ function resolveTurnInternal(
   const context = ctx ?? defaultContext(seed);
   const rng = createSeededRng(seed);
   const events: AdjudicationEvent[] = [];
-  const turnMinutes = context.turnMinutes || 15;
-  const blueC2 = state.blue_force.c2?.gcs_location ?? 'ALPHA-4';
 
-  const waveActivated = applyWaveActivation(state, 8);
-  if (waveActivated > 0) {
-    events.push({
-      event_id: `EVT-WAVE-${state.turn}`,
-      type: 'weapon_release',
-      description: `Red wave activated ${waveActivated} platforms inbound.`,
-      affected_platform_ids: [],
-      visible_to_red: true,
-      visible_to_blue: false,
-      visible_to_ds: true,
-    });
-  }
+  const engagement = runEngagementPhase(state, redOrders, blueOrders, context, rng);
+  events.push(...engagement.events);
 
-  const redResult = resolveRedOrders(state, redOrders, context, rng);
-  events.push(...redResult.events);
-  context.ewInterceptPenalty = redResult.ewPressure;
-
-  const defenders = state.blue_force.platforms.filter(isDefenceReady);
-  const queue = buildInboundQueue(state, redOrders);
-
-  const salvo = runSalvoCoordinator(state, queue, blueOrders, defenders, context, rng);
-  events.push(...salvo.events);
-
-  const ewResult = resolveEwCombat(state, blueOrders, context, rng);
-  events.push(...ewResult.events);
-  context.ewInterceptPenalty = ewResult.ewInterceptPenalty;
-
-  events.push(...resolveImpacts(state, queue, salvo.interceptedThreatIds, rng));
-
-  const inbound = state.red_force.platforms.filter(isInboundThreat);
-  advanceAllInboundThreats(inbound, blueC2, turnMinutes);
-
-  evaluateRedObjectiveProgress(state, salvo.leakers);
-
-  refreshForceTotals(state.red_force);
-  refreshForceTotals(state.blue_force);
-
-  const sensorRng = createSeededRng(seed + 1);
-  const red = fogOfWarEngine.generateSensorPicture(state, 'RED', { rng: sensorRng });
-  const blue = fogOfWarEngine.generateSensorPicture(state, 'BLUE', { rng: sensorRng });
-  state.all_contacts = [...red, ...blue];
-
-  // Adaptive Red Force — adjust surviving Red platforms for the next turn
-  // based on loss rate, Blue EW posture, and elapsed turn count.
+  runDetectionPhase(state, seed);
   adaptRedForce(state, seed);
 
+  const assessment = runAssessmentPhase(state, engagement.salvo);
   state.outcome = evaluateOutcome(state);
-  state.updated_at = new Date().toISOString();
 
-  const blueWinProbability = computeBlueWinProbability(state, salvo.leakers);
+  const blueWinProbability = assessment.blueWinProbability;
 
   return { resolvedState: state, events, blueWinProbability };
 }

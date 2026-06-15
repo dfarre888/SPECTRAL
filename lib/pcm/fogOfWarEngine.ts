@@ -33,6 +33,8 @@ import {
 } from './detectionConstants';
 
 import type { PCM } from '@/lib/pcm/spectral.types';
+import { rangePdFactor, resolveDefenderSensorRange } from '@/lib/pcm/platform-performance-view';
+import { estimateGridRangeKm, gridRef } from '@/lib/pcm/pcm-spectrum-bridge';
 
 type WorldState = PCM.WorldState;
 type Platform = PCM.Platform;
@@ -53,6 +55,7 @@ export interface SensorEnvironment {
   time_of_day: WorldState['time_of_day'];
   terrain_type: string;
   detecting_force: ForceId;
+  defender_platforms?: Platform[];
 }
 
 export interface DetectionResult {
@@ -104,6 +107,14 @@ export class FogOfWarEngine {
   ): PdComponents {
 
     const basePd = this.getBasePd(platform, sensorType, rangeKm);
+    let adjustedBasePd = basePd;
+    if (sensorType === 'radar' && rangeKm > 0 && env.defender_platforms?.length) {
+      const detectionRangeKm = Math.max(
+        ...env.defender_platforms.map((d) => resolveDefenderSensorRange(d, 'radar', d.sensor)),
+        1,
+      );
+      adjustedBasePd = basePd * rangePdFactor(rangeKm, detectionRangeKm);
+    }
     const weatherMod = this.getWeatherModifier(sensorType, env.weather);
     const ewMod = this.getEWModifier(sensorType, platform, env.ew_assets_active, rangeKm);
     const altitudeMod = this.getAltitudeModifier(sensorType, platform);
@@ -116,7 +127,7 @@ export class FogOfWarEngine {
     const counterMod = this.getCountermeasuresModifier(platform, sensorType);
 
     // Final Pd — clamped 0.0–1.0
-    let rawPd = basePd * weatherMod * ewMod * altitudeMod * rcsMod * terrainMod * counterMod;
+    let rawPd = adjustedBasePd * weatherMod * ewMod * altitudeMod * rcsMod * terrainMod * counterMod;
     if (
       sensorType === 'visual' &&
       (env.time_of_day === 'night' ||
@@ -128,7 +139,7 @@ export class FogOfWarEngine {
     const finalPd = Math.max(0, Math.min(1, rawPd));
 
     return {
-      base_pd: basePd,
+      base_pd: adjustedBasePd,
       sensor_type: sensorType,
       weather_modifier: weatherMod,
       ew_modifier: ewMod,
@@ -177,6 +188,7 @@ export class FogOfWarEngine {
       time_of_day: worldState.time_of_day,
       terrain_type: worldState.terrain.primary_feature,
       detecting_force: detectingForce,
+      defender_platforms: detectingOrbat.platforms.filter((p) => p.status !== 'destroyed'),
     };
 
     for (const platform of enemyOrbat.platforms) {
@@ -190,7 +202,8 @@ export class FogOfWarEngine {
       }
 
       // Determine range from detecting force C2 node to platform
-      const rangeKm = this.estimateRange(worldState, detectingForce, platform);
+      const c2Grid = detectingOrbat.c2?.gcs_location ?? 'ALPHA-4';
+      const rangeKm = estimateGridRangeKm(c2Grid, gridRef(platform));
 
       // Try each available sensor type — take best result
       const sensorTypes = this.getAvailableSensors(detectingOrbat.platforms, platform);

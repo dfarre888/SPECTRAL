@@ -9,6 +9,7 @@ import { SpectralAnalysisPanel } from '@/app/map/components/SpectralAnalysisPane
 import { MapNavigationWheel } from '@/app/map/components/MapNavigationWheel'
 import { EntityInfoPanel } from '@/app/map/components/EntityInfoPanel'
 import { PlatformContextMenu } from '@/app/map/components/PlatformContextMenu'
+import { ThreatAssessmentPanel } from '@/app/map/components/ThreatAssessmentPanel'
 import type { PlatformContextTarget } from '@/app/map/hooks/usePlatformContextMenu'
 import { useDefeatOverlap } from '@/app/map/hooks/useDefeatOverlap'
 import { useLaydownAdjudication } from '@/app/map/hooks/useLaydownAdjudication'
@@ -23,9 +24,11 @@ import { useTerrainMasking } from '@/app/map/hooks/useTerrainMasking'
 import { useMapBuildings } from '@/app/map/hooks/useMapBuildings'
 import { useWindData } from '@/app/map/hooks/useWindData'
 import { writeLaydownSession } from '@/lib/map/laydown-session'
+import { haversineM } from '@/lib/propagation/geo'
+import { buildThreatAssessments } from '@/lib/map/threat-assessment'
 import { envelopeDiscAltitudeM } from '@/lib/map/range-declaration'
 import type { TerrainHeightUpdate } from '@/lib/map/terrain'
-import type { MapAssetsPayload, CursorPosition, PlacementMode, PlacedCuas, PlacedUas } from '@/lib/map/types'
+import type { MapAssetsPayload, CursorPosition, PlacementMode, PlacedCuas, PlacedEffector, PlacedRadar, PlacedUas } from '@/lib/map/types'
 
 const CesiumMapPanel = dynamic(() => import('./CesiumMapPanel'), {
   ssr: false,
@@ -50,6 +53,8 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const [assets] = useState(initialAssets)
   const [placedUas, setPlacedUas] = useState<PlacedUas[]>([])
   const [placedCuas, setPlacedCuas] = useState<PlacedCuas[]>([])
+  const [placedRadars, setPlacedRadars] = useState<PlacedRadar[]>([])
+  const [placedEffectors, setPlacedEffectors] = useState<PlacedEffector[]>([])
   const [placementMode, setPlacementMode] = useState<PlacementMode>({ active: false })
   const [nilWind, setNilWind] = useState(true)
   const [cursor, setCursor] = useState<CursorPosition>({ lon: 0, lat: 0, terrainAMSL: null })
@@ -63,6 +68,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const [spectralOpen, setSpectralOpen] = useState(false)
   const [heatmapEnabled, setHeatmapEnabled] = useState(false)
   const [platformContextMenu, setPlatformContextMenu] = useState<PlatformContextTarget | null>(null)
+  const [selectedThreatId, setSelectedThreatId] = useState<string | null>(null)
 
   const cesiumCtxRef = useRef<CesiumContext | null>(null)
   const getCesium = useCallback(() => cesiumCtxRef.current, [])
@@ -71,16 +77,27 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     cesiumCtxRef.current = ctx
   }, [])
 
-  const { placeAt, startUasPlacement, startCuasPlacement, cancelPlacement, duplicateAdjacent } =
-    usePlatformPlacement(
-      placementMode,
-      setPlacementMode,
-      placedUas,
-      placedCuas,
-      setPlacedUas,
-      setPlacedCuas,
-      getCesium,
-    )
+  const {
+    placeAt,
+    startUasPlacement,
+    startCuasPlacement,
+    startRadarPlacement,
+    startEffectorPlacement,
+    cancelPlacement,
+    duplicateAdjacent,
+  } = usePlatformPlacement(
+    placementMode,
+    setPlacementMode,
+    placedUas,
+    placedCuas,
+    placedRadars,
+    placedEffectors,
+    setPlacedUas,
+    setPlacedCuas,
+    setPlacedRadars,
+    setPlacedEffectors,
+    getCesium,
+  )
 
   const { startLoiterMode, placeLoiterWaypoint, clearLoiter } = useLoiterPlanning(
     placementMode,
@@ -151,6 +168,28 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     [overlaps]
   )
 
+  const threatAssessments = useMemo(
+    () =>
+      buildThreatAssessments(
+        placedUas,
+        placedCuas,
+        adjudication.analysis,
+        assets.cuas,
+        overlaps,
+      ),
+    [placedUas, placedCuas, adjudication.analysis, assets.cuas, overlaps],
+  )
+
+  useEffect(() => {
+    if (placedUas.length === 0) {
+      setSelectedThreatId(null)
+      return
+    }
+    if (!selectedThreatId || !placedUas.some((u) => u.instanceId === selectedThreatId)) {
+      setSelectedThreatId(placedUas[placedUas.length - 1]?.instanceId ?? null)
+    }
+  }, [placedUas, selectedThreatId])
+
   const handleGlobeClick = useCallback(
     async (lon: number, lat: number) => {
       if (placementMode.active && placementMode.kind === 'loiter') {
@@ -165,6 +204,8 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const handleClearAll = useCallback(() => {
     setPlacedUas([])
     setPlacedCuas([])
+    setPlacedRadars([])
+    setPlacedEffectors([])
     setPlacementMode({ active: false })
   }, [])
 
@@ -184,6 +225,14 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
 
   const handleRemoveCuas = useCallback((instanceId: string) => {
     setPlacedCuas((prev) => prev.filter((c) => c.instanceId !== instanceId))
+  }, [])
+
+  const handleRemoveRadar = useCallback((instanceId: string) => {
+    setPlacedRadars((prev) => prev.filter((r) => r.instanceId !== instanceId))
+  }, [])
+
+  const handleRemoveEffector = useCallback((instanceId: string) => {
+    setPlacedEffectors((prev) => prev.filter((e) => e.instanceId !== instanceId))
   }, [])
 
   const closePanel = useCallback((instanceId: string) => {
@@ -230,6 +279,24 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         })
       )
     }
+    if (update.radars.length) {
+      setPlacedRadars((prev) =>
+        prev.map((r) => {
+          const hit = update.radars.find((h) => h.instanceId === r.instanceId)
+          if (!hit) return r
+          return { ...r, terrainAMSL: hit.terrainAMSL }
+        })
+      )
+    }
+    if (update.effectors.length) {
+      setPlacedEffectors((prev) =>
+        prev.map((e) => {
+          const hit = update.effectors.find((h) => h.instanceId === e.instanceId)
+          if (!hit) return e
+          return { ...e, terrainAMSL: hit.terrainAMSL }
+        })
+      )
+    }
   }, [])
 
   useEffect(() => {
@@ -273,12 +340,18 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     const assetIds = new Set([
       ...assets.uas.map((a) => a.id),
       ...assets.cuas.map((a) => a.id),
+      ...assets.radars.map((a) => a.id),
+      ...assets.effectors.map((a) => a.id),
     ])
-    // SPECTRA effectors use 'eff-' prefixed IDs (e.g. 'eff-iron-beam').
-    // Map Intel assets use bare IDs (e.g. 'iron-beam'). Strip the prefix before matching.
-    const normalizeId = (id: string) => id.startsWith('eff-') ? id.slice(4) : id
-    const normalizedIds = stagedIds.map(normalizeId)
-    const matched = normalizedIds.filter((id) => assetIds.has(id))
+    const matchStagedId = (id: string): string | null => {
+      if (assetIds.has(id)) return id
+      if (id.startsWith('eff-')) {
+        const stripped = id.slice(4)
+        if (assetIds.has(stripped)) return stripped
+      }
+      return null
+    }
+    const matched = [...new Set(stagedIds.map(matchStagedId).filter((id): id is string => id !== null))]
 
     setStagingBanner({ stagedCount: stagedIds.length, matchedCount: matched.length })
     setHighlightedIds(matched)
@@ -294,6 +367,10 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     const pairs = adjudication.analysis.pairs.map((p) => {
       const uas = placedUas.find((u) => u.instanceId === p.uasInstanceId)
       const cuas = placedCuas.find((c) => c.instanceId === p.cuasInstanceId)
+      const rangeKm =
+        uas && cuas
+          ? haversineM(cuas.lat, cuas.lon, uas.lat, uas.lon) / 1000
+          : undefined
       return {
         platformId: uas?.asset.id ?? '',
         systemId: cuas?.asset.id ?? '',
@@ -304,6 +381,8 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         jamToSignal_db: p.propagation?.jam_to_signal_db ?? null,
         los_state: p.propagation?.los_state ?? '—',
         propagationGated: p.propagation?.propagationGated ?? false,
+        rangeKm,
+        uasAltitude_m: uas?.discAltitude_m,
       }
     })
     writeLaydownSession({ updatedAt: new Date().toISOString(), pairs })
@@ -323,6 +402,12 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         onClearLoiter={clearLoiter}
         onRemoveUas={handleRemoveUas}
         onRemoveCuas={handleRemoveCuas}
+        placedRadars={placedRadars}
+        placedEffectors={placedEffectors}
+        onSelectRadar={startRadarPlacement}
+        onSelectEffector={startEffectorPlacement}
+        onRemoveRadar={handleRemoveRadar}
+        onRemoveEffector={handleRemoveEffector}
         overlapLegend={overlapLegend}
         overlapSource={overlapSource}
         heatmapEnabled={heatmapEnabled}
@@ -337,6 +422,10 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         onOpenChange={setSpectralOpen}
         placedUas={placedUas}
         placedCuas={placedCuas}
+        placedRadars={placedRadars}
+        placedEffectors={placedEffectors}
+        threatAssessments={threatAssessments}
+        catalogCuas={assets.cuas}
         overlaps={overlaps}
         analysis={adjudication.analysis}
         adjudicationSource={adjudication.source}
@@ -349,8 +438,8 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             <span>
               AeroCopilot staged {stagingBanner.stagedCount} system
               {stagingBanner.stagedCount === 1 ? '' : 's'} — {stagingBanner.matchedCount} matched
-              Map Intel asset{stagingBanner.matchedCount === 1 ? '' : 's'} (radar-only IDs remain
-              in SPECTRA). Highlighted in sidebar.
+              Map Intel asset{stagingBanner.matchedCount === 1 ? '' : 's'} (unmatched SPECTRA IDs
+              stay in staging). Highlighted in sidebar.
             </span>
             <button
               type="button"
@@ -366,9 +455,13 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-xl store-panel-inner border-[var(--store-accent-border)] text-[11px] text-[var(--store-accent)] font-medium">
             {placementMode.kind === 'loiter'
               ? 'Place Loiter — click globe for loiter point · Esc to cancel'
-              : placementMode.kind === 'uas'
-                ? `Placing ${placementMode.asset.name} · click terrain · Esc to cancel`
-                : `Placing ${placementMode.asset.name} · click terrain · Esc to cancel`}
+              : placementMode.kind === 'radar'
+                ? `Placing radar ${placementMode.asset.name} · click terrain · Esc to cancel`
+                : placementMode.kind === 'effector'
+                  ? `Placing ${placementMode.asset.tierLabel} ${placementMode.asset.name} · click terrain · Esc to cancel`
+                  : placementMode.kind === 'uas'
+                    ? `Placing ${placementMode.asset.name} · click terrain · Esc to cancel`
+                    : `Placing ${placementMode.asset.name} · click terrain · Esc to cancel`}
           </div>
         )}
 
@@ -376,6 +469,8 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           <CesiumMapPanel
             placedUas={placedUas}
             placedCuas={placedCuas}
+            placedRadars={placedRadars}
+            placedEffectors={placedEffectors}
             overlaps={overlaps}
             maskingPolygons={maskingPolygons}
             heatmapCells={heatmap.cells}
@@ -408,6 +503,13 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           )}
 
           <MapNavigationWheel getCesium={getCesium} />
+
+          <ThreatAssessmentPanel
+            assessments={threatAssessments}
+            selectedUasInstanceId={selectedThreatId}
+            onSelectUas={setSelectedThreatId}
+            adjudicationSource={adjudication.source}
+          />
 
           {panelUas && panelScreenPos && (
             <EntityInfoPanel

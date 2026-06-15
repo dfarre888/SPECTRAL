@@ -9,6 +9,7 @@ import {
   composeAdjudicationResult,
 } from '@/lib/pcm/adjudicationCore';
 import { trainingAdjudicationCore } from '@/lib/pcm/trainingAdjudicationCore';
+import { interopRegistry, type AdversaryIntent } from '@/lib/moat/interopLayer';
 import type { AdjudicationContext } from '@/lib/pcm/adjudication-context';
 import { fogOfWarEngine } from '@/lib/pcm/fogOfWarEngine';
 import {
@@ -21,6 +22,32 @@ type WorldState = PCM.WorldState;
 type Order = PCM.Order;
 type PlayerProfile = PCM.PlayerProfile;
 type TacticalTendency = PCM.TacticalTendency;
+
+
+
+async function pushInteropAdversaryIntent(worldState: WorldState): Promise<void> {
+  const mode = process.env.SPECTRAL_INTEROP_SIM;
+  if (mode !== 'AFSIM' && mode !== 'MOCK') return;
+  const adapter = interopRegistry.get('AFSIM');
+  if (!adapter) return;
+  const intent: AdversaryIntent = {
+    exercise_id: worldState.exercise_id,
+    turn: worldState.turn,
+    objective: 'Pressure Blue magazine and detection chain',
+    approach: 'Sustain inbound OWA saturation from eastern axis',
+    pedagogical_rationale: 'Post-adjudication intent export for external sim validation',
+    targets_competency: 'layered_defence',
+    composition_summary: 'Mixed OWA package — training tier OSINT laydown',
+    platform_refs: worldState.red_force.platforms
+      .filter((pl) => pl.status !== 'destroyed')
+      .map((pl) => pl.id),
+  };
+  try {
+    await adapter.pushAdversaryIntent(intent);
+  } catch {
+    // Interop is best-effort in training builds
+  }
+}
 
 function defaultCore(): AdjudicationCore {
   if (process.env.SPECTRAL_PCM_STUB_ADJUDICATION === 'true') {
@@ -69,6 +96,8 @@ export class SpectralRefOrchestrator {
         `Turn ${resolvedState.turn}: ${detectionLine} ` +
         `${detectionSummary.blueMissing.length > 0 ? 'Blue NOT tracking: ' + detectionSummary.blueMissing.join(', ') + '.' : 'Blue tracking all Red assets.'}`;
     }
+
+    await pushInteropAdversaryIntent(resolvedState);
 
     const result = composeAdjudicationResult(
       resolvedState,

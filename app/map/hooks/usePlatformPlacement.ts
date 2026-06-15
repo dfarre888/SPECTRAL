@@ -7,8 +7,12 @@ import type { CesiumModule, CesiumTerrainProvider, CesiumViewer } from '@/lib/ma
 import { offsetApprox1Km } from '@/lib/propagation/geo'
 import type {
   MapCuasAsset,
+  MapEffectorAsset,
+  MapRadarAsset,
   MapUasAsset,
   PlacedCuas,
+  PlacedEffector,
+  PlacedRadar,
   PlacedUas,
   PlacementMode,
 } from '@/lib/map/types'
@@ -61,13 +65,47 @@ export function clonePlacedCuasAt(
   }
 }
 
+export function clonePlacedRadarAt(
+  source: PlacedRadar,
+  lon: number,
+  lat: number,
+  terrainAMSL: number,
+): PlacedRadar {
+  return {
+    instanceId: newInstanceId('radar'),
+    asset: source.asset,
+    lon,
+    lat,
+    terrainAMSL,
+  }
+}
+
+export function clonePlacedEffectorAt(
+  source: PlacedEffector,
+  lon: number,
+  lat: number,
+  terrainAMSL: number,
+): PlacedEffector {
+  return {
+    instanceId: newInstanceId('effector'),
+    asset: source.asset,
+    lon,
+    lat,
+    terrainAMSL,
+  }
+}
+
 export function usePlatformPlacement(
   placementMode: PlacementMode,
   setPlacementMode: (mode: PlacementMode) => void,
   placedUas: PlacedUas[],
   placedCuas: PlacedCuas[],
+  placedRadars: PlacedRadar[],
+  placedEffectors: PlacedEffector[],
   setPlacedUas: React.Dispatch<React.SetStateAction<PlacedUas[]>>,
   setPlacedCuas: React.Dispatch<React.SetStateAction<PlacedCuas[]>>,
+  setPlacedRadars: React.Dispatch<React.SetStateAction<PlacedRadar[]>>,
+  setPlacedEffectors: React.Dispatch<React.SetStateAction<PlacedEffector[]>>,
   getCesium: () => CesiumContext | null
 ) {
   const placeAt = useCallback(
@@ -117,9 +155,45 @@ export function usePlatformPlacement(
         }
         setPlacedCuas((prev) => [...prev, placed])
         setPlacementMode({ active: false })
+        return
+      }
+
+      if (placementMode.kind === 'radar') {
+        const asset = placementMode.asset as MapRadarAsset
+        const placed: PlacedRadar = {
+          instanceId: newInstanceId('radar'),
+          asset,
+          lon,
+          lat,
+          terrainAMSL,
+        }
+        setPlacedRadars((prev) => [...prev, placed])
+        setPlacementMode({ active: false })
+        return
+      }
+
+      if (placementMode.kind === 'effector') {
+        const asset = placementMode.asset as MapEffectorAsset
+        const placed: PlacedEffector = {
+          instanceId: newInstanceId('effector'),
+          asset,
+          lon,
+          lat,
+          terrainAMSL,
+        }
+        setPlacedEffectors((prev) => [...prev, placed])
+        setPlacementMode({ active: false })
       }
     },
-    [placementMode, getCesium, setPlacedUas, setPlacedCuas, setPlacementMode]
+    [
+      placementMode,
+      getCesium,
+      setPlacedUas,
+      setPlacedCuas,
+      setPlacedRadars,
+      setPlacedEffectors,
+      setPlacementMode,
+    ]
   )
 
   const startUasPlacement = useCallback(
@@ -132,6 +206,20 @@ export function usePlatformPlacement(
   const startCuasPlacement = useCallback(
     (asset: MapCuasAsset) => {
       setPlacementMode({ active: true, kind: 'cuas', asset })
+    },
+    [setPlacementMode]
+  )
+
+  const startRadarPlacement = useCallback(
+    (asset: MapRadarAsset) => {
+      setPlacementMode({ active: true, kind: 'radar', asset })
+    },
+    [setPlacementMode]
+  )
+
+  const startEffectorPlacement = useCallback(
+    (asset: MapEffectorAsset) => {
+      setPlacementMode({ active: true, kind: 'effector', asset })
     },
     [setPlacementMode]
   )
@@ -175,5 +263,13 @@ export function usePlatformPlacement(
     [getCesium, placedUas, placedCuas, setPlacedUas, setPlacedCuas],
   )
 
-  return { placeAt, startUasPlacement, startCuasPlacement, cancelPlacement, duplicateAdjacent }
+  return {
+    placeAt,
+    startUasPlacement,
+    startCuasPlacement,
+    startRadarPlacement,
+    startEffectorPlacement,
+    cancelPlacement,
+    duplicateAdjacent,
+  }
 }

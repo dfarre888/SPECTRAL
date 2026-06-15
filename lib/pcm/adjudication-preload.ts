@@ -8,6 +8,7 @@ import type { AdjudicationContext } from '@/lib/pcm/adjudication-context';
 import { DefeatMatrixCache } from '@/lib/pcm/defeat-matrix-lookup';
 import { preloadPairCache } from '@/lib/pcm/pcm-pair-adjudication';
 import { isInboundThreat } from '@/lib/pcm/swarm-saturation';
+import { mergeLaydownIntoContext, readLaydownSessionSafe } from '@/lib/pcm/laydown-context-bridge';
 
 const DEFENCE_GROUPS = new Set([
   'c_uas_defeat_kinetic',
@@ -46,5 +47,6 @@ export async function buildAdjudicationContext(
   };
 
   await preloadPairCache(ctx, worldState, threats, defenders);
+  mergeLaydownIntoContext(ctx, readLaydownSessionSafe());
   return ctx;
 }

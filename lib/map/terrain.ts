@@ -62,6 +62,8 @@ export interface TerrainHeightUpdate {
   uas: { instanceId: string; terrainAMSL: number }[]
   cuas: { instanceId: string; terrainAMSL: number }[]
   loiter: { uasInstanceId: string; terrainAMSL: number }[]
+  radars: { instanceId: string; terrainAMSL: number }[]
+  effectors: { instanceId: string; terrainAMSL: number }[]
 }
 
 const TERRAIN_HEIGHT_EPS_M = 0.5

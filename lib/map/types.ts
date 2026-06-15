@@ -1,4 +1,7 @@
 import type { PlatformCategory } from '@/lib/types'
+import type { EffectorTier, EffectType } from '@/lib/spectrum/effector-types'
+import type { RadarRole } from '@/lib/spectrum/radar-types'
+import type { Side } from '@/lib/spectrum/types'
 
 /** OSINT altitude reference for combat envelope disc placement. */
 export type AltitudeReference = 'AGL' | 'AMSL'
@@ -29,9 +32,48 @@ export interface MapCuasAsset {
   defeat_methods: string[]
 }
 
+export interface MapRadarAsset {
+  id: string
+  name: string
+  side: Side
+  role: RadarRole
+  roleLabel: string
+  image_url: string | null
+  /** OSINT instrumented / class range — shown in sidebar. */
+  detection_range_km: number
+  /** Tactical dome radius on globe (may be capped — see spectra-assets). */
+  dome_range_km: number
+  sector_deg: number
+  bandsLabel: string
+  nato_name?: string | null
+  associated_system?: string | null
+}
+
+export interface MapEffectorAsset {
+  id: string
+  name: string
+  side: Side
+  tier: EffectorTier
+  tierLabel: string
+  effect: EffectType
+  engagement_max_km: number
+  engagement_min_km: number
+  /** Tactical globe dome radius (capped — sidebar shows engagement_max_km). */
+  engagement_dome_km: number
+  alt_min_km: number
+  alt_max_km: number
+  cueing_radar_ids: string[]
+  /** Linked cueing radars resolved from the radar catalogue. */
+  linkedRadars: MapRadarAsset[]
+  image_url: string | null
+  associated_system?: string | null
+}
+
 export interface MapAssetsPayload {
   uas: MapUasAsset[]
   cuas: MapCuasAsset[]
+  radars: MapRadarAsset[]
+  effectors: MapEffectorAsset[]
 }
 
 export interface PlacedUas {
@@ -73,6 +115,22 @@ export interface PlacedCuas {
   wallTerrain_m?: number[]
 }
 
+export interface PlacedRadar {
+  instanceId: string
+  asset: MapRadarAsset
+  lon: number
+  lat: number
+  terrainAMSL: number
+}
+
+export interface PlacedEffector {
+  instanceId: string
+  asset: MapEffectorAsset
+  lon: number
+  lat: number
+  terrainAMSL: number
+}
+
 export interface OverlapVolume {
   id: string
   uasInstanceId: string
@@ -96,6 +154,8 @@ export type PlacementMode =
   | { active: false }
   | { active: true; kind: 'uas'; asset: MapUasAsset }
   | { active: true; kind: 'cuas'; asset: MapCuasAsset }
+  | { active: true; kind: 'radar'; asset: MapRadarAsset }
+  | { active: true; kind: 'effector'; asset: MapEffectorAsset }
   | { active: true; kind: 'loiter'; uasInstanceId: string; asset: MapUasAsset }
 
 export interface CursorPosition {

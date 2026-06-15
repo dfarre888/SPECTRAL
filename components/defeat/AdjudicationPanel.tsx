@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useMemo } from 'react'
 import { ConfidenceBadge } from '@/components/platforms/ConfidenceBadge'
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { ImmuneBadge } from '@/components/defeat/ImmuneBadge'
@@ -19,9 +20,14 @@ import type {
   Platform,
 } from '@/lib/types'
 import { EditionBadge } from '@/components/operations/EditionBadge'
-import { mapIntelDeepLink } from '@/lib/map/laydown-session'
+import { findSessionPair, mapIntelDeepLink, readLaydownSession } from '@/lib/map/laydown-session'
+import {
+  computeCatalogDetectionPd,
+  sessionPairToPcmPairResult,
+} from '@/lib/map/map-adjudication-provenance'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import { cn } from '@/lib/utils'
+import { AdjudicationProvenancePanel } from '@/components/pcm/AdjudicationProvenancePanel'
 
 interface AdjudicationPanelProps {
   open: boolean
@@ -62,6 +68,19 @@ export function AdjudicationPanel({
   system,
   effectiveness,
 }: AdjudicationPanelProps) {
+  const provenance = useMemo(() => {
+    if (!open || !platform || !system) {
+      return { pd: null, pair: null } as const
+    }
+    const session = readLaydownSession()
+    const sessionPair = findSessionPair(session, platform.id, system.id)
+    const rangeKm = sessionPair?.rangeKm ?? 5
+    const altitude_m = sessionPair?.uasAltitude_m ?? 200
+    const pd = computeCatalogDetectionPd(platform, rangeKm, altitude_m)
+    const pair = sessionPair ? sessionPairToPcmPairResult(sessionPair) : null
+    return { pd, pair }
+  }, [open, platform, system])
+
   if (!platform || !system) return null
 
   const operations = isOperationsEditionClient()
@@ -205,6 +224,8 @@ export function AdjudicationPanel({
               )}
             </>
           )}
+          {/* PCM engine provenance — wired when pair/Pd available from live adjudication */}
+          <AdjudicationProvenancePanel pd={provenance.pd} pair={provenance.pair} />
         </div>
       </SheetContent>
     </Sheet>

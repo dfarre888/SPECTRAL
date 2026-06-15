@@ -10,6 +10,10 @@ export interface LaydownSessionPair {
   jamToSignal_db: number | null
   los_state: string
   propagationGated: boolean
+  /** Haversine UAS–C-UAS separation (km) at session write time. */
+  rangeKm?: number
+  /** UAS combat disc altitude AMSL (m). */
+  uasAltitude_m?: number
 }
 
 export interface LaydownSession {

@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { toMapCuasAsset, toMapUasAsset } from '@/lib/map/asset-mappers'
+import { getSpectraMapAssets } from '@/lib/map/spectra-assets'
 import type { MapAssetsPayload } from '@/lib/map/types'
 import type { AntiDroneSystem, DefeatEffectiveness, Platform } from '@/lib/types'
 
@@ -14,9 +15,13 @@ export async function getMapAssets(): Promise<MapAssetsPayload> {
   if (platformsRes.error) throw new Error(platformsRes.error.message)
   if (systemsRes.error) throw new Error(systemsRes.error.message)
 
+  const spectra = getSpectraMapAssets()
+
   return {
     uas: (platformsRes.data as Platform[]).map(toMapUasAsset),
     cuas: (systemsRes.data as AntiDroneSystem[]).map(toMapCuasAsset),
+    radars: spectra.radars,
+    effectors: spectra.effectors,
   }
 }
 

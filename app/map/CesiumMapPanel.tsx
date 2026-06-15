@@ -27,6 +27,8 @@ import type {
   CursorPosition,
   OverlapVolume,
   PlacedCuas,
+  PlacedEffector,
+  PlacedRadar,
   PlacedUas,
   PlacementMode,
   WindSample,
@@ -35,6 +37,8 @@ import type {
 interface CesiumMapPanelProps {
   placedUas: PlacedUas[]
   placedCuas: PlacedCuas[]
+  placedRadars: PlacedRadar[]
+  placedEffectors: PlacedEffector[]
   overlaps: OverlapVolume[]
   maskingPolygons: MaskingPolygon[]
   heatmapCells?: HeatmapCell[]
@@ -59,6 +63,8 @@ interface CesiumMapPanelProps {
 export default function CesiumMapPanel({
   placedUas,
   placedCuas,
+  placedRadars,
+  placedEffectors,
   overlaps,
   maskingPolygons,
   heatmapCells = [],
@@ -97,6 +103,8 @@ export default function CesiumMapPanel({
   const onPlatformContextMenuRef = useRef(onPlatformContextMenu)
   const placedUasRef = useRef(placedUas)
   const placedCuasRef = useRef(placedCuas)
+  const placedRadarsRef = useRef(placedRadars)
+  const placedEffectorsRef = useRef(placedEffectors)
   const placementModeRef = useRef(placementMode)
   onCesiumReadyRef.current = onCesiumReady
   onGlobeClickRef.current = onGlobeClick
@@ -107,6 +115,8 @@ export default function CesiumMapPanel({
   onPlatformContextMenuRef.current = onPlatformContextMenu
   placedUasRef.current = placedUas
   placedCuasRef.current = placedCuas
+  placedRadarsRef.current = placedRadars
+  placedEffectorsRef.current = placedEffectors
   placementModeRef.current = placementMode
 
   usePlatformDrag(cesiumReady, viewerRef, cesiumRef, terrainRef, placementModeRef, setPlacedUas, setPlacedCuas)
@@ -127,7 +137,9 @@ export default function CesiumMapPanel({
         placementNeedsTerrainRefresh(u.terrainAMSL) ||
         (u.loiter && placementNeedsTerrainRefresh(u.loiter.terrainAMSL))
     ).length +
-    placedCuas.filter((c) => placementNeedsTerrainRefresh(c.terrainAMSL)).length
+    placedCuas.filter((c) => placementNeedsTerrainRefresh(c.terrainAMSL)).length +
+    placedRadars.filter((r) => placementNeedsTerrainRefresh(r.terrainAMSL)).length +
+    placedEffectors.filter((e) => placementNeedsTerrainRefresh(e.terrainAMSL)).length
 
   const pickLonLat = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -270,10 +282,12 @@ export default function CesiumMapPanel({
 
     const uas = placedUasRef.current
     const cuas = placedCuasRef.current
-    if (uas.length === 0 && cuas.length === 0) return
+    const radars = placedRadarsRef.current
+    const effectors = placedEffectorsRef.current
+    if (uas.length === 0 && cuas.length === 0 && radars.length === 0 && effectors.length === 0) return
     if (terrainEpoch === 0 && stalePlacementCount === 0) return
 
-    type SampleKind = 'uas' | 'cuas' | 'loiter'
+    type SampleKind = 'uas' | 'cuas' | 'loiter' | 'radar' | 'effector'
     const samples: { kind: SampleKind; instanceId: string; lon: number; lat: number }[] = []
     for (const u of uas) {
       samples.push({ kind: 'uas', instanceId: u.instanceId, lon: u.lon, lat: u.lat })
@@ -289,12 +303,18 @@ export default function CesiumMapPanel({
     for (const c of cuas) {
       samples.push({ kind: 'cuas', instanceId: c.instanceId, lon: c.lon, lat: c.lat })
     }
+    for (const r of radars) {
+      samples.push({ kind: 'radar', instanceId: r.instanceId, lon: r.lon, lat: r.lat })
+    }
+    for (const e of effectors) {
+      samples.push({ kind: 'effector', instanceId: e.instanceId, lon: e.lon, lat: e.lat })
+    }
 
     let cancelled = false
     sampleTerrainBatch(Cesium, terrainProvider, samples, viewer).then((heights) => {
       if (cancelled) return
 
-      const update: TerrainHeightUpdate = { uas: [], cuas: [], loiter: [] }
+      const update: TerrainHeightUpdate = { uas: [], cuas: [], loiter: [], radars: [], effectors: [] }
       samples.forEach((sample, i) => {
         const next = heights[i]
         if (sample.kind === 'uas') {
@@ -307,6 +327,16 @@ export default function CesiumMapPanel({
           if (current !== undefined && terrainHeightChanged(current, next)) {
             update.cuas.push({ instanceId: sample.instanceId, terrainAMSL: next })
           }
+        } else if (sample.kind === 'radar') {
+          const current = radars.find((r) => r.instanceId === sample.instanceId)?.terrainAMSL
+          if (current !== undefined && terrainHeightChanged(current, next)) {
+            update.radars.push({ instanceId: sample.instanceId, terrainAMSL: next })
+          }
+        } else if (sample.kind === 'effector') {
+          const current = effectors.find((e) => e.instanceId === sample.instanceId)?.terrainAMSL
+          if (current !== undefined && terrainHeightChanged(current, next)) {
+            update.effectors.push({ instanceId: sample.instanceId, terrainAMSL: next })
+          }
         } else {
           const current = uas.find((u) => u.instanceId === sample.instanceId)?.loiter
             ?.terrainAMSL
@@ -316,7 +346,13 @@ export default function CesiumMapPanel({
         }
       })
 
-      if (update.uas.length || update.cuas.length || update.loiter.length) {
+      if (
+        update.uas.length ||
+        update.cuas.length ||
+        update.loiter.length ||
+        update.radars.length ||
+        update.effectors.length
+      ) {
         onResolve(update)
       }
     })
@@ -339,6 +375,8 @@ export default function CesiumMapPanel({
     const state: CesiumSyncState = {
       placedUas,
       placedCuas,
+      placedRadars,
+      placedEffectors,
       overlaps,
       maskingPolygons,
       windByUas,
@@ -365,6 +403,8 @@ export default function CesiumMapPanel({
     cesiumReady,
     placedUas,
     placedCuas,
+    placedRadars,
+    placedEffectors,
     overlaps,
     maskingPolygons,
     heatmapCells,

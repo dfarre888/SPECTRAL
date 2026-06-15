@@ -154,3 +154,10 @@ export class InteropRegistry {
 }
 
 export const interopRegistry = new InteropRegistry();
+
+
+import { MockAfsimAdapter } from '@/lib/moat/mock-afsim-adapter';
+
+if (process.env.SPECTRAL_MOCK_AFSIM === 'true') {
+  interopRegistry.register(new MockAfsimAdapter({ mode: 'spectral_as_brain' }));
+}

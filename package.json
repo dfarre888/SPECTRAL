@@ -15,7 +15,8 @@
     "test:spectral:phase4": "vitest run lib/pcm/_test_phase4-adjudication.test.ts",
     "test:moat": "vitest run lib/moat/_test_moat.test.ts",
     "test:gnss": "vitest run lib/gnss/_test_gnss-incidents.test.ts",
-    "test:spectral:all": "vitest run lib/pcm/_test_phase1.test.ts lib/pcm/_test_phase2.test.ts lib/pcm/_test_phase3.test.ts lib/pcm/_test_phase4-adjudication.test.ts lib/moat/_test_moat.test.ts"
+    "test:spectral:all": "vitest run lib/pcm/_test_phase1.test.ts lib/pcm/_test_phase2.test.ts lib/pcm/_test_phase3.test.ts lib/pcm/_test_phase4-adjudication.test.ts lib/moat/_test_moat.test.ts",
+    "test:spectral:golden": "vitest run lib/pcm/_test_golden-scenarios.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",

@@ -6,6 +6,7 @@ import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 
 export function OperationsChrome() {
   const [tenantId, setTenantId] = useState<string | null>(null)
+  const [role, setRole] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isOperationsEditionClient()) return
@@ -13,6 +14,7 @@ export function OperationsChrome() {
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
         if (j?.tenantId) setTenantId(j.tenantId.slice(0, 8))
+        if (j?.role) setRole(j.role)
       })
       .catch(() => {})
   }, [])
@@ -26,6 +28,14 @@ export function OperationsChrome() {
           title="Tenant scope — customer data isolated"
         >
           TNT {tenantId}
+        </span>
+      )}
+      {role === 'admin' && (
+        <span
+          className="text-[9px] font-mono text-[var(--store-accent)] px-2 py-0.5 rounded-lg border border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]"
+          title="WOPR administrator — full scenario control"
+        >
+          WOPR ADMIN
         </span>
       )}
     </div>

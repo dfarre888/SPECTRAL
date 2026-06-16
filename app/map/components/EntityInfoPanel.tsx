@@ -58,6 +58,14 @@ export function EntityInfoPanel({
         <DataRow label="Time to perimeter" value={formatHHMM(uas.annotationTime_min)} accent />
         <DataRow label="Ceiling AMSL" value={`${Math.round(uas.ceilingAMSL_m)} m`} />
         <DataRow label="Endurance" value={formatHHMM(uas.asset.endurance_min)} />
+        {uas.mission && (
+          <>
+            <DataRow label="Mission" value={uas.mission.goalKind.toUpperCase()} accent />
+            <DataRow label="Path distance" value={`${uas.mission.totalDistance_km.toFixed(1)} km`} />
+            <DataRow label="Max Pk" value={`${uas.mission.maxPk_pct}%`} accent={uas.mission.pkThresholdExceeded} />
+            <DataRow label="EMCON" value={uas.mission.emcon ? "ON" : "OFF (transit)"} />
+          </>
+        )}
         {uas.loiter?.exceedsEndurance && (
           <p className="text-[var(--store-accent)] pt-1 text-[11px]">
             Endurance warning — loiter exceeds fuel/time envelope

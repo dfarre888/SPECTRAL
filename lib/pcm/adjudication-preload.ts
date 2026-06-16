@@ -36,6 +36,7 @@ export async function buildAdjudicationContext(
     supabase,
     threats.map((t) => t.type),
     defenders.map((d) => d.type),
+    tenantId,
   );
 
   const ctx: AdjudicationContext = {

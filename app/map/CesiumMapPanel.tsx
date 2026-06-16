@@ -20,8 +20,10 @@ import {
   type TerrainHeightUpdate,
 } from '@/lib/map/terrain'
 import { formatCoord } from '@/lib/map/format'
+import { parseEntityLaydownPick, type SelectedLaydownItem } from '@/lib/map/laydown-evaluation'
 import { usePlatformDrag } from '@/app/map/hooks/usePlatformDrag'
 import { usePlatformContextMenu, type PlatformContextTarget } from '@/app/map/hooks/usePlatformContextMenu'
+import type { WaypointContextTarget } from '@/app/map/components/WaypointContextMenu'
 import type { CesiumContext } from '@/app/map/hooks/usePlatformPlacement'
 import type {
   CursorPosition,
@@ -39,6 +41,8 @@ interface CesiumMapPanelProps {
   placedCuas: PlacedCuas[]
   placedRadars: PlacedRadar[]
   placedEffectors: PlacedEffector[]
+  selectedLaydownItem?: SelectedLaydownItem | null
+  onSelectPlacedItem?: (item: SelectedLaydownItem) => void
   overlaps: OverlapVolume[]
   maskingPolygons: MaskingPolygon[]
   heatmapCells?: HeatmapCell[]
@@ -58,6 +62,7 @@ interface CesiumMapPanelProps {
   setPlacedUas: React.Dispatch<React.SetStateAction<PlacedUas[]>>
   setPlacedCuas: React.Dispatch<React.SetStateAction<PlacedCuas[]>>
   onPlatformContextMenu: (target: PlatformContextTarget | null) => void
+  onWaypointContextMenu: (target: WaypointContextTarget | null) => void
 }
 
 export default function CesiumMapPanel({
@@ -65,6 +70,8 @@ export default function CesiumMapPanel({
   placedCuas,
   placedRadars,
   placedEffectors,
+  selectedLaydownItem = null,
+  onSelectPlacedItem,
   overlaps,
   maskingPolygons,
   heatmapCells = [],
@@ -84,6 +91,7 @@ export default function CesiumMapPanel({
   setPlacedUas,
   setPlacedCuas,
   onPlatformContextMenu,
+  onWaypointContextMenu,
 }: CesiumMapPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const viewerRef = useRef<CesiumViewer | null>(null)
@@ -101,6 +109,8 @@ export default function CesiumMapPanel({
   const onTerrainHeightsResolvedRef = useRef(onTerrainHeightsResolved)
   const onTerrainEpochChangeRef = useRef(onTerrainEpochChange)
   const onPlatformContextMenuRef = useRef(onPlatformContextMenu)
+  const onWaypointContextMenuRef = useRef(onWaypointContextMenu)
+  const onSelectPlacedItemRef = useRef(onSelectPlacedItem)
   const placedUasRef = useRef(placedUas)
   const placedCuasRef = useRef(placedCuas)
   const placedRadarsRef = useRef(placedRadars)
@@ -113,6 +123,8 @@ export default function CesiumMapPanel({
   onTerrainHeightsResolvedRef.current = onTerrainHeightsResolved
   onTerrainEpochChangeRef.current = onTerrainEpochChange
   onPlatformContextMenuRef.current = onPlatformContextMenu
+  onWaypointContextMenuRef.current = onWaypointContextMenu
+  onSelectPlacedItemRef.current = onSelectPlacedItem
   placedUasRef.current = placedUas
   placedCuasRef.current = placedCuas
   placedRadarsRef.current = placedRadars
@@ -129,6 +141,7 @@ export default function CesiumMapPanel({
     placedUasRef,
     placedCuasRef,
     (target) => onPlatformContextMenuRef.current(target),
+    (target) => onWaypointContextMenuRef.current(target),
   )
 
   const stalePlacementCount =
@@ -161,11 +174,19 @@ export default function CesiumMapPanel({
     if (initRef.current || !containerRef.current) return
     initRef.current = true
 
+    const container = containerRef.current
     let destroyed = false
+
+    const abortInit = () => {
+      initRef.current = false
+    }
 
     ;(async () => {
       const Cesium = await loadCesium()
-      if (destroyed || !containerRef.current) return
+      if (destroyed || !container.isConnected) {
+        abortInit()
+        return
+      }
 
       Cesium.Ion.defaultAccessToken = process.env.NEXT_PUBLIC_CESIUM_ION_TOKEN ?? ''
 
@@ -173,7 +194,12 @@ export default function CesiumMapPanel({
         requestVertexNormals: true,
       })
 
-      const viewer = new Cesium.Viewer(containerRef.current, {
+      if (destroyed || !container.isConnected) {
+        abortInit()
+        return
+      }
+
+      const viewer = new Cesium.Viewer(container, {
         terrainProvider,
         animation: false,
         timeline: false,
@@ -247,6 +273,15 @@ export default function CesiumMapPanel({
       handler.setInputAction(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (click: any) => {
+          const pickedEntity = viewer.scene.pick(click.position)
+          const entityId = pickedEntity?.id?.id ?? pickedEntity?.id
+          if (typeof entityId === 'string') {
+            const laydownPick = parseEntityLaydownPick(entityId)
+            if (laydownPick) {
+              onSelectPlacedItemRef.current?.(laydownPick)
+              return
+            }
+          }
           const picked = pickLonLat(viewer, Cesium, click.position)
           if (picked) onGlobeClickRef.current(picked.lon, picked.lat)
         },
@@ -377,6 +412,7 @@ export default function CesiumMapPanel({
       placedCuas,
       placedRadars,
       placedEffectors,
+      selectedLaydownItem,
       overlaps,
       maskingPolygons,
       windByUas,
@@ -405,6 +441,7 @@ export default function CesiumMapPanel({
     placedCuas,
     placedRadars,
     placedEffectors,
+    selectedLaydownItem,
     overlaps,
     maskingPolygons,
     heatmapCells,

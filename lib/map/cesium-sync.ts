@@ -5,6 +5,7 @@ import {
   uniformWallTerrain,
 } from '@/lib/map/envelope-geometry'
 import { formatHHMM } from '@/lib/map/format'
+import { missionWaypointEntityId } from '@/lib/map/mission-path-planner'
 import { TERRAIN_SURFACE_AGL_M, placementNeedsTerrainRefresh } from '@/lib/map/terrain'
 import { PIN_SVG, SHIELD_SVG, UAS_SILHOUETTE_SVG, windArrowSvg } from '@/lib/map/icons'
 import {
@@ -14,6 +15,8 @@ import {
   type MaskingRayResult,
   type TerrainShadowFootprint,
 } from '@/lib/map/terrain-masking'
+import type { SelectedLaydownItem } from '@/lib/map/laydown-evaluation'
+import { isSameLaydownItem } from '@/lib/map/laydown-evaluation'
 import type {
   OverlapVolume,
   PlacedCuas,
@@ -46,10 +49,24 @@ export interface CesiumSyncState {
   placedCuas: PlacedCuas[]
   placedRadars: PlacedRadar[]
   placedEffectors: PlacedEffector[]
+  selectedLaydownItem?: SelectedLaydownItem | null
   overlaps: OverlapVolume[]
   maskingPolygons: MaskingPolygon[]
   windByUas: Record<string, WindSample>
   nilWind: boolean
+}
+
+
+function isSelectedEntity(
+  state: CesiumSyncState,
+  kind: SelectedLaydownItem['kind'],
+  instanceId: string,
+): boolean {
+  return isSameLaydownItem(state.selectedLaydownItem ?? null, { kind, instanceId })
+}
+
+function billboardScale(base: number, selected: boolean): number {
+  return selected ? base * 1.35 : base
 }
 
 function colour(Cesium: CesiumModule, hex: string, alpha: number) {
@@ -538,7 +555,7 @@ export function syncMapEntities(
       image: UAS_SILHOUETTE_SVG,
       verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
       heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-      scale: 1.2,
+      scale: billboardScale(1.2, isSelectedEntity(state, 'uas', uas.instanceId)),
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
     })
 
@@ -557,6 +574,10 @@ export function syncMapEntities(
 
     if (uas.loiter) {
       syncLoiterGraphics(Cesium, viewer, uas, keep)
+    }
+
+    if (uas.mission) {
+      syncMissionPathGraphics(Cesium, viewer, uas, keep)
     }
 
     if (!state.nilWind && state.windByUas[uas.instanceId]) {
@@ -627,7 +648,7 @@ export function syncMapEntities(
       image: SHIELD_SVG,
       verticalOrigin: Cesium.VerticalOrigin.CENTER,
       heightReference: Cesium.HeightReference.NONE,
-      scale: 1.1,
+      scale: billboardScale(1.1, isSelectedEntity(state, 'cuas', cuas.instanceId)),
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
     })
     entity.label = new Cesium.LabelGraphics({
@@ -684,7 +705,7 @@ export function syncMapEntities(
       image: PIN_SVG,
       verticalOrigin: Cesium.VerticalOrigin.CENTER,
       heightReference: Cesium.HeightReference.NONE,
-      scale: 1.05,
+      scale: billboardScale(1.05, isSelectedEntity(state, 'radar', radar.instanceId)),
       color: colour(Cesium, isBlue ? CYAN : RED, 1),
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
     })
@@ -767,7 +788,7 @@ export function syncMapEntities(
       image: SHIELD_SVG,
       verticalOrigin: Cesium.VerticalOrigin.CENTER,
       heightReference: Cesium.HeightReference.NONE,
-      scale: 1.15,
+      scale: billboardScale(1.15, isSelectedEntity(state, 'effector', eff.instanceId)),
       color: colour(Cesium, engageHex, 1),
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
     })
@@ -971,6 +992,57 @@ function syncLoiterGraphics(
       outlineColor: Cesium.Color.BLACK,
       outlineWidth: 2,
       style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    })
+  }
+}
+
+
+function syncMissionPathGraphics(
+  Cesium: CesiumModule,
+  viewer: CesiumViewer,
+  uas: PlacedUas,
+  keep: Set<string>,
+) {
+  if (!uas.mission) return
+  const mission = uas.mission
+  const base = uas.instanceId
+  const positions: number[] = []
+  for (const wp of mission.waypoints) {
+    positions.push(wp.lon, wp.lat, wp.alt_m)
+  }
+  const pathId = `map-mission-path-${base}`
+  keep.add(pathId)
+  const pathEntity = ensureEntity(viewer, pathId, () => new Cesium.Entity({ id: pathId }))
+  pathEntity.polyline = new Cesium.PolylineGraphics({
+    positions: Cesium.Cartesian3.fromDegreesArrayHeights(positions),
+    width: 3,
+    material: colour(Cesium, ORANGE, 0.95),
+  })
+
+  const goalId = `map-mission-goal-${base}`
+  keep.add(goalId)
+  const goal = ensureEntity(viewer, goalId, () => new Cesium.Entity({ id: goalId }))
+  goal.position = new Cesium.ConstantPositionProperty(
+    Cesium.Cartesian3.fromDegrees(mission.goalLon, mission.goalLat, mission.goalTerrainAMSL + 2),
+  )
+  goal.billboard = new Cesium.BillboardGraphics({
+    image: PIN_SVG,
+    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+    disableDepthTestDistance: Number.POSITIVE_INFINITY,
+  })
+
+  for (const wp of mission.waypoints) {
+    const wpId = missionWaypointEntityId(base, wp.id)
+    keep.add(wpId)
+    const entity = ensureEntity(viewer, wpId, () => new Cesium.Entity({ id: wpId, name: wp.kind }))
+    entity.position = new Cesium.ConstantPositionProperty(Cesium.Cartesian3.fromDegrees(wp.lon, wp.lat, wp.alt_m))
+    entity.point = new Cesium.PointGraphics({
+      pixelSize: 10,
+      color: colour(Cesium, CYAN, 0.95),
+      outlineColor: Cesium.Color.BLACK,
+      outlineWidth: 2,
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
     })
   }

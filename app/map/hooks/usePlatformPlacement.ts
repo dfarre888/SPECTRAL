@@ -106,7 +106,8 @@ export function usePlatformPlacement(
   setPlacedCuas: React.Dispatch<React.SetStateAction<PlacedCuas[]>>,
   setPlacedRadars: React.Dispatch<React.SetStateAction<PlacedRadar[]>>,
   setPlacedEffectors: React.Dispatch<React.SetStateAction<PlacedEffector[]>>,
-  getCesium: () => CesiumContext | null
+  getCesium: () => CesiumContext | null,
+  onUasPlaced?: (uas: PlacedUas) => void,
 ) {
   const placeAt = useCallback(
     async (lon: number, lat: number) => {
@@ -140,6 +141,7 @@ export function usePlatformPlacement(
         }
         setPlacedUas((prev) => [...prev, placed])
         setPlacementMode({ active: false })
+        onUasPlaced?.(placed)
         return
       }
 
@@ -193,6 +195,7 @@ export function usePlatformPlacement(
       setPlacedRadars,
       setPlacedEffectors,
       setPlacementMode,
+      onUasPlaced,
     ]
   )
 
@@ -228,7 +231,34 @@ export function usePlatformPlacement(
     setPlacementMode({ active: false })
   }, [setPlacementMode])
 
-  const duplicateAdjacent = useCallback(
+  const placeCuasAt = useCallback(
+    async (asset: MapCuasAsset, lon: number, lat: number): Promise<PlacedCuas | null> => {
+      const ctx = getCesium()
+      if (!ctx) return null
+
+      const terrainAMSL = await sampleTerrainAMSL(
+        ctx.Cesium,
+        ctx.terrainProvider,
+        lon,
+        lat,
+        ctx.viewer,
+      )
+
+      const placed: PlacedCuas = {
+        instanceId: newInstanceId('cuas'),
+        asset,
+        lon,
+        lat,
+        terrainAMSL,
+        hasTerrainMasking: false,
+      }
+      setPlacedCuas((prev) => [...prev, placed])
+      return placed
+    },
+    [getCesium, setPlacedCuas],
+  )
+
+    const duplicateAdjacent = useCallback(
     async (kind: 'uas' | 'cuas', instanceId: string) => {
       const ctx = getCesium()
       if (!ctx) return
@@ -265,6 +295,7 @@ export function usePlatformPlacement(
 
   return {
     placeAt,
+    placeCuasAt,
     startUasPlacement,
     startCuasPlacement,
     startRadarPlacement,

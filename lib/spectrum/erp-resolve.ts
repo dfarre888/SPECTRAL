@@ -1,6 +1,7 @@
 import type { BandOverlap } from '@/lib/spectrum/types'
 import type { Platform, SpectrumCapability } from '@/lib/spectrum/types'
 import type { ConfidenceLevel } from '@/lib/propagation/types'
+import { resolveAccreditedErpForJam } from '@/lib/operations/accredited-supplements-data'
 
 export interface JamTransmit {
   erp_dbm: number
@@ -65,6 +66,20 @@ export function resolveJamTransmit(
       freq_hz,
       confidence: 'Estimated',
       source: 'No jam capability — OSINT default',
+    }
+  }
+
+
+  if (cap) {
+    const systemId = blue.id
+    const accredited = resolveAccreditedErpForJam(systemId, cap.fn)
+    if (accredited) {
+      return {
+        erp_dbm: accredited.erp_dbm,
+        freq_hz: accredited.freq_hz ?? freq_hz,
+        confidence: accredited.confidence,
+        source: accredited.source,
+      }
     }
   }
 

@@ -63,8 +63,9 @@ export function usePropagationHeatmap(
       grid_steps: 20,
       receiver_alt_m: receiverAltM,
       environment: {
-        urban_density: jammer.hasTerrainMasking ? 'suburban' : 'open',
-        terrain_obstructed: jammer.hasTerrainMasking,
+        // Nominal propagation grid — terrain shielding is shown on the defeat dome, not as all-NLOS grey tiles.
+        urban_density: 'open',
+        terrain_obstructed: false,
       },
     }
 

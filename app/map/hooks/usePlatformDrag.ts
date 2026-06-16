@@ -7,8 +7,9 @@ import type { CesiumModule, CesiumTerrainProvider, CesiumViewer } from '@/lib/ma
 import type { PlacedCuas, PlacedUas, PlacementMode } from '@/lib/map/types'
 
 interface DragState {
-  kind: 'uas' | 'cuas'
+  kind: 'uas' | 'cuas' | 'mission-wp'
   instanceId: string
+  waypointId?: string
   entityId: string
   didMove: boolean
 }
@@ -65,12 +66,26 @@ export function usePlatformDrag(
         const entityId: string | undefined = picked?.id?.id
         if (typeof entityId !== 'string') return
 
-        let kind: 'uas' | 'cuas' | null = null
+        let kind: 'uas' | 'cuas' | 'mission-wp' | null = null
         let instanceId = ''
+        let waypointId: string | undefined
 
         if (entityId.startsWith('map-uas-mark-')) {
           kind = 'uas'
           instanceId = entityId.slice('map-uas-mark-'.length)
+        } else if (entityId.startsWith('map-mission-wp-')) {
+          kind = 'mission-wp'
+          const rest = entityId.slice('map-mission-wp-'.length)
+          const sep = rest.indexOf('-wp-')
+          if (sep > 0) {
+            instanceId = rest.slice(0, sep)
+            waypointId = rest.slice(sep + 1)
+          } else {
+            const dash = rest.indexOf('-')
+            if (dash <= 0) return
+            instanceId = rest.slice(0, dash)
+            waypointId = rest.slice(dash + 1)
+          }
         } else if (entityId.startsWith('map-cuas-mark-')) {
           kind = 'cuas'
           instanceId = entityId.slice('map-cuas-mark-'.length)
@@ -78,7 +93,7 @@ export function usePlatformDrag(
 
         if (!kind) return
 
-        dragRef.current = { kind, instanceId, entityId, didMove: false }
+        dragRef.current = { kind, instanceId, waypointId, entityId, didMove: false }
         camera.enableRotate = false
         camera.enableZoom = false
         camera.enableTranslate = false
@@ -138,6 +153,20 @@ export function usePlatformDrag(
         // State update triggers syncMapEntities (redraws disc/sphere/wall)
         // and useTerrainMasking (recomputes LOS masking polygon).
         sampleTerrainAMSL(Cesium, terrainProvider, lon, lat, viewer).then((terrainAMSL) => {
+          if (drag.kind === 'mission-wp' && drag.waypointId) {
+            setPlacedUas((prev) =>
+              prev.map((u) => {
+                if (u.instanceId !== drag.instanceId || !u.mission) return u
+                const waypoints = u.mission.waypoints.map((wp) =>
+                  wp.id === drag.waypointId
+                    ? { ...wp, lon, lat, terrainAMSL, alt_m: terrainAMSL + (wp.alt_m - wp.terrainAMSL) }
+                    : wp,
+                )
+                return { ...u, mission: { ...u.mission, waypoints, manualOverride: true, updatedAt: new Date().toISOString() } }
+              }),
+            )
+            return
+          }
           if (drag.kind === 'uas') {
             setPlacedUas((prev) =>
               prev.map((u) => {
@@ -158,7 +187,7 @@ export function usePlatformDrag(
                 }
               }),
             )
-          } else {
+          } else if (drag.kind === 'cuas') {
             setPlacedCuas((prev) =>
               prev.map((c) => {
                 if (c.instanceId !== drag.instanceId) return c

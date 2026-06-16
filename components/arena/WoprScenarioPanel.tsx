@@ -7,34 +7,74 @@ import { StorePanel } from '@/components/ui/store-surface'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import type { SensorTrack, TickResult, WoprScenario } from '@/lib/wopr/types'
 import { clsx } from 'clsx'
-import { Play, Plus, Radio, Pause, Swords } from 'lucide-react'
+import { Play, Plus, Radio, Swords } from 'lucide-react'
 
-export function WoprScenarioPanel() {
+export interface WoprScenarioPanelProps {
+  onScenarioChange?: (scenario: WoprScenario | null) => void
+  onTickChange?: (tick: TickResult | null) => void
+}
+
+function countActivePlatforms(scenario: WoprScenario | null): { red: number; blue: number } {
+  if (!scenario) return { red: 0, blue: 0 }
+  const red = scenario.world_state.red_orbat.platforms.filter((p) => !p.destroyed).length
+  const blue = scenario.world_state.blue_orbat.platforms.filter((p) => !p.destroyed).length
+  return { red, blue }
+}
+
+export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenarioPanelProps) {
   const operations = isOperationsEditionClient()
   const [scenarios, setScenarios] = useState<WoprScenario[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [tick, setTick] = useState<TickResult | null>(null)
   const [events, setEvents] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [apiStatus, setApiStatus] = useState<'idle' | 'loading' | 'ok' | 'fallback'>('idle')
+  const [sseConnected, setSseConnected] = useState(false)
   const [newName, setNewName] = useState('')
   const [templateId, setTemplateId] = useState('')
   const [templates, setTemplates] = useState<{ id: string; name: string }[]>([])
   const streamRef = useRef<EventSource | null>(null)
 
   const selected = scenarios.find((s) => s.id === selectedId) ?? null
+  const orbatCounts = countActivePlatforms(selected)
+
+  const selectScenario = useCallback(
+    (id: string, list: WoprScenario[] = scenarios) => {
+      setSelectedId(id)
+      setTick(null)
+      setEvents([])
+      onTickChange?.(null)
+      const scenario = list.find((s) => s.id === id) ?? null
+      onScenarioChange?.(scenario)
+    },
+    [scenarios, onScenarioChange, onTickChange],
+  )
 
   const refresh = useCallback(async () => {
     if (!operations) return
     setApiStatus('loading')
-    const res = await fetch('/api/v1/wopr/scenarios')
-    if (res.status === 403 || !res.ok) {
+    setError(null)
+    try {
+      const res = await fetch('/api/v1/wopr/scenarios')
+      if (res.status === 403) {
+        setApiStatus('fallback')
+        setError('WOPR API forbidden — Operations edition and tenant membership required.')
+        return
+      }
+      if (!res.ok) {
+        setApiStatus('fallback')
+        setError(`Failed to load scenarios (${res.status}).`)
+        return
+      }
+      const json = await res.json()
+      const list: WoprScenario[] = json.data ?? []
+      setScenarios(list)
+      setApiStatus('ok')
+    } catch {
       setApiStatus('fallback')
-      return
+      setError('Network error loading WOPR scenarios.')
     }
-    const json = await res.json()
-    setScenarios(json.data ?? [])
-    setApiStatus('ok')
   }, [operations])
 
   useEffect(() => {
@@ -50,17 +90,32 @@ export function WoprScenarioPanel() {
   }, [operations])
 
   useEffect(() => {
-    if (!selectedId || !operations) return
+    if (scenarios.length === 0) return
+    const stillSelected = selectedId && scenarios.some((s) => s.id === selectedId)
+    if (!stillSelected) {
+      selectScenario(scenarios[0].id, scenarios)
+    }
+  }, [scenarios, selectedId, selectScenario])
+
+  useEffect(() => {
+    if (!selectedId || !operations) {
+      setSseConnected(false)
+      return
+    }
 
     streamRef.current?.close()
     const es = new EventSource(`/api/v1/wopr/scenarios/${selectedId}/stream`)
     streamRef.current = es
+
+    es.onopen = () => setSseConnected(true)
+    es.onerror = () => setSseConnected(false)
 
     es.onmessage = (ev) => {
       try {
         const msg = JSON.parse(ev.data) as { type: string; payload?: TickResult & { events?: string[] } }
         if (msg.type === 'tick' && msg.payload) {
           setTick(msg.payload)
+          onTickChange?.(msg.payload)
           if (msg.payload.events?.length) {
             setEvents((prev) => [...msg.payload!.events!, ...prev].slice(0, 20))
           }
@@ -73,26 +128,43 @@ export function WoprScenarioPanel() {
     return () => {
       es.close()
       streamRef.current = null
+      setSseConnected(false)
     }
-  }, [selectedId, operations])
+  }, [selectedId, operations, onTickChange])
+
+  useEffect(() => {
+    onScenarioChange?.(selected)
+  }, [selected, onScenarioChange])
 
   async function createScenario(e: React.FormEvent) {
     e.preventDefault()
     if (!newName.trim()) return
     setLoading(true)
-    const res = await fetch('/api/v1/wopr/scenarios', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: newName.trim(),
-        templateId: templateId || undefined,
-      }),
-    })
-    if (res.ok) {
+    setError(null)
+    try {
+      const res = await fetch('/api/v1/wopr/scenarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newName.trim(),
+          templateId: templateId || undefined,
+        }),
+      })
+      if (!res.ok) {
+        setError(`Create scenario failed (${res.status}).`)
+        setLoading(false)
+        return
+      }
       const json = await res.json()
-      setScenarios((prev) => [json.data, ...prev])
-      setSelectedId(json.data.id)
+      const created: WoprScenario = json.data
+      setScenarios((prev) => {
+        const next = [created, ...prev]
+        selectScenario(created.id, next)
+        return next
+      })
       setNewName('')
+    } catch {
+      setError('Network error creating scenario.')
     }
     setLoading(false)
   }
@@ -100,14 +172,24 @@ export function WoprScenarioPanel() {
   async function runTick() {
     if (!selectedId) return
     setLoading(true)
-    const res = await fetch(`/api/v1/wopr/scenarios/${selectedId}/tick`, { method: 'POST' })
-    if (res.ok) {
+    setError(null)
+    try {
+      const res = await fetch(`/api/v1/wopr/scenarios/${selectedId}/tick`, { method: 'POST' })
+      if (!res.ok) {
+        setError(`Advance tick failed (${res.status}).`)
+        setLoading(false)
+        return
+      }
       const json = await res.json()
-      setTick(json.data.tick)
-      setEvents((prev) => [...(json.data.tick.events ?? []), ...prev].slice(0, 20))
-      setScenarios((prev) =>
-        prev.map((s) => (s.id === selectedId ? json.data.scenario : s)),
-      )
+      const nextTick: TickResult = json.data.tick
+      const nextScenario: WoprScenario = json.data.scenario
+      setTick(nextTick)
+      onTickChange?.(nextTick)
+      setEvents((prev) => [...(nextTick.events ?? []), ...prev].slice(0, 20))
+      setScenarios((prev) => prev.map((s) => (s.id === selectedId ? nextScenario : s)))
+      onScenarioChange?.(nextScenario)
+    } catch {
+      setError('Network error advancing tick.')
     }
     setLoading(false)
   }
@@ -120,8 +202,8 @@ export function WoprScenarioPanel() {
           <EditionBadge />
         </div>
         <p className="store-text-body text-sm max-w-lg">
-          Red/Blue Arena (WOPR) requires Spectral Operations edition. Training tier provides
-          static scenario templates only — no live SSE COP or fog-of-war tick engine.
+          Red/Blue Arena (WOPR) requires Spectral Operations edition. Training tier provides static
+          scenario templates only — no live SSE COP or fog-of-war tick engine.
         </p>
         <p className="text-[10px] font-mono store-text-muted">
           Set NEXT_PUBLIC_SPECTRAL_EDITION=operations to enable WOPR client.
@@ -131,8 +213,8 @@ export function WoprScenarioPanel() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-      <StorePanel inner className="p-4 space-y-4 h-fit">
+    <div className="space-y-4">
+      <StorePanel inner className="p-4 space-y-4">
         <div className="flex items-center justify-between">
           <p className="text-xs font-semibold uppercase tracking-wider store-text-muted">Scenarios</p>
           <EditionBadge />
@@ -143,6 +225,12 @@ export function WoprScenarioPanel() {
           fallbackReason="WOPR API unavailable — authenticate and enable Operations edition"
         />
 
+        {error && (
+          <p className="text-xs text-red-400 font-mono border border-red-400/30 rounded-xl px-3 py-2">
+            {error}
+          </p>
+        )}
+
         <form onSubmit={createScenario} className="space-y-2">
           <input
             value={newName}
@@ -150,20 +238,27 @@ export function WoprScenarioPanel() {
             placeholder="Scenario name"
             className="w-full store-panel-inner rounded-xl px-3 py-2 text-xs text-white placeholder:store-text-muted focus:outline-none focus:border-[var(--store-accent-border)]"
           />
-          {templates.length > 0 && (
-            <select
-              value={templateId}
-              onChange={(e) => setTemplateId(e.target.value)}
-              className="w-full store-panel-inner rounded-xl px-3 py-2 text-xs text-white"
-            >
-              <option value="">Empty ORBAT</option>
-              {templates.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          )}
+          <select
+            value={templates.length === 0 ? '' : templateId}
+            onChange={(e) => setTemplateId(e.target.value)}
+            className="w-full store-panel-inner rounded-xl px-3 py-2 text-xs text-white"
+            aria-label="Scenario template"
+          >
+            {templates.length === 0 ? (
+              <option value="" disabled>
+                No templates loaded
+              </option>
+            ) : (
+              <>
+                <option value="">Empty ORBAT</option>
+                {templates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
+                ))}
+              </>
+            )}
+          </select>
           <button
             type="submit"
             disabled={loading}
@@ -177,12 +272,12 @@ export function WoprScenarioPanel() {
         {scenarios.length === 0 ? (
           <p className="text-xs store-text-body">No scenarios — create one to start WOPR.</p>
         ) : (
-          <ul className="space-y-1">
+          <ul className="space-y-1 max-h-48 overflow-y-auto">
             {scenarios.map((s) => (
               <li key={s.id}>
                 <button
                   type="button"
-                  onClick={() => setSelectedId(s.id)}
+                  onClick={() => selectScenario(s.id)}
                   className={clsx(
                     'w-full text-left rounded-xl px-3 py-2 text-xs border transition-colors',
                     selectedId === s.id
@@ -201,75 +296,66 @@ export function WoprScenarioPanel() {
         )}
       </StorePanel>
 
-      <div className="space-y-4">
-        {!selected ? (
-          <StorePanel className="p-8 text-center store-text-muted text-sm">
-            Select or create a scenario to open the COP.
-          </StorePanel>
-        ) : (
-          <>
-            <StorePanel inner className="p-4 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-white">{selected.name}</p>
-                <p className="text-[10px] font-mono store-text-muted mt-0.5">
-                  {selected.classification} · {selected.status} · SSE{' '}
-                  {streamRef.current ? 'connected' : '—'}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={runTick}
-                disabled={loading}
-                className="store-btn-primary px-4 py-2 rounded-xl text-xs flex items-center gap-2"
-              >
-                {selected.status === 'running' ? (
-                  <Pause className="w-3.5 h-3.5" />
-                ) : (
-                  <Play className="w-3.5 h-3.5" />
-                )}
-                Advance tick
-              </button>
-            </StorePanel>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <CopPicture
-                title="Blue sensor picture"
-                force="blue"
-                tracks={tick?.blue_picture ?? []}
-              />
-              <CopPicture
-                title="Red sensor picture (fog of war)"
-                force="red"
-                tracks={tick?.red_picture ?? []}
-              />
-            </div>
-
-            <StorePanel inner className="p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-wider store-text-muted mb-2 flex items-center gap-2">
-                <Radio className="w-3.5 h-3.5 text-cyan" />
-                Tick events
+      {!selected ? (
+        <StorePanel className="p-6 text-center store-text-muted text-sm">
+          Select or create a scenario to open the COP.
+        </StorePanel>
+      ) : (
+        <>
+          <StorePanel inner className="p-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-white">{selected.name}</p>
+              <p className="text-[10px] font-mono store-text-muted mt-0.5">
+                {selected.classification} · {selected.status} · SSE {sseConnected ? 'connected' : '—'}
               </p>
-              {events.length === 0 ? (
-                <p className="text-xs store-text-body">No events yet — advance a tick.</p>
-              ) : (
-                <ul className="space-y-1 max-h-40 overflow-y-auto">
-                  {events.map((ev, i) => (
-                    <li key={`${ev}-${i}`} className="text-[10px] font-mono store-text-body">
-                      {ev}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {tick && (
-                <p className="text-[9px] font-mono store-text-muted mt-3">
-                  Turn {tick.turn} · T+{tick.elapsed_min} min
-                  {tick.propagation_refreshed ? ' · propagation flag set' : ''}
-                </p>
-              )}
-            </StorePanel>
-          </>
-        )}
-      </div>
+              <p className="text-[10px] font-mono store-text-body mt-1">
+                ORBAT{' '}
+                <span className="text-red-400">{orbatCounts.red} red</span>
+                {' · '}
+                <span className="text-blue-400">{orbatCounts.blue} blue</span>
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={runTick}
+              disabled={loading}
+              className="store-btn-primary px-4 py-2 rounded-xl text-xs flex items-center gap-2"
+            >
+              <Play className="w-3.5 h-3.5" />
+              Advance tick (+15 min)
+            </button>
+          </StorePanel>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <CopPicture title="Blue sensor picture" force="blue" tracks={tick?.blue_picture ?? []} />
+            <CopPicture title="Red sensor picture (fog of war)" force="red" tracks={tick?.red_picture ?? []} />
+          </div>
+
+          <StorePanel inner className="p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-wider store-text-muted mb-2 flex items-center gap-2">
+              <Radio className="w-3.5 h-3.5 text-cyan" />
+              Tick events
+            </p>
+            {events.length === 0 ? (
+              <p className="text-xs store-text-body">No events yet — advance a tick.</p>
+            ) : (
+              <ul className="space-y-1 max-h-40 overflow-y-auto">
+                {events.map((ev, i) => (
+                  <li key={`${ev}-${i}`} className="text-[10px] font-mono store-text-body">
+                    {ev}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {tick && (
+              <p className="text-[9px] font-mono store-text-muted mt-3">
+                Turn {tick.turn} · T+{tick.elapsed_min} min
+                {tick.propagation_refreshed ? ' · propagation flag set' : ''}
+              </p>
+            )}
+          </StorePanel>
+        </>
+      )}
     </div>
   )
 }
@@ -307,3 +393,4 @@ function CopPicture({
     </StorePanel>
   )
 }
+

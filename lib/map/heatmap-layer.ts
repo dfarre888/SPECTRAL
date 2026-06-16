@@ -1,15 +1,15 @@
 import type { CesiumModule, CesiumViewer } from '@/lib/map/cesium-types'
 import type { HeatmapCell } from '@/lib/propagation/types'
 
+/** Jam / path-loss heat — visible on terrain (not buried at ellipsoid h=2). */
 function lossToColour(Cesium: CesiumModule, pathLossDb: number, losState: string) {
-  if (losState === 'NLOS') {
-    return Cesium.Color.fromCssColorString('#64748B').withAlpha(0.35)
-  }
+  // 80–160 dB → cyan (strong field) → orange (weak). NLOS still shows gradient, not flat grey.
   const t = Math.min(1, Math.max(0, (pathLossDb - 80) / 80))
   const r = Math.round(249 * t + 6 * (1 - t))
   const g = Math.round(115 * t + 182 * (1 - t))
   const b = Math.round(22 * t + 212 * (1 - t))
-  return new Cesium.Color(r / 255, g / 255, b / 255, 0.42)
+  const alpha = losState === 'NLOS' ? 0.48 : 0.55
+  return Cesium.Color.fromBytes(r, g, b, Math.round(alpha * 255))
 }
 
 export function syncHeatmapLayer(
@@ -44,30 +44,27 @@ export function syncHeatmapLayer(
       cell.lon + halfLon,
       cell.lat + halfLat,
     )
+    const material = lossToColour(Cesium, cell.path_loss_db, cell.los_state)
     let entity = viewer.entities.getById(id)
+    const rectGraphics = {
+      coordinates: rect,
+      material,
+      height: 8,
+      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      classificationType: Cesium.ClassificationType.TERRAIN,
+      outline: false,
+      zIndex: 0,
+    }
     if (!entity) {
-      entity = viewer.entities.add({
-        id,
-        rectangle: {
-          coordinates: rect,
-          material: lossToColour(Cesium, cell.path_loss_db, cell.los_state),
-          height: 2,
-          outline: false,
-        },
-      })
+      entity = viewer.entities.add({ id, rectangle: rectGraphics })
     } else {
-      entity.rectangle = {
-        coordinates: rect,
-        material: lossToColour(Cesium, cell.path_loss_db, cell.los_state),
-        height: 2,
-        outline: false,
-      }
+      entity.rectangle = rectGraphics
     }
   })
 
   const toRemove: { id?: string }[] = []
   viewer.entities.values.forEach((e: { id?: string }) => {
-    if (e.id?.startsWith('map-heatmap-') && !keepIds.has(e.id)) toRemove.push(e)
+    if (e.id?.startsWith('map-heatmap-') && !keepIds.has(e.id!)) toRemove.push(e)
   })
   toRemove.forEach((e) => viewer.entities.remove(e))
 }

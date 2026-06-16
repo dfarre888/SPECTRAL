@@ -319,6 +319,174 @@ export function emissionClipInTile(
   return { lo: clipLo, hi: clipHi }
 }
 
+
+export type TileZoneKind = 'overlap' | 'red_gap'
+
+export interface TileSpectrumZone {
+  kind: TileZoneKind
+  lo: number
+  hi: number
+}
+
+type FreqInterval = { lo: number; hi: number }
+
+function normaliseInterval(interval: FreqInterval): FreqInterval {
+  return interval.lo <= interval.hi
+    ? interval
+    : { lo: interval.hi, hi: interval.lo }
+}
+
+function mergeIntervals(intervals: FreqInterval[]): FreqInterval[] {
+  if (intervals.length === 0) return []
+  const sorted = intervals.map(normaliseInterval).sort((a, b) => a.lo - b.lo)
+  const out: FreqInterval[] = []
+  let cur = { ...sorted[0] }
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i].lo <= cur.hi) {
+      cur.hi = Math.max(cur.hi, sorted[i].hi)
+    } else {
+      out.push(cur)
+      cur = { ...sorted[i] }
+    }
+  }
+  out.push(cur)
+  return out
+}
+
+function intersectIntervalPair(a: FreqInterval, b: FreqInterval): FreqInterval | null {
+  const lo = Math.max(a.lo, b.lo)
+  const hi = Math.min(a.hi, b.hi)
+  if (lo > hi) return null
+  return { lo, hi }
+}
+
+function intersectIntervals(a: FreqInterval[], b: FreqInterval[]): FreqInterval[] {
+  const raw: FreqInterval[] = []
+  for (const ia of a) {
+    for (const ib of b) {
+      const x = intersectIntervalPair(ia, ib)
+      if (x) raw.push(x)
+    }
+  }
+  return mergeIntervals(raw)
+}
+
+function subtractIntervals(a: FreqInterval[], b: FreqInterval[]): FreqInterval[] {
+  const mergedB = mergeIntervals(b)
+  let result = mergeIntervals(a)
+  for (const sub of mergedB) {
+    const next: FreqInterval[] = []
+    for (const iv of result) {
+      if (sub.hi <= iv.lo || sub.lo >= iv.hi) {
+        next.push(iv)
+      } else {
+        if (iv.lo < sub.lo) next.push({ lo: iv.lo, hi: sub.lo })
+        if (sub.hi < iv.hi) next.push({ lo: sub.hi, hi: iv.hi })
+      }
+    }
+    result = next
+  }
+  return result
+}
+
+function isRedEmissionKind(kind: LaydownAssetKind): boolean {
+  return kind === 'uas'
+}
+
+function isBlueEmissionKind(kind: LaydownAssetKind): boolean {
+  return (
+    kind === 'cuas' ||
+    kind === 'radar' ||
+    kind === 'effector' ||
+    kind === 'recommended_detect' ||
+    kind === 'recommended_defeat'
+  )
+}
+
+function clippedIntervalsForKinds(
+  tile: BandTile,
+  emissions: LaydownEmission[],
+  kindFilter: (kind: LaydownAssetKind) => boolean,
+): FreqInterval[] {
+  const raw: FreqInterval[] = []
+  for (const emission of emissions) {
+    if (!kindFilter(emission.kind)) continue
+    const clip = emissionClipInTile(emission, tile)
+    if (clip) raw.push(clip)
+  }
+  return mergeIntervals(raw)
+}
+
+export function computeTileSpectrumZones(
+  tile: BandTile,
+  emissions: LaydownEmission[],
+): TileSpectrumZone[] {
+  const red = clippedIntervalsForKinds(tile, emissions, isRedEmissionKind)
+  const blue = clippedIntervalsForKinds(tile, emissions, isBlueEmissionKind)
+  if (red.length === 0) return []
+
+  const overlaps = intersectIntervals(red, blue)
+  const gaps = subtractIntervals(red, blue)
+
+  const zones: TileSpectrumZone[] = []
+  for (const iv of overlaps) {
+    zones.push({ kind: 'overlap', lo: iv.lo, hi: iv.hi })
+  }
+  for (const iv of gaps) {
+    zones.push({ kind: 'red_gap', lo: iv.lo, hi: iv.hi })
+  }
+  return zones
+}
+
+export function spectrumZoneStyle(zone: TileSpectrumZone, tile: BandTile): CSSProperties {
+  const scale = makeLogScale([tile.lo, tile.hi], [30, 650])
+  const x0 = scale(zone.lo)
+  const x1 = scale(Math.max(zone.hi, zone.lo * 1.001))
+  const leftPct = (x0 / VB_W) * 100
+  const widthPct = Math.max(((x1 - x0) / VB_W) * 100, 0.6)
+
+  const topPct = (tile.rowTopY / tile.viewBoxH) * 100
+  const heightPct = ((tile.rowBotY + tile.rowH - tile.rowTopY) / tile.viewBoxH) * 100
+
+  if (zone.kind === 'overlap') {
+    return {
+      position: 'absolute',
+      left: `${leftPct}%`,
+      width: `${widthPct}%`,
+      top: `${topPct}%`,
+      height: `${heightPct}%`,
+      background: `repeating-linear-gradient(
+        45deg,
+        rgba(6,182,212,0.22),
+        rgba(6,182,212,0.22) 3px,
+        rgba(16,185,129,0.28) 3px,
+        rgba(16,185,129,0.28) 6px
+      )`,
+      border: '1px solid rgba(6,182,212,0.65)',
+      borderRadius: 2,
+      pointerEvents: 'none',
+      zIndex: 5,
+      boxSizing: 'border-box',
+      animation: 'spectrum-zone-overlap-pulse 2.5s ease-in-out infinite',
+    }
+  }
+
+  return {
+    position: 'absolute',
+    left: `${leftPct}%`,
+    width: `${widthPct}%`,
+    top: `${topPct}%`,
+    height: `${heightPct}%`,
+    background: 'rgba(249,115,22,0.1)',
+    border: '1px dashed rgba(249,115,22,0.8)',
+    borderRadius: 2,
+    pointerEvents: 'none',
+    zIndex: 5,
+    boxSizing: 'border-box',
+    animation: 'spectrum-zone-gap-pulse 2.5s ease-in-out infinite',
+  }
+}
+
 export function emissionBarStyle(
   emission: LaydownEmission,
   tile: BandTile,

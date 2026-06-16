@@ -7,6 +7,8 @@ export async function GET(request: Request) {
     return NextResponse.json({
       classification: ctx.classification,
       tenantId: ctx.tenantId,
+      role: ctx.role,
+      userId: ctx.userId,
       edition: process.env.SPECTRAL_EDITION ?? 'training',
     })
   } catch {

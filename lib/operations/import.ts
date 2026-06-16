@@ -4,7 +4,7 @@ import { roleCanImportPlatforms } from '@/lib/operations/auth-config'
 export interface ImportJob {
   id: string
   tenant_id: string
-  job_type: 'platform' | 'document' | 'buildings'
+  job_type: 'platform' | 'document' | 'buildings' | 'defeat_matrix'
   status: 'queued' | 'processing' | 'completed' | 'failed'
   payload: Record<string, unknown>
   result: Record<string, unknown> | null
@@ -171,6 +171,58 @@ async function processApprovedJob(
       return { document_id: data?.id, approved_by: approverId }
     } catch {
       return { document_id: crypto.randomUUID(), approved_by: approverId }
+    }
+  }
+
+  if (job.job_type === 'defeat_matrix') {
+    const payload = job.payload as {
+      platform_id?: string
+      defeat_system_id?: string
+      rf_jamming_pct?: number | null
+      kinetic_pct?: number | null
+      dew_pct?: number | null
+      pd_detect_pct?: number | null
+      data_provenance?: string
+      confidence?: string
+      classification?: string
+      source_notes?: string | null
+    }
+    try {
+      const supabase = await createClient()
+      const { data } = await supabase
+        .from('tenant_defeat_effectiveness')
+        .insert({
+          tenant_id: job.tenant_id,
+          platform_id: payload.platform_id ?? null,
+          defeat_system_id: payload.defeat_system_id ?? null,
+          rf_jamming_pct: payload.rf_jamming_pct ?? null,
+          kinetic_pct: payload.kinetic_pct ?? null,
+          dew_pct: payload.dew_pct ?? null,
+          pd_detect_pct: payload.pd_detect_pct ?? null,
+          data_provenance: payload.data_provenance ?? 'customer_proprietary',
+          confidence: payload.confidence ?? 'Reported',
+          classification: payload.classification ?? 'UNCLASSIFIED',
+          source_notes: payload.source_notes ?? null,
+          approved_by: approverId,
+          created_by: job.created_by,
+        })
+        .select('id')
+        .single()
+      return {
+        tenant_defeat_id: data?.id,
+        platform_id: payload.platform_id,
+        defeat_system_id: payload.defeat_system_id,
+        approved_by: approverId,
+        confidence: payload.confidence ?? 'Reported',
+      }
+    } catch {
+      return {
+        tenant_defeat_id: crypto.randomUUID(),
+        platform_id: payload.platform_id,
+        defeat_system_id: payload.defeat_system_id,
+        approved_by: approverId,
+        confidence: payload.confidence ?? 'Reported',
+      }
     }
   }
 

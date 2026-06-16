@@ -164,3 +164,21 @@ body {
 .priority-a { background: rgba(239,68,68,0.15); color: #EF4444; }
 .priority-b { background: rgba(245,158,11,0.15); color: #F59E0B; }
 .priority-c { background: rgba(59,130,246,0.15); color: #3B82F6; }
+
+/* Spectrum pulse overlay — Map Intel laydown band tiles */
+@keyframes spectrum-zone-overlap-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.75; }
+}
+
+@keyframes spectrum-zone-gap-pulse {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes spectrum-pulse-sweep {
+  0% { left: 0%; opacity: 0; }
+  5% { opacity: 0.85; }
+  95% { opacity: 0.85; }
+  100% { left: 100%; opacity: 0; }
+}

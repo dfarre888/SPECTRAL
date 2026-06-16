@@ -26,8 +26,10 @@ import type {
   PlacedUas,
 } from '@/lib/map/types'
 import { BandTileGrid } from '@/components/spectrum/BandTileGrid'
+import { SpectrumPulseLegend } from '@/components/spectrum/SpectrumPulseOverlay'
 import { LaydownTileModal } from '@/app/map/components/LaydownTileModal'
 import {
+  activeTileIds,
   mergeLaydownEmissions,
   resolveLaydownEmissions,
   resolveRecommendationEmissions,
@@ -118,6 +120,11 @@ export function SpectralAnalysisPanel({
     [placedEmissions, recommendationEmissions],
   )
 
+  const activeBandCount = useMemo(
+    () => activeTileIds(placedEmissions).length,
+    [placedEmissions],
+  )
+
   const hasPlaced =
     placedUas.length > 0 ||
     placedCuas.length > 0 ||
@@ -151,7 +158,7 @@ export function SpectralAnalysisPanel({
 
         {!hasPlaced ? (
           <p className="mt-6 text-sm store-text-body">
-            Place at least one UAS or C-UAS on the map to run spectral analysis.
+            Place at least one asset (UAS, C-UAS, radar, or effector) on the map to run spectral analysis.
             <span className="block mt-2 text-[10px] store-text-muted font-mono">
               Shortcut: press <kbd className="px-1 rounded border border-[var(--store-line)]">S</kbd>{' '}
               with assets on map
@@ -184,8 +191,13 @@ export function SpectralAnalysisPanel({
 
             <section className="space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <h3 className="text-[10px] font-semibold uppercase tracking-widest store-text-muted">
+                <h3 className="text-[10px] font-semibold uppercase tracking-widest store-text-muted flex items-center gap-2">
                   Laydown EW bands
+                  {activeBandCount > 0 && (
+                    <span className="font-mono text-[var(--store-accent)] normal-case tracking-normal">
+                      {activeBandCount} active
+                    </span>
+                  )}
                 </h3>
                 {threatAssessments.length > 0 && catalogCuas.length > 0 && (
                   <label className="flex items-center gap-2 text-[10px] store-text-muted cursor-pointer select-none">
@@ -202,13 +214,16 @@ export function SpectralAnalysisPanel({
               {placedEmissions.length === 0 ? (
                 <p className="text-[10px] store-text-muted">No spectrum emissions resolved for placed assets.</p>
               ) : (
-                <BandTileGrid
+                <>
+                  <SpectrumPulseLegend compact />
+                  <BandTileGrid
                   emissions={displayEmissions}
                   compact
                   activeOnly
                   fullscreenExpand
                   onTileClick={setExpandedTile}
                 />
+                </>
               )}
             </section>
 

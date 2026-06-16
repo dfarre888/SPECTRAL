@@ -91,7 +91,36 @@ export interface PlacedUas {
   /** Terrain AMSL samples around disc perimeter — drives terrain-following side walls. */
   wallTerrain_m?: number[]
   loiter?: LoiterPlan
+  mission?: MissionPlan
   infoPanelClosed: boolean
+}
+
+
+export interface MissionWaypoint {
+  id: string
+  lon: number
+  lat: number
+  terrainAMSL: number
+  /** AMSL flight altitude at this waypoint. */
+  alt_m: number
+  speed_kmh: number
+  kind: 'start' | 'transit' | 'detour' | 'terminal' | 'goal'
+}
+
+export interface MissionPlan {
+  goalKind: 'target' | 'aoi'
+  goalLon: number
+  goalLat: number
+  goalTerrainAMSL: number
+  waypoints: MissionWaypoint[]
+  emcon: boolean
+  manualOverride: boolean
+  totalDistance_km: number
+  maxPk_pct: number
+  /** True when max segment Pk ≥ 20% and hard avoid was not fully achievable. */
+  pkThresholdExceeded: boolean
+  pathMode: 'hard-avoid' | 'soft-minimize'
+  updatedAt: string
 }
 
 export interface LoiterPlan {
@@ -157,6 +186,13 @@ export type PlacementMode =
   | { active: true; kind: 'radar'; asset: MapRadarAsset }
   | { active: true; kind: 'effector'; asset: MapEffectorAsset }
   | { active: true; kind: 'loiter'; uasInstanceId: string; asset: MapUasAsset }
+  | {
+      active: true
+      kind: 'mission-goal'
+      uasInstanceId: string
+      goalKind: 'target' | 'aoi'
+      asset: MapUasAsset
+    }
 
 export interface CursorPosition {
   lon: number

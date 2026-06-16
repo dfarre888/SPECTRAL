@@ -12,7 +12,13 @@ export interface HeatmapJob {
   createdAt: number
 }
 
-const jobs = new Map<string, HeatmapJob>()
+function getJobStore(): Map<string, HeatmapJob> {
+  const g = globalThis as typeof globalThis & { __spectralHeatmapJobs?: Map<string, HeatmapJob> }
+  if (!g.__spectralHeatmapJobs) g.__spectralHeatmapJobs = new Map()
+  return g.__spectralHeatmapJobs
+}
+
+const jobs = getJobStore()
 const MAX_JOBS = 200
 
 function pruneJobs() {

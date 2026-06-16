@@ -5,6 +5,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { resolveCellValue, type CellValue } from '@/lib/defeat/cell-value';
 import type { DefeatTypeFilter } from '@/lib/defeat/defeat-types';
+import { isOperationsEdition } from '@/lib/operations/edition';
+import { fetchAllAccreditedDefeatPk, mergeAccreditedOverOsint } from '@/lib/operations/accredited-supplements';
+import { fetchTenantDefeatRows, mergeTenantOverOsint } from '@/lib/operations/tenant-performance';
 import type { PCM } from '@/lib/pcm/spectral.types';
 import {
   resolveDefenderSystemId,
@@ -107,6 +110,58 @@ const OFFLINE_EFFECTIVENESS: DefeatEffectiveness[] = [
     modifiers: [],
     recommended_response: null,
   },
+
+  {
+    id: 'offline-shahed-edge',
+    platform_id: 'shahed-136',
+    defeat_system_id: 'edge-horizon',
+    rf_jamming_pct: 68,
+    kinetic_pct: null,
+    dew_pct: null,
+    is_immune: false,
+    immune_reason: null,
+    swarm_engagement_pct: 55,
+    data_confidence: 'estimated',
+    weather_limited: false,
+    special_notes: null,
+    adjudication_rationale: null,
+    modifiers: [],
+    recommended_response: null,
+  },
+  {
+    id: 'offline-shahed-skynex',
+    platform_id: 'shahed-136',
+    defeat_system_id: 'skynex',
+    rf_jamming_pct: null,
+    kinetic_pct: 82,
+    dew_pct: null,
+    is_immune: false,
+    immune_reason: null,
+    swarm_engagement_pct: 75,
+    data_confidence: 'high',
+    weather_limited: false,
+    special_notes: null,
+    adjudication_rationale: null,
+    modifiers: [],
+    recommended_response: null,
+  },
+  {
+    id: 'offline-shahed-apache',
+    platform_id: 'shahed-136',
+    defeat_system_id: 'ah-64e-apache-cuas',
+    rf_jamming_pct: null,
+    kinetic_pct: 72,
+    dew_pct: null,
+    is_immune: false,
+    immune_reason: null,
+    swarm_engagement_pct: 60,
+    data_confidence: 'high',
+    weather_limited: true,
+    special_notes: null,
+    adjudication_rationale: null,
+    modifiers: [],
+    recommended_response: null,
+  },
 ];
 
 const OFFLINE_SYSTEMS: AntiDroneSystem[] = [
@@ -157,6 +212,61 @@ const OFFLINE_SYSTEMS: AntiDroneSystem[] = [
     power_output_w: null,
     weight_kg: null,
     portability: 'vehicle',
+    price_usd_approx: null,
+    platforms_can_defeat: [],
+    conflict_validated: true,
+    conflict_notes: null,
+    sources: [],
+    data_confidence: 'high',
+  },
+
+  {
+    id: 'edge-horizon',
+    name: 'Edge Horizon EW',
+    manufacturer: 'Edge Group',
+    country: 'United Arab Emirates',
+    defeat_method: ['RF_jamming'],
+    effective_range_m: 12000,
+    frequency_bands_covered_mhz: {},
+    power_output_w: null,
+    weight_kg: null,
+    portability: 'vehicle',
+    price_usd_approx: null,
+    platforms_can_defeat: [],
+    conflict_validated: true,
+    conflict_notes: null,
+    sources: [],
+    data_confidence: 'estimated',
+  },
+  {
+    id: 'skynex',
+    name: 'Rheinmetall Skynex',
+    manufacturer: 'Rheinmetall',
+    country: 'Germany',
+    defeat_method: ['kinetic'],
+    effective_range_m: 4000,
+    frequency_bands_covered_mhz: {},
+    power_output_w: null,
+    weight_kg: null,
+    portability: 'vehicle',
+    price_usd_approx: null,
+    platforms_can_defeat: [],
+    conflict_validated: true,
+    conflict_notes: null,
+    sources: [],
+    data_confidence: 'high',
+  },
+  {
+    id: 'ah-64e-apache-cuas',
+    name: 'AH-64E Guardian C-UAS',
+    manufacturer: 'Boeing',
+    country: 'United Arab Emirates',
+    defeat_method: ['kinetic'],
+    effective_range_m: 8000,
+    frequency_bands_covered_mhz: {},
+    power_output_w: null,
+    weight_kg: null,
+    portability: 'airborne',
     price_usd_approx: null,
     platforms_can_defeat: [],
     conflict_validated: true,
@@ -240,6 +350,7 @@ export class DefeatMatrixCache {
     supabase: SupabaseClient | null,
     threatTypes: string[],
     defenderTypes: string[],
+    tenantId?: string | null,
   ): Promise<DefeatMatrixCache> {
     if (!supabase) return DefeatMatrixCache.createOffline();
 
@@ -278,6 +389,25 @@ export class DefeatMatrixCache {
           is_immune: row.is_immune ?? false,
           swarm_engagement_pct: row.swarm_engagement_pct ?? null,
         });
+      }
+
+
+      if (isOperationsEdition()) {
+        const accreditedRows = await fetchAllAccreditedDefeatPk(platformIds, systemIds);
+        for (const [key, accreditedRow] of accreditedRows) {
+          const osint = cache.effectiveness.get(key);
+          const merged = mergeAccreditedOverOsint(osint, accreditedRow);
+          if (merged) cache.effectiveness.set(key, merged);
+        }
+      }
+
+      if (isOperationsEdition() && tenantId) {
+        const tenantRows = await fetchTenantDefeatRows(tenantId, platformIds, systemIds);
+        for (const [key, tenantRow] of tenantRows) {
+          const osint = cache.effectiveness.get(key);
+          const merged = mergeTenantOverOsint(osint, tenantRow);
+          if (merged) cache.effectiveness.set(key, merged);
+        }
       }
 
       if (cache.effectiveness.size === 0) return DefeatMatrixCache.createOffline();

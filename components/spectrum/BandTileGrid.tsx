@@ -17,6 +17,7 @@ import {
   activeTileIds,
   type LaydownEmission,
 } from '@/lib/map/laydown-tiles';
+import { SpectrumPulseOverlay } from './SpectrumPulseOverlay';
 
 const VB_W = 680;
 
@@ -28,6 +29,7 @@ export interface BandTileGridProps {
   activeOnly?: boolean;
   showRecommendations?: boolean;
   onTileClick?: (tile: BandTile) => void;
+  showSpectrumPulse?: boolean;
 }
 
 interface TooltipState {
@@ -146,6 +148,7 @@ export function TileCard({
   compact = false,
   fullscreenExpand = false,
   onTileClick,
+  showSpectrumPulse = true,
 }: {
   tile: BandTile;
   expanded: boolean;
@@ -154,6 +157,7 @@ export function TileCard({
   compact?: boolean;
   fullscreenExpand?: boolean;
   onTileClick?: (tile: BandTile) => void;
+  showSpectrumPulse?: boolean;
 }) {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const tileEmissions = emissionsForTile(tile, emissions);
@@ -215,6 +219,13 @@ export function TileCard({
         />
         <AllocationHitAreas tile={tile} onHover={handleHover} onLeave={() => setTooltip(null)} />
         {emissions.length > 0 && <AssetEmissionOverlay tile={tile} emissions={emissions} />}
+        {emissions.length > 0 && showSpectrumPulse && (
+          <SpectrumPulseOverlay
+            tile={tile}
+            emissions={emissions}
+            showPulse={expanded || fullscreenExpand}
+          />
+        )}
         {tooltip && <Tooltip state={tooltip} expanded={expanded} />}
       </div>
 
@@ -467,6 +478,7 @@ export function BandTileGrid(props?: BandTileGridProps) {
     activeOnly = false,
     showRecommendations: _showRecommendations,
     onTileClick,
+    showSpectrumPulse = true,
   } = props;
 
   const catalog = tiles ?? BAND_TILES;
@@ -526,6 +538,7 @@ export function BandTileGrid(props?: BandTileGridProps) {
             compact={compact}
             fullscreenExpand={fullscreenExpand}
             onTileClick={onTileClick}
+            showSpectrumPulse={showSpectrumPulse}
           />
         ))}
       </div>

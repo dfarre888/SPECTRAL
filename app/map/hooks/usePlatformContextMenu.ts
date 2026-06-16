@@ -2,7 +2,9 @@
 
 import { useEffect, useRef } from 'react'
 import type { CesiumModule, CesiumViewer } from '@/lib/map/cesium-types'
-import type { PlacementMode } from '@/lib/map/types'
+import { parseMissionWaypointEntityId } from '@/lib/map/mission-path-planner'
+import type { WaypointContextTarget } from '@/app/map/components/WaypointContextMenu'
+import type { PlacedUas, PlacementMode } from '@/lib/map/types'
 
 export interface PlatformContextTarget {
   kind: 'uas' | 'cuas'
@@ -30,11 +32,14 @@ export function usePlatformContextMenu(
   viewerRef: React.RefObject<CesiumViewer | null>,
   cesiumRef: React.RefObject<CesiumModule | null>,
   placementModeRef: React.MutableRefObject<PlacementMode>,
-  placedUasRef: React.MutableRefObject<{ instanceId: string; asset: { name: string } }[]>,
+  placedUasRef: React.MutableRefObject<PlacedUas[]>,
   placedCuasRef: React.MutableRefObject<{ instanceId: string; asset: { name: string } }[]>,
   onOpenMenu: (target: PlatformContextTarget) => void,
+  onOpenWaypointMenu: (target: WaypointContextTarget) => void,
 ) {
   const onOpenMenuRef = useRef(onOpenMenu)
+  const onOpenWaypointMenuRef = useRef(onOpenWaypointMenu)
+  onOpenWaypointMenuRef.current = onOpenWaypointMenu
   onOpenMenuRef.current = onOpenMenu
   const handlerRef = useRef<unknown | null>(null)
 
@@ -60,6 +65,25 @@ export function usePlatformContextMenu(
         const entityId: string | undefined = picked?.id?.id
         if (typeof entityId !== 'string') return
 
+        const wpParsed = parseMissionWaypointEntityId(entityId)
+        if (wpParsed) {
+          const uas = placedUasRef.current.find((u) => u.instanceId === wpParsed.uasInstanceId)
+          const wp = uas?.mission?.waypoints.find((w) => w.id === wpParsed.waypointId)
+          if (!uas || !wp) return
+          onOpenWaypointMenuRef.current({
+            uasInstanceId: uas.instanceId,
+            waypointId: wp.id,
+            assetName: uas.asset.name,
+            alt_m: wp.alt_m,
+            speed_kmh: wp.speed_kmh,
+            maxAlt_m: uas.ceilingAMSL_m,
+            maxSpeed_kmh: uas.asset.max_speed_kmh,
+            screenX: e.position.x,
+            screenY: e.position.y,
+          })
+          return
+        }
+
         const parsed = parseMarkEntity(entityId)
         if (!parsed) return
 
@@ -84,5 +108,5 @@ export function usePlatformContextMenu(
       h?.destroy?.()
       handlerRef.current = null
     }
-  }, [cesiumReady, viewerRef, cesiumRef, placementModeRef, placedUasRef, placedCuasRef])
+  }, [cesiumReady, viewerRef, cesiumRef, placementModeRef, placedUasRef, placedCuasRef, onOpenWaypointMenu])
 }

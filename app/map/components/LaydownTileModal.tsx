@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { TileCard } from '@/components/spectrum/BandTileGrid'
 import type { BandTile } from '@/components/spectrum/band-tile-data'
 import type { LaydownEmission } from '@/lib/map/laydown-tiles'
+import { SpectrumPulseLegend } from '@/components/spectrum/SpectrumPulseOverlay'
 import { X } from 'lucide-react'
 
 interface LaydownTileModalProps {
@@ -51,6 +52,7 @@ export function LaydownTileModal({ tile, emissions, onClose }: LaydownTileModalP
             <X className="w-4 h-4" />
           </button>
         </div>
+        <SpectrumPulseLegend />
         <TileCard
           tile={tile}
           expanded

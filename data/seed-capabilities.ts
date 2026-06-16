@@ -32,6 +32,7 @@ const SAT_KU = { lo: GHz(12), hi: GHz(18) };
 const SAT_KA = { lo: GHz(27), hi: GHz(40) };
 const BAND_C = { lo: GHz(4), hi: GHz(8) };
 const BAND_X = { lo: GHz(8), hi: GHz(12) };
+const BAND_S = { lo: GHz(2), hi: GHz(4) };
 
 function rf(
   pid: string,
@@ -314,6 +315,68 @@ export const CAPABILITIES: SpectrumCapability[] = [
 
   // UK DragonFire — HEL demonstrator
   ir('dragonfire', 'laser_defeat', '50 kW+ HEL effect', 1.0, 1.07, { range_km: 3, layer: 'eo_ir', note: 'OSINT: DSTL/RN demonstrator — assessed range' }),
+
+
+  // Gulf / global C-UAS expansion (UAE 2026 ORBAT proxies)
+  rf('edge-horizon', 'detect_rf', 'comms', 'Integrated RF detect 400 MHz–6 GHz', { lo: MHz(400), hi: GHz(6) }, { range_km: 12 }),
+  rf('edge-horizon', 'jam_control', 'comms', 'Jam 2.4 GHz C2', ISM_24, { range_km: 12, power_dbm: 47 }),
+  rf('edge-horizon', 'jam_video', 'comms', 'Jam 5.8 GHz video', ISM_58, { range_km: 12, power_dbm: 45 }),
+  rf('edge-horizon', 'jam_gnss', 'navigation', 'Jam/spoof GNSS L-band', { lo: MHz(1160), hi: MHz(1610) }, { range_km: 12, power_dbm: 43 }),
+  ir('ah-64e-apache-cuas', 'detect_eo_ir', 'Longbow + EO/IR cue', 3.0, 12.0, { range_km: 8, note: 'Airborne kinetic — 30 mm + APKWS' }),
+  ir('f-16-block60-intercept', 'detect_eo_ir', 'Fighter EO/IR + radar cue', 0.4, 5.0, { range_km: 15, note: 'AAM intercept — poor cost exchange' }),
+  rf('merops-interceptor', 'sensor', 'comms', 'AI vision terminal (GPS-denied)', { lo: MHz(400), hi: GHz(6) }, { range_km: 6, note: 'Drone-on-drone hard kill' }),
+  ir('iron-drone-raider', 'detect_eo_ir', 'Machine-vision net engagement', 0.4, 1.0, { range_km: 2 }),
+  ir('dronehunter-f700', 'detect_eo_ir', 'Net tow-away engagement', 0.4, 1.0, { range_km: 3 }),
+  rf('apkws-vampire-launcher', 'detect_radar', 'radar', 'Cue radar — Ku band', SAT_KU, { range_km: 6 }),
+  ir('apkws-vampire-launcher', 'detect_eo_ir', 'APKWS laser-guided rocket', 1.0, 1.07, { range_km: 6 }),
+  rf('gepard-cuas', 'detect_radar', 'radar', 'Search/track radar X-band', BAND_X, { range_km: 15 }),
+  ir('gepard-cuas', 'detect_eo_ir', '35 mm kinetic defeat', 0.4, 5.0, { range_km: 4 }),
+  rf('iris-t-slm-cuas', 'detect_radar', 'radar', 'TRML-4D / IRIS cue radar', BAND_C, { range_km: 25 }),
+
+
+  // Global OWA / C-UAS ORBAT tranche (multi-theatre proxies)
+  rf('nasams-amraam-er', 'detect_radar', 'radar', 'AN/MPQ-64F1 Sentinel cue', BAND_S, { range_km: 50 }),
+  ir('nasams-amraam-er', 'detect_eo_ir', 'EO/IR adjunct cue', 0.4, 5.0, { range_km: 50 }),
+  rf('iris-t-sls-cuas', 'detect_radar', 'radar', 'IRIS-T SLS fire-control radar', BAND_X, { range_km: 8 }),
+  ir('iris-t-sls-cuas', 'detect_eo_ir', 'EO/IR tracker', 0.4, 5.0, { range_km: 8 }),
+  rf('faad-c2-node', 'detect_rf', 'comms', 'FAAD integrated RF picture 400 MHz–6 GHz', { lo: MHz(400), hi: GHz(6) }, { range_km: 25 }),
+  rf('faad-c2-node', 'jam_control', 'comms', 'Linked effector EW cueing', ISM_24, { range_km: 25, note: 'C2 node — defeat via shooters' }),
+  rf('iron-dome-tamir', 'detect_radar', 'radar', 'EL/M-2084 multi-mission radar', BAND_S, { range_km: 70 }),
+  ir('iron-dome-tamir', 'detect_eo_ir', 'Tamir terminal IR', 3.0, 5.0, { range_km: 70 }),
+  rf('davids-sling-cuas', 'detect_radar', 'radar', 'EL/M-2084 / Super Green Pine cue', BAND_S, { range_km: 250 }),
+  ir('davids-sling-cuas', 'detect_eo_ir', 'Stunner multi-phenomenology seeker', 0.4, 12.0, { range_km: 250 }),
+  ir('martlet-airborne-cuas', 'detect_eo_ir', 'Wildcat EO/IR + laser designation', 0.4, 5.0, { range_km: 6 }),
+  rf('martlet-airborne-cuas', 'datalink', 'comms', 'Airborne C2 — UHF', { lo: MHz(225), hi: MHz(400) }),
+  rf('land-ceptor-cuas', 'detect_radar', 'radar', 'Saab Giraffe / CAMM cue radar', BAND_S, { range_km: 25 }),
+  ir('land-ceptor-cuas', 'detect_eo_ir', 'EO/IR adjunct', 0.4, 5.0, { range_km: 25 }),
+  rf('pilica-plus', 'detect_radar', 'radar', 'BYD-10 tracking radar', BAND_X, { range_km: 5.5 }),
+  ir('pilica-plus', 'detect_eo_ir', '35 mm + Grom kinetic', 0.4, 5.0, { range_km: 5.5 }),
+  rf('narew-camm-er', 'detect_radar', 'radar', 'CAMM-ER acquisition radar', BAND_S, { range_km: 45 }),
+  ir('narew-camm-er', 'detect_eo_ir', 'EO/IR cueing', 0.4, 5.0, { range_km: 45 }),
+  ir('skyguard-laser', 'laser_defeat', 'HEL effect segment', 1.0, 1.07, { range_km: 3, layer: 'eo_ir' }),
+  rf('skyguard-laser', 'detect_radar', 'radar', 'Skyguard fire-control radar', BAND_X, { range_km: 3 }),
+  ir('skyguard-laser', 'detect_eo_ir', '35 mm gun segment', 0.4, 5.0, { range_km: 3 }),
+  rf('shahin-cuas', 'detect_rf', 'comms', 'SHORAD RF detect 400 MHz–6 GHz', { lo: MHz(400), hi: GHz(6) }, { range_km: 12 }),
+  rf('shahin-cuas', 'jam_control', 'comms', 'Jam 2.4 GHz C2', ISM_24, { range_km: 12 }),
+  ir('shahin-cuas', 'detect_eo_ir', 'EO/IR SHORAD cue', 0.4, 5.0, { range_km: 12 }),
+  rf('m-shorad-stryker', 'detect_rf', 'comms', 'Moog REK wideband detect', { lo: MHz(400), hi: GHz(6) }, { range_km: 5 }),
+  rf('m-shorad-stryker', 'jam_control', 'comms', 'REK jam 2.4 GHz', ISM_24, { range_km: 5 }),
+  ir('m-shorad-stryker', 'detect_eo_ir', 'XM914 + APKWS/Stinger cue', 0.4, 5.0, { range_km: 5 }),
+  rf('bullfrog-apkws', 'detect_radar', 'radar', 'Cue radar — Ku band', SAT_KU, { range_km: 6 }),
+  ir('bullfrog-apkws', 'detect_eo_ir', 'APKWS laser-guided rocket', 1.0, 1.07, { range_km: 6 }),
+  rf('akash-ng-cuas', 'detect_radar', 'radar', 'Rajendra phased-array', BAND_S, { range_km: 30 }),
+  ir('akash-ng-cuas', 'detect_eo_ir', 'EO/IR adjunct', 0.4, 5.0, { range_km: 30 }),
+  ir('bharani-gun', 'detect_eo_ir', 'Anti-drone gun EO cue', 0.4, 1.0, { range_km: 2.5 }),
+  rf('bharani-gun', 'detect_rf', 'comms', 'RF detect adjunct', ISM_24, { range_km: 2.5 }),
+  rf('l-sam-cheongung', 'detect_radar', 'radar', 'Cheongung multifunction radar', BAND_S, { range_km: 40 }),
+  ir('l-sam-cheongung', 'detect_eo_ir', 'IR seeker terminal', 3.0, 5.0, { range_km: 40 }),
+  rf('sm-2-aegis-cuas', 'detect_radar', 'radar', 'SPY-1/6 naval air search', BAND_S, { range_km: 170 }),
+  ir('sm-2-aegis-cuas', 'detect_eo_ir', 'Ship EO/IR adjunct', 0.4, 5.0, { range_km: 170 }),
+  rf('sm-6-aegis-cuas', 'detect_radar', 'radar', 'Aegis BMD / air search cue', BAND_S, { range_km: 240 }),
+  ir('sm-6-aegis-cuas', 'detect_eo_ir', 'Active RF seeker terminal', 2.0, 18.0, { range_km: 240 }),
+  rf('pantsir-s1-cuas', 'detect_radar', 'radar', '1RS2-1E engagement radar', BAND_X, { range_km: 20 }),
+  rf('pantsir-s1-cuas', 'jam_control', 'comms', 'RF suppression adjunct', { lo: MHz(400), hi: GHz(6) }, { range_km: 20 }),
+  ir('pantsir-s1-cuas', 'detect_eo_ir', '30 mm + 57E6 kinetic', 0.4, 5.0, { range_km: 20 }),
 
   /* ===================== CATALOGUE EXPANSION (Tiers 1–5) ===================== */
   ...CATALOGUE_EXPANSION_CAPABILITIES,

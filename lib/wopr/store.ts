@@ -2,7 +2,40 @@ import { createClient } from '@/lib/supabase/server'
 import { createDefaultWorldState } from '@/lib/wopr/engine'
 import type { WoprScenario } from '@/lib/wopr/types'
 
-const memory = new Map<string, WoprScenario>()
+const globalForWopr = globalThis as typeof globalThis & {
+  __woprScenarioMemory?: Map<string, WoprScenario>
+}
+
+const memory = globalForWopr.__woprScenarioMemory ?? new Map<string, WoprScenario>()
+if (!globalForWopr.__woprScenarioMemory) {
+  globalForWopr.__woprScenarioMemory = memory
+}
+
+
+function saveToMemory(scenario: WoprScenario): void {
+  memory.set(scenario.id, scenario)
+}
+
+/** Merge DB rows with in-memory scenarios for a tenant (memory overlays DB). */
+export function mergeScenariosForTenant(
+  dbScenarios: WoprScenario[],
+  tenantId: string,
+  memoryMap: Map<string, WoprScenario> = memory,
+): WoprScenario[] {
+  const byId = new Map<string, WoprScenario>()
+  for (const s of dbScenarios) {
+    if (s.tenant_id === tenantId) byId.set(s.id, s)
+  }
+  for (const s of memoryMap.values()) {
+    if (s.tenant_id === tenantId) byId.set(s.id, s)
+  }
+  return [...byId.values()].sort((a, b) => b.elapsed_min - a.elapsed_min)
+}
+
+/** Test helper — clears the in-memory fallback store. */
+export function clearMemoryStoreForTests(): void {
+  memory.clear()
+}
 
 export async function listScenarios(tenantId: string): Promise<WoprScenario[]> {
   try {
@@ -12,9 +45,11 @@ export async function listScenarios(tenantId: string): Promise<WoprScenario[]> {
       .select('*')
       .eq('tenant_id', tenantId)
       .order('updated_at', { ascending: false })
-    return (data ?? []).map(rowToScenario)
+    const dbScenarios = (data ?? []).map(rowToScenario)
+    for (const s of dbScenarios) saveToMemory(s)
+    return mergeScenariosForTenant(dbScenarios, tenantId)
   } catch {
-    return [...memory.values()].filter((s) => s.tenant_id === tenantId)
+    return mergeScenariosForTenant([], tenantId)
   }
 }
 
@@ -27,11 +62,19 @@ export async function getScenario(id: string, tenantId: string): Promise<WoprSce
       .eq('id', id)
       .eq('tenant_id', tenantId)
       .maybeSingle()
-    if (data) return rowToScenario(data)
+    if (data) {
+      const scenario = rowToScenario(data)
+      saveToMemory(scenario)
+      return scenario
+    }
   } catch {
     const m = memory.get(id)
     if (m && m.tenant_id === tenantId) return m
+    return null
   }
+
+  const m = memory.get(id)
+  if (m && m.tenant_id === tenantId) return m
   return null
 }
 
@@ -57,7 +100,9 @@ export async function createScenario(
       .select('*')
       .single()
     if (error) throw error
-    return rowToScenario(data)
+    const scenario = rowToScenario(data)
+    saveToMemory(scenario)
+    return scenario
   } catch {
     const id = crypto.randomUUID()
     const scenario: WoprScenario = {
@@ -69,12 +114,13 @@ export async function createScenario(
       elapsed_min: 0,
       status: 'draft',
     }
-    memory.set(id, scenario)
+    saveToMemory(scenario)
     return scenario
   }
 }
 
 export async function saveScenario(scenario: WoprScenario): Promise<void> {
+  saveToMemory(scenario)
   try {
     const supabase = await createClient()
     await supabase
@@ -88,7 +134,7 @@ export async function saveScenario(scenario: WoprScenario): Promise<void> {
       .eq('id', scenario.id)
       .eq('tenant_id', scenario.tenant_id)
   } catch {
-    memory.set(scenario.id, scenario)
+    // Memory already updated — DB write failed silently for fallback mode
   }
 }
 

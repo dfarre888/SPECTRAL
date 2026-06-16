@@ -28,3 +28,7 @@ export function roleCanRunPropagation(role: string): boolean {
 export function roleCanImportPlatforms(role: string): boolean {
   return role === 'analyst' || role === 'admin'
 }
+
+export function roleCanManageWopr(role: string): boolean {
+  return role === 'admin' || role === 'commander'
+}

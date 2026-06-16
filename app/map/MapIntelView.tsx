@@ -9,12 +9,15 @@ import { SpectralAnalysisPanel } from '@/app/map/components/SpectralAnalysisPane
 import { MapNavigationWheel } from '@/app/map/components/MapNavigationWheel'
 import { EntityInfoPanel } from '@/app/map/components/EntityInfoPanel'
 import { PlatformContextMenu } from '@/app/map/components/PlatformContextMenu'
-import { ThreatAssessmentPanel } from '@/app/map/components/ThreatAssessmentPanel'
+import { LaydownEvaluationPanel } from '@/app/map/components/LaydownEvaluationPanel'
 import type { PlatformContextTarget } from '@/app/map/hooks/usePlatformContextMenu'
 import { useDefeatOverlap } from '@/app/map/hooks/useDefeatOverlap'
 import { useLaydownAdjudication } from '@/app/map/hooks/useLaydownAdjudication'
 import { usePropagationHeatmap } from '@/app/map/hooks/usePropagationHeatmap'
 import { useLoiterPlanning } from '@/app/map/hooks/useLoiterPlanning'
+import { useMissionPlanning } from '@/app/map/hooks/useMissionPlanning'
+import { MissionGoalDialog } from '@/app/map/components/MissionGoalDialog'
+import { WaypointContextMenu, type WaypointContextTarget } from '@/app/map/components/WaypointContextMenu'
 import {
   usePlatformPlacement,
   type CesiumContext,
@@ -25,6 +28,12 @@ import { useMapBuildings } from '@/app/map/hooks/useMapBuildings'
 import { useWindData } from '@/app/map/hooks/useWindData'
 import { writeLaydownSession } from '@/lib/map/laydown-session'
 import { haversineM } from '@/lib/propagation/geo'
+import {
+  buildLaydownEvaluation,
+  isSameLaydownItem,
+  listPlacedLaydownItems,
+  type SelectedLaydownItem,
+} from '@/lib/map/laydown-evaluation'
 import { buildThreatAssessments } from '@/lib/map/threat-assessment'
 import { envelopeDiscAltitudeM } from '@/lib/map/range-declaration'
 import type { TerrainHeightUpdate } from '@/lib/map/terrain'
@@ -68,17 +77,23 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const [spectralOpen, setSpectralOpen] = useState(false)
   const [heatmapEnabled, setHeatmapEnabled] = useState(false)
   const [platformContextMenu, setPlatformContextMenu] = useState<PlatformContextTarget | null>(null)
-  const [selectedThreatId, setSelectedThreatId] = useState<string | null>(null)
+  const [selectedLaydownItem, setSelectedLaydownItem] = useState<SelectedLaydownItem | null>(null)
+  const prevPlacedCountsRef = useRef({ uas: 0, cuas: 0, radar: 0, effector: 0 })
+  const [pendingMissionUasId, setPendingMissionUasId] = useState<string | null>(null)
+  const [waypointContextMenu, setWaypointContextMenu] = useState<WaypointContextTarget | null>(null)
 
   const cesiumCtxRef = useRef<CesiumContext | null>(null)
+  const [cesiumReady, setCesiumReady] = useState(false)
   const getCesium = useCallback(() => cesiumCtxRef.current, [])
 
   const onCesiumReady = useCallback((ctx: CesiumContext) => {
     cesiumCtxRef.current = ctx
+    setCesiumReady(true)
   }, [])
 
   const {
     placeAt,
+    placeCuasAt,
     startUasPlacement,
     startCuasPlacement,
     startRadarPlacement,
@@ -97,6 +112,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     setPlacedRadars,
     setPlacedEffectors,
     getCesium,
+    (uas) => setPendingMissionUasId(uas.instanceId),
   )
 
   const { startLoiterMode, placeLoiterWaypoint, clearLoiter } = useLoiterPlanning(
@@ -113,6 +129,12 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     terrainEpoch,
   )
   const { overlaps, source: overlapSource } = useDefeatOverlap(placedUas, placedCuas)
+
+const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEmcon, clearMission } = useMissionPlanning(
+    placementMode, setPlacementMode, placedUas, placedCuas, placedRadars, placedEffectors, overlaps, setPlacedUas, getCesium,
+  )
+
+  const pendingMissionUas = useMemo(() => placedUas.find((u) => u.instanceId === pendingMissionUasId) ?? null, [placedUas, pendingMissionUasId])
   const adjudication = useLaydownAdjudication(
     placedUas,
     placedCuas,
@@ -180,25 +202,93 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     [placedUas, placedCuas, adjudication.analysis, assets.cuas, overlaps],
   )
 
+  const laydownState = useMemo(
+    () => ({
+      placedUas,
+      placedCuas,
+      placedRadars,
+      placedEffectors,
+      catalogUas: assets.uas,
+      catalogCuas: assets.cuas,
+    }),
+    [placedUas, placedCuas, placedRadars, placedEffectors, assets.uas, assets.cuas],
+  )
+
+  const laydownEvaluation = useMemo(
+    () => buildLaydownEvaluation(selectedLaydownItem, laydownState),
+    [selectedLaydownItem, laydownState],
+  )
+
+  const placedLaydownChips = useMemo(() => {
+    const nameFor = (item: SelectedLaydownItem) => {
+      switch (item.kind) {
+        case 'uas':
+          return placedUas.find((u) => u.instanceId === item.instanceId)?.asset.name ?? item.instanceId
+        case 'cuas':
+          return placedCuas.find((c) => c.instanceId === item.instanceId)?.asset.name ?? item.instanceId
+        case 'radar':
+          return placedRadars.find((r) => r.instanceId === item.instanceId)?.asset.name ?? item.instanceId
+        case 'effector':
+          return placedEffectors.find((e) => e.instanceId === item.instanceId)?.asset.name ?? item.instanceId
+      }
+    }
+    return listPlacedLaydownItems(laydownState).map((item) => ({
+      ...item,
+      name: nameFor(item),
+    }))
+  }, [laydownState, placedUas, placedCuas, placedRadars, placedEffectors])
+
   useEffect(() => {
-    if (placedUas.length === 0) {
-      setSelectedThreatId(null)
+    const counts = {
+      uas: placedUas.length,
+      cuas: placedCuas.length,
+      radar: placedRadars.length,
+      effector: placedEffectors.length,
+    }
+    const total = counts.uas + counts.cuas + counts.radar + counts.effector
+    if (total === 0) {
+      setSelectedLaydownItem(null)
+      prevPlacedCountsRef.current = counts
       return
     }
-    if (!selectedThreatId || !placedUas.some((u) => u.instanceId === selectedThreatId)) {
-      setSelectedThreatId(placedUas[placedUas.length - 1]?.instanceId ?? null)
+
+    const items = listPlacedLaydownItems(laydownState)
+    const stillValid = selectedLaydownItem && items.some((i) => isSameLaydownItem(i, selectedLaydownItem))
+
+    if (!stillValid) {
+      if (counts.uas > prevPlacedCountsRef.current.uas) {
+        const last = placedUas[placedUas.length - 1]
+        setSelectedLaydownItem({ kind: 'uas', instanceId: last.instanceId })
+      } else if (counts.cuas > prevPlacedCountsRef.current.cuas) {
+        const last = placedCuas[placedCuas.length - 1]
+        setSelectedLaydownItem({ kind: 'cuas', instanceId: last.instanceId })
+      } else if (counts.radar > prevPlacedCountsRef.current.radar) {
+        const last = placedRadars[placedRadars.length - 1]
+        setSelectedLaydownItem({ kind: 'radar', instanceId: last.instanceId })
+      } else if (counts.effector > prevPlacedCountsRef.current.effector) {
+        const last = placedEffectors[placedEffectors.length - 1]
+        setSelectedLaydownItem({ kind: 'effector', instanceId: last.instanceId })
+      } else {
+        setSelectedLaydownItem(items[items.length - 1] ?? null)
+      }
     }
-  }, [placedUas, selectedThreatId])
+
+    prevPlacedCountsRef.current = counts
+  }, [placedUas, placedCuas, placedRadars, placedEffectors, laydownState, selectedLaydownItem])
 
   const handleGlobeClick = useCallback(
     async (lon: number, lat: number) => {
+      if (placementMode.active && placementMode.kind === 'mission-goal') {
+        await placeMissionGoal(lon, lat)
+        return
+      }
       if (placementMode.active && placementMode.kind === 'loiter') {
         await placeLoiterWaypoint(lon, lat)
         return
       }
       await placeAt(lon, lat)
     },
-    [placementMode, placeAt, placeLoiterWaypoint]
+    [placementMode, placeAt, placeLoiterWaypoint, placeMissionGoal]
   )
 
   const handleClearAll = useCallback(() => {
@@ -214,7 +304,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     setPlacementMode((mode) => {
       if (
         mode.active &&
-        mode.kind === 'loiter' &&
+        (mode.kind === 'loiter' || mode.kind === 'mission-goal') &&
         mode.uasInstanceId === instanceId
       ) {
         return { active: false }
@@ -394,12 +484,17 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         assets={assets}
         placedUas={placedUas}
         placedCuas={placedCuas}
+        selectedLaydownItem={selectedLaydownItem}
+        onSelectPlacedItem={setSelectedLaydownItem}
         placementMode={placementMode}
         highlightedIds={highlightedIds}
         onSelectUas={startUasPlacement}
         onSelectCuas={startCuasPlacement}
         onPlaceLoiter={startLoiterMode}
         onClearLoiter={clearLoiter}
+        onReplanMission={replanMission}
+        onClearMission={clearMission}
+        onMissionEmcon={setEmcon}
         onRemoveUas={handleRemoveUas}
         onRemoveCuas={handleRemoveCuas}
         placedRadars={placedRadars}
@@ -453,7 +548,9 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         )}
         {placementMode.active && (
           <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-xl store-panel-inner border-[var(--store-accent-border)] text-[11px] text-[var(--store-accent)] font-medium">
-            {placementMode.kind === 'loiter'
+{placementMode.kind === 'mission-goal'
+              ? 'Mission goal — click globe for target/AOI point · Esc to cancel'
+              : placementMode.kind === 'loiter'
               ? 'Place Loiter — click globe for loiter point · Esc to cancel'
               : placementMode.kind === 'radar'
                 ? `Placing radar ${placementMode.asset.name} · click terrain · Esc to cancel`
@@ -471,6 +568,8 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             placedCuas={placedCuas}
             placedRadars={placedRadars}
             placedEffectors={placedEffectors}
+            selectedLaydownItem={selectedLaydownItem}
+            onSelectPlacedItem={setSelectedLaydownItem}
             overlaps={overlaps}
             maskingPolygons={maskingPolygons}
             heatmapCells={heatmap.cells}
@@ -490,6 +589,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             setPlacedUas={setPlacedUas}
             setPlacedCuas={setPlacedCuas}
             onPlatformContextMenu={setPlatformContextMenu}
+            onWaypointContextMenu={setWaypointContextMenu}
           />
 
           {platformContextMenu && (
@@ -504,12 +604,29 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
 
           <MapNavigationWheel getCesium={getCesium} />
 
-          <ThreatAssessmentPanel
-            assessments={threatAssessments}
-            selectedUasInstanceId={selectedThreatId}
-            onSelectUas={setSelectedThreatId}
+          <LaydownEvaluationPanel
+            evaluation={laydownEvaluation}
+            placedItems={placedLaydownChips}
+            selectedItem={selectedLaydownItem}
+            onSelectItem={setSelectedLaydownItem}
             adjudicationSource={adjudication.source}
           />
+
+          {pendingMissionUas && (
+            <MissionGoalDialog
+              uas={pendingMissionUas}
+              onSelect={(kind) => { startMissionGoal(pendingMissionUas, kind); setPendingMissionUasId(null) }}
+              onDismiss={() => setPendingMissionUasId(null)}
+            />
+          )}
+
+          {waypointContextMenu && (
+            <WaypointContextMenu
+              target={waypointContextMenu}
+              onApply={(patch) => updateWaypoint(waypointContextMenu.uasInstanceId, waypointContextMenu.waypointId, patch)}
+              onClose={() => setWaypointContextMenu(null)}
+            />
+          )}
 
           {panelUas && panelScreenPos && (
             <EntityInfoPanel

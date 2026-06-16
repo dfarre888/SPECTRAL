@@ -4,6 +4,7 @@ import { analyzeLaydown } from '@/lib/map/laydown-analysis'
 import { buildOverlapVolume } from '@/lib/map/overlap'
 import {
   activeTileIds,
+  computeTileSpectrumZones,
   mergeLaydownEmissions,
   resolveLaydownEmissions,
   resolveRecommendationEmissions,
@@ -130,7 +131,61 @@ describe('laydown-tiles', () => {
     expect(activeTileIds(merged)).toEqual(before)
   })
 
+  it('Shahed + DroneGun on UHF produces overlap zones', () => {
+    const emissions = resolveLaydownEmissions([placedUas()], [placedCuas()], [], [])
+    const uhf = BAND_TILES.find((t) => t.id === 'uhf')
+    expect(uhf).toBeDefined()
+    const zones = computeTileSpectrumZones(uhf!, emissions)
+    expect(zones.some((z) => z.kind === 'overlap')).toBe(true)
+  })
+
+  it('red_gap when only uas placed', () => {
+    const emissions = resolveLaydownEmissions([placedUas()], [], [], [])
+    const uhf = BAND_TILES.find((t) => t.id === 'uhf')
+    expect(uhf).toBeDefined()
+    const zones = computeTileSpectrumZones(uhf!, emissions)
+    expect(zones.length).toBeGreaterThan(0)
+    expect(zones.every((z) => z.kind === 'red_gap')).toBe(true)
+  })
+
   it('BAND_TILES catalogue is wired', () => {
     expect(BAND_TILES.length).toBeGreaterThan(10)
+  })
+
+  it('MQ-9 Reaper EO/IR activates IR optical tile', () => {
+    const mq9: MapUasAsset = {
+      id: 'mq-9-reaper',
+      name: 'MQ-9 Reaper',
+      slug: 'mq-9-reaper',
+      category: 'MALE',
+      categoryLabel: 'MALE',
+      image_url: null,
+      max_altitude_agl_m: 15000,
+      altitude_reference: 'AGL',
+      max_range_km: 1850,
+      max_speed_kmh: 444,
+      endurance_min: 1620,
+      climb_rate_mpm: 500,
+    }
+
+    const placed: PlacedUas = {
+      instanceId: 'uas-mq9',
+      asset: mq9,
+      lon: 55.5,
+      lat: 26.99,
+      terrainAMSL: 10,
+      discAltitude_m: 5000,
+      lateralRadius_m: 8000,
+      ceilingAMSL_m: 15010,
+      annotationTime_min: 120,
+      effectiveRange_km: 1850,
+      infoPanelClosed: true,
+    }
+
+    const emissions = resolveLaydownEmissions([placed], [], [], [])
+    expect(emissions.some((e) => e.unit === 'um')).toBe(true)
+
+    const ids = activeTileIds(emissions)
+    expect(ids).toContain('ir')
   })
 })

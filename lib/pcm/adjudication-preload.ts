@@ -14,6 +14,9 @@ import { buildAccreditedDataLayer } from '@/lib/pcm/accredited-data-layer';
 import { fetchAccreditedErpProfiles } from '@/lib/operations/accredited-supplements';
 import type { AccreditedErpProfile } from '@/lib/operations/accredited-supplements-data';
 import { resolvePcmPlatformId, resolveDefenderSystemId } from '@/lib/pcm/pcm-platform-ids';
+import { fetchGnssPlatformDependencies } from '@/lib/gnss/gnss-queries';
+import type { GnssPlatformDependency } from '@/lib/gnss/gnss-types';
+import { countGnssDependentThreats } from '@/lib/pcm/gnss-adjudication-bridge';
 
 
 const DEFENCE_GROUPS = new Set([
@@ -76,6 +79,11 @@ export async function preloadAccreditedErpRows(): Promise<AccreditedErpProfile[]
   return rows.length > 0 ? rows : undefined;
 }
 
+async function preloadGnssDependencies(): Promise<GnssPlatformDependency[]> {
+  if (process.env.SPECTRAL_ACCREDITED_RESOLVER !== 'true') return [];
+  return fetchGnssPlatformDependencies();
+}
+
 export async function buildAdjudicationContext(
   supabase: SupabaseClient | null,
   worldState: PCM.WorldState,
@@ -93,10 +101,19 @@ export async function buildAdjudicationContext(
     tenantId,
   );
 
-  const resolvedAccredited =
-    accreditedData ?? (await preloadAccreditedData(worldState));
-  const resolvedErpRows =
-    accreditedErpRows ?? (await preloadAccreditedErpRows());
+  const [resolvedAccredited, resolvedErpRows, gnssRows] = await Promise.all([
+    accreditedData ?? preloadAccreditedData(worldState),
+    accreditedErpRows ?? preloadAccreditedErpRows(),
+    preloadGnssDependencies(),
+  ]);
+
+  const threatIds = [
+    ...new Set(
+      threats
+        .map((t) => resolvePcmPlatformId(t.type))
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ];
 
   const ctx: AdjudicationContext = {
     defeatMatrix,
@@ -106,6 +123,11 @@ export async function buildAdjudicationContext(
     ewInterceptPenalty: 0,
     accreditedData: resolvedAccredited,
     accreditedErpRows: resolvedErpRows,
+    gnssDependencies: gnssRows.length > 0 ? gnssRows : undefined,
+    gnssSwarmDegradedCount:
+      gnssRows.length > 0
+        ? countGnssDependentThreats(threatIds, gnssRows, true)
+        : undefined,
   };
 
   await preloadPairCache(ctx, worldState, threats, defenders);

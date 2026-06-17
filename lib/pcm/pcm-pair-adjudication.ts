@@ -19,6 +19,7 @@ import {
   pcmToSpectrumRed,
 } from '@/lib/pcm/pcm-spectrum-bridge';
 import { resolveDefenderSystemId, resolvePcmPlatformId } from '@/lib/pcm/pcm-platform-ids';
+import { gnssVulnerabilityForPlatform } from '@/lib/pcm/gnss-adjudication-bridge';
 import { selectAccreditedPk, type AccreditedDataLayer } from '@/lib/pcm/accredited-data-layer';
 import type { AccreditedErpProfile } from '@/lib/operations/accredited-supplements-data';
 import type { PropagationResult } from '@/lib/propagation/types';
@@ -43,6 +44,7 @@ export interface PcmPairResult {
   defeatMatrixPk: number | null;
   /** 'accredited' if Pk came from accredited layer, 'osint' otherwise. */
   data_source?: 'accredited' | 'osint';
+  gnssEffect?: 'mission_kill' | 'degraded' | 'none';
 }
 
 function combinedScore(
@@ -112,6 +114,34 @@ export function applyAccreditedPkToResult(
   };
 }
 
+
+function applyGnssDenialToResult(
+  result: PcmPairResult,
+  threat: PcmPlatform,
+  ctx: AdjudicationContext,
+): PcmPairResult {
+  if (!ctx.gnssSwarmDegradedCount || ctx.gnssSwarmDegradedCount <= 0) {
+    return { ...result, gnssEffect: 'none' };
+  }
+  if (result.isImmune) return { ...result, gnssEffect: 'none' };
+
+  const platformId = resolvePcmPlatformId(threat.type);
+  if (!platformId) return { ...result, gnssEffect: 'none' };
+
+  const vuln = gnssVulnerabilityForPlatform(platformId, ctx.gnssDependencies ?? []);
+  if (vuln === 'immune' || vuln === 'none' || vuln === 'minimal') {
+    return { ...result, gnssEffect: 'none' };
+  }
+
+  const bonus = vuln === 'mission_kill' ? 30 : vuln === 'degraded' ? 12 : 0;
+  const gnssEffect = vuln === 'mission_kill' ? 'mission_kill' : vuln === 'degraded' ? 'degraded' : 'none';
+  return {
+    ...result,
+    combinedBlueSuccessPct: Math.min(100, result.combinedBlueSuccessPct + bonus),
+    gnssEffect,
+  };
+}
+
 function trainingPairResult(
   threat: PcmPlatform,
   defender: PcmPlatform,
@@ -119,6 +149,7 @@ function trainingPairResult(
   worldState: PCM.WorldState,
   ewPenalty: number,
   options?: TrainingPairOptions,
+  ctx?: AdjudicationContext,
 ): PcmPairResult {
   const accreditedData = options?.accreditedData;
   const accRow = accreditedData?.get(`${threat.id}:${defender.id}`);
@@ -240,7 +271,7 @@ function trainingPairResult(
   );
   if (isUrbanTerrain) combined = Math.round(combined * 0.7);
 
-  return {
+  const base: PcmPairResult = {
     combinedBlueSuccessPct: combined,
     spectrumVerdict: spectrum.verdict,
     inRange,
@@ -252,6 +283,7 @@ function trainingPairResult(
     defeatMatrixPk: matrixPk,
     data_source: accreditedPk != null ? 'accredited' : 'osint',
   };
+  return ctx ? applyGnssDenialToResult(base, threat, ctx) : { ...base, gnssEffect: 'none' };
 }
 
 async function operationsPairResult(
@@ -266,7 +298,7 @@ async function operationsPairResult(
     accreditedErpRows: ctx.accreditedErpRows,
   };
   if (lookup.isImmune) {
-    return trainingPairResult(threat, defender, lookup, worldState, ctx.ewInterceptPenalty, options);
+    return trainingPairResult(threat, defender, lookup, worldState, ctx.ewInterceptPenalty, options, ctx);
   }
 
   const platformId = resolvePcmPlatformId(threat.type);
@@ -353,7 +385,8 @@ async function operationsPairResult(
     defeatMatrixPk: lookup.defeatMatrixPk,
     data_source: 'osint',
   };
-  return applyAccreditedPkToResult(threat, defender, lookup, base, options);
+  const withPk = applyAccreditedPkToResult(threat, defender, lookup, base, options);
+  return applyGnssDenialToResult(withPk, threat, ctx);
 }
 
 export async function adjudicatePcmPairAsync(
@@ -369,7 +402,7 @@ export async function adjudicatePcmPairAsync(
   return trainingPairResult(threat, defender, lookup, worldState, ctx.ewInterceptPenalty, {
     accreditedData: ctx.accreditedData,
     accreditedErpRows: ctx.accreditedErpRows,
-  });
+  }, ctx);
 }
 
 /** Sync read from preloaded cache (WSE must preload before resolveTurn). */
@@ -386,7 +419,7 @@ export function getCachedPairResult(
   return trainingPairResult(threat, defender, lookup, { weather: {}, terrain: {} } as PCM.WorldState, ctx.ewInterceptPenalty, {
     accreditedData: ctx.accreditedData,
     accreditedErpRows: ctx.accreditedErpRows,
-  });
+  }, ctx);
 }
 
 export async function preloadPairCache(
@@ -423,5 +456,5 @@ export function adjudicatePcmPairFromCtx(
   return trainingPairResult(threat, defender, lookup, worldState, ctx.ewInterceptPenalty, {
     accreditedData: ctx.accreditedData,
     accreditedErpRows: ctx.accreditedErpRows,
-  });
+  }, ctx);
 }

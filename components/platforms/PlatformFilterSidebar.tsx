@@ -32,9 +32,12 @@ interface PlatformFilterSidebarProps {
   search: string
   onSearchChange: (search: string) => void
   countries: string[]
+  sovereignCount?: number
 }
 
-function pillCount(platforms: Platform[], pill: CategoryPill): number {
+function pillCount(platforms: Platform[], pill: CategoryPill, sovereignCount = 0): number {
+  if (pill === 'sovereign') return sovereignCount
+
   if (pill === 'gnss_shortcut' || pill === 'cuas_shortcut') return 0
   return platforms.filter((p) => matchesCategoryPill(p.category, pill)).length
 }
@@ -50,6 +53,7 @@ export function PlatformFilterSidebar(props: PlatformFilterSidebarProps) {
     search,
     onSearchChange,
     countries,
+    sovereignCount = 0,
   } = props
 
   const handlePill = (pill: CategoryPill) => {
@@ -91,7 +95,7 @@ export function PlatformFilterSidebar(props: PlatformFilterSidebarProps) {
               count={
                 pill.id === 'all'
                   ? platforms.length
-                  : pillCount(platforms, pill.id) || undefined
+                  : pillCount(platforms, pill.id, sovereignCount) || undefined
               }
               icon={PILL_ICONS[pill.id]}
               onClick={() => handlePill(pill.id)}
@@ -124,9 +128,10 @@ export function PlatformMobileFilters({
   onCategoryPillChange,
   search,
   onSearchChange,
+  sovereignCount = 0,
 }: Pick<
   PlatformFilterSidebarProps,
-  'categoryPill' | 'onCategoryPillChange' | 'search' | 'onSearchChange'
+  'categoryPill' | 'onCategoryPillChange' | 'search' | 'onSearchChange' | 'sovereignCount'
 >) {
   const router = useRouter()
   const rowPills = CATEGORY_PILLS.filter(
@@ -160,6 +165,7 @@ export function PlatformMobileFilters({
             }
           >
             {pill.label}
+            {pill.id === 'sovereign' && sovereignCount > 0 ? ` (${sovereignCount})` : ''}
           </button>
         ))}
         <button

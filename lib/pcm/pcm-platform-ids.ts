@@ -15,6 +15,13 @@ export const TYPE_TO_PLATFORM_ID: Record<string, string> = {
   FPV_fibre_optic: 'fpv-fibre-optic',
   'Magura V5': 'magura-v5',
   'GJ-11': 'gj-11-sharp-sword',
+  'Kargu-2': 'kargu-2',
+  'UJ-22 Airborne': 'uj-22-airborne',
+  'Coordinated FPV Swarm': 'fpv-swarm-coord',
+  'XQ-58A Valkyrie': 'xq-58a-valkyrie',
+  'CH-4 Rainbow': 'ch-4-rainbow',
+  'Wing Loong II': 'wing-loong-2',
+  'wing-loong-ii': 'wing-loong-2',
 };
 
 /** PCM defender type → anti_drone_systems.id (Block 2 → Block 3 matrix row). */
@@ -27,6 +34,13 @@ export const DEFENDER_TYPE_TO_SYSTEM_ID: Record<string, string> = {
   'Drone Dome': 'drone-dome',
   'Iron Beam': 'iron-beam',
   'Edge Horizon': 'edge-horizon',
+  'MBDA DragonFire': 'dragonfire-uk',
+  DragonFire: 'dragonfire-uk',
+  'LIDS': 'lids-system',
+  'Leonidas': 'leonidas-hpm',
+  MORFIUS: 'morfius',
+  'Anduril Lattice': 'anduril-lattice',
+  'IRIS-T SLM': 'iris-t-slm-cuas',
 };
 
 export function resolvePcmPlatformId(typeName: string): string | null {

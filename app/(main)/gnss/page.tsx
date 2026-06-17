@@ -1,33 +1,28 @@
-import { GnssWorkspace } from '@/components/gnss/GnssWorkspace'
+import { GnssIntelClient } from '@/components/gnss/GnssIntelClient'
 import { HubPageShell } from '@/components/hub/HubPageShell'
-import { getGnssAnalytics, getGnssIncidents } from '@/lib/gnss/incidents'
 import {
-  getGnssConstellations,
-  getGnssJammers,
-  getNavCountermeasures,
-} from '@/lib/gnss/queries'
+  fetchGnssConstellations,
+  fetchGnssJammingIncidents,
+  fetchGnssPlatformDependencies,
+} from '@/lib/gnss/gnss-queries'
 
 export default async function GnssPage() {
-  const [constellations, jammers, countermeasures, incidents, analytics] = await Promise.all([
-    getGnssConstellations(),
-    getGnssJammers(),
-    getNavCountermeasures(),
-    Promise.resolve(getGnssIncidents()),
-    Promise.resolve(getGnssAnalytics()),
+  const [constellations, dependencies, incidents] = await Promise.all([
+    fetchGnssConstellations(),
+    fetchGnssPlatformDependencies(),
+    fetchGnssJammingIncidents(),
   ])
 
   return (
     <HubPageShell
       eyebrow="Navigation Warfare"
       title="GNSS Intelligence"
-      subtitle="Constellation status, jamming threats, navigation countermeasures, and evidence-graded GNSS denial incident awareness — OSINT"
+      subtitle="Constellation status, platform GNSS dependency, and evidence-graded jamming incident awareness — OSINT"
     >
-      <GnssWorkspace
+      <GnssIntelClient
         constellations={constellations}
-        jammers={jammers}
-        countermeasures={countermeasures}
+        dependencies={dependencies}
         incidents={incidents}
-        analytics={analytics}
       />
     </HubPageShell>
   )

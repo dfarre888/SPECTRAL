@@ -50,6 +50,7 @@ export type CategoryPill =
   | 'owa'
   | 'gnss_shortcut'
   | 'cuas_shortcut'
+  | 'sovereign'
 
 export const CATEGORY_PILLS: { id: CategoryPill; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -58,9 +59,11 @@ export const CATEGORY_PILLS: { id: CategoryPill; label: string }[] = [
   { id: 'owa', label: 'OWA/Loitering Munition' },
   { id: 'gnss_shortcut', label: 'GNSS Jammer' },
   { id: 'cuas_shortcut', label: 'C-UAS' },
+  { id: 'sovereign', label: 'Sovereign Programmes' },
 ]
 
 export function matchesCategoryPill(category: PlatformCategory, pill: CategoryPill): boolean {
+  if (pill === 'sovereign') return false
   if (pill === 'all') return true
   if (pill === 'male_hale') return category === 'MALE' || category === 'HALE'
   if (pill === 'fpv') return category === 'FPV'

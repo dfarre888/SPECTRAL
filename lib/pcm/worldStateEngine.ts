@@ -355,8 +355,11 @@ export class WorldStateEngine {
         adjudication,
       );
 
-      if (exercise.blue_player_id) {
-        await processMoatAfterTurn(this.supabase, {
+      if (
+        process.env.SPECTRAL_PCM_STUB_ADJUDICATION !== 'true' &&
+        exercise.blue_player_id
+      ) {
+        void processMoatAfterTurn(this.supabase, {
           exerciseId: req.exercise_id,
           bluePlayerId: exercise.blue_player_id,
           preState: updatedWorldState,
@@ -366,7 +369,7 @@ export class WorldStateEngine {
           events: adjudication.events,
           exerciseComplete,
           blueWinProbability: adjudication.blue_win_probability ?? 0.5,
-        });
+        }).catch((err) => console.error('[Moat] processMoatAfterTurn failed:', err));
       }
 
       return {

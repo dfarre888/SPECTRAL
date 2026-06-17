@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   Database, Radio, Satellite, Shield, Globe,
-  Swords, GitCompare, LayoutDashboard, ChevronRight, Map, FileUp
+  Swords, GitCompare, LayoutDashboard, ChevronRight, Map, FileUp,
+  Activity, Coins,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
@@ -15,6 +16,7 @@ const BASE_NAV = [
   { href: '/spectrum',  icon: Radio,            label: 'Spectrum View',    sub: 'SPECTRA / EW intel' },
   { href: '/gnss',      icon: Satellite,        label: 'GNSS Intelligence',sub: 'Constellations & jammers' },
   { href: '/defeat',    icon: Shield,           label: 'Defeat Matrix',    sub: 'Countermeasures' },
+  { href: '/conflict',  icon: Activity,         label: 'Conflict Incidents', sub: 'Timeline & map' },
   { href: '/conflicts', icon: Globe,            label: 'Conflict Intel',   sub: 'Case studies' },
   { href: '/arena',     icon: Swords,           label: 'Red/Blue Arena',   sub: 'Scenario engine' },
   { href: '/compare',   icon: GitCompare,       label: '1v1 Overlay',      sub: 'Head-to-head' },
@@ -27,15 +29,70 @@ const OPERATIONS_NAV = {
   sub: 'Tenant ingest',
 } as const
 
-export function Sidebar() {
+const DS_TOOLS = {
+  href: '/currency',
+  icon: Coins,
+  label: 'Currency Queue',
+  sub: 'TTP review pipeline',
+} as const
+
+interface SidebarProps {
+  proposedCurrencyCount?: number
+}
+
+export function Sidebar({ proposedCurrencyCount = 0 }: SidebarProps) {
   const pathname = usePathname()
   const nav = isOperationsEditionClient()
     ? [...BASE_NAV.slice(0, 3), OPERATIONS_NAV, ...BASE_NAV.slice(3)]
     : BASE_NAV
 
+  const renderNavItem = ({
+    href,
+    icon: Icon,
+    label,
+    sub,
+    badge,
+  }: {
+    href: string
+    icon: typeof LayoutDashboard
+    label: string
+    sub: string
+    badge?: number
+  }) => {
+    const active = pathname === href || (href !== '/' && pathname.startsWith(href))
+    return (
+      <Link
+        key={href}
+        href={href}
+        className={cn(
+          'flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl mb-0.5 group transition-all border',
+          active
+            ? 'nav-item-active'
+            : 'border-transparent store-text-body hover:bg-[var(--store-surface-2)] hover:text-white',
+        )}
+      >
+        <Icon
+          className={cn(
+            'nav-icon w-4 h-4 flex-shrink-0',
+            active ? 'text-[var(--store-accent)]' : 'store-text-muted group-hover:store-text-body',
+          )}
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-medium truncate">{label}</p>
+          <p className="text-[10px] store-text-muted truncate font-mono">{sub}</p>
+        </div>
+        {badge != null && badge > 0 && (
+          <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-[var(--store-accent)] text-[10px] font-mono font-bold text-black flex items-center justify-center">
+            {badge}
+          </span>
+        )}
+        {active && <ChevronRight className="w-3 h-3 text-[var(--store-accent)] flex-shrink-0" />}
+      </Link>
+    )
+  }
+
   return (
     <aside className="w-72 xl:w-80 flex-shrink-0 store-panel border-r border-[var(--store-line)] border-t-0 border-b-0 border-l-0 rounded-none flex flex-col bg-[var(--store-surface)]">
-      {/* Logo — Spectral purple brand identity */}
       <div className="px-5 py-4 border-b border-[var(--store-line)]">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-purple/15 border border-purple/35 flex items-center justify-center">
@@ -48,38 +105,22 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Nav — orange active state (A3DM pattern) */}
       <nav className="flex-1 py-3 overflow-y-auto">
-        {nav.map(({ href, icon: Icon, label, sub }) => {
-          const active = pathname === href || (href !== '/' && pathname.startsWith(href))
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                'flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl mb-0.5 group transition-all border',
-                active
-                  ? 'nav-item-active'
-                  : 'border-transparent store-text-body hover:bg-[var(--store-surface-2)] hover:text-white',
-              )}
-            >
-              <Icon
-                className={cn(
-                  'nav-icon w-4 h-4 flex-shrink-0',
-                  active ? 'text-[var(--store-accent)]' : 'store-text-muted group-hover:store-text-body',
-                )}
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium truncate">{label}</p>
-                <p className="text-[10px] store-text-muted truncate font-mono">{sub}</p>
-              </div>
-              {active && <ChevronRight className="w-3 h-3 text-[var(--store-accent)] flex-shrink-0" />}
-            </Link>
-          )
-        })}
+        {nav.map(({ href, icon, label, sub }) =>
+          renderNavItem({ href, icon, label, sub }),
+        )}
+
+        <div className="mt-4 pt-3 mx-4 border-t border-[var(--store-line)]">
+          <p className="text-[10px] font-mono store-text-muted uppercase tracking-wider px-1 mb-2">
+            DS Tools
+          </p>
+          {renderNavItem({
+            ...DS_TOOLS,
+            badge: proposedCurrencyCount,
+          })}
+        </div>
       </nav>
 
-      {/* Footer */}
       <div className="px-4 py-3 border-t border-[var(--store-line)] space-y-1">
         <p className="text-[10px] font-mono store-text-muted text-center">
           SPECTRAL v0.1.0 — UNCLASSIFIED

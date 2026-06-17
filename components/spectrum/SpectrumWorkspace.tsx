@@ -20,6 +20,7 @@ import { OutcomePanel } from './OutcomePanel';
 import { BandTileGrid } from './BandTileGrid';
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail';
 import type { AccreditedWaveformProfile } from '@/lib/operations/accredited-supplements-data';
+import type { GnssConstellation, GnssPlatformDependency } from '@/lib/gnss/gnss-types';
 
 type Mode = 'reference' | 'platform' | 'engagement' | 'tiles';
 
@@ -34,9 +35,15 @@ const ALL_LAYERS: SpectrumLayer[] = ['comms', 'navigation', 'radar', 'eo_ir', 'c
 
 export interface SpectrumWorkspaceProps {
   accreditedWaveforms?: AccreditedWaveformProfile[];
+  constellations?: GnssConstellation[];
+  gnssVulnerabilities?: GnssPlatformDependency[];
 }
 
-export function SpectrumWorkspace({ accreditedWaveforms }: SpectrumWorkspaceProps = {}) {
+export function SpectrumWorkspace({
+  accreditedWaveforms,
+  constellations,
+  gnssVulnerabilities,
+}: SpectrumWorkspaceProps = {}) {
   const { platforms, source } = usePlatforms();
   const [axis, setAxis] = useState<SpectrumAxis>('rf');
   const [mode, setMode] = useState<Mode>('reference');
@@ -44,6 +51,7 @@ export function SpectrumWorkspace({ accreditedWaveforms }: SpectrumWorkspaceProp
     new Set(['comms', 'navigation', 'radar'])
   );
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [gnssOverlay, setGnssOverlay] = useState(false);
 
   const selected = useMemo(
     () => selectedIds.map((id) => platforms.find((p) => p.id === id)!).filter(Boolean),
@@ -138,6 +146,27 @@ export function SpectrumWorkspace({ accreditedWaveforms }: SpectrumWorkspaceProp
             {t.label}
           </button>
         ))}
+
+        <button
+          onClick={() => setGnssOverlay((v) => !v)}
+          className={gnssOverlay ? 'sx-glass-hi' : 'sx-glass'}
+          style={{
+            padding: '9px 16px',
+            borderRadius: 12,
+            fontSize: 12.5,
+            fontWeight: 600,
+            color: gnssOverlay ? 'var(--sx-ink)' : 'var(--sx-ink-dim)',
+            border: gnssOverlay ? '1px solid #06B6D455' : '1px solid var(--sx-glass-line)',
+            background: gnssOverlay ? '#06B6D414' : undefined,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <span className="sx-dot" style={{ width: 8, height: 8, color: '#06B6D4', background: '#06B6D4' }} />
+          GNSS Bands
+        </button>
         {/* mode switch */}
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
           {(['reference', 'platform', 'engagement', 'tiles'] as Mode[]).map((m) => (
@@ -296,6 +325,9 @@ export function SpectrumWorkspace({ accreditedWaveforms }: SpectrumWorkspaceProp
             title={axisTitle(axis)}
             subtitle={axisSubtitle(axis)}
             accreditedWaveforms={axis === 'rf' ? accreditedWaveforms : undefined}
+            constellations={constellations}
+            gnssVulnerabilities={gnssVulnerabilities}
+            gnssOverlay={gnssOverlay}
           />
           {canvasMode === 'engagement' && engagement && (
             <div style={{ marginTop: 16 }}>

@@ -7,6 +7,7 @@ import type { DefeatMatrixCache } from '@/lib/pcm/defeat-matrix-lookup';
 import type { PcmPairResult } from '@/lib/pcm/pcm-pair-adjudication';
 import type { AccreditedDataLayer } from '@/lib/pcm/accredited-data-layer';
 import type { AccreditedErpProfile } from '@/lib/operations/accredited-supplements-data';
+import type { GnssPlatformDependency } from '@/lib/gnss/gnss-types';
 
 export interface AdjudicationContext {
   defeatMatrix: DefeatMatrixCache;
@@ -16,6 +17,8 @@ export interface AdjudicationContext {
   /** Cumulative Red EW pressure reducing Blue intercept Pk this turn (0–1). */
   ewInterceptPenalty: number;
   gnssSwarmDegradedCount?: number;
+  /** Preloaded GNSS platform dependencies (accredited resolver only). */
+  gnssDependencies?: GnssPlatformDependency[];
   /**
    * Pre-fetched accredited Pk/Pd rows for this turn.
    * PCM-scoped only — must never flow to learner model or client.

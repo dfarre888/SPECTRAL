@@ -28,6 +28,7 @@ import { usePlatform, usePlatforms } from '@/components/spectrum/data';
 import { useRadars } from '@/components/spectrum/radar-data';
 import { useEffectors } from '@/components/spectrum/effector-data';
 import type { AccreditedWaveformProfile } from '@/lib/operations/accredited-supplements-data';
+import type { GnssConstellation, GnssPlatformDependency } from '@/lib/gnss/gnss-types';
 
 type Page = 'overview' | 'library' | 'detail' | 'engagement' | 'spectrum' | 'radar' | 'effectors' | 'evolution' | 'map';
 
@@ -43,9 +44,15 @@ const NAV: { key: Page; label: string; icon: string }[] = [
 
 export interface SpectrumAppClientProps {
   accreditedWaveforms?: AccreditedWaveformProfile[];
+  constellations?: GnssConstellation[];
+  gnssVulnerabilities?: GnssPlatformDependency[];
 }
 
-export default function SpectrumAppClient({ accreditedWaveforms }: SpectrumAppClientProps) {
+export default function SpectrumAppClient({
+  accreditedWaveforms,
+  constellations,
+  gnssVulnerabilities,
+}: SpectrumAppClientProps) {
   const { platforms } = usePlatforms();
   const radars = useRadars();
   const effectors = useEffectors();
@@ -145,7 +152,13 @@ export default function SpectrumAppClient({ accreditedWaveforms }: SpectrumAppCl
             {page === 'engagement' && (
               <EngagementPlanner initialRed={engagementPair.red} initialBlue={engagementPair.blue} key={`${engagementPair.red}-${engagementPair.blue}`} />
             )}
-            {page === 'spectrum' && <SpectrumWorkspace accreditedWaveforms={accreditedWaveforms} />}
+            {page === 'spectrum' && (
+              <SpectrumWorkspace
+                accreditedWaveforms={accreditedWaveforms}
+                constellations={constellations}
+                gnssVulnerabilities={gnssVulnerabilities}
+              />
+            )}
             {page === 'radar' && (
               <RadarSpectrum onSelect={toggleSelect} selectedIds={[...selectedIds, ...highlightIds]} />
             )}

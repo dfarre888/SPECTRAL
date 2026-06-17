@@ -14,6 +14,7 @@ import { fogOfWarEngine } from '@/lib/pcm/fogOfWarEngine';
 import { createSeededRng } from '@/lib/pcm/seeded-rng';
 import { resolveEwCombat } from '@/lib/pcm/ew-combat-resolver';
 import type { AdjudicationContext } from '@/lib/pcm/adjudication-context';
+import type { GnssPlatformDependency } from '@/lib/gnss/gnss-types';
 import { adjudicatePcmPairFromCtx, applyAccreditedPkToResult } from '@/lib/pcm/pcm-pair-adjudication';
 import type { AccreditedDataLayer } from '@/lib/pcm/accredited-data-layer';
 import { resolveJamFromEngagement, resolveJamTransmit } from '@/lib/spectrum/erp-resolve';
@@ -569,4 +570,86 @@ describe('operationalAdjudicationCore + applyAccreditedPkToResult', () => {
     expect(result.data_source).toBe("accredited");
   });
 });
+describe('gnss denial effect', () => {
+  const shahedDeps: GnssPlatformDependency[] = [
+    {
+      id: 'dep-shahed-gps',
+      platform_id: 'shahed-136',
+      constellation: 'gps',
+      dependency_level: 'primary',
+      jamming_effect: 'mission_kill',
+      notes: 'test',
+      data_source: 'OSINT',
+    },
+  ];
+
+  const fibreDeps: GnssPlatformDependency[] = [
+    {
+      id: 'dep-fpv',
+      platform_id: 'fpv-fibre-optic',
+      constellation: 'gps',
+      dependency_level: 'immune',
+      jamming_effect: 'none',
+      notes: 'fibre C2',
+      data_source: 'OSINT',
+    },
+  ];
+
+  it('shahed-136 gets +30 Pk when gnssSwarmDegradedCount > 0', () => {
+    const baseCtx = buildTestCtx({
+      gnssSwarmDegradedCount: 1,
+      gnssDependencies: shahedDeps,
+    });
+    const without = adjudicatePcmPairFromCtx(
+      buildTestCtx({ gnssSwarmDegradedCount: 0 }),
+      testThreat('shahed-136-t1'),
+      testDefender('coyote-block3-d1', 'c_uas_defeat_kinetic'),
+      testWorldState(),
+    );
+    const withGnss = adjudicatePcmPairFromCtx(
+      baseCtx,
+      testThreat('shahed-136-t1'),
+      testDefender('coyote-block3-d1', 'c_uas_defeat_kinetic'),
+      testWorldState(),
+    );
+    expect(withGnss.combinedBlueSuccessPct).toBeGreaterThan(without.combinedBlueSuccessPct);
+    expect(withGnss.gnssEffect).toBe('mission_kill');
+  });
+
+  it('fpv-fibre-optic unchanged when gnssSwarmDegradedCount > 0', () => {
+    const ctx = buildTestCtx({
+      gnssSwarmDegradedCount: 5,
+      gnssDependencies: fibreDeps,
+    });
+    const without = adjudicatePcmPairFromCtx(
+      buildTestCtx({ gnssSwarmDegradedCount: 0 }),
+      testThreat('fpv-fibre-t1', 'FPV_fibre_optic'),
+      testDefender('coyote-block3-d1', 'c_uas_defeat_kinetic'),
+      testWorldState(),
+    );
+    const withGnss = adjudicatePcmPairFromCtx(
+      ctx,
+      testThreat('fpv-fibre-t1', 'FPV_fibre_optic'),
+      testDefender('coyote-block3-d1', 'c_uas_defeat_kinetic'),
+      testWorldState(),
+    );
+    expect(withGnss.combinedBlueSuccessPct).toBe(without.combinedBlueSuccessPct);
+    expect(withGnss.gnssEffect).toBe('none');
+  });
+
+  it('count=0 leaves pair result unchanged', () => {
+    const ctx = buildTestCtx({
+      gnssSwarmDegradedCount: 0,
+      gnssDependencies: shahedDeps,
+    });
+    const result = adjudicatePcmPairFromCtx(
+      ctx,
+      testThreat('shahed-136-t1'),
+      testDefender('coyote-block3-d1', 'c_uas_defeat_kinetic'),
+      testWorldState(),
+    );
+    expect(result.gnssEffect).toBe('none');
+  });
+});
+
 

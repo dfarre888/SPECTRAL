@@ -25,6 +25,7 @@ import {
 } from '@/lib/spectrum/scale';
 import type { BandOverlap } from '@/lib/spectrum/types';
 import type { AccreditedWaveformProfile } from '@/lib/operations/accredited-supplements-data';
+import type { GnssConstellation, GnssPlatformDependency } from '@/lib/gnss/gnss-types';
 
 export interface CanvasLane {
   key: string;
@@ -44,6 +45,16 @@ export interface SpectrumCanvasProps {
   title?: string;
   subtitle?: string;
   accreditedWaveforms?: AccreditedWaveformProfile[];
+  constellations?: GnssConstellation[];
+  gnssVulnerabilities?: GnssPlatformDependency[];
+  gnssOverlay?: boolean;
+}
+
+
+function gnssConstellationColor(id: string): string {
+  if (id === 'glonass') return '#F97316';
+  if (id === 'beidou') return '#A78BFA';
+  return '#06B6D4';
 }
 
 const VB_W = 960;
@@ -64,12 +75,16 @@ export function SpectrumCanvas({
   title,
   subtitle,
   accreditedWaveforms = [],
+  constellations = [],
+  gnssVulnerabilities = [],
+  gnssOverlay = false,
 }: SpectrumCanvasProps) {
   const [hover, setHover] = useState<{
     x: number;
     y: number;
     cap?: SpectrumCapability;
     accredited?: import('@/lib/operations/accredited-supplements-data').AccreditedWaveformProfile;
+    gnss?: { constellation: string; band: string; freqMhz: number; platforms: string[] };
   } | null>(null);
 
   const cfg = useMemo(() => getAxisConfig(axis, [PAD_L, VB_W - PAD_R]), [axis]);
@@ -315,6 +330,67 @@ export function SpectrumCanvas({
           );
         })()}
 
+
+        {/* GNSS constellation band markers (RF axis only) */}
+        {gnssOverlay && axis === 'rf' && unit === 'hz' && constellations.length > 0 && (
+          <g key="gnss-overlay">
+            {constellations.flatMap((c) =>
+              (c.signal_bands ?? []).map((band) => {
+                const freqHz = band.freq_mhz * 1e6;
+                const x = px(freqHz);
+                const color = gnssConstellationColor(c.id);
+                const vulnPlatforms = gnssVulnerabilities
+                  .filter((d) => d.dependency_level === 'primary' && d.jamming_effect === 'mission_kill')
+                  .map((d) => d.platform_id)
+                  .slice(0, 3);
+                return (
+                  <line
+                    key={`${c.id}-${band.band}`}
+                    x1={x}
+                    x2={x}
+                    y1={lanesTop - 8}
+                    y2={axisY}
+                    stroke={color}
+                    strokeWidth={1.5}
+                    strokeDasharray="4 3"
+                    opacity={0.85}
+                    style={{ pointerEvents: 'stroke' }}
+                    onMouseEnter={() =>
+                      setHover({
+                        x,
+                        y: lanesTop - 10,
+                        gnss: {
+                          constellation: c.display_name,
+                          band: band.band,
+                          freqMhz: band.freq_mhz,
+                          platforms: vulnPlatforms,
+                        },
+                      })
+                    }
+                  />
+                );
+              }),
+            )}
+          </g>
+        )}
+
+        {gnssOverlay && axis === 'rf' && constellations.length > 0 && (
+          <g key="gnss-legend">
+            {constellations.map((c, i) => (
+              <text
+                key={`leg-${c.id}`}
+                x={PAD_L}
+                y={vbH - 8 - (constellations.length - 1 - i) * 12}
+                fontFamily="var(--sx-mono)"
+                fontSize="10"
+                fill={gnssConstellationColor(c.id)}
+              >
+                {c.display_name}
+              </text>
+            ))}
+          </g>
+        )}
+
         {/* axis */}
         <line
           x1={PAD_L - 20}
@@ -354,14 +430,20 @@ export function SpectrumCanvas({
           <g pointerEvents="none">
             <rect
               x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184)}
-              y={hover.y - (hover.accredited ? 58 : 46)}
+              y={hover.y - (hover.gnss ? 70 : hover.accredited ? 58 : 46)}
               width="180"
-              height={hover.accredited ? 54 : 42}
+              height={hover.gnss ? 66 : hover.accredited ? 54 : 42}
               rx="8"
               fill="rgba(8,10,12,0.95)"
               stroke="var(--sx-glass-line-hi)"
             />
-            {hover.accredited ? (
+            {hover.gnss ? (
+              <>
+                <text x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10} y={hover.y - 56} fontFamily="var(--sx-ui)" fontSize="10" fontWeight="600" fill="#06B6D4">{hover.gnss.constellation}</text>
+                <text x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10} y={hover.y - 42} fontFamily="var(--sx-mono)" fontSize="9" fill="var(--sx-ink-dim)">{hover.gnss.band} · {hover.gnss.freqMhz.toFixed(2)} MHz</text>
+                <text x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10} y={hover.y - 28} fontFamily="var(--sx-mono)" fontSize="9" fill="var(--sx-ink-dim)">Vuln: {hover.gnss.platforms.join(', ') || '—'}</text>
+              </>
+            ) : hover.accredited ? (
               <>
                 <text x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10} y={hover.y - 44} fontFamily="var(--sx-ui)" fontSize="10" fontWeight="600" fill="#F97316">{hover.accredited.label.slice(0, 28)}</text>
                 <text x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10} y={hover.y - 30} fontFamily="var(--sx-mono)" fontSize="9" fill="var(--sx-ink-dim)">{hover.accredited.system_id} · {hover.accredited.capability_fn}</text>

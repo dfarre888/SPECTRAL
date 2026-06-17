@@ -15,10 +15,13 @@ import {
 import { PlatformGrid } from '@/components/platforms/PlatformGrid'
 import { CATEGORY_PILLS, matchesCategoryPill, type CategoryPill } from '@/lib/platforms/constants'
 import type { Platform } from '@/lib/types'
+import type { SovereignPlatform } from '@/lib/platforms/sovereign-types'
+import { SovereignPlatformCard } from '@/components/platforms/SovereignPlatformCard'
 
 interface PlatformLibraryProps {
   platforms: Platform[]
   countries: string[]
+  sovereignPlatforms?: SovereignPlatform[]
 }
 
 function sectionTitle(pill: CategoryPill): string {
@@ -26,7 +29,7 @@ function sectionTitle(pill: CategoryPill): string {
   return CATEGORY_PILLS.find((p) => p.id === pill)?.label ?? 'Platforms'
 }
 
-export function PlatformLibrary({ platforms, countries }: PlatformLibraryProps) {
+export function PlatformLibrary({ platforms, countries, sovereignPlatforms = [] }: PlatformLibraryProps) {
   const [categoryPill, setCategoryPill] = useState<CategoryPill>('all')
   const [country, setCountry] = useState('all')
   const [search, setSearch] = useState('')
@@ -88,6 +91,7 @@ export function PlatformLibrary({ platforms, countries }: PlatformLibraryProps) 
             search={search}
             onSearchChange={setSearch}
             countries={countries}
+            sovereignCount={sovereignPlatforms.length}
           />
         }
       >
@@ -96,14 +100,38 @@ export function PlatformLibrary({ platforms, countries }: PlatformLibraryProps) 
           onCategoryPillChange={setCategoryPill}
           search={search}
           onSearchChange={setSearch}
+          sovereignCount={sovereignPlatforms.length}
         />
 
         <StoreCatalogHeader
           title={sectionTitle(categoryPill)}
-          meta={`Showing ${filtered.length} of ${platforms.length}`}
+          meta={
+            categoryPill === 'sovereign'
+              ? `${sovereignPlatforms.length} sovereign programmes`
+              : `Showing ${filtered.length} of ${platforms.length}`
+          }
         />
 
-        <PlatformGrid platforms={filtered} />
+        {categoryPill === 'sovereign' ? (
+          <div className="space-y-10">
+            {(['Australia', 'UK', 'USA'] as const).map((country) => {
+              const group = sovereignPlatforms.filter((s) => s.origin_country === country)
+              if (!group.length) return null
+              return (
+                <section key={country}>
+                  <h2 className="text-sm font-mono store-text-muted uppercase tracking-wider mb-4">{country}</h2>
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    {group.map((sp) => (
+                      <SovereignPlatformCard key={sp.id} platform={sp} />
+                    ))}
+                  </div>
+                </section>
+              )
+            })}
+          </div>
+        ) : (
+          <PlatformGrid platforms={filtered} />
+        )}
       </StoreCatalogLayout>
 
       <CompareTray platforms={platforms} />

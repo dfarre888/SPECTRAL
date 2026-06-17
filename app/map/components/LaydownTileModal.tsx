@@ -23,23 +23,26 @@ export function LaydownTileModal({ tile, emissions, onClose }: LaydownTileModalP
     return () => window.removeEventListener('keydown', onKey)
   }, [tile, onClose])
 
+  useEffect(() => {
+    if (!tile) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [tile])
+
   if (!tile) return null
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[100] flex flex-col bg-[#0A0A0F]"
       role="dialog"
       aria-modal="true"
       aria-label={`${tile.band} band detail`}
     >
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
-        aria-label="Close band detail"
-        onClick={onClose}
-      />
-      <div className="relative z-10 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl border border-[var(--store-line)] bg-[#0A0A0F] p-4 shadow-2xl">
-        <div className="flex items-center justify-between gap-2 mb-3">
+      <div className="relative z-10 flex flex-col flex-1 min-h-0 p-3 pt-4">
+        <div className="flex items-center justify-between gap-2 mb-2 shrink-0">
           <p className="text-[10px] font-mono uppercase tracking-widest text-[var(--store-accent)]">
             Laydown EW band — {tile.band}
           </p>
@@ -53,13 +56,17 @@ export function LaydownTileModal({ tile, emissions, onClose }: LaydownTileModalP
           </button>
         </div>
         <SpectrumPulseLegend />
-        <TileCard
-          tile={tile}
-          expanded
-          onExpand={onClose}
-          emissions={emissions}
-          compact={false}
-        />
+        <div className="flex flex-col flex-1 min-h-0">
+          <TileCard
+            tile={tile}
+            expanded
+            onExpand={onClose}
+            emissions={emissions}
+            compact={false}
+            fillViewport
+            spectrumPulseProminent
+          />
+        </div>
       </div>
     </div>
   )

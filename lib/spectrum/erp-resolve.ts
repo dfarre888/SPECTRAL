@@ -1,6 +1,7 @@
 import type { BandOverlap } from '@/lib/spectrum/types'
 import type { Platform, SpectrumCapability } from '@/lib/spectrum/types'
 import type { ConfidenceLevel } from '@/lib/propagation/types'
+import type { AccreditedErpProfile } from '@/lib/operations/accredited-supplements-data'
 import { resolveAccreditedErpForJam } from '@/lib/operations/accredited-supplements-data'
 
 export interface JamTransmit {
@@ -8,6 +9,11 @@ export interface JamTransmit {
   freq_hz: number
   confidence: ConfidenceLevel
   source: string
+}
+
+export interface JamResolveOptions {
+  erpRows?: AccreditedErpProfile[]
+  systemId?: string
 }
 
 const JAM_FNS = new Set([
@@ -51,6 +57,7 @@ function pickJamCapability(
 export function resolveJamTransmit(
   blue: Platform,
   overlap?: BandOverlap | null,
+  options?: JamResolveOptions,
 ): JamTransmit {
   const cap = pickJamCapability(blue, overlap)
   const freq_hz =
@@ -71,8 +78,8 @@ export function resolveJamTransmit(
 
 
   if (cap) {
-    const systemId = blue.id
-    const accredited = resolveAccreditedErpForJam(systemId, cap.fn)
+    const systemId = options?.systemId ?? blue.id
+    const accredited = resolveAccreditedErpForJam(systemId, cap.fn, options?.erpRows)
     if (accredited) {
       return {
         erp_dbm: accredited.erp_dbm,
@@ -105,7 +112,8 @@ export function resolveJamTransmit(
 export function resolveJamFromEngagement(
   blue: Platform,
   overlaps: BandOverlap[],
+  options?: JamResolveOptions,
 ): JamTransmit {
   const rfOverlap = overlaps.find((o) => o.axis === 'rf' || o.axis === 'gnss') ?? overlaps[0]
-  return resolveJamTransmit(blue, rfOverlap ?? null)
+  return resolveJamTransmit(blue, rfOverlap ?? null, options)
 }

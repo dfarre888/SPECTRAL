@@ -417,6 +417,14 @@ export class DefeatMatrixCache {
     }
   }
 
+  /** OSINT effective range (km) for a defender system id or PCM type slug. */
+  systemEffectiveRangeKm(systemIdOrType: string): number | undefined {
+    const id = resolveDefenderSystemId(systemIdOrType, '');
+    const system = this.systems.get(id) ?? this.systems.get(systemIdOrType);
+    if (!system?.effective_range_m) return undefined;
+    return system.effective_range_m / 1000;
+  }
+
   lookup(threat: PCM.Platform, defender: PCM.Platform): DefeatLookupResult {
     const key = `${threat.id}:${defender.id}`;
     const hit = this.cache.get(key);

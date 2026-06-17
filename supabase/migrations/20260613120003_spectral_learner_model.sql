@@ -54,7 +54,6 @@ CREATE TABLE spectral_currency_updates (
   reviewed_by                         UUID REFERENCES spectral_players(id),
   reviewed_at                         TIMESTAMPTZ,
   review_notes                        TEXT,
-  requires_accredited_implementation  BOOLEAN NOT NULL DEFAULT false,
   created_at                          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -93,7 +92,6 @@ CREATE INDEX idx_spectral_competency_player ON spectral_competency_records(playe
 CREATE INDEX idx_spectral_training_plans_player ON spectral_training_plans(player_id);
 CREATE INDEX idx_spectral_training_plans_status ON spectral_training_plans(status);
 CREATE INDEX idx_spectral_currency_status ON spectral_currency_updates(status);
-CREATE INDEX idx_spectral_currency_accredited ON spectral_currency_updates(requires_accredited_implementation);
 CREATE INDEX idx_spectral_sovereign_role ON spectral_sovereign_platforms(role);
 
 ALTER TABLE spectral_competency_records   ENABLE ROW LEVEL SECURITY;
@@ -154,23 +152,23 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Demo currency updates (proposed — SME review required)
 INSERT INTO spectral_currency_updates
-  (id, type, title, summary, source_type, source_reference, detected_at, proposed_effect, affects, status, requires_accredited_implementation)
+  (id, type, title, summary, source_type, source_reference, detected_at, proposed_effect, affects, status)
 VALUES
   ('CU-SEED-FO-FPV', 'new_tactic', 'Fibre-optic FPV defeats RF-based counter-UAS',
    'Fibre-optic guided FPV drones are immune to RF jamming and SIGINT detection. Observed at scale in Ukraine.',
    'osint', 'OSINT Ukraine conflict reporting 2025-26', NOW(),
    'Add training emphasis: recognise EW-immune threat; do not rely on EW defeat. Pedagogy and scenario-emphasis change only.',
-   '{"competencies":["adaptation"],"scenarios":[],"injects":["RED-003"]}', 'proposed', false),
+   '{"competencies":["adaptation"],"scenarios":[],"injects":["RED-003"]}', 'proposed'),
   ('CU-SEED-DECOY', 'doctrine_shift', 'Decoy-heavy OWA packages to deplete interceptor magazines',
    'Attackers mix low-cost decoys with real OWA to force defenders to expend interceptors on decoys.',
    'osint', 'OSINT Ukraine saturation tactics 2025-26', NOW(),
    'Strengthen magazine-management and threat-classification training emphasis. Inject-narrative change only.',
-   '{"competencies":["magazine_management","threat_classification"],"scenarios":[],"injects":["RED-001","RED-004"]}', 'proposed', false),
+   '{"competencies":["magazine_management","threat_classification"],"scenarios":[],"injects":["RED-001","RED-004"]}', 'proposed'),
   ('CU-SEED-TURBOJET', 'doctrine_shift', 'Turbojet OWA variants compress the intercept window',
    'Turbojet-powered OWA variants travel faster, reducing detection-to-impact time.',
    'osint', 'OSINT reporting 2025-26', NOW(),
    'Emphasise decision-tempo training under compressed timelines. Pedagogy change only.',
-   '{"competencies":["tempo_and_initiative","decision_under_uncertainty"],"scenarios":[],"injects":[]}', 'proposed', false)
+   '{"competencies":["tempo_and_initiative","decision_under_uncertainty"],"scenarios":[],"injects":[]}', 'proposed')
 ON CONFLICT (id) DO NOTHING;
 
 COMMENT ON TABLE spectral_competency_records IS

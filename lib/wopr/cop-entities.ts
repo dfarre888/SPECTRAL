@@ -1,4 +1,5 @@
 import type { Entity } from '@/components/arena/CesiumArena'
+import { resolveCopRangeKm } from '@/lib/wopr/cop-range'
 import type { SensorTrack, TickResult, WoprPlatform, WoprScenario } from '@/lib/wopr/types'
 
 export type CopViewMode = 'orbat' | 'blue_picture' | 'red_fow'
@@ -20,6 +21,7 @@ function platformTypeToEntityType(platformType: string): Entity['type'] {
 }
 
 function platformToEntity(p: WoprPlatform): Entity {
+  const type = platformTypeToEntityType(p.platform_type)
   return {
     id: p.id,
     name: p.name,
@@ -27,7 +29,8 @@ function platformToEntity(p: WoprPlatform): Entity {
     lat: p.lat,
     altM: p.alt_m,
     force: p.side,
-    type: platformTypeToEntityType(p.platform_type),
+    type,
+    range_km: resolveCopRangeKm(p, type),
   }
 }
 

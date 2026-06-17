@@ -106,3 +106,6 @@ export async function fetchAllAccreditedDefeatPk(
     return map
   }
 }
+
+/** Alias for turn-level ERP preload (Prompt 1). */
+export const fetchAccreditedErpProfiles = fetchAccreditedErp

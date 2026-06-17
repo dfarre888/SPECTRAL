@@ -9,7 +9,8 @@ export type { CesiumModule } from '@/lib/map/cesium-types'
 /** Small offset above draped geometry to avoid z-fighting with terrain tiles. */
 export const TERRAIN_SURFACE_AGL_M = 2
 
-const TERRAIN_FALLBACK_M = 0
+/** Sentinel when terrain tiles have not resolved — distinct from valid sea-level (0 m). */
+const TERRAIN_UNRESOLVED_M = Number.NaN
 
 export async function sampleTerrainAMSL(
   Cesium: CesiumModule,
@@ -34,7 +35,7 @@ export async function sampleTerrainAMSL(
     if (globeH !== undefined && Number.isFinite(globeH)) height = globeH
   }
 
-  return height ?? TERRAIN_FALLBACK_M
+  return height ?? TERRAIN_UNRESOLVED_M
 }
 
 export async function sampleTerrainBatch(
@@ -54,7 +55,7 @@ export async function sampleTerrainBatch(
       const globeH = viewer.scene.globe.getHeight(cartographics[i])
       if (globeH !== undefined && Number.isFinite(globeH)) height = globeH
     }
-    return height ?? TERRAIN_FALLBACK_M
+    return height ?? TERRAIN_UNRESOLVED_M
   })
 }
 
@@ -68,9 +69,9 @@ export interface TerrainHeightUpdate {
 
 const TERRAIN_HEIGHT_EPS_M = 0.5
 
-/** True when placement still uses the pre-tile-load fallback height. */
+/** True when placement still uses the pre-tile-load unresolved sentinel. */
 export function placementNeedsTerrainRefresh(terrainAMSL: number): boolean {
-  return terrainAMSL === TERRAIN_FALLBACK_M
+  return !Number.isFinite(terrainAMSL)
 }
 
 export function terrainHeightChanged(prev: number, next: number): boolean {

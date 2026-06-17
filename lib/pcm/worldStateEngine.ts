@@ -18,8 +18,19 @@ import {
 import { fogOfWarEngine } from '@/lib/pcm/fogOfWarEngine';
 import { SpectralRefOrchestrator } from '@/lib/pcm/spectralRefOrchestrator';
 import { hashTurnSeed } from '@/lib/pcm/seeded-rng';
-import { buildAdjudicationContext } from '@/lib/pcm/adjudication-preload';
+import { buildAdjudicationContext, preloadAccreditedData, preloadAccreditedErpRows } from '@/lib/pcm/adjudication-preload';
 import { processMoatAfterTurn } from '@/lib/moat/moatStore';
+import {
+  buildTurnMemory,
+  createRedAdaptiveState,
+  recordAndAdapt,
+  type RedAdaptiveState,
+} from '@/lib/pcm/red-adaptive-ai';
+import {
+  applyDifficultyModifiers,
+  defaultMagazineByType,
+} from '@/lib/pcm/difficulty-modifiers';
+import { buildAAR, type AARReport } from '@/lib/pcm/debrief-engine';
 
 type WorldState = PCM.WorldState;
 type Exercise = PCM.Exercise;
@@ -259,10 +270,16 @@ export class WorldStateEngine {
       const seed = hashTurnSeed(req.exercise_id, newTurn, 42);
       const tenantId =
         (exercise as { tenant_id?: string | null }).tenant_id ?? null;
+      const [accreditedData, accreditedErpRows] = await Promise.all([
+        preloadAccreditedData(updatedWorldState),
+        preloadAccreditedErpRows(),
+      ]);
       const adjudicationCtx = await buildAdjudicationContext(
         this.supabase,
         updatedWorldState,
         tenantId,
+        accreditedData,
+        accreditedErpRows,
       );
       const gate = await orchestrator.adjudicateTurn(
         updatedWorldState,
@@ -283,6 +300,36 @@ export class WorldStateEngine {
       const outcome = adjudication.outcome;
       const exerciseComplete =
         outcome !== 'continues' || newTurn >= (currentWorldState.max_turns || 18);
+
+      // ── Red Adaptive AI: record turn outcomes, update strategy ─────────────
+      // Derive intercept set from post-turn platform status (pre-turn comparison).
+      // This avoids requiring interceptedThreatIds to be surfaced from adjudication.
+      const preRedPlatforms = updatedWorldState.red_force.platforms;
+      const postRedPlatforms = resolvedWorldState.red_force.platforms;
+      const interceptedIdSet = new Set(
+        postRedPlatforms
+          .filter((p) => {
+            const pre = preRedPlatforms.find((q) => q.id === p.id);
+            return (
+              pre?.status !== 'destroyed' &&
+              p.status === 'destroyed'
+            );
+          })
+          .map((p) => p.id),
+      );
+      const blueKineticExpended =
+        (resolvedWorldState.blue_force.magazine_expended ?? 0) -
+        (updatedWorldState.blue_force.magazine_expended ?? 0);
+
+      const existingAiState = (
+        updatedWorldState.red_force as unknown as Record<string, unknown>
+      ).ai_state as RedAdaptiveState | undefined;
+      const aiState = existingAiState ?? createRedAdaptiveState();
+      const turnMem = buildTurnMemory(newTurn, preRedPlatforms, interceptedIdSet, blueKineticExpended);
+      recordAndAdapt(aiState, turnMem);
+      // Persist updated adaptive state into the resolved world state so it carries
+      // forward to the next turn's resolveRedOrders() call.
+      (resolvedWorldState.red_force as unknown as Record<string, unknown>).ai_state = aiState;
 
       await this.supabase
         .from('spectral_exercises')
@@ -384,6 +431,15 @@ export class WorldStateEngine {
     return data as Exercise;
   }
 
+  async getDebrief(exercise_id: string, ds_player_id: string): Promise<AARReport | null> {
+    const isDS = await this.validateDS(exercise_id, ds_player_id);
+    if (!isDS) return null;
+    const history = await this.getTurnHistory(exercise_id, ds_player_id);
+    const exercise = await this.getExercise(exercise_id);
+    if (!exercise) return null;
+    return buildAAR(exercise_id, history, exercise.current_world_state);
+  }
+
   async getTurnHistory(exercise_id: string, ds_player_id: string): Promise<TurnRecord[]> {
     const isDS = await this.validateDS(exercise_id, ds_player_id);
     if (!isDS) return [];
@@ -456,8 +512,12 @@ export class WorldStateEngine {
   ): WorldState {
     const now = new Date().toISOString();
 
-    const redOrbat = this.applyDifficultyModifiers(scenario.red_base_orbat, difficulty, 'RED');
-    const blueOrbat = this.applyDifficultyModifiers(scenario.blue_base_orbat, difficulty, 'BLUE');
+    const redOrbat = applyDifficultyModifiers(scenario.red_base_orbat, difficulty, 'RED');
+    const blueOrbat = applyDifficultyModifiers(scenario.blue_base_orbat, difficulty, 'BLUE');
+
+    if (!blueOrbat.magazine_by_type) {
+      blueOrbat.magazine_by_type = defaultMagazineByType(blueOrbat.magazine_remaining ?? 40);
+    }
 
     return {
       exercise_id: '',
@@ -470,8 +530,8 @@ export class WorldStateEngine {
       outcome: 'continues',
       terrain: scenario.primary_terrain as WorldState['terrain'],
       weather: scenario.initial_weather as WorldState['weather'],
-      red_force: redOrbat as WorldState['red_force'],
-      blue_force: blueOrbat as WorldState['blue_force'],
+      red_force: redOrbat,
+      blue_force: blueOrbat,
       all_contacts: [],
       red_orders: null,
       blue_orders: null,
@@ -482,24 +542,6 @@ export class WorldStateEngine {
       updated_at: now,
       version: 1,
     };
-  }
-
-  private applyDifficultyModifiers(
-    baseOrbat: unknown,
-    difficulty: string,
-    _force: ForceId,
-  ): unknown {
-    const orbat = JSON.parse(JSON.stringify(baseOrbat));
-
-    if (difficulty === 'advanced') {
-      // Phase 3: full difficulty modifiers
-    }
-
-    if (difficulty === 'expert') {
-      // Phase 3: full difficulty modifiers
-    }
-
-    return orbat;
   }
 
   private generateSensorPicture(worldState: WorldState, force: ForceId): Contact[] {

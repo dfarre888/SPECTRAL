@@ -19,6 +19,7 @@ import { LAYER_COLOR } from '@/lib/spectrum/scale';
 import { OutcomePanel } from './OutcomePanel';
 import { BandTileGrid } from './BandTileGrid';
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail';
+import type { AccreditedWaveformProfile } from '@/lib/operations/accredited-supplements-data';
 
 type Mode = 'reference' | 'platform' | 'engagement' | 'tiles';
 
@@ -31,7 +32,11 @@ const AXIS_TABS: { axis: SpectrumAxis; label: string; color: string }[] = [
 
 const ALL_LAYERS: SpectrumLayer[] = ['comms', 'navigation', 'radar', 'eo_ir', 'cbrn'];
 
-export function SpectrumWorkspace() {
+export interface SpectrumWorkspaceProps {
+  accreditedWaveforms?: AccreditedWaveformProfile[];
+}
+
+export function SpectrumWorkspace({ accreditedWaveforms }: SpectrumWorkspaceProps = {}) {
   const { platforms, source } = usePlatforms();
   const [axis, setAxis] = useState<SpectrumAxis>('rf');
   const [mode, setMode] = useState<Mode>('reference');
@@ -290,6 +295,7 @@ export function SpectrumWorkspace() {
             referenceBands={canvasMode === 'reference' || canvasMode === 'platform' ? referenceBandsFor(axis) : []}
             title={axisTitle(axis)}
             subtitle={axisSubtitle(axis)}
+            accreditedWaveforms={axis === 'rf' ? accreditedWaveforms : undefined}
           />
           {canvasMode === 'engagement' && engagement && (
             <div style={{ marginTop: 16 }}>

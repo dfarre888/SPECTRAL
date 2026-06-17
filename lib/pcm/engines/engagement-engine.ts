@@ -63,14 +63,18 @@ export function runEngagementPhase(
       p.status !== 'destroyed' &&
       (p.status === 'ground_ready' || p.status === 'airborne_tasked'),
   );
+  const ewPre = resolveEwCombat(state, blueOrders, ctx, rng, { phase: 'pre_salvo' });
+  events.push(...ewPre.events);
+  ctx.ewInterceptPenalty = ewPre.ewInterceptPenalty;
+  ctx.gnssSwarmDegradedCount = ewPre.gnssSwarmDegradedCount;
+
   const queue = buildInboundQueue(state, redOrders);
 
   const salvo = runSalvoCoordinator(state, queue, blueOrders, defenders, ctx, rng);
   events.push(...salvo.events);
 
-  const ewResult = resolveEwCombat(state, blueOrders, ctx, rng);
-  events.push(...ewResult.events);
-  ctx.ewInterceptPenalty = ewResult.ewInterceptPenalty;
+  const ewPost = resolveEwCombat(state, blueOrders, ctx, rng, { phase: 'post_salvo' });
+  events.push(...ewPost.events);
 
   events.push(...resolveImpacts(state, queue, salvo.interceptedThreatIds, rng));
 

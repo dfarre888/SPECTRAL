@@ -758,6 +758,50 @@ describe('Phase 2 — Operation IRON CROW: Critical Detection Scenarios', () => 
 // SUITE 12: DETECTION EXPLANATION GENERATOR
 // ─────────────────────────────────────────────────────────────────────────────
 
+
+describe('Phase 2 — EO/IR time-of-day (GAP 7)', () => {
+  it('dawn boosts eo_ir Pd vs midday on same platform', () => {
+    const platform = buildPlatform({ altitude_m: 500, rcs_class: 'low' });
+    const dawn = fwe.calculatePd(platform, 'eo_ir', buildEnv({ time_of_day: 'dawn' }), 20);
+    const midday = fwe.calculatePd(platform, 'eo_ir', buildEnv({ time_of_day: 'midday' }), 20);
+    expect(dawn.time_of_day_modifier).toBe(1.25);
+    expect(midday.time_of_day_modifier).toBe(0.9);
+    expect(dawn.final_pd).toBeGreaterThan(midday.final_pd);
+  });
+});
+
+function buildFadingTrackWorldState(turn: number, lastUpdatedTurn: number): WorldState {
+  return {
+    turn,
+    all_contacts: [{
+      contact_id: 'C1', true_platform_id: 'T1', detected_by: 'BLUE', confidence: 'high',
+      classification: 'OWA_munition', true_type: 'Shahed-136', bearing_deg: 90, range_km: 40,
+      altitude_m: 200, speed_kt: 100, detection_method: 'radar', detection_probability: 0.7,
+      first_detected_turn: lastUpdatedTurn, last_updated_turn: lastUpdatedTurn, time_to_impact_turns: 6,
+      location_grid: 'ECHO-7', misclassified: false, report_delay_turns: 0,
+    }],
+    blue_force: { platforms: [], ew_assets: [], c2: { comms_status: 'nominal', gcs_location: 'D1', backup_gcs: null, link_health_percent: 85, primary_waveform: 'Link-16', backup_waveform: 'VHF' }, comms_status: 'nominal', force_id: 'BLUE', platforms_active: 0, platforms_destroyed: 0, magazine_expended: 0, magazine_remaining: 12 },
+    red_force: {
+      ew_assets: [],
+      c2: { gcs_location: 'H1', backup_gcs: null, link_health_percent: 80, comms_status: 'nominal', primary_waveform: 'UHF', backup_waveform: 'VHF' },
+      comms_status: 'nominal', force_id: 'RED', platforms_active: 1, platforms_destroyed: 0, magazine_expended: 0, magazine_remaining: 0,
+      platforms: [{ id: 'T1', type: 'Shahed-136', group: 'OWA', quantity: 1, quantity_remaining: 1, location_grid: 'ECHO-7', altitude_m: 200, status: 'airborne_tasked', fuel_state_percent: 80, payload: 'HE', guidance: 'GNSS_INS', ew_immune: false, rcs_class: 'low', speed_kt: 100, ceiling_ft: 10000, range_km: 2500, endurance_hr: 5 }],
+    },
+    weather: clearWeather, time_of_day: 'morning', terrain: { primary_feature: 'coastal_littoral' },
+  } as unknown as WorldState;
+}
+
+describe('Phase 2 — track fade STALE (GAP 13)', () => {
+  it('retained fading tracks append (STALE) to classification at turn 2', () => {
+    const picture = fwe.generateSensorPicture(buildFadingTrackWorldState(2, 1), 'BLUE', { rng: () => 0.99 });
+    expect(picture.find((c) => c.classification.includes('(STALE)'))).toBeDefined();
+  });
+  it('drops fading tracks after 3 turns without redetection by turn 5', () => {
+    const picture = fwe.generateSensorPicture(buildFadingTrackWorldState(5, 1), 'BLUE', { rng: () => 0.99 });
+    expect(picture.find((c) => c.true_platform_id === 'T1')).toBeUndefined();
+  });
+});
+
 describe('Phase 2 — explainDetection()', () => {
 
   it('Should produce a non-empty explanation string', () => {

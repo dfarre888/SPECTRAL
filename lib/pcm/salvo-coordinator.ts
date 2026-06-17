@@ -1,5 +1,14 @@
 /**
  * Layered defence salvo coordinator — magazine allocation, best defender selection.
+ *
+ * Layering model (updated):
+ * True EW → kinetic → DEW sequencing. Each threat faces ALL available defender
+ * layers in priority order. A defender only stops engaging a threat once it is
+ * confirmed destroyed (added to interceptedThreatIds). EW and DEW remain in the
+ * loop even when kinetic magazine is exhausted.
+ *
+ * This matches the C-UAS doctrine of outer (EW) / middle (kinetic) / terminal
+ * (DEW) zones rather than collapsing to the first defender that fires.
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';
@@ -32,6 +41,41 @@ function sortDefenders(defenders: Platform[]): Platform[] {
     if (rangeDiff !== 0) return rangeDiff;
     return defenderLayer(b) - defenderLayer(a);
   });
+}
+
+
+function kineticAvailable(state: WorldState): boolean {
+  const magByType = state.blue_force.magazine_by_type;
+  if (magByType) return magByType.kinetic_interceptors > 0;
+  return (state.blue_force.magazine_remaining ?? 0) > 0;
+}
+
+function dewAvailable(state: WorldState): boolean {
+  const magByType = state.blue_force.magazine_by_type;
+  if (magByType) return magByType.dew_charge_cycles > 0;
+  return true;
+}
+
+function deductKineticRound(state: WorldState): number {
+  const magByType = state.blue_force.magazine_by_type;
+  if (magByType) {
+    magByType.kinetic_interceptors = Math.max(0, magByType.kinetic_interceptors - 1);
+    magByType.total_remaining = Math.max(0, magByType.total_remaining - 1);
+    state.blue_force.magazine_remaining = magByType.total_remaining;
+  } else {
+    state.blue_force.magazine_remaining = Math.max(0, (state.blue_force.magazine_remaining ?? 0) - 1);
+  }
+  state.blue_force.magazine_expended = (state.blue_force.magazine_expended ?? 0) + 1;
+  return state.blue_force.magazine_remaining ?? 0;
+}
+
+function deductDewCycle(state: WorldState): void {
+  const magByType = state.blue_force.magazine_by_type;
+  if (magByType) {
+    magByType.dew_charge_cycles = Math.max(0, magByType.dew_charge_cycles - 1);
+    magByType.total_remaining = Math.max(0, magByType.total_remaining - 1);
+    state.blue_force.magazine_remaining = magByType.total_remaining;
+  }
 }
 
 function roeAllowsFire(
@@ -90,7 +134,6 @@ export function runSalvoCoordinator(
 
     if (!roeAllowsFire(state, contactConfidence, taskAuthorizes)) continue;
 
-    let fired = false;
     const defenderOrder = preferredDefender
       ? [
           ...sortedDefenders.filter((d) => d.id === preferredDefender),
@@ -99,32 +142,32 @@ export function runSalvoCoordinator(
       : sortedDefenders;
 
     for (const defender of defenderOrder) {
+      // If a prior layer already destroyed this threat, stop engaging it.
+      if (interceptedThreatIds.has(threat.id)) break;
+
       if (!DEFENCE_GROUPS.has(defender.group)) continue;
 
       const spent = spentDefendersThisThreat.get(threat.id) ?? new Set<string>();
       if (spent.has(defender.id)) continue;
 
-      if (defender.group === 'c_uas_defeat_kinetic') {
-        if (magazine <= 0) {
-          events.push({
-            event_id: `EVT-MAG-EMPTY-${state.turn}-${threat.id}`,
-            type: 'intercept_fail',
-            description: `Magazine empty — cannot engage ${threat.type}.`,
-            affected_platform_ids: [defender.id],
-            visible_to_red: false,
-            visible_to_blue: true,
-            visible_to_ds: true,
-          });
-          break;
-        }
+      // Kinetic magazine exhausted — skip THIS layer but continue to DEW/EW layers.
+      if (defender.group === 'c_uas_defeat_kinetic' && !kineticAvailable(state)) {
+        events.push({
+          event_id: `EVT-MAG-EMPTY-${state.turn}-${threat.id}-${defender.id}`,
+          type: 'intercept_fail',
+          description: `Kinetic interceptors exhausted — Coyote/Stinger rounds depleted. Skipped ${threat.type}; DEW/EW layers continue.`,
+          affected_platform_ids: [defender.id],
+          visible_to_red: false,
+          visible_to_blue: true,
+          visible_to_ds: true,
+        });
+        continue; // ← continue, not break — DEW terminal layer may still engage
       }
 
       if (preferredContact) {
         const contact = state.all_contacts.find((c) => c.contact_id === preferredContact);
         if (contact?.misclassified && isDecoy) {
-          magazine = Math.max(0, magazine - 1);
-          state.blue_force.magazine_remaining = magazine;
-          state.blue_force.magazine_expended = (state.blue_force.magazine_expended ?? 0) + 1;
+          magazine = deductKineticRound(state);
           events.push({
             event_id: `EVT-DECOY-${state.turn}-${threat.id}`,
             type: 'intercept_success',
@@ -134,18 +177,32 @@ export function runSalvoCoordinator(
             visible_to_blue: true,
             visible_to_ds: true,
           });
-          fired = true;
-          break;
+          break; // Wasted shot on decoy — stop pursuing this contact
         }
       }
 
-      const pair = adjudicatePcmPairFromCtx(ctx, threat, defender, state);
+      if (defender.group === 'c_uas_defeat_dew' && !dewAvailable(state)) {
+        events.push({
+          event_id: `EVT-DEW-EMPTY-${state.turn}-${threat.id}-${defender.id}`,
+          type: 'intercept_fail',
+          description: `DEW charge cycles exhausted — thermal/power limit reached for ${threat.type}.`,
+          affected_platform_ids: [defender.id],
+          visible_to_red: false,
+          visible_to_blue: true,
+          visible_to_ds: true,
+        });
+        continue;
+      }
+
+            const pair = adjudicatePcmPairFromCtx(ctx, threat, defender, state);
       if (!pair.inRange || pair.isImmune) continue;
 
       if (defender.group === 'c_uas_defeat_kinetic') {
-        magazine = Math.max(0, magazine - 1);
-        state.blue_force.magazine_remaining = magazine;
-        state.blue_force.magazine_expended = (state.blue_force.magazine_expended ?? 0) + 1;
+        magazine = deductKineticRound(state);
+      }
+      if (defender.group === 'c_uas_defeat_dew') {
+        deductDewCycle(state);
+        magazine = state.blue_force.magazine_remaining ?? magazine;
       }
 
       spent.add(defender.id);
@@ -156,37 +213,40 @@ export function runSalvoCoordinator(
       const success = roll < pk / 100;
 
       if (success) {
-        if (pk >= 60) {
+        // High-confidence Pk → destroy. Near-miss (low Pk roll) → degrade then check
+        // accumulated damage (a degraded platform hit again is destroyed).
+        if (pk >= 60 || threat.damage_state === 'degraded') {
           threat.status = 'destroyed';
           threat.damage_state = 'destroyed';
           threat.quantity_remaining = 0;
           interceptedThreatIds.add(threat.id);
-        } else if (threat.damage_state === 'degraded') {
-          threat.status = 'destroyed';
-          threat.damage_state = 'destroyed';
-          threat.quantity_remaining = 0;
-          interceptedThreatIds.add(threat.id);
-        } else {
-          threat.damage_state = 'degraded';
           events.push({
-            event_id: 'EVT-DMG-' + state.turn + '-' + threat.id,
-            type: 'platform_damaged',
-            description: defender.type + ' damaged ' + threat.type + ' (Pk~' + pk + '%).',
+            event_id: 'EVT-INT-OK-' + state.turn + '-' + threat.id,
+            type: 'intercept_success',
+            description:
+              defender.type + ' destroyed ' + threat.type +
+              ' (layer=' + defenderLayer(defender) + ', Pk~' + pk + '%).',
             affected_platform_ids: [threat.id, defender.id],
-            visible_to_red: true,
+            visible_to_red: false,
             visible_to_blue: true,
             visible_to_ds: true,
           });
+        } else {
+          // Low-Pk success — damages but doesn't destroy; next layer still gets a shot.
+          threat.damage_state = 'degraded';
+          events.push({
+            event_id: 'EVT-INT-OK-' + state.turn + '-' + threat.id,
+            type: 'intercept_success',
+            description:
+              defender.type + ' damaged ' + threat.type +
+              ' (layer=' + defenderLayer(defender) + ', Pk~' + pk + '% — degraded, next layer engages).',
+            affected_platform_ids: [threat.id, defender.id],
+            visible_to_red: false,
+            visible_to_blue: true,
+            visible_to_ds: true,
+          });
+          // Do NOT break — outer loop check handles destroyed state; degraded continues to next layer
         }
-        events.push({
-          event_id: 'EVT-INT-OK-' + state.turn + '-' + threat.id,
-          type: 'intercept_success',
-          description: defender.type + ' intercepted ' + threat.type + ' (Pk~' + pk + '%).',
-          affected_platform_ids: [threat.id, defender.id],
-          visible_to_red: false,
-          visible_to_blue: true,
-          visible_to_ds: true,
-        });
       } else {
         if (pk > 40) {
           threat.damage_state = 'degraded';
@@ -194,7 +254,9 @@ export function runSalvoCoordinator(
           events.push({
             event_id: 'EVT-DMG-' + state.turn + '-' + threat.id,
             type: 'platform_damaged',
-            description: defender.type + ' near-miss damaged ' + threat.type + ' (Pk~' + pk + '%).',
+            description:
+              defender.type + ' near-miss on ' + threat.type +
+              ' (layer=' + defenderLayer(defender) + ', Pk~' + pk + '%).',
             affected_platform_ids: [threat.id, defender.id],
             visible_to_red: true,
             visible_to_blue: true,
@@ -204,19 +266,18 @@ export function runSalvoCoordinator(
         events.push({
           event_id: 'EVT-INT-FAIL-' + state.turn + '-' + threat.id,
           type: 'intercept_fail',
-          description: defender.type + ' missed ' + threat.type + ' (Pk~' + pk + '%).',
+          description:
+            defender.type + ' missed ' + threat.type +
+            ' (layer=' + defenderLayer(defender) + ', Pk~' + pk + '% — next layer).',
           affected_platform_ids: [threat.id, defender.id],
           visible_to_red: true,
           visible_to_blue: true,
           visible_to_ds: true,
         });
+        // Miss — loop continues to next defender layer automatically
       }
-      fired = true;
-      break;
-    }
-
-    if (!fired && magazine <= 0 && item.tti <= 1) {
-      // leaker — handled in impact phase
+      // ← No break here. The interceptedThreatIds check at the top of this loop
+      //    handles early exit when a layer successfully destroys the threat.
     }
   }
 

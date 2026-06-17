@@ -201,6 +201,13 @@ export interface C2Node {
   backup_waveform: string;
 }
 
+export interface MagazineState {
+  kinetic_interceptors: number;
+  dew_charge_cycles: number;
+  ew_jamming_hours: number;
+  total_remaining: number;
+}
+
 export interface ForceOrbat {
   force_id: ForceId;
   platforms: Platform[];
@@ -212,6 +219,7 @@ export interface ForceOrbat {
   platforms_destroyed: number;
   magazine_expended: number;   // kinetic intercepts fired (c-UAS)
   magazine_remaining: number;
+  magazine_by_type?: MagazineState;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

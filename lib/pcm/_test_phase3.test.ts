@@ -278,7 +278,7 @@ describe('Phase 3 — Magazine mathematics', () => {
       12345,
     );
     expect(events.some((e) => e.type === 'intercept_fail')).toBe(true);
-    expect(events.some((e) => e.description.toLowerCase().includes('magazine empty'))).toBe(
+    expect(events.some((e) => e.description.toLowerCase().includes('kinetic interceptors exhausted') || e.description.toLowerCase().includes('magazine empty'))).toBe(
       true,
     );
   });

@@ -5,6 +5,7 @@
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';
+import { trainingAdjudicationCore, resolveTurnInternal } from '@/lib/pcm/trainingAdjudicationCore';
 
 type WorldState = PCM.WorldState;
 type Order = PCM.Order;
@@ -24,6 +25,13 @@ export interface AdjudicationCore {
     blueWinProbability?: number;
   };
 }
+
+/** Operations open-build core: identical turn resolution to training; pair path uses accredited Pk/ERP when available. */
+export const operationalAdjudicationCore: AdjudicationCore = {
+  resolveTurn(worldState, redOrders, blueOrders, seed, ctx) {
+    return resolveTurnInternal(worldState, redOrders, blueOrders, seed, ctx);
+  },
+};
 
 export const placeholderAdjudicationCore: AdjudicationCore = {
   resolveTurn(worldState, _redOrders, _blueOrders, _seed) {

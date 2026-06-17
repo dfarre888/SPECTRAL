@@ -115,6 +115,36 @@ export const CURRICULUM_LIBRARY: CurriculumModule[] = [
     recommended_injects: ['ENV-001', 'ENV-002', 'BLUE-001'],
     mastery_criteria: 'Cues appropriate sensor; confirms before acting across 3 sessions.',
   },
+  {
+    id: 'MOD-TEMPO-01',
+    title: 'Tempo and Initiative — Forcing Adversary Reaction',
+    target_competency: 'tempo_and_initiative',
+    description: 'Drills proactive tasking under inbound threats rather than reactive or delayed response.',
+    trains_under: ['saturation', 'decoy_heavy'],
+    scenario_emphasis: 'Time-critical inbound with delayed launch authority inject — forces issue of platform tasks early.',
+    recommended_injects: ['RED-001', 'RED-004'],
+    mastery_criteria: 'Issues platform tasks on 3+ consecutive turns with inbound threats present; average decision time ≤ 45s, across 3 sessions.',
+  },
+  {
+    id: 'MOD-SA-01',
+    title: 'Situational Awareness — Building and Holding the Air Picture',
+    target_competency: 'situational_awareness',
+    description: 'Drills persistent sensor management so the air picture stays current through a multi-wave attack.',
+    trains_under: ['saturation', 'under_ew', 'night'],
+    scenario_emphasis: 'Multi-wave attack with sensor outages; contacts go stale mid-engagement.',
+    recommended_injects: ['ENV-001', 'ENV-002', 'RED-002'],
+    mastery_criteria: 'Maintains ≥80% contact freshness throughout exercise; no undetected leakers due to picture gaps, across 3 sessions.',
+  },
+  {
+    id: 'MOD-RESPR-01',
+    title: 'Resource Prioritisation — Competing Demands on Finite Assets',
+    target_competency: 'resource_prioritisation',
+    description: 'Drills allocation of sensors, interceptors and EW assets when demand exceeds supply.',
+    trains_under: ['saturation', 'degraded_comms'],
+    scenario_emphasis: 'Simultaneous RED OWA + FPV attack; fixed interceptor and EW asset pool forcing trade-off decisions.',
+    recommended_injects: ['RED-001', 'RED-003', 'BLUE-003'],
+    mastery_criteria: 'Correctly prioritises high-value targets for interceptors; preserves EW assets for highest-threat platforms across 3 sessions.',
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

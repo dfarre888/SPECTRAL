@@ -18,11 +18,18 @@ import {
   pcmToSpectrumBlue,
   pcmToSpectrumRed,
 } from '@/lib/pcm/pcm-spectrum-bridge';
-import { resolvePcmPlatformId } from '@/lib/pcm/pcm-platform-ids';
+import { resolveDefenderSystemId, resolvePcmPlatformId } from '@/lib/pcm/pcm-platform-ids';
+import { selectAccreditedPk, type AccreditedDataLayer } from '@/lib/pcm/accredited-data-layer';
+import type { AccreditedErpProfile } from '@/lib/operations/accredited-supplements-data';
 import type { PropagationResult } from '@/lib/propagation/types';
 import type { EngagementResult } from '@/lib/spectrum/types';
 
 type PcmPlatform = PCM.Platform;
+
+export interface TrainingPairOptions {
+  accreditedData?: AccreditedDataLayer;
+  accreditedErpRows?: AccreditedErpProfile[];
+}
 
 export interface PcmPairResult {
   combinedBlueSuccessPct: number;
@@ -34,6 +41,8 @@ export interface PcmPairResult {
   propagation?: PropagationResult;
   spectrum?: EngagementResult;
   defeatMatrixPk: number | null;
+  /** 'accredited' if Pk came from accredited layer, 'osint' otherwise. */
+  data_source?: 'accredited' | 'osint';
 }
 
 function combinedScore(
@@ -67,13 +76,65 @@ function combinedScore(
   return Math.max(0, Math.min(100, combined));
 }
 
+export function recalcCombinedFromMatrixPk(base: PcmPairResult, newMatrixPk: number): number {
+  const oldPk = base.defeatMatrixPk ?? 50;
+  const rest = base.combinedBlueSuccessPct - Math.round(oldPk * 0.4);
+  return Math.max(0, Math.min(100, Math.round(newMatrixPk * 0.4 + rest)));
+}
+
+export function applyAccreditedPkToResult(
+  threat: PcmPlatform,
+  defender: PcmPlatform,
+  lookup: DefeatLookupResult,
+  base: PcmPairResult,
+  options?: TrainingPairOptions,
+): PcmPairResult {
+  const accRow = options?.accreditedData?.get(`${threat.id}:${defender.id}`);
+  if (accRow?.is_immune) {
+    return {
+      combinedBlueSuccessPct: 0,
+      spectrumVerdict: 'no_engagement',
+      inRange: false,
+      isImmune: true,
+      immuneReason: accRow.immune_reason ?? 'Immune (operational accredited data)',
+      propagationGated: true,
+      defeatMatrixPk: null,
+      data_source: 'accredited',
+    };
+  }
+  const accreditedPk = accRow ? (selectAccreditedPk(accRow, defender.group ?? '') ?? null) : null;
+  if (accreditedPk == null) return { ...base, data_source: base.data_source ?? 'osint' };
+  return {
+    ...base,
+    defeatMatrixPk: accreditedPk,
+    combinedBlueSuccessPct: recalcCombinedFromMatrixPk(base, accreditedPk),
+    data_source: 'accredited',
+  };
+}
+
 function trainingPairResult(
   threat: PcmPlatform,
   defender: PcmPlatform,
   lookup: DefeatLookupResult,
   worldState: PCM.WorldState,
   ewPenalty: number,
+  options?: TrainingPairOptions,
 ): PcmPairResult {
+  const accreditedData = options?.accreditedData;
+  const accRow = accreditedData?.get(`${threat.id}:${defender.id}`);
+  if (accRow?.is_immune) {
+    return {
+      combinedBlueSuccessPct: 0,
+      spectrumVerdict: 'no_engagement',
+      inRange: false,
+      isImmune: true,
+      immuneReason: accRow.immune_reason ?? 'Immune (accredited data layer)',
+      propagationGated: true,
+      defeatMatrixPk: null,
+      data_source: 'accredited',
+    };
+  }
+
   if (lookup.isImmune) {
     return {
       combinedBlueSuccessPct: 0,
@@ -83,6 +144,7 @@ function trainingPairResult(
       immuneReason: lookup.immuneReason,
       propagationGated: true,
       defeatMatrixPk: null,
+      data_source: 'osint',
     };
   }
 
@@ -106,11 +168,21 @@ function trainingPairResult(
           effectiveCoverage: 0,
         };
 
-  const matrixPk = lookup.defeatMatrixPk ?? 50;
+  const accreditedPk = accRow
+    ? (selectAccreditedPk(accRow, defender.group ?? '') ?? null)
+    : null;
+
+  const matrixPk = accreditedPk ?? lookup.defeatMatrixPk ?? 50;
   const isRfJammer = defender.group === 'c_uas_defeat_ew';
 
+  const jamSystemId = resolveDefenderSystemId(defender.type, defender.group);
   const jamTransmit =
-    blue && isRfJammer ? resolveJamFromEngagement(blue, spectrum.overlaps) : null;
+    blue && isRfJammer
+      ? resolveJamFromEngagement(blue, spectrum.overlaps, {
+          erpRows: options?.accreditedErpRows,
+          systemId: jamSystemId,
+        })
+      : null;
 
   const isUrbanTerrain = Boolean(
     worldState.terrain?.urban_areas?.length &&
@@ -178,6 +250,7 @@ function trainingPairResult(
     propagation,
     spectrum,
     defeatMatrixPk: matrixPk,
+    data_source: accreditedPk != null ? 'accredited' : 'osint',
   };
 }
 
@@ -186,11 +259,14 @@ async function operationsPairResult(
   defender: PcmPlatform,
   lookup: DefeatLookupResult,
   worldState: PCM.WorldState,
-  tenantId: string | null,
-  ewPenalty: number,
+  ctx: AdjudicationContext,
 ): Promise<PcmPairResult> {
+  const options: TrainingPairOptions = {
+    accreditedData: ctx.accreditedData,
+    accreditedErpRows: ctx.accreditedErpRows,
+  };
   if (lookup.isImmune) {
-    return trainingPairResult(threat, defender, lookup, worldState, ewPenalty);
+    return trainingPairResult(threat, defender, lookup, worldState, ctx.ewInterceptPenalty, options);
   }
 
   const platformId = resolvePcmPlatformId(threat.type);
@@ -258,14 +334,14 @@ async function operationsPairResult(
     defeatMatrixPk: lookup.defeatMatrixPk,
     inDefeatRange: inRange,
     terrainMasked: terrainMask.masked,
-    tenantId: tenantId ?? 'training',
+    tenantId: ctx.tenantId ?? 'training',
   };
 
   const adj = await adjudicatePair(input);
   let combined = adj.combinedBlueSuccessPct;
-  if (ewPenalty > 0) combined = Math.round(combined * (1 - ewPenalty));
+  if (ctx.ewInterceptPenalty > 0) combined = Math.round(combined * (1 - ctx.ewInterceptPenalty));
 
-  return {
+  const base: PcmPairResult = {
     combinedBlueSuccessPct: Math.max(0, Math.min(100, combined)),
     spectrumVerdict: adj.spectrum.verdict,
     inRange,
@@ -275,7 +351,9 @@ async function operationsPairResult(
     propagation: adj.propagation,
     spectrum: adj.spectrum,
     defeatMatrixPk: lookup.defeatMatrixPk,
+    data_source: 'osint',
   };
+  return applyAccreditedPkToResult(threat, defender, lookup, base, options);
 }
 
 export async function adjudicatePcmPairAsync(
@@ -286,16 +364,12 @@ export async function adjudicatePcmPairAsync(
   ctx: AdjudicationContext,
 ): Promise<PcmPairResult> {
   if (isOperationsEdition() && ctx.tenantId) {
-    return operationsPairResult(
-      threat,
-      defender,
-      lookup,
-      worldState,
-      ctx.tenantId,
-      ctx.ewInterceptPenalty,
-    );
+    return operationsPairResult(threat, defender, lookup, worldState, ctx);
   }
-  return trainingPairResult(threat, defender, lookup, worldState, ctx.ewInterceptPenalty);
+  return trainingPairResult(threat, defender, lookup, worldState, ctx.ewInterceptPenalty, {
+    accreditedData: ctx.accreditedData,
+    accreditedErpRows: ctx.accreditedErpRows,
+  });
 }
 
 /** Sync read from preloaded cache (WSE must preload before resolveTurn). */
@@ -309,7 +383,10 @@ export function getCachedPairResult(
   if (cached) return cached;
 
   const lookup = ctx.defeatMatrix.lookup(threat, defender);
-  return trainingPairResult(threat, defender, lookup, { weather: {}, terrain: {} } as PCM.WorldState, ctx.ewInterceptPenalty);
+  return trainingPairResult(threat, defender, lookup, { weather: {}, terrain: {} } as PCM.WorldState, ctx.ewInterceptPenalty, {
+    accreditedData: ctx.accreditedData,
+    accreditedErpRows: ctx.accreditedErpRows,
+  });
 }
 
 export async function preloadPairCache(
@@ -343,5 +420,8 @@ export function adjudicatePcmPairFromCtx(
   const key = `${threat.id}:${defender.id}`;
   if (ctx.pairResults.has(key)) return ctx.pairResults.get(key)!;
   const lookup = ctx.defeatMatrix.lookup(threat, defender);
-  return trainingPairResult(threat, defender, lookup, worldState, ctx.ewInterceptPenalty);
+  return trainingPairResult(threat, defender, lookup, worldState, ctx.ewInterceptPenalty, {
+    accreditedData: ctx.accreditedData,
+    accreditedErpRows: ctx.accreditedErpRows,
+  });
 }

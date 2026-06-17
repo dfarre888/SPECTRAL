@@ -53,9 +53,6 @@ export interface CurrencyUpdate {
   reviewed_by: string | null;
   reviewed_at: string | null;
   review_notes: string | null;
-  // Controlled-data flag — if the update would require controlled technical
-  // data to implement, it is routed to the accredited environment, not here.
-  requires_accredited_implementation: boolean;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -67,10 +64,8 @@ export class CurrencyEngine {
   /**
    * proposeUpdate
    * Registers a new currency update as a PROPOSAL. Never auto-applies.
-   * Automatically flags updates that would need controlled data so they
-   * route to the accredited environment instead of the open build.
    */
-  proposeUpdate(input: Omit<CurrencyUpdate, 'id' | 'status' | 'reviewed_by' | 'reviewed_at' | 'review_notes' | 'requires_accredited_implementation'>): CurrencyUpdate {
+  proposeUpdate(input: Omit<CurrencyUpdate, 'id' | 'status' | 'reviewed_by' | 'reviewed_at' | 'review_notes'>): CurrencyUpdate {
     return {
       ...input,
       id: `CU-${Date.now()}`,
@@ -78,29 +73,12 @@ export class CurrencyEngine {
       reviewed_by: null,
       reviewed_at: null,
       review_notes: null,
-      requires_accredited_implementation: this.needsAccreditation(input.proposed_effect, input.type),
     };
   }
 
   /**
-   * needsAccreditation
-   * Heuristic gate: if implementing the update would require real performance /
-   * survivability / weapon-effect data, it cannot be done in the open build.
-   * It is marked for the accredited environment.
-   */
-  private needsAccreditation(proposedEffect: string, type: UpdateType): boolean {
-    const controlledSignals = /pk|probability of kill|lethality|survivability|warhead|range table|seeker|terminal|penetration|kill chain|engagement outcome/i;
-    if (controlledSignals.test(proposedEffect)) return true;
-    // New threat platforms and capability changes usually need performance data
-    if (type === 'new_threat_platform' || type === 'capability_change') return true;
-    return false;
-  }
-
-  /**
    * review
-   * SME approves or rejects. Only approved, non-controlled updates may inform
-   * the open training content. Approved controlled updates are handed to the
-   * accredited build.
+   * SME approves or rejects. Only approved updates may inform training content.
    */
   review(
     update: CurrencyUpdate,
@@ -120,25 +98,10 @@ export class CurrencyEngine {
 
   /**
    * getPublishable
-   * Returns approved updates that can inform the OPEN training content
-   * (pedagogy, scenario emphasis, inject narrative) — explicitly excluding
-   * anything that needs accredited implementation.
+   * Returns approved updates that can inform training content.
    */
   getPublishable(updates: CurrencyUpdate[]): CurrencyUpdate[] {
-    return updates.filter(u =>
-      u.status === 'approved' && !u.requires_accredited_implementation,
-    );
-  }
-
-  /**
-   * getAccreditedQueue
-   * Returns approved updates that must be implemented in the accredited
-   * environment because they involve controlled data.
-   */
-  getAccreditedQueue(updates: CurrencyUpdate[]): CurrencyUpdate[] {
-    return updates.filter(u =>
-      u.status === 'approved' && u.requires_accredited_implementation,
-    );
+    return updates.filter(u => u.status === 'approved');
   }
 
   /**
@@ -149,8 +112,7 @@ export class CurrencyEngine {
   currencyReport(updates: CurrencyUpdate[]): {
     total: number;
     pending_review: number;
-    approved_open: number;
-    routed_to_accredited: number;
+    approved: number;
     most_recent_approved: string | null;
   } {
     const approved = updates.filter(u => u.status === 'approved');
@@ -163,8 +125,7 @@ export class CurrencyEngine {
     return {
       total: updates.length,
       pending_review: updates.filter(u => u.status === 'proposed' || u.status === 'under_review').length,
-      approved_open: this.getPublishable(updates).length,
-      routed_to_accredited: this.getAccreditedQueue(updates).length,
+      approved: approved.length,
       most_recent_approved: mostRecent,
     };
   }
@@ -182,20 +143,29 @@ export const SEED_CURRENCY_UPDATES: Partial<CurrencyUpdate>[] = [
     title: 'Fibre-optic FPV defeats RF-based counter-UAS',
     summary: 'Fibre-optic guided FPV drones, tethered by spooling optical fibre, are immune to RF jamming and SIGINT detection. Observed at scale in Ukraine. Defeats the EW-centric counter-UAS investment; kinetic or acoustic-cued defeat only.',
     source_type: 'osint',
+    source_reference: 'OSINT Ukraine conflict reporting 2025-26',
+    detected_at: '2025-01-01T00:00:00Z',
     proposed_effect: 'Add a training emphasis: recognise EW-immune threat; do not rely on EW defeat. Pedagogy and scenario-emphasis change only.',
+    affects: { competencies: ['adaptation'], scenarios: [], injects: ['RED-003'] },
   },
   {
     type: 'doctrine_shift',
     title: 'Decoy-heavy OWA packages to deplete interceptor magazines',
     summary: 'Attackers mix low-cost decoys with real OWA in high ratios to force defenders to expend interceptors on decoys. Magazine economics, not capability, becomes decisive.',
     source_type: 'osint',
+    source_reference: 'OSINT Ukraine saturation tactics 2025-26',
+    detected_at: '2025-01-01T00:00:00Z',
     proposed_effect: 'Strengthen magazine-management and threat-classification training emphasis. Inject-narrative change only.',
+    affects: { competencies: ['magazine_management', 'threat_classification'], scenarios: [], injects: ['RED-001', 'RED-004'] },
   },
   {
     type: 'doctrine_shift',
     title: 'Turbojet OWA variants compress the intercept window',
     summary: 'Turbojet-powered OWA variants travel substantially faster than piston variants, reducing detection-to-impact time and stressing decision tempo.',
     source_type: 'osint',
+    source_reference: 'OSINT reporting 2025-26',
+    detected_at: '2025-01-01T00:00:00Z',
     proposed_effect: 'Emphasise decision-tempo training under compressed timelines. Pedagogy change only; any speed/performance values resolved in accredited catalogue.',
+    affects: { competencies: ['tempo_and_initiative', 'decision_under_uncertainty'], scenarios: [], injects: [] },
   },
 ];

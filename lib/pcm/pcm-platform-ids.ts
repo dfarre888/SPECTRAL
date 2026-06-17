@@ -26,6 +26,7 @@ export const DEFENDER_TYPE_TO_SYSTEM_ID: Record<string, string> = {
   'DroneGun Tactical': 'dronegun-tactical',
   'Drone Dome': 'drone-dome',
   'Iron Beam': 'iron-beam',
+  'Edge Horizon': 'edge-horizon',
 };
 
 export function resolvePcmPlatformId(typeName: string): string | null {

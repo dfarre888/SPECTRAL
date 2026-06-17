@@ -221,6 +221,7 @@ export function SpectralAnalysisPanel({
                   compact
                   activeOnly
                   fullscreenExpand
+                  spectrumPulseProminent
                   onTileClick={setExpandedTile}
                 />
                 </>

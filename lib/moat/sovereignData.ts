@@ -213,14 +213,8 @@ export interface PlatformPerformanceResolver {
   resolvePerformance(platformId: string): PlatformPerformance;
 }
 
-export const openBuildPerformanceResolver: PlatformPerformanceResolver = {
-  resolvePerformance(platformId: string): PlatformPerformance {
-    return {
-      platform_id: platformId,
-      resolved: false,
-      note: 'Performance data resides in the accredited catalogue. Implement resolver in the accredited environment under export-control review.',
-    };
-  },
-};
-
-export { getActivePerformanceResolver, trainingCataloguePerformanceResolver } from '@/lib/moat/catalogue-performance-resolver';
+export {
+  getActivePerformanceResolver,
+  openBuildPerformanceResolver,
+  trainingCataloguePerformanceResolver,
+} from '@/lib/moat/catalogue-performance-resolver';

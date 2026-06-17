@@ -4,6 +4,7 @@ import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { MatrixCell } from '@/components/defeat/MatrixCell'
 import type { DefeatTypeFilter } from '@/lib/defeat/defeat-types'
 import type {
+  AccreditedDefeatPkRow,
   AntiDroneSystem,
   DefeatEffectiveness,
   Platform,
@@ -15,6 +16,7 @@ interface DefeatMatrixTableProps {
   effectiveness: DefeatEffectiveness[]
   defeatTypeFilter: DefeatTypeFilter
   onCellSelect: (platformId: string, systemId: string) => void
+  accreditedPkMap?: Record<string, AccreditedDefeatPkRow>
 }
 
 function findRow(
@@ -33,6 +35,7 @@ export function DefeatMatrixTable({
   effectiveness,
   defeatTypeFilter,
   onCellSelect,
+  accreditedPkMap,
 }: DefeatMatrixTableProps) {
   if (platforms.length === 0 || systems.length === 0) {
     return (
@@ -99,12 +102,18 @@ export function DefeatMatrixTable({
                   row={findRow(effectiveness, platform.id, system.id)}
                   defeatTypeFilter={defeatTypeFilter}
                   onSelect={onCellSelect}
+                    accreditedPkMap={accreditedPkMap}
                 />
               ))}
             </tr>
           ))}
         </tbody>
       </table>
+    {accreditedPkMap && Object.keys(accreditedPkMap).length > 0 && (
+      <p className="mt-3 px-2 text-[11px] font-mono store-text-muted">
+        <span className="text-[#F97316]">A</span> Training-contract analogue · blank OSINT estimate
+      </p>
+    )}
     </div>
   )
 }

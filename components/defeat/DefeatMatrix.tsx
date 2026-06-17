@@ -140,6 +140,7 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
             onCellSelect={(platformId, systemId) =>
               setSelectedCell({ platformId, systemId })
             }
+            accreditedPkMap={data.accreditedPkMap}
           />
         </div>
       </StoreCatalogLayout>

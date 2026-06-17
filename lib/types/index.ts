@@ -1,3 +1,6 @@
+import type { AccreditedDefeatPkRow } from '@/lib/operations/accredited-supplements-data'
+export type { AccreditedDefeatPkRow }
+
 // ─── Platform (UAS) ───────────────────────────────────────────────────────────
 export type PlatformCategory =
   | 'MALE' | 'HALE' | 'tactical' | 'loitering_munition'
@@ -213,6 +216,7 @@ export interface DefeatMatrixPayload {
   platforms: Platform[]
   systems: AntiDroneSystem[]
   effectiveness: DefeatEffectiveness[]
+  accreditedPkMap?: Record<string, AccreditedDefeatPkRow>
 }
 
 // ─── Conflict Incidents ───────────────────────────────────────────────────────

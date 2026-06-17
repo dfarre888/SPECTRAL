@@ -9,6 +9,12 @@ import { DefeatMatrixCache } from '@/lib/pcm/defeat-matrix-lookup';
 import { preloadPairCache } from '@/lib/pcm/pcm-pair-adjudication';
 import { isInboundThreat } from '@/lib/pcm/swarm-saturation';
 import { mergeLaydownIntoContext, readLaydownSessionSafe } from '@/lib/pcm/laydown-context-bridge';
+import type { AccreditedDataLayer } from '@/lib/pcm/accredited-data-layer';
+import { buildAccreditedDataLayer } from '@/lib/pcm/accredited-data-layer';
+import { fetchAccreditedErpProfiles } from '@/lib/operations/accredited-supplements';
+import type { AccreditedErpProfile } from '@/lib/operations/accredited-supplements-data';
+import { resolvePcmPlatformId, resolveDefenderSystemId } from '@/lib/pcm/pcm-platform-ids';
+
 
 const DEFENCE_GROUPS = new Set([
   'c_uas_defeat_kinetic',
@@ -24,10 +30,58 @@ function isDefenceReady(p: PCM.Platform): boolean {
   );
 }
 
+
+export async function preloadAccreditedData(
+  worldState: PCM.WorldState,
+): Promise<AccreditedDataLayer | undefined> {
+  if (process.env.SPECTRAL_ACCREDITED_RESOLVER !== 'true') return undefined;
+
+  const threats = worldState.red_force.platforms.filter(isInboundThreat);
+  const defenders = worldState.blue_force.platforms.filter(isDefenceReady);
+  if (!threats.length || !defenders.length) return undefined;
+
+  const platformIds = [
+    ...new Set(
+      threats
+        .map((t) => resolvePcmPlatformId(t.type))
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ];
+  const defeatSystemIds = [
+    ...new Set(defenders.map((d) => resolveDefenderSystemId(d.type, d.group))),
+  ];
+  if (!platformIds.length || !defeatSystemIds.length) return undefined;
+
+  const catalogMap = await buildAccreditedDataLayer(platformIds, defeatSystemIds);
+  if (catalogMap.size === 0) return undefined;
+
+  const instanceMap: AccreditedDataLayer = new Map();
+  for (const threat of threats) {
+    const pid = resolvePcmPlatformId(threat.type);
+    if (!pid) continue;
+    for (const defender of defenders) {
+      const sid = resolveDefenderSystemId(defender.type, defender.group);
+      const row = catalogMap.get(`${pid}:${sid}`);
+      if (row) instanceMap.set(`${threat.id}:${defender.id}`, row);
+    }
+  }
+
+  return instanceMap.size > 0 ? instanceMap : undefined;
+}
+
+
+export async function preloadAccreditedErpRows(): Promise<AccreditedErpProfile[] | undefined> {
+  if (process.env.SPECTRAL_ACCREDITED_RESOLVER !== 'true') return undefined;
+  const rows = await fetchAccreditedErpProfiles();
+  return rows.length > 0 ? rows : undefined;
+}
+
 export async function buildAdjudicationContext(
   supabase: SupabaseClient | null,
   worldState: PCM.WorldState,
   tenantId: string | null,
+  accreditedData?: AccreditedDataLayer,
+  accreditedErpRows?: AccreditedErpProfile[],
 ): Promise<AdjudicationContext> {
   const threats = worldState.red_force.platforms.filter(isInboundThreat);
   const defenders = worldState.blue_force.platforms.filter(isDefenceReady);
@@ -39,12 +93,19 @@ export async function buildAdjudicationContext(
     tenantId,
   );
 
+  const resolvedAccredited =
+    accreditedData ?? (await preloadAccreditedData(worldState));
+  const resolvedErpRows =
+    accreditedErpRows ?? (await preloadAccreditedErpRows());
+
   const ctx: AdjudicationContext = {
     defeatMatrix,
     pairResults: new Map(),
     tenantId,
     turnMinutes: 15,
     ewInterceptPenalty: 0,
+    accreditedData: resolvedAccredited,
+    accreditedErpRows: resolvedErpRows,
   };
 
   await preloadPairCache(ctx, worldState, threats, defenders);

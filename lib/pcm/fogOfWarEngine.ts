@@ -78,6 +78,7 @@ export interface PdComponents {
   rcs_modifier: number;
   terrain_masking_modifier: number;
   countermeasures_modifier: number;
+  time_of_day_modifier?: number;
   final_pd: number;
 }
 
@@ -94,7 +95,7 @@ export class FogOfWarEngine {
    * Computes the probability of detection for a given platform
    * by a given sensor type in a given environment.
    *
-   * Formula: Pd = BasePd × WeatherMod × EWMod × AltitudeMod × RCSMod × TerrainMod × CounterMod
+   * Formula: Pd = BasePd × WeatherMod × EWMod × AltitudeMod × RCSMod × TerrainMod × CounterMod × ToDMod (eo_ir)
    *
    * Returns the full component breakdown for transparency and
    * instructor debriefing use.
@@ -126,8 +127,32 @@ export class FogOfWarEngine {
       sensorType === 'radar' ? this.getTerrainMaskingModifier(platform, env.terrain_type) : 1.0;
     const counterMod = this.getCountermeasuresModifier(platform, sensorType);
 
+    // Time-of-day IR modulation — OSINT basis:
+    // Dawn/dusk thermal crossover: target/background ΔT peaks → Pd +25%
+    // Night: reduced background clutter for uncooled LWIR → Pd +10%
+    // Midday: solar loading creates thermal noise floor → Pd -10%
+    // Source: Jane's C-UAS Handbook 2023, Teledyne FLIR technical notes (open)
+    let timeOfDayMod = 1.0;
+    if (sensorType === 'eo_ir') {
+      const timeOfDay = env.time_of_day;
+      if (timeOfDay === 'dawn' || timeOfDay === 'dusk') {
+        timeOfDayMod = 1.25;
+      } else if (
+        timeOfDay === 'night' ||
+        timeOfDay === 'pre_dawn' ||
+        timeOfDay === 'night_transition'
+      ) {
+        timeOfDayMod = 1.10;
+      } else if (timeOfDay === 'midday') {
+        timeOfDayMod = 0.90;
+      }
+    }
+
     // Final Pd — clamped 0.0–1.0
     let rawPd = adjustedBasePd * weatherMod * ewMod * altitudeMod * rcsMod * terrainMod * counterMod;
+    if (sensorType === 'eo_ir') {
+      rawPd = Math.min(1.0, rawPd * timeOfDayMod);
+    }
     if (
       sensorType === 'visual' &&
       (env.time_of_day === 'night' ||
@@ -147,6 +172,7 @@ export class FogOfWarEngine {
       rcs_modifier: rcsMod,
       terrain_masking_modifier: terrainMod,
       countermeasures_modifier: counterMod,
+      time_of_day_modifier: timeOfDayMod,
       final_pd: finalPd,
     };
   }
@@ -731,9 +757,14 @@ export class FogOfWarEngine {
       const degradedConfidence = this.degradeConfidence(prevContact.confidence, trackAge);
       if (degradedConfidence === null) continue;
 
+      const staleClass = prevContact.classification.includes('(STALE)')
+        ? prevContact.classification
+        : `${prevContact.classification} (STALE)`;
+
       fadingContacts.push({
         ...prevContact,
         confidence: degradedConfidence,
+        classification: staleClass,
         last_updated_turn: prevContact.last_updated_turn,
         // Update time to impact estimate
         time_to_impact_turns: prevContact.time_to_impact_turns !== null

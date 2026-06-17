@@ -10,6 +10,29 @@ Next.js 14 SaaS. ITAR-compliant. OSINT-only. Defence-adjacent.
 - Claude API: claude-sonnet-4-6, always use querySpectral() wrapper in lib/claude/client.ts
 - Tailwind + shadcn/ui
 
+## Deployment Environment
+- IDE: [Cursor / other] on [protected network name, e.g. "DSTG Secure Workstation" or "ITAR-segregated dev machine"]
+- Network: [internet-egress blocked / air-gapped / PROTECTED network]
+- Accredited resolver active: SPECTRAL_ACCREDITED_RESOLVER=true
+- Supabase project: [your project ref, e.g. "xyzabc"] — region ap-southeast-2
+- Admin access: service role key available server-side
+
+## Tables — Where Data Lives
+| Data | Table | How to add |
+|------|-------|------------|
+| Platforms | `platforms` | New migration in `supabase/migrations/` OR Supabase MCP `execute_sql` |
+| Defeat matrix | `defeat_matrix_entries` | Same — migration or MCP |
+| Accredited Pk | `accredited_defeat_pk` | Same, OR add row to `OFFLINE_ACCREDITED_DEFEAT_PK` in `lib/operations/accredited-supplements-data.ts` for offline fallback |
+| Accredited ERP | `accredited_erp_profiles` | Same pattern |
+| Accredited waveforms | `accredited_waveform_profiles` | Same pattern |
+| Learner model | `spectral_competency_records`, `spectral_training_plans` | Only via `processMoatAfterTurn()` — never direct insert |
+
+## Adding a Platform (standard flow)
+1. Write INSERT into a new migration file: `supabase/migrations/YYYYMMDDHHMMSS_add_platform_X.sql`
+2. Run `supabase db push` or apply via Supabase MCP `apply_migration`
+3. Add platform to `pcm-platform-ids.ts` if it appears in PCM exercises
+4. Add Pk rows to `accredited_defeat_pk` for any defeat pairings that need accredited data
+
 ## Critical Rules
 - Classification banner `UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY` on every page — non-removable
 - SUPABASE_SERVICE_ROLE_KEY and ANTHROPIC_API_KEY are server-only — NEVER in client code

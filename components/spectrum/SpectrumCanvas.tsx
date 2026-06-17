@@ -24,6 +24,7 @@ import {
   OVERLAP_COLOR,
 } from '@/lib/spectrum/scale';
 import type { BandOverlap } from '@/lib/spectrum/types';
+import type { AccreditedWaveformProfile } from '@/lib/operations/accredited-supplements-data';
 
 export interface CanvasLane {
   key: string;
@@ -42,6 +43,7 @@ export interface SpectrumCanvasProps {
   height?: number;
   title?: string;
   subtitle?: string;
+  accreditedWaveforms?: AccreditedWaveformProfile[];
 }
 
 const VB_W = 960;
@@ -61,22 +63,28 @@ export function SpectrumCanvas({
   height,
   title,
   subtitle,
+  accreditedWaveforms = [],
 }: SpectrumCanvasProps) {
   const [hover, setHover] = useState<{
     x: number;
     y: number;
-    cap: SpectrumCapability;
+    cap?: SpectrumCapability;
+    accredited?: import('@/lib/operations/accredited-supplements-data').AccreditedWaveformProfile;
   } | null>(null);
 
   const cfg = useMemo(() => getAxisConfig(axis, [PAD_L, VB_W - PAD_R]), [axis]);
   const scale = useMemo(() => makeLogScale(cfg.domain, cfg.range), [cfg]);
   const unit = cfg.unit;
 
+  const accreditedLaneCount = accreditedWaveforms.length > 0 && unit === "hz" ? 1 : 0;
   const lanesTop = PAD_T + 26; // room for region labels
-  const axisY = lanesTop + lanes.length * (LANE_H + LANE_GAP) + 6;
+  const axisY = lanesTop + (lanes.length + accreditedLaneCount) * (LANE_H + LANE_GAP) + 6;
   const vbH = height ?? axisY + AXIS_GAP + 40;
 
   const px = (v: number) => scale(v);
+
+  const overlapsAccredited = (lo: number, hi: number) =>
+    accreditedWaveforms.some((wf) => wf.freq_low_hz <= hi && wf.freq_high_hz >= lo);
 
   // helper: project a capability to {x, w}
   const project = (cap: SpectrumCapability) => {
@@ -115,6 +123,13 @@ export function SpectrumCanvas({
               {subtitle}
             </div>
           )}
+        </div>
+      )}
+
+      {accreditedWaveforms.length > 0 && unit === "hz" && (
+        <div className="sx-mono" style={{ position: "absolute", top: 0, right: 0, fontSize: 11, display: "flex", gap: 14, color: "var(--sx-ink-dim)" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 12, height: 8, borderRadius: 2, background: "#06B6D4", opacity: 0.85 }} />OSINT estimate</span>
+          <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 12, height: 8, borderRadius: 2, background: "#F97316" }} />Accredited data</span>
         </div>
       )}
 
@@ -248,10 +263,16 @@ export function SpectrumCanvas({
               {lane.caps.map((cap) => {
                 const p = project(cap);
                 if (!p) return null;
+                const ext = capabilityExtent(cap, unit);
+                const bandLo = ext?.[0] ?? 0;
+                const bandHi = ext?.[1] ?? 0;
+                const accOverlap = unit === 'hz' && accreditedWaveforms.length > 0 && overlapsAccredited(bandLo, bandHi);
                 const color =
                   mode === 'engagement'
                     ? laneColor!
-                    : LAYER_COLOR[cap.layer] ?? '#8b939c';
+                    : accOverlap
+                      ? '#06B6D4'
+                      : LAYER_COLOR[cap.layer] ?? '#8b939c';
                 return (
                   <rect
                     key={cap.id}
@@ -261,10 +282,10 @@ export function SpectrumCanvas({
                     height={LANE_H}
                     rx="6"
                     fill={color}
-                    opacity={cap.derived ? 0.4 : 0.85}
-                    stroke={cap.derived ? color : 'none'}
-                    strokeWidth={cap.derived ? 1 : 0}
-                    strokeDasharray={cap.derived ? '4 3' : undefined}
+                    opacity={cap.derived || accOverlap ? 0.4 : 0.85}
+                    stroke={cap.derived || accOverlap ? color : 'none'}
+                    strokeWidth={cap.derived || accOverlap ? 1 : 0}
+                    strokeDasharray={cap.derived || accOverlap ? '4 2' : undefined}
                     style={{ cursor: 'pointer', transition: 'opacity .15s' }}
                     onMouseEnter={() =>
                       setHover({ x: p.x + p.w / 2, y: y - 6, cap })
@@ -275,6 +296,24 @@ export function SpectrumCanvas({
             </g>
           );
         })}
+
+        {/* accredited waveform overlay lane */}
+        {accreditedWaveforms.length > 0 && unit === "hz" && (() => {
+          const y = lanesTop + lanes.length * (LANE_H + LANE_GAP);
+          return (
+            <g key="accredited-lane">
+              <text x={PAD_L - 12} y={y + LANE_H / 2 + 3} textAnchor="end" fontFamily="var(--sx-mono)" fontSize="10" fill="#F97316">Accredited</text>
+              {accreditedWaveforms.map((wf) => {
+                const x0 = px(wf.freq_low_hz);
+                const x1 = px(wf.freq_high_hz);
+                const w = Math.max(x1 - x0, 4);
+                return (
+                  <rect key={wf.id} x={x0} y={y} width={w} height={LANE_H} rx="6" fill="#F97316" opacity={0.5} style={{ cursor: "pointer" }} onMouseEnter={() => setHover({ x: x0 + w / 2, y: y - 6, accredited: wf })} />
+                );
+              })}
+            </g>
+          );
+        })()}
 
         {/* axis */}
         <line
@@ -315,33 +354,25 @@ export function SpectrumCanvas({
           <g pointerEvents="none">
             <rect
               x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184)}
-              y={hover.y - 46}
+              y={hover.y - (hover.accredited ? 58 : 46)}
               width="180"
-              height="42"
+              height={hover.accredited ? 54 : 42}
               rx="8"
               fill="rgba(8,10,12,0.95)"
               stroke="var(--sx-glass-line-hi)"
             />
-            <text
-              x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10}
-              y={hover.y - 30}
-              fontFamily="var(--sx-ui)"
-              fontSize="10"
-              fontWeight="600"
-              fill="var(--sx-ink)"
-            >
-              {hover.cap.label.slice(0, 30)}
-            </text>
-            <text
-              x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10}
-              y={hover.y - 16}
-              fontFamily="var(--sx-mono)"
-              fontSize="9"
-              fill="var(--sx-ink-dim)"
-            >
-              {fmtExtent(hover.cap, unit)}
-              {hover.cap.derived ? ' · derived' : ''}
-            </text>
+            {hover.accredited ? (
+              <>
+                <text x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10} y={hover.y - 44} fontFamily="var(--sx-ui)" fontSize="10" fontWeight="600" fill="#F97316">{hover.accredited.label.slice(0, 28)}</text>
+                <text x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10} y={hover.y - 30} fontFamily="var(--sx-mono)" fontSize="9" fill="var(--sx-ink-dim)">{hover.accredited.system_id} · {hover.accredited.capability_fn}</text>
+                <text x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10} y={hover.y - 16} fontFamily="var(--sx-mono)" fontSize="9" fill="var(--sx-ink-dim)">{hover.accredited.confidence} · accredited</text>
+              </>
+            ) : hover.cap ? (
+              <>
+                <text x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10} y={hover.y - 30} fontFamily="var(--sx-ui)" fontSize="10" fontWeight="600" fill="var(--sx-ink)">{hover.cap.label.slice(0, 30)}</text>
+                <text x={Math.min(Math.max(hover.x - 90, 4), VB_W - 184) + 10} y={hover.y - 16} fontFamily="var(--sx-mono)" fontSize="9" fill="var(--sx-ink-dim)">{fmtExtent(hover.cap, unit)}{hover.cap.derived ? ' · derived' : ''}</text>
+              </>
+            ) : null}
           </g>
         )}
       </svg>

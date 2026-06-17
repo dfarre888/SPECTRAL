@@ -86,14 +86,19 @@ export default function CesiumArena({ entities, center, onEntityClick }: Props) 
         duration: 1.5,
       })
 
-      // Click handler — strips "_sphere" suffix so clicking the sphere returns the base entity id
+      // Click handler — strips disc/sphere suffix so radius click returns base entity id
       viewer.screenSpaceEventHandler.setInputAction((click: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         const picked = viewer.scene.pick(click.position)
         if (picked?.id?.id && onEntityClickRef.current) {
           const rawId: string = picked.id.id
-          const entityId = rawId.endsWith('_sphere')
-            ? rawId.slice(0, -7)
-            : rawId
+          let entityId = rawId
+          if (rawId.startsWith('disc-')) {
+            entityId = rawId.slice(5)
+          } else if (rawId.endsWith('_disc')) {
+            entityId = rawId.slice(0, -5)
+          } else if (rawId.endsWith('_sphere')) {
+            entityId = rawId.slice(0, -7)
+          }
           onEntityClickRef.current(entityId)
         }
       }, 0 /* LEFT_CLICK */)
@@ -161,28 +166,33 @@ export default function CesiumArena({ entities, center, onEntityClick }: Props) 
         },
       })
 
-      // ── Engagement / range sphere ─────────────────────────────────────────
+      // ── Influence radius — ground disc (CLAMP_TO_GROUND) ─────────────────
       if (ent.range_km && ent.range_km > 0) {
         const rangeM = ent.range_km * 1000
+        const discId = `disc-${ent.id}`
+        viewer.entities.removeById(discId)
+
+        const fillColor = (isRed
+          ? Color.fromCssColorString('#EF4444')
+          : Color.fromCssColorString('#3B82F6')
+        ).withAlpha(0.15)
+        const outlineColor = isRed
+          ? Color.fromCssColorString('#EF4444')
+          : Color.fromCssColorString('#3B82F6')
 
         viewer.entities.add({
-          id: `${ent.id}_sphere`,
-          position: Cartesian3.fromDegrees(ent.lon, ent.lat, ent.altM),
-          ellipsoid: {
-            radii: new Cartesian3(rangeM, rangeM, rangeM),
-            material: (isRed
-              ? Color.fromCssColorString('#EF4444')
-              : Color.fromCssColorString('#3B82F6')
-            ).withAlpha(0.05),
+          id: discId,
+          position: Cartesian3.fromDegrees(ent.lon, ent.lat, 0),
+          ellipse: {
+            semiMajorAxis: rangeM,
+            semiMinorAxis: rangeM,
+            height: 0,
+            heightReference: HeightReference.CLAMP_TO_GROUND,
+            material: fillColor,
             fill: true,
             outline: true,
-            outlineColor: (isRed
-              ? Color.fromCssColorString('#EF4444')
-              : Color.fromCssColorString('#3B82F6')
-            ).withAlpha(0.35),
-            outlineWidth: 1,
-            slicePartitions: 32,
-            stackPartitions: 16,
+            outlineColor,
+            outlineWidth: 2,
           } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
         })
       }

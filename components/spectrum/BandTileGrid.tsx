@@ -30,6 +30,7 @@ export interface BandTileGridProps {
   showRecommendations?: boolean;
   onTileClick?: (tile: BandTile) => void;
   showSpectrumPulse?: boolean;
+  spectrumPulseProminent?: boolean;
 }
 
 interface TooltipState {
@@ -149,6 +150,8 @@ export function TileCard({
   fullscreenExpand = false,
   onTileClick,
   showSpectrumPulse = true,
+  fillViewport = false,
+  spectrumPulseProminent = false,
 }: {
   tile: BandTile;
   expanded: boolean;
@@ -158,6 +161,8 @@ export function TileCard({
   fullscreenExpand?: boolean;
   onTileClick?: (tile: BandTile) => void;
   showSpectrumPulse?: boolean;
+  fillViewport?: boolean;
+  spectrumPulseProminent?: boolean;
 }) {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const tileEmissions = emissionsForTile(tile, emissions);
@@ -198,11 +203,21 @@ export function TileCard({
         cursor: 'pointer',
         transition: 'border-color 0.15s',
         gridColumn: expanded && !fullscreenExpand ? '1 / -1' : undefined,
+        display: fillViewport ? 'flex' : undefined,
+        flexDirection: fillViewport ? 'column' : undefined,
+        height: fillViewport ? '100%' : undefined,
+        minHeight: fillViewport ? 0 : undefined,
       }}
       onClick={handleCardClick}
       onMouseLeave={() => setTooltip(null)}
     >
-      <div style={{ position: 'relative', paddingBottom: aspectPad }}>
+      <div
+        style={
+          fillViewport
+            ? { position: 'relative', flex: 1, minHeight: 0 }
+            : { position: 'relative', paddingBottom: aspectPad }
+        }
+      >
         <img
           src={tile.overlay}
           alt={`${tile.band} spectrum overlay`}
@@ -214,6 +229,7 @@ export function TileCard({
             display: 'block',
             userSelect: 'none',
             pointerEvents: 'none',
+            objectFit: fillViewport ? 'contain' : undefined,
           }}
           draggable={false}
         />
@@ -223,7 +239,10 @@ export function TileCard({
           <SpectrumPulseOverlay
             tile={tile}
             emissions={emissions}
-            showPulse={expanded || fullscreenExpand}
+            showPulse
+            prominent={
+              spectrumPulseProminent || expanded || fullscreenExpand || fillViewport
+            }
           />
         )}
         {tooltip && <Tooltip state={tooltip} expanded={expanded} />}
@@ -238,6 +257,7 @@ export function TileCard({
           alignItems: compact ? 'stretch' : 'baseline',
           gap: compact ? 4 : 10,
           background: 'rgba(0,0,0,0.35)',
+          flexShrink: fillViewport ? 0 : undefined,
         }}
         onClick={(e) => {
           e.stopPropagation();
@@ -479,6 +499,7 @@ export function BandTileGrid(props?: BandTileGridProps) {
     showRecommendations: _showRecommendations,
     onTileClick,
     showSpectrumPulse = true,
+    spectrumPulseProminent = false,
   } = props;
 
   const catalog = tiles ?? BAND_TILES;
@@ -539,6 +560,7 @@ export function BandTileGrid(props?: BandTileGridProps) {
             fullscreenExpand={fullscreenExpand}
             onTileClick={onTileClick}
             showSpectrumPulse={showSpectrumPulse}
+            spectrumPulseProminent={spectrumPulseProminent}
           />
         ))}
       </div>

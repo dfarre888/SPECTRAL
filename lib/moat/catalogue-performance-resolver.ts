@@ -29,9 +29,19 @@ export const trainingCataloguePerformanceResolver: PlatformPerformanceResolver =
   },
 };
 
+export const openBuildPerformanceResolver: PlatformPerformanceResolver = {
+  resolvePerformance(platformId: string): PlatformPerformance {
+    return {
+      platform_id: platformId,
+      resolved: false,
+      note: 'Performance data resides in the accredited catalogue. Implement resolver in the accredited environment under export-control review.',
+    };
+  },
+};
+
 export function getActivePerformanceResolver(): PlatformPerformanceResolver {
   if (process.env.SPECTRAL_ACCREDITED_RESOLVER === 'true') {
     return trainingCataloguePerformanceResolver;
   }
-  return trainingCataloguePerformanceResolver;
+  return openBuildPerformanceResolver;
 }

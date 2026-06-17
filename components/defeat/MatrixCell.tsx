@@ -3,7 +3,9 @@
 import { resolveCellValue, type CellValue } from '@/lib/defeat/cell-value'
 import { findSessionPair, readLaydownSession } from '@/lib/map/laydown-session'
 import type { DefeatTypeFilter } from '@/lib/defeat/defeat-types'
+import { getPrimaryDefeatType } from '@/lib/defeat/defeat-types'
 import type {
+  AccreditedDefeatPkRow,
   AntiDroneSystem,
   DefeatEffectiveness,
   Platform,
@@ -23,6 +25,7 @@ interface MatrixCellProps {
   row: DefeatEffectiveness | undefined
   defeatTypeFilter: DefeatTypeFilter
   onSelect: (platformId: string, systemId: string) => void
+  accreditedPkMap?: Record<string, AccreditedDefeatPkRow>
 }
 
 export function MatrixCell({
@@ -31,10 +34,13 @@ export function MatrixCell({
   row,
   defeatTypeFilter,
   onSelect,
+  accreditedPkMap,
 }: MatrixCellProps) {
   const session = readLaydownSession()
   const laydownPair = findSessionPair(session, platform.id, system.id)
   const value = resolveCellValue(platform, system, row, defeatTypeFilter, laydownPair)
+  const accKey = `${platform.id}:${system.id}`
+  const accRow = accreditedPkMap?.[accKey]
 
   return (
     <td className="border border-[var(--store-line)] p-0 min-w-[88px]">
@@ -48,18 +54,40 @@ export function MatrixCell({
           value.kind === 'empty' && 'store-text-muted bg-[var(--store-surface-2)]/50'
         )}
       >
-        <CellContent value={value} />
+        <CellContent value={value} accRow={accRow} system={system} />
       </button>
     </td>
   )
 }
 
-function CellContent({ value }: { value: CellValue }) {
+function accreditedPkForSystem(row: AccreditedDefeatPkRow, system: AntiDroneSystem): number | null {
+  const primary = getPrimaryDefeatType(system)
+  if (primary === 'RF') return row.pk_rf_jamming_pct
+  if (primary === 'DEW') return row.pk_dew_pct
+  return row.pk_kinetic_pct
+}
+
+function CellContent({ value, accRow, system }: { value: CellValue; accRow?: AccreditedDefeatPkRow; system: AntiDroneSystem }) {
+  if (accRow?.is_immune) {
+    return (
+      <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-orange">IMMUNE</span>
+    )
+  }
   if (value.kind === 'immune') return <ImmuneBadge />
   if (value.kind === 'empty') {
     return <span className="font-mono text-sm store-text-muted">—</span>
   }
   const colour = value.colour
+  const accPk = accRow ? accreditedPkForSystem(accRow, system) : null
+  if (accPk != null) {
+    return (
+      <div className="flex flex-col items-center gap-0.5 px-1">
+        <span className="font-mono text-sm font-medium text-[#F97316]">
+          {accPk}%<sup className="text-[10px] ml-0.5">A</sup>
+        </span>
+      </div>
+    )
+  }
   if (colour === 'red' || colour === 'amber' || colour === 'green') {
     return (
       <div className="flex flex-col items-center gap-0.5 px-1">

@@ -6,9 +6,11 @@ import type { PCM } from '@/lib/pcm/spectral.types';
 import {
   type AdjudicationCore,
   placeholderAdjudicationCore,
+  operationalAdjudicationCore,
   composeAdjudicationResult,
 } from '@/lib/pcm/adjudicationCore';
 import { trainingAdjudicationCore } from '@/lib/pcm/trainingAdjudicationCore';
+import { isOperationsEdition } from '@/lib/operations/edition';
 import { interopRegistry, type AdversaryIntent } from '@/lib/moat/interopLayer';
 import type { AdjudicationContext } from '@/lib/pcm/adjudication-context';
 import { fogOfWarEngine } from '@/lib/pcm/fogOfWarEngine';
@@ -52,6 +54,9 @@ async function pushInteropAdversaryIntent(worldState: WorldState): Promise<void>
 function defaultCore(): AdjudicationCore {
   if (process.env.SPECTRAL_PCM_STUB_ADJUDICATION === 'true') {
     return placeholderAdjudicationCore;
+  }
+  if (isOperationsEdition()) {
+    return operationalAdjudicationCore;
   }
   return trainingAdjudicationCore;
 }

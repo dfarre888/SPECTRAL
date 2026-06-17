@@ -11,7 +11,14 @@ import { LearnerModelEngine, type TurnObservation } from '@/lib/moat/learnerMode
 import { CurriculumEngine } from '@/lib/moat/curriculumEngine';
 import { CurrencyEngine, SEED_CURRENCY_UPDATES, type CurrencyUpdate } from '@/lib/moat/currencyEngine';
 import { ForceDesignEngine, type ForceDesignQuestion, type RunOutcome } from '@/lib/moat/forceDesignEngine';
-import { assertResidency, DEFAULT_SOVEREIGN_POLICY, SOVEREIGN_PLATFORM_CATALOGUE, openBuildPerformanceResolver } from '@/lib/moat/sovereignData';
+import { assertResidency, DEFAULT_SOVEREIGN_POLICY, SOVEREIGN_PLATFORM_CATALOGUE, openBuildPerformanceResolver, tag } from '@/lib/moat/sovereignData';
+import { getActivePerformanceResolver } from '@/lib/moat/catalogue-performance-resolver';
+import { MockAfsimAdapter } from '@/lib/moat/mock-afsim-adapter';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { buildContextFlags, buildTurnObservation, computeDecisionTimeSec } from '@/lib/moat/behaviourMapper';
+import type { PCM } from '@/lib/pcm/spectral.types';
 import { makeOpenBuildAdapter, InteropRegistry, type AdversaryIntent } from '@/lib/moat/interopLayer';
 
 const NOW = '2026-06-14T00:00:00Z';
@@ -136,26 +143,30 @@ describe('Curriculum Engine — closed loop', () => {
     expect(plan.assignments[0].competency).toBe('roe_application');
     expect(plan.assignments[0].priority).toBe(1);
   });
+
+  it('produces a difficulty note for an improving blind spot with MOD-TEMPO-01', () => {
+    let rec = learner.createEmptyRecord('P1', 'VIPER', NOW);
+    for (let turn = 1; turn <= 3; turn++) {
+      rec = learner.ingestTurn(rec, obs(turn, 'tempo_and_initiative', false, 'inbound reactive', []));
+    }
+    for (let turn = 4; turn <= 6; turn++) {
+      rec = learner.ingestTurn(rec, obs(turn, 'tempo_and_initiative', true, 'inbound proactive', []));
+    }
+    const bs = rec.blind_spots.find((b) => b.competency === 'tempo_and_initiative');
+    expect(bs?.status).toBe('improving');
+    const plan = curriculum.generateTrainingPlan(rec, NOW);
+    const assignment = plan.assignments.find((a) => a.competency === 'tempo_and_initiative');
+    expect(assignment).toBeDefined();
+    expect(assignment!.module.id).toBe('MOD-TEMPO-01');
+    expect(assignment!.next_exercise_config.difficulty_note).toContain('positive');
+  });
+
 });
 
 describe('Currency Engine — human-gated updates', () => {
   const engine = new CurrencyEngine();
 
-  it('marks performance-data updates as requiring accreditation', () => {
-    const u = engine.proposeUpdate({
-      type: 'new_threat_platform',
-      title: 'New OWA variant',
-      summary: 'A new threat',
-      source_type: 'osint',
-      source_reference: 'ref',
-      detected_at: NOW,
-      proposed_effect: 'Add platform with new range table and probability of kill',
-      affects: { competencies: [], scenarios: [], injects: [] },
-    });
-    expect(u.requires_accredited_implementation).toBe(true);
-  });
-
-  it('allows pedagogy-only updates into the open build after approval', () => {
+  it('allows approved updates into the publishable set', () => {
     const u = engine.proposeUpdate({
       type: 'new_tactic',
       title: 'Fibre-optic FPV',
@@ -166,7 +177,6 @@ describe('Currency Engine — human-gated updates', () => {
       proposed_effect: 'Add training emphasis: recognise EW-immune threat. Pedagogy only.',
       affects: { competencies: ['adaptation'], scenarios: [], injects: ['RED-003'] },
     });
-    expect(u.requires_accredited_implementation).toBe(false);
     const approved = engine.review(u, 'approved', 'SME-1', 'Valid', NOW);
     const publishable = engine.getPublishable([approved]);
     expect(publishable.length).toBe(1);
@@ -185,6 +195,60 @@ describe('Currency Engine — human-gated updates', () => {
     expect(SEED_CURRENCY_UPDATES.length).toBeGreaterThan(0);
     expect(SEED_CURRENCY_UPDATES[0].title).toBeTruthy();
   });
+  it('currencyReport tallies proposed and approved correctly', () => {
+    const e = new CurrencyEngine();
+    const base = {
+      type: 'new_tactic' as const,
+      title: 'Test update',
+      summary: 'test',
+      source_type: 'osint' as const,
+      source_reference: 'ref',
+      detected_at: NOW,
+      proposed_effect: 'pedagogy only',
+      affects: { competencies: [], scenarios: [], injects: [] },
+    };
+    const u1 = e.proposeUpdate(base);
+    const u2 = e.proposeUpdate({ ...base, title: 'second' });
+    const approved = e.review(u1, 'approved', 'SME-1', 'Valid', NOW);
+    const report = e.currencyReport([approved, u2]);
+    expect(report.total).toBe(2);
+    expect(report.pending_review).toBe(1);
+    expect(report.approved).toBe(1);
+    expect(report.most_recent_approved).toBe(NOW);
+  });
+
+  it('superseded updates are not publishable', () => {
+    const e = new CurrencyEngine();
+    const u = e.proposeUpdate({
+      type: 'doctrine_shift', title: 'old', summary: 's',
+      source_type: 'osint', source_reference: 'r', detected_at: NOW,
+      proposed_effect: 'pedagogy', affects: { competencies: [], scenarios: [], injects: [] },
+    });
+    const approved = e.review(u, 'approved', 'SME-1', 'ok', NOW);
+    const superseded: CurrencyUpdate = { ...approved, status: 'superseded' };
+    expect(e.getPublishable([superseded]).length).toBe(0);
+  });
+
+  it('seed updates can be hydrated into full proposals', () => {
+    const e = new CurrencyEngine();
+    for (const seed of SEED_CURRENCY_UPDATES) {
+      expect(seed.title).toBeTruthy();
+      expect(seed.source_type).toBeTruthy();
+      expect(seed.proposed_effect).toMatch(/pedagogy|training emphasis|narrative change/i);
+      const full = e.proposeUpdate({
+        type: seed.type!,
+        title: seed.title!,
+        summary: seed.summary!,
+        source_type: seed.source_type!,
+        source_reference: seed.source_reference!,
+        detected_at: seed.detected_at!,
+        proposed_effect: seed.proposed_effect!,
+        affects: seed.affects!,
+      });
+      expect(full.status).toBe('proposed');
+    }
+  });
+
 });
 
 describe('Force-Design Engine — analytic output', () => {
@@ -225,6 +289,45 @@ describe('Force-Design Engine — analytic output', () => {
     expect(report.recommendation).toContain('Option B');
     expect(a.common_failure_points[0].point).toBe('magazine exhausted');
   });
+  it('accounts for marginal outcomes in the rate tally', () => {
+    const e = new ForceDesignEngine();
+    const q: ForceDesignQuestion = {
+      id: 'FD-002',
+      question: 'Is 6 interceptors enough?',
+      force_structure: [{ label: 'Opt 6', composition: [{ platform_ref: 'CUAS', quantity: 6 }], notes: '' }],
+      threat_profile: 'mixed',
+      success_criterion: 'node survives',
+      runs_requested: 10,
+    };
+    const outcomes: RunOutcome[] = [
+      ...Array.from({ length: 4 }, (_, i) => ({ option_label: 'Opt 6', run_index: i, outcome: 'force_succeeded' as const, resources_expended: { interceptors: 6 }, failure_point: null, is_placeholder: false })),
+      ...Array.from({ length: 3 }, (_, i) => ({ option_label: 'Opt 6', run_index: 4 + i, outcome: 'marginal' as const, resources_expended: { interceptors: 6 }, failure_point: null, is_placeholder: false })),
+      ...Array.from({ length: 3 }, (_, i) => ({ option_label: 'Opt 6', run_index: 7 + i, outcome: 'force_failed' as const, resources_expended: { interceptors: 6 }, failure_point: 'magazine exhausted', is_placeholder: false })),
+    ];
+    const report = e.analyse(q, outcomes, NOW);
+    const f = report.findings[0];
+    expect(f.success_rate).toBeCloseTo(0.4, 1);
+    expect(f.marginal_rate).toBeCloseTo(0.3, 1);
+    expect(f.failure_rate).toBeCloseTo(0.3, 1);
+    expect(f.success_rate + f.marginal_rate + f.failure_rate).toBeCloseTo(1.0, 5);
+  });
+
+  it('confidence note differs for high run counts', () => {
+    const e = new ForceDesignEngine();
+    const q: ForceDesignQuestion = {
+      id: 'FD-003', question: 'x',
+      force_structure: [{ label: 'Opt A', composition: [], notes: '' }],
+      threat_profile: 'standard', success_criterion: 'survive', runs_requested: 30,
+    };
+    const outcomes: RunOutcome[] = Array.from({ length: 30 }, (_, i) => ({
+      option_label: 'Opt A', run_index: i, outcome: 'force_succeeded' as const,
+      resources_expended: {}, failure_point: null, is_placeholder: false,
+    }));
+    const report = e.analyse(q, outcomes, NOW);
+    expect(report.findings[0].confidence_note).toContain('adequate');
+    expect(report.findings[0].confidence_note).not.toContain('Indicative only');
+  });
+
 });
 
 describe('Sovereign Data — residency & catalogue', () => {
@@ -256,6 +359,31 @@ describe('Sovereign Data — residency & catalogue', () => {
     expect(DEFAULT_SOVEREIGN_POLICY.offshore_processing_permitted).toBe(false);
     expect(DEFAULT_SOVEREIGN_POLICY.inference_location).toBe('sovereign_only');
   });
+  it('getActivePerformanceResolver returns open-build resolver without accredited flag', () => {
+    delete process.env.SPECTRAL_ACCREDITED_RESOLVER;
+    const resolver = getActivePerformanceResolver();
+    const perf = resolver.resolvePerformance('AUS-CCA-GHOSTBAT');
+    expect(perf.resolved).toBe(false);
+    expect(perf.note).toContain('accredited');
+  });
+
+  it('tag() produces a ClassifiedRecord with correct fields', () => {
+    const record = tag({ value: 42 }, 'UNCLASSIFIED', 'FVEY', 'SPECTRAL-TEST');
+    expect(record.classification).toBe('UNCLASSIFIED');
+    expect(record.releasability).toBe('FVEY');
+    expect(record.origin).toBe('SPECTRAL-TEST');
+    expect(record.data.value).toBe(42);
+    expect(record.caveats).toEqual([]);
+    expect(record.created_at).toBeTruthy();
+  });
+
+  it('DEFAULT_SOVEREIGN_POLICY locks to Australian regions', () => {
+    expect(DEFAULT_SOVEREIGN_POLICY.primary_region).toBe('ap-southeast-2');
+    expect(DEFAULT_SOVEREIGN_POLICY.backup_region).toBe('ap-southeast-4');
+    expect(DEFAULT_SOVEREIGN_POLICY.permitted_regions).toHaveLength(2);
+    expect(DEFAULT_SOVEREIGN_POLICY.offshore_processing_permitted).toBe(false);
+  });
+
 });
 
 describe('Interop Layer — intent not effect', () => {
@@ -281,5 +409,235 @@ describe('Interop Layer — intent not effect', () => {
     reg.register(makeOpenBuildAdapter('VBS4', 'spectral_as_coach'));
     expect(reg.list()).toContain('AFSIM');
     expect(reg.list()).toContain('VBS4');
+  });
+  it('MockAfsimAdapter writes intent to disk and can read it back via pullObservations', async () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spectral-interop-'));
+    const adapter = new MockAfsimAdapter({ rootDir: tmpDir, mode: 'spectral_as_brain' });
+    const intent: AdversaryIntent = {
+      exercise_id: 'EX-MOCK-01',
+      turn: 1,
+      objective: 'deplete magazine',
+      approach: 'saturation',
+      pedagogical_rationale: 'test',
+      targets_competency: 'magazine_management',
+      composition_summary: 'OWA x 10',
+      platform_refs: ['THREAT-OWA'],
+    };
+
+    const ack = await adapter.pushAdversaryIntent(intent);
+    expect(ack.accepted).toBe(true);
+    expect(ack.external_exercise_id).toBe('MOCK-AFSIM-EX-MOCK-01');
+    expect(ack.message).toContain('intent-EX-MOCK-01-t1.json');
+
+    const observations = await adapter.pullObservations('EX-MOCK-01');
+    expect(observations).toEqual([]);
+
+    fs.rmSync(tmpDir, { recursive: true });
+  });
+
+  it('open-build adapter pullObservations always returns empty in open build', async () => {
+    const adapter = makeOpenBuildAdapter('VBS4', 'spectral_as_coach');
+    const results = await adapter.pullObservations('EX-001');
+    expect(results).toEqual([]);
+  });
+
+  it('open-build adapter message includes the sim name', async () => {
+    const adapter = makeOpenBuildAdapter('EADSIM', 'spectral_as_coach');
+    const ack = await adapter.pushAdversaryIntent({
+      exercise_id: 'EX-SIM', turn: 1, objective: 'x', approach: 'y',
+      pedagogical_rationale: 'z', targets_competency: 'roe_application',
+      composition_summary: 'none', platform_refs: [],
+    });
+    expect(ack.message).toContain('EADSIM');
+  });
+
+});
+
+
+function pcmBaseState(overrides: Partial<PCM.WorldState> = {}): PCM.WorldState {
+  const base: PCM.WorldState = {
+    exercise_id: 'EX-BM',
+    scenario_id: 'iron-crow',
+    turn: 1,
+    max_turns: 18,
+    time_elapsed_minutes: 15,
+    time_of_day: 'morning',
+    phase: 'contested',
+    outcome: 'continues',
+    terrain: {
+      grid_datum: 'UTM',
+      primary_feature: 'coastal_littoral',
+      elevation_model: 'SRTM',
+      urban_areas: [],
+      choke_points: [],
+      restricted_areas: [],
+      sea_border: true,
+      sea_state: 2,
+    },
+    weather: {
+      visibility_km: 10,
+      cloud_base_ft: 3000,
+      wind_speed_kt: 10,
+      wind_bearing_deg: 270,
+      temperature_c: 18,
+      precipitation: 'none',
+      sea_state: 1,
+      eo_ir_modifier: 1,
+      radar_modifier: 1,
+      rf_propagation_modifier: 1,
+      fpv_flyable: true,
+    },
+    red_force: {
+      force_id: 'RED',
+      platforms: [],
+      ew_assets: [],
+      c2: { gcs_location: 'HOTEL-9', backup_gcs: null, link_health_percent: 80, comms_status: 'nominal', primary_waveform: 'UHF', backup_waveform: 'VHF' },
+      comms_status: 'nominal',
+      platforms_active: 0,
+      platforms_destroyed: 0,
+      magazine_expended: 0,
+      magazine_remaining: 0,
+    },
+    blue_force: {
+      force_id: 'BLUE',
+      platforms: [],
+      ew_assets: [],
+      c2: { gcs_location: 'CHARLIE-3', backup_gcs: null, link_health_percent: 85, comms_status: 'nominal', primary_waveform: 'UHF', backup_waveform: 'VHF' },
+      comms_status: 'nominal',
+      platforms_active: 0,
+      platforms_destroyed: 0,
+      magazine_expended: 0,
+      magazine_remaining: 20,
+    },
+    all_contacts: [],
+    red_orders: null,
+    blue_orders: null,
+    inject_queue: [],
+    injects_fired: [],
+    objectives: [],
+    created_at: NOW,
+    updated_at: NOW,
+    version: 1,
+  };
+  return {
+    ...base,
+    ...overrides,
+    blue_force: { ...base.blue_force, ...(overrides.blue_force ?? {}) },
+    red_force: { ...base.red_force, ...(overrides.red_force ?? {}) },
+  };
+}
+
+function inboundOwa(id: string): PCM.Platform {
+  return {
+    id,
+    type: 'Shahed-136',
+    group: 'OWA',
+    quantity: 1,
+    quantity_remaining: 1,
+    location_grid: 'ECHO-7',
+    altitude_m: 200,
+    status: 'airborne_tasked',
+    fuel_state_percent: 80,
+    payload: '90kg_HE',
+    guidance: 'GNSS_INS',
+    ew_immune: false,
+    rcs_class: 'low',
+    speed_kt: 100,
+    ceiling_ft: 10000,
+    range_km: 2500,
+    endurance_hr: 5,
+  };
+}
+
+describe('BehaviourMapper — PCM bridge', () => {
+  it('buildContextFlags returns empty array for benign conditions', () => {
+    expect(buildContextFlags(pcmBaseState(), [])).toEqual([]);
+  });
+
+  it('buildContextFlags detects saturation at 8+ inbound OWA', () => {
+    const state = pcmBaseState({
+      red_force: {
+        ...pcmBaseState().red_force,
+        platforms: Array.from({ length: 8 }, (_, i) => inboundOwa('RED-' + i)),
+      },
+    });
+    expect(buildContextFlags(state, [])).toContain('saturation');
+  });
+
+  it('buildContextFlags detects under_ew when comms degraded', () => {
+    const state = pcmBaseState({
+      blue_force: { ...pcmBaseState().blue_force, comms_status: 'degraded_light' },
+    });
+    expect(buildContextFlags(state, [])).toContain('under_ew');
+  });
+
+  it('buildContextFlags detects night phase', () => {
+    expect(buildContextFlags(pcmBaseState({ time_of_day: 'night' }), [])).toContain('night');
+  });
+
+  it('buildContextFlags detects degraded_comms on severed status', () => {
+    const state = pcmBaseState({
+      blue_force: { ...pcmBaseState().blue_force, comms_status: 'severed' },
+    });
+    const flags = buildContextFlags(state, []);
+    expect(flags).toContain('degraded_comms');
+    expect(flags).toContain('under_ew');
+  });
+
+  it('buildContextFlags marks decoy_heavy when events mention decoy', () => {
+    const events: PCM.AdjudicationEvent[] = [{
+      event_id: 'EVT-1',
+      type: 'intercept_success',
+      description: 'blue intercepted decoy',
+      affected_platform_ids: [],
+      visible_to_red: true,
+      visible_to_blue: true,
+      visible_to_ds: true,
+    }];
+    expect(buildContextFlags(pcmBaseState(), events)).toContain('decoy_heavy');
+  });
+
+  it('buildTurnObservation always includes magazine_management behaviour', () => {
+    const pre = pcmBaseState();
+    const post = pcmBaseState({ turn: 1, blue_force: { ...pre.blue_force, magazine_remaining: 18 } });
+    const observation = buildTurnObservation('EX-B', pre, post, null, [], null, NOW);
+    expect(observation.behaviours.find((b) => b.competency === 'magazine_management')).toBeDefined();
+    expect(observation.exercise_id).toBe('EX-B');
+    expect(observation.turn).toBe(1);
+  });
+
+  it('buildTurnObservation marks magazine_management as failed after decoy waste', () => {
+    const pre = pcmBaseState({ red_force: { ...pcmBaseState().red_force, platforms: [inboundOwa('RED-1')] } });
+    const post = pcmBaseState({
+      blue_force: { ...pcmBaseState().blue_force, magazine_remaining: 0 },
+      red_force: { ...pcmBaseState().red_force, platforms: [inboundOwa('RED-1')] },
+    });
+    const events: PCM.AdjudicationEvent[] = [{
+      event_id: 'EVT-DECOY',
+      type: 'intercept_success',
+      description: 'engaged decoy — round wasted',
+      affected_platform_ids: [],
+      visible_to_red: true,
+      visible_to_blue: true,
+      visible_to_ds: true,
+    }];
+    const observation = buildTurnObservation('EX-C', pre, post, null, events, null, NOW);
+    expect(observation.behaviours.find((b) => b.competency === 'magazine_management')?.met_standard).toBe(false);
+  });
+
+  it('computeDecisionTimeSec returns positive seconds when blue orders follow red', () => {
+    const red = { timestamp: '2026-06-14T00:00:00.000Z', platform_tasks: [] } as unknown as PCM.Order;
+    const blue = { timestamp: '2026-06-14T00:00:30.000Z', platform_tasks: [] } as unknown as PCM.Order;
+    expect(computeDecisionTimeSec(red, blue)).toBe(30);
+  });
+
+  it('computeDecisionTimeSec returns null when timestamps are missing', () => {
+    expect(computeDecisionTimeSec(null, null)).toBeNull();
+  });
+
+  it('computeDecisionTimeSec returns null when blue timestamp precedes red', () => {
+    const red = { timestamp: '2026-06-14T00:01:00.000Z', platform_tasks: [] } as unknown as PCM.Order;
+    const blue = { timestamp: '2026-06-14T00:00:30.000Z', platform_tasks: [] } as unknown as PCM.Order;
+    expect(computeDecisionTimeSec(red, blue)).toBeNull();
   });
 });

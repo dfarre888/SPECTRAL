@@ -181,6 +181,169 @@ export const SOVEREIGN_PLATFORM_CATALOGUE: SovereignPlatform[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// IADS THREAT CATALOGUE — Red integrated air-defence nodes (PCM / force-design)
+// UNCLASSIFIED descriptive data only; engagement physics via SOVEREIGN_CORE_BOUNDARY
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface IadsThreatEntry {
+  id: string;
+  display_name: string;
+  sam_profile_id?: string;
+  sam_profile_ids?: string[];
+  effector_id?: string;
+  spectral_role: string;
+  performance_ref: 'SOVEREIGN_CORE_BOUNDARY';
+  open_sources: string[];
+  confidence: 'confirmed' | 'assessed' | 'estimated';
+}
+
+export const IADS_THREAT_CATALOGUE: IadsThreatEntry[] = [
+  {
+    id: 'iads-manpads-family',
+    display_name: 'MANPADS family (SA-7/14/16/18/24)',
+    sam_profile_ids: ['sa-7-grail', 'sa-14-gremlin', 'sa-16-gimlet', 'sa-18-grouse', 'sa-24-grinch'],
+    effector_id: 'eff-manpads-family',
+    spectral_role: 'proliferated_point_air_defence',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['Janes Land Warfare Platforms', 'CSIS Missile Threat MANPADS profiles', 'Ukraine conflict OSINT MANPADS employment 2022-2026'],
+    confidence: 'confirmed',
+  },
+  {
+    id: 'iads-sa-6-gainful',
+    display_name: 'SA-6 Gainful (2K12 Kub)',
+    sam_profile_id: 'sa-6-gainful',
+    effector_id: 'eff-kub-3m9',
+    spectral_role: 'mobile_medium_sam',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat 2K12 Kub', 'Army Recognition Kub profile', 'Ukraine 2022 Kub battery OSINT'],
+    confidence: 'confirmed',
+  },
+  {
+    id: 'iads-sa-8-gecko',
+    display_name: 'SA-8 Gecko (9K33 Osa)',
+    sam_profile_id: 'sa-8-gecko',
+    effector_id: 'eff-osa-9m33',
+    spectral_role: 'mobile_shorad',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat 9K33 Osa', 'GlobalSecurity Osa-AKM', 'Export inventory reporting (India, Syria)'],
+    confidence: 'confirmed',
+  },
+  {
+    id: 'iads-sa-11-gadfly',
+    display_name: 'SA-11 Gadfly (9K37 Buk-M1)',
+    sam_profile_id: 'sa-11-gadfly',
+    effector_id: 'eff-buk-m1-9m38',
+    spectral_role: 'mobile_medium_sam',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat Buk-M1', 'Janes Land Warfare Buk entry', 'Ukraine MH17/Buk OSINT & 2022-2025 employment'],
+    confidence: 'confirmed',
+  },
+  {
+    id: 'iads-sa-17-grizzly',
+    display_name: 'SA-17 Grizzly (9K37M1-2 Buk-M1-2/M3)',
+    sam_profile_id: 'sa-17-grizzly',
+    effector_id: 'eff-buk-m3',
+    spectral_role: 'mobile_medium_sam',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat Buk-M2/M3', 'Almaz-Antey public Buk-M3 brochure', 'Ukraine 2022-2025 Buk employment OSINT'],
+    confidence: 'confirmed',
+  },
+  {
+    id: 'iads-sa-13-gopher',
+    display_name: 'SA-13 Gopher (9K35 Strela-10)',
+    sam_profile_id: 'sa-13-gopher',
+    effector_id: 'eff-strela10-9m37',
+    spectral_role: 'mobile_shorad',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat 9K35 Strela-10', 'Army Recognition Strela-10M profile', 'Wide export operator base OSINT'],
+    confidence: 'assessed',
+  },
+  {
+    id: 'iads-sa-15-gauntlet',
+    display_name: 'SA-15 Gauntlet (9K330 Tor-M2)',
+    sam_profile_id: 'sa-15-gauntlet',
+    effector_id: 'eff-tor-m2',
+    spectral_role: 'point_defence_sam',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat Tor-M2', 'Ukraine 2022-2025 Tor vs Shahed/Lancet OSINT', 'Russian MoD Tor-M2 public releases'],
+    confidence: 'confirmed',
+  },
+  {
+    id: 'iads-sa-19-grison',
+    display_name: 'SA-19 Grison (2K22 Tunguska)',
+    sam_profile_id: 'sa-19-grison',
+    effector_id: 'eff-tunguska-9m311',
+    spectral_role: 'gun_missile_point_defence',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat 2K22 Tunguska', 'Janes Land Warfare Tunguska entry', 'Export inventory (India, Belarus) OSINT'],
+    confidence: 'assessed',
+  },
+  {
+    id: 'iads-sa-10-grumble',
+    display_name: 'SA-10 Grumble (S-300P / 5V55)',
+    sam_profile_id: 'sa-10-grumble',
+    effector_id: 'eff-s300-5v55',
+    spectral_role: 'long_range_sam',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat S-300P', 'GlobalSecurity S-300P profile', 'Wide export operator base (China, Greece, Ukraine) OSINT'],
+    confidence: 'confirmed',
+  },
+  {
+    id: 'iads-sa-20-gargoyle',
+    display_name: 'SA-20 Gargoyle (S-300PMU-2 Favorit)',
+    sam_profile_id: 'sa-20-gargoyle',
+    effector_id: 'eff-s300-5v55',
+    spectral_role: 'long_range_sam',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat S-300PMU-2', 'Almaz-Antey S-300PMU-2 public data', 'Export operators (China, Algeria, Vietnam) OSINT'],
+    confidence: 'confirmed',
+  },
+  {
+    id: 'iads-sa-21-growler',
+    display_name: 'SA-21 Growler (S-400 Triumf)',
+    sam_profile_id: 'sa-21-growler',
+    effector_id: 'eff-s400-48n6',
+    spectral_role: 'long_range_sam',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat S-400', "Janes All the World's Aircraft S-400 profile", 'Russia/Turkey/China/India S-400 deployment OSINT'],
+    confidence: 'confirmed',
+  },
+  {
+    id: 'iads-sa-23-giant',
+    display_name: 'SA-23 Giant (S-300VM Antey-2500)',
+    sam_profile_id: 'sa-23-giant',
+    effector_id: 'eff-s300vm-9m83',
+    spectral_role: 'export_context_long_sam',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat S-300VM', 'Rosoboronexport Antey-2500 brochure', 'Venezuela/Algeria export deployment OSINT'],
+    confidence: 'assessed',
+  },
+  {
+    id: 'iads-sa-12-gladiator',
+    display_name: 'SA-12 Gladiator (S-300V / 9M83)',
+    sam_profile_id: 'sa-12a-gladiator',
+    spectral_role: 'legacy_context_sam',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat S-300V', 'GlobalSecurity S-300V profile', 'Legacy operator context (Syria, DPRK, India) OSINT'],
+    confidence: 'assessed',
+  },
+  {
+    id: 'iads-sa-22-greyhound',
+    display_name: 'SA-22 Greyhound (96K6 Pantsir-S1)',
+    sam_profile_id: 'sa-22-greyhound',
+    effector_id: 'eff-pantsir-57e6',
+    spectral_role: 'point_defence_gun_missile',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: ['CSIS Missile Threat Pantsir-S1', 'Ukraine/Red Sea Pantsir combat reporting 2022-2026', 'KBP public Pantsir-S1 data'],
+    confidence: 'confirmed',
+  },
+];
+
+export function getIadsThreat(id: string): IadsThreatEntry | undefined {
+  return IADS_THREAT_CATALOGUE.find((entry) => entry.id === id);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // SOVEREIGN CORE BOUNDARY
 // ─────────────────────────────────────────────────────────────────────────────
 

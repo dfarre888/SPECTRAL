@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { requireSpectralAuth } from '@/lib/pcm/require-auth'
 
 interface WindyResponse {
   'wind_u-surface'?: number[]
@@ -8,6 +9,9 @@ interface WindyResponse {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireSpectralAuth()
+  if (auth.response) return auth.response
+
   try {
     const apiKey = process.env.WINDY_API_KEY
     if (!apiKey) {

@@ -5,6 +5,7 @@ import {
   loadCompetencyRecord,
   validateDsPlayer,
 } from '@/lib/moat/moatStore';
+import { authorizeDsRoute } from '@/lib/moat/ds-route-auth';
 
 export async function GET(
   req: NextRequest,
@@ -25,6 +26,10 @@ export async function GET(
     if (!isDs) {
       return NextResponse.json({ error: 'DS role required' }, { status: 403 });
     }
+
+    // Bind ds_player_id to session; verify learner exercise scope (skipped in demo mode)
+    const authErr = await authorizeDsRoute(supabase, auth.user!.id, dsPlayerId, params.id);
+    if (authErr) return authErr;
 
     const { data: player } = await supabase
       .from('spectral_players')

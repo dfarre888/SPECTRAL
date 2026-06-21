@@ -217,6 +217,8 @@ export interface DefeatMatrixPayload {
   systems: AntiDroneSystem[]
   effectiveness: DefeatEffectiveness[]
   accreditedPkMap?: Record<string, AccreditedDefeatPkRow>
+  /** Reference-geometry SAM Pk (percent) keyed platformId:systemId */
+  computedSamPkMap?: Record<string, number>
 }
 
 // ─── Conflict Incidents ───────────────────────────────────────────────────────

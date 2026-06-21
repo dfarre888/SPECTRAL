@@ -16,7 +16,7 @@ import {
   calculateTimeOfDay,
 } from '@/lib/pcm/turn-logic';
 import { fogOfWarEngine } from '@/lib/pcm/fogOfWarEngine';
-import { SpectralRefOrchestrator } from '@/lib/pcm/spectralRefOrchestrator';
+import { SpectralRefOrchestrator, finaliseExercise } from '@/lib/pcm/spectralRefOrchestrator';
 import { hashTurnSeed } from '@/lib/pcm/seeded-rng';
 import { buildAdjudicationContext, preloadAccreditedData, preloadAccreditedErpRows } from '@/lib/pcm/adjudication-preload';
 import { processMoatAfterTurn } from '@/lib/moat/moatStore';
@@ -31,6 +31,8 @@ import {
   defaultMagazineByType,
 } from '@/lib/pcm/difficulty-modifiers';
 import { buildAAR, type AARReport } from '@/lib/pcm/debrief-engine';
+import { injectFeedContacts } from '@/lib/pcm/feed-contact-merge';
+export { injectFeedContacts } from '@/lib/pcm/feed-contact-merge';
 
 type WorldState = PCM.WorldState;
 type Exercise = PCM.Exercise;
@@ -372,6 +374,11 @@ export class WorldStateEngine {
         }).catch((err) => console.error('[Moat] processMoatAfterTurn failed:', err));
       }
 
+      if (exerciseComplete && req.ds_player_id) {
+        const history = await this.getTurnHistory(req.exercise_id, req.ds_player_id);
+        void finaliseExercise(req.exercise_id, history, resolvedWorldState);
+      }
+
       return {
         new_turn: newTurn,
         adjudication,
@@ -432,6 +439,36 @@ export class WorldStateEngine {
 
     if (error || !data) return null;
     return data as Exercise;
+  }
+
+
+  async getLatestGlobeState(exercise_id: string): Promise<{
+    world_state: WorldState;
+    sensor_picture: Contact[];
+    adjudication_result?: AdjudicationResult;
+    feed_classification?: string;
+  } | null> {
+    const exercise = await this.getExercise(exercise_id);
+    if (!exercise) return null;
+
+    const { data } = await this.supabase
+      .from('spectral_turn_records')
+      .select('world_state_snapshot, blue_sensor_picture, adjudication_result, turn')
+      .eq('exercise_id', exercise_id)
+      .order('turn', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const worldState = (data?.world_state_snapshot ?? exercise.current_world_state) as WorldState;
+    const sensorPicture = (data?.blue_sensor_picture ?? []) as Contact[];
+    const adjudication = data?.adjudication_result as AdjudicationResult | undefined;
+
+    return {
+      world_state: worldState,
+      sensor_picture: sensorPicture,
+      adjudication_result: adjudication,
+      feed_classification: 'SYNTHETIC — OPEN BUILD — NO REAL DATA',
+    };
   }
 
   async getDebrief(exercise_id: string, ds_player_id: string): Promise<AARReport | null> {

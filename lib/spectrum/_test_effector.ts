@@ -19,7 +19,7 @@ const byId=(id:string)=>plats.find(p=>p.id===id)!;
 
 console.log('\n=== Effector data ===');
 ck('24+ effectors', eff.length>=22, `got ${eff.length}`);
-ck('both sides', BLUE_EFFECTORS.length>=10 && RED_EFFECTORS.length>=8, `B${BLUE_EFFECTORS.length}/R${RED_EFFECTORS.length}`);
+ck('both sides', BLUE_EFFECTORS.length>=10 && RED_EFFECTORS.length>=16, `B${BLUE_EFFECTORS.length}/R${RED_EFFECTORS.length}`);
 ck('all have envelopes', eff.every(e=>e.envelope.max_range_km>0&&e.envelope.max_alt_km>0));
 ck('all four effect types present', new Set(eff.map(e=>e.effect)).size>=4);
 ck('tiers span point→strategic', ['point_defence','shorad','medium','long','strategic_bmd'].every(t=>eff.some(e=>e.tier===t)));

@@ -17,6 +17,7 @@ interface DefeatMatrixTableProps {
   defeatTypeFilter: DefeatTypeFilter
   onCellSelect: (platformId: string, systemId: string) => void
   accreditedPkMap?: Record<string, AccreditedDefeatPkRow>
+  computedSamPkMap?: Record<string, number>
 }
 
 function findRow(
@@ -36,6 +37,7 @@ export function DefeatMatrixTable({
   defeatTypeFilter,
   onCellSelect,
   accreditedPkMap,
+  computedSamPkMap,
 }: DefeatMatrixTableProps) {
   if (platforms.length === 0 || systems.length === 0) {
     return (
@@ -103,6 +105,7 @@ export function DefeatMatrixTable({
                   defeatTypeFilter={defeatTypeFilter}
                   onSelect={onCellSelect}
                     accreditedPkMap={accreditedPkMap}
+                    computedSamPkMap={computedSamPkMap}
                 />
               ))}
             </tr>

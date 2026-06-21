@@ -11,7 +11,7 @@ import { LearnerModelEngine, type TurnObservation } from '@/lib/moat/learnerMode
 import { CurriculumEngine } from '@/lib/moat/curriculumEngine';
 import { CurrencyEngine, SEED_CURRENCY_UPDATES, type CurrencyUpdate } from '@/lib/moat/currencyEngine';
 import { ForceDesignEngine, type ForceDesignQuestion, type RunOutcome } from '@/lib/moat/forceDesignEngine';
-import { assertResidency, DEFAULT_SOVEREIGN_POLICY, SOVEREIGN_PLATFORM_CATALOGUE, openBuildPerformanceResolver, tag } from '@/lib/moat/sovereignData';
+import { assertResidency, DEFAULT_SOVEREIGN_POLICY, SOVEREIGN_PLATFORM_CATALOGUE, IADS_THREAT_CATALOGUE, openBuildPerformanceResolver, tag } from '@/lib/moat/sovereignData';
 import { getActivePerformanceResolver } from '@/lib/moat/catalogue-performance-resolver';
 import { MockAfsimAdapter } from '@/lib/moat/mock-afsim-adapter';
 import fs from 'node:fs';
@@ -20,6 +20,8 @@ import path from 'node:path';
 import { buildContextFlags, buildTurnObservation, computeDecisionTimeSec } from '@/lib/moat/behaviourMapper';
 import type { PCM } from '@/lib/pcm/spectral.types';
 import { makeOpenBuildAdapter, InteropRegistry, type AdversaryIntent } from '@/lib/moat/interopLayer';
+import { getSamProfile } from '@/lib/risk/sam-intercept';
+import { RED_EFFECTORS } from '@/data/seed-effectors-red';
 
 const NOW = '2026-06-14T00:00:00Z';
 
@@ -639,5 +641,47 @@ describe('BehaviourMapper — PCM bridge', () => {
     const red = { timestamp: '2026-06-14T00:01:00.000Z', platform_tasks: [] } as unknown as PCM.Order;
     const blue = { timestamp: '2026-06-14T00:00:30.000Z', platform_tasks: [] } as unknown as PCM.Order;
     expect(computeDecisionTimeSec(red, blue)).toBeNull();
+  });
+});
+
+
+describe('IADS Threat Catalogue', () => {
+  it('contains exactly 14 entries', () => {
+    expect(IADS_THREAT_CATALOGUE.length).toBe(14);
+  });
+
+  it('marks every entry with SOVEREIGN_CORE_BOUNDARY performance_ref', () => {
+    for (const entry of IADS_THREAT_CATALOGUE) {
+      expect(entry.performance_ref).toBe('SOVEREIGN_CORE_BOUNDARY');
+    }
+  });
+
+  it('resolves all sam_profile_id / sam_profile_ids via getSamProfile', () => {
+    for (const entry of IADS_THREAT_CATALOGUE) {
+      const ids = entry.sam_profile_ids ?? (entry.sam_profile_id ? [entry.sam_profile_id] : []);
+      expect(ids.length).toBeGreaterThan(0);
+      for (const id of ids) {
+        expect(getSamProfile(id)).toBeDefined();
+      }
+    }
+  });
+
+  it('maps all non-null effector_id values to RED_EFFECTORS', () => {
+    const redIds = new Set(RED_EFFECTORS.map((e) => e.id));
+    for (const entry of IADS_THREAT_CATALOGUE) {
+      if (entry.effector_id) {
+        expect(redIds.has(entry.effector_id)).toBe(true);
+      }
+    }
+  });
+
+  it('MANPADS family aggregates five SAM profiles', () => {
+    const manpads = IADS_THREAT_CATALOGUE.find((e) => e.id === 'iads-manpads-family');
+    expect(manpads?.sam_profile_ids?.length).toBe(5);
+  });
+
+  it('has no duplicate catalogue ids', () => {
+    const ids = IADS_THREAT_CATALOGUE.map((e) => e.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });

@@ -532,4 +532,134 @@ export function emissionBarStyle(
   }
 }
 
+export const STACKED_BRICK_H = 14
+export const STACKED_BRICK_GAP = 3
+export const STACKED_SECTION_GAP = 8
+export const STACKED_GUTTER_W = 72
+
+export function resolveEmissionSide(em: LaydownEmission): 'red' | 'blue' {
+  if (em.side === 'red' || em.side === 'blue') return em.side
+  return isRedEmissionKind(em.kind) ? 'red' : 'blue'
+}
+
+function stackedEmissionSortKey(em: LaydownEmission): string {
+  return `${em.label}\0${em.capabilityLabel ?? ''}\0${em.id}`
+}
+
+export interface StackedBrick {
+  emission: LaydownEmission
+  side: 'red' | 'blue'
+  y: number
+  height: number
+}
+
+export interface StackedTileMetrics {
+  bricks: StackedBrick[]
+  rowTopY: number
+  rowBotY: number
+  viewBoxH: number
+  gutterW: number
+}
+
+const STACKED_START_Y = 6
+
+export function computeStackedTileMetrics(
+  tile: BandTile,
+  emissions: LaydownEmission[],
+  options: { showRed: boolean; showBlue: boolean },
+): StackedTileMetrics {
+  const inTile = emissionsForTile(tile, emissions)
+  const visible = inTile.filter((em) => {
+    const side = resolveEmissionSide(em)
+    return side === 'red' ? options.showRed : options.showBlue
+  })
+
+  const redEmissions = visible
+    .filter((em) => resolveEmissionSide(em) === 'red')
+    .sort((a, b) => stackedEmissionSortKey(a).localeCompare(stackedEmissionSortKey(b)))
+  const blueEmissions = visible
+    .filter((em) => resolveEmissionSide(em) === 'blue')
+    .sort((a, b) => stackedEmissionSortKey(a).localeCompare(stackedEmissionSortKey(b)))
+
+  const brickUnit = STACKED_BRICK_H + STACKED_BRICK_GAP
+  const redHeight =
+    redEmissions.length > 0 ? redEmissions.length * brickUnit - STACKED_BRICK_GAP : 0
+  const blueHeight =
+    blueEmissions.length > 0 ? blueEmissions.length * brickUnit - STACKED_BRICK_GAP : 0
+  const sectionBetween =
+    redEmissions.length > 0 && blueEmissions.length > 0 ? STACKED_SECTION_GAP : 0
+  const stackHeight = redHeight + sectionBetween + blueHeight
+  const paddingBeforeAlloc = stackHeight > 0 ? STACKED_SECTION_GAP : 0
+  const extraHeight = stackHeight + paddingBeforeAlloc
+
+  const bricks: StackedBrick[] = []
+  let y = STACKED_START_Y
+
+  for (const em of redEmissions) {
+    bricks.push({ emission: em, side: 'red', y, height: STACKED_BRICK_H })
+    y += brickUnit
+  }
+
+  if (sectionBetween > 0) {
+    y += sectionBetween - STACKED_BRICK_GAP
+  }
+
+  for (const em of blueEmissions) {
+    bricks.push({ emission: em, side: 'blue', y, height: STACKED_BRICK_H })
+    y += brickUnit
+  }
+
+  return {
+    bricks,
+    rowTopY: tile.rowTopY + extraHeight,
+    rowBotY: tile.rowBotY + extraHeight,
+    viewBoxH: tile.viewBoxH + extraHeight,
+    gutterW: STACKED_GUTTER_W,
+  }
+}
+
+export function applyStackedLayout(tile: BandTile, metrics: StackedTileMetrics): BandTile {
+  return {
+    ...tile,
+    viewBoxH: metrics.viewBoxH,
+    rowTopY: metrics.rowTopY,
+    rowBotY: metrics.rowBotY,
+  }
+}
+
+export function stackedBrickStyle(brick: StackedBrick, tile: BandTile): CSSProperties | null {
+  const clip = emissionClipInTile(brick.emission, tile)
+  if (!clip) return null
+
+  const gutter = STACKED_GUTTER_W
+  const scale = makeLogScale([tile.lo, tile.hi], [30 + gutter, 650])
+  const x0 = scale(clip.lo)
+  const x1 = scale(Math.max(clip.hi, clip.lo * 1.001))
+  const leftPct = (x0 / VB_W) * 100
+  const widthPct = Math.max(((x1 - x0) / VB_W) * 100, 0.6)
+  const topPct = (brick.y / tile.viewBoxH) * 100
+  const heightPct = (brick.height / tile.viewBoxH) * 100
+
+  const colour =
+    brick.side === 'red' ? 'rgba(248,113,113,0.6)' : 'rgba(74,158,255,0.6)'
+  const border =
+    brick.emission.recommended || isRecommendedKind(brick.emission.kind)
+      ? '1px dashed rgba(250,204,21,0.9)'
+      : '1px solid rgba(255,255,255,0.25)'
+
+  return {
+    position: 'absolute',
+    left: `${leftPct}%`,
+    width: `${widthPct}%`,
+    top: `${topPct}%`,
+    height: `${heightPct}%`,
+    background: colour,
+    border,
+    borderRadius: 2,
+    pointerEvents: 'none',
+    zIndex: 4,
+    boxSizing: 'border-box',
+  }
+}
+
 export { VB_W as LAYDOWN_TILE_VB_W }

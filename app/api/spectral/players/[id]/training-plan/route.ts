@@ -8,6 +8,7 @@ import {
   validateDsPlayer,
 } from '@/lib/moat/moatStore';
 import { curriculumEngine } from '@/lib/moat/curriculumEngine';
+import { authorizeDsRoute } from '@/lib/moat/ds-route-auth';
 
 export async function GET(
   req: NextRequest,
@@ -28,6 +29,9 @@ export async function GET(
     if (!isDs) {
       return NextResponse.json({ error: 'DS role required' }, { status: 403 });
     }
+
+    const authErr = await authorizeDsRoute(supabase, auth.user!.id, dsPlayerId, params.id);
+    if (authErr) return authErr;
 
     const plan = await getActiveTrainingPlan(supabase, params.id);
     return NextResponse.json({ player_id: params.id, plan });
@@ -56,6 +60,9 @@ export async function POST(
     if (!isDs) {
       return NextResponse.json({ error: 'DS role required' }, { status: 403 });
     }
+
+    const authErr = await authorizeDsRoute(supabase, auth.user!.id, dsPlayerId, params.id);
+    if (authErr) return authErr;
 
     const { data: player } = await supabase
       .from('spectral_players')

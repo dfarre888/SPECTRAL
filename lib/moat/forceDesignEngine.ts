@@ -94,6 +94,14 @@ export class ForceDesignEngine {
    * Aggregates run outcomes into a procurement-grade finding set.
    * Pure aggregation and presentation — no lethality computation.
    */
+  analyseFromParallelResult(
+    question: ForceDesignQuestion,
+    outcomes: RunOutcome[],
+    now: string,
+  ): ForceDesignReport {
+    return this.analyse(question, outcomes, now);
+  }
+
   analyse(
     question: ForceDesignQuestion,
     outcomes: RunOutcome[],

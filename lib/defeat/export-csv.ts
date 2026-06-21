@@ -1,4 +1,5 @@
 import { resolveCellValue, cellValueToDisplay } from '@/lib/defeat/cell-value'
+import { resolveSamKineticPct } from '@/lib/defeat/resolve-sam-pk'
 import type { DefeatTypeFilter } from '@/lib/defeat/defeat-types'
 import type {
   AntiDroneSystem,
@@ -32,7 +33,8 @@ export function exportMatrixCsv(
   const rows = platforms.map((platform) => {
     const cells = systems.map((system) => {
       const row = findEffectiveness(effectiveness, platform.id, system.id)
-      const value = resolveCellValue(platform, system, row, defeatTypeFilter)
+      const computedSamPk = resolveSamKineticPct(system.id, platform.id, row?.kinetic_pct ?? null)
+      const value = resolveCellValue(platform, system, row, defeatTypeFilter, null, computedSamPk)
       return cellValueToDisplay(value)
     })
     return [

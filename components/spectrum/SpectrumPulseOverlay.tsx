@@ -17,6 +17,7 @@ export interface SpectrumPulseOverlayProps {
   emissions: LaydownEmission[]
   showPulse?: boolean
   prominent?: boolean
+  stacked?: boolean
 }
 
 function platformEmissionHighlights(
@@ -78,6 +79,7 @@ export function SpectrumPulseOverlay({
   emissions,
   showPulse = true,
   prominent = false,
+  stacked = false,
 }: SpectrumPulseOverlayProps) {
   const inTile = emissionsForTile(tile, emissions)
   const zones = useMemo(
@@ -100,7 +102,7 @@ export function SpectrumPulseOverlay({
           title={zone.kind === 'overlap' ? 'Band overlap — threat covered by blue' : 'Spectrum gap — threat not covered'}
         />
       ))}
-      {platformEmissionHighlights(tile, emissions, prominent)}
+      {!stacked && platformEmissionHighlights(tile, emissions, prominent)}
       {showPulse && (
         <>
           <div

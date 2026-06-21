@@ -26,6 +26,7 @@ interface MatrixCellProps {
   defeatTypeFilter: DefeatTypeFilter
   onSelect: (platformId: string, systemId: string) => void
   accreditedPkMap?: Record<string, AccreditedDefeatPkRow>
+  computedSamPkMap?: Record<string, number>
 }
 
 export function MatrixCell({
@@ -35,10 +36,12 @@ export function MatrixCell({
   defeatTypeFilter,
   onSelect,
   accreditedPkMap,
+  computedSamPkMap,
 }: MatrixCellProps) {
   const session = readLaydownSession()
   const laydownPair = findSessionPair(session, platform.id, system.id)
-  const value = resolveCellValue(platform, system, row, defeatTypeFilter, laydownPair)
+  const computedSamPk = computedSamPkMap?.[`${platform.id}:${system.id}`]
+  const value = resolveCellValue(platform, system, row, defeatTypeFilter, laydownPair, computedSamPk)
   const accKey = `${platform.id}:${system.id}`
   const accRow = accreditedPkMap?.[accKey]
 

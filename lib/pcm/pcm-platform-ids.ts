@@ -13,6 +13,8 @@ export const TYPE_TO_PLATFORM_ID: Record<string, string> = {
   'Bayraktar TB2': 'bayraktar-tb2',
   'Coyote Block 2': 'coyote-block-2',
   FPV_fibre_optic: 'fpv-fibre-optic',
+  'Wild Hornet': 'wild-hornet',
+  'wild-hornet': 'wild-hornet',
   'Magura V5': 'magura-v5',
   'GJ-11': 'gj-11-sharp-sword',
   'Kargu-2': 'kargu-2',

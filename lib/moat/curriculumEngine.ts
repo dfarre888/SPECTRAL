@@ -162,6 +162,7 @@ export interface TrainingAssignment {
     emphasise_conditions: string[];
     recommended_injects: string[];
     difficulty_note: string;
+    scenario_id?: string;
   };
 }
 
@@ -188,7 +189,7 @@ export class CurriculumEngine {
    * measurable training plan. This is the closed loop: weakness in → targeted
    * training out.
    */
-  generateTrainingPlan(record: LongitudinalCompetencyRecord, now: string): TrainingPlan {
+  generateTrainingPlan(record: LongitudinalCompetencyRecord, now: string, options?: { scenario_id?: string }): TrainingPlan {
     const activeBlindSpots = record.blind_spots
       .filter(b => b.status === 'active' || b.status === 'improving')
       .sort((a, b) => this.severityRank(b.severity) - this.severityRank(a.severity));
@@ -211,6 +212,7 @@ export class CurriculumEngine {
             : module.trains_under,
           recommended_injects: module.recommended_injects,
           difficulty_note: this.difficultyNote(bs, record),
+          ...(options?.scenario_id ? { scenario_id: options.scenario_id } : {}),
         },
       });
 

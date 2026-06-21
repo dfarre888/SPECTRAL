@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { buildComputedSamPkMap, SAM_MATRIX_PLATFORMS, isSamSystemId } from '@/lib/defeat/sam-matrix-bridge'
 import type { AccreditedDefeatPkRow, DefeatMatrixPayload } from '@/lib/types'
 import { fetchAllAccreditedDefeatPk } from '@/lib/operations/accredited-supplements'
 
@@ -34,6 +35,13 @@ export async function getDefeatMatrixData(): Promise<DefeatMatrixPayload> {
     }
   }
 
+  // Scope to SAM_MATRIX_PLATFORMS × SAM system IDs only — avoids O(all × all) wasted loops
+  const samPlatformIds = platforms
+    .map((p) => p.id)
+    .filter((id) => (SAM_MATRIX_PLATFORMS as readonly string[]).includes(id))
+  const samSystemIds = systems.map((s) => s.id).filter(isSamSystemId)
+  const computedSamPkMap = buildComputedSamPkMap(samPlatformIds, samSystemIds)
+
   return {
     systems,
     effectiveness: (effectivenessRes.data ?? []).map((row) => ({
@@ -47,5 +55,6 @@ export async function getDefeatMatrixData(): Promise<DefeatMatrixPayload> {
     })),
     platforms,
     accreditedPkMap,
+    computedSamPkMap,
   }
 }

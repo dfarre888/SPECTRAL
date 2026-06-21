@@ -4,6 +4,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { resolveCellValue, type CellValue } from '@/lib/defeat/cell-value';
+import { resolveSamKineticPct } from '@/lib/defeat/resolve-sam-pk';
 import type { DefeatTypeFilter } from '@/lib/defeat/defeat-types';
 import { isOperationsEdition } from '@/lib/operations/edition';
 import { fetchAllAccreditedDefeatPk, mergeAccreditedOverOsint } from '@/lib/operations/accredited-supplements';
@@ -439,6 +440,11 @@ export class DefeatMatrixCache {
     const system = this.systems.get(systemId);
     const row = this.effectiveness.get(effKey);
 
+    // Resolve SAM Pk through unified model so PCM engine matches the heatmap/CSV
+    const computedSamPk = platformId
+      ? resolveSamKineticPct(systemId, platformId, row?.kinetic_pct ?? null)
+      : null;
+
     const cell = resolveCellValue(
       platform ?? ({
         id: platformId ?? threat.id,
@@ -458,6 +464,8 @@ export class DefeatMatrixCache {
       } as AntiDroneSystem),
       row,
       defeatType,
+      undefined,
+      computedSamPk,
     );
 
     const result = cellToLookup(cell, row?.swarm_engagement_pct ?? null, defeatType);

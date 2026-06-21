@@ -1,8 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import type { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies'
+import { isDemoMode } from '@/lib/demo'
 
-const isDemoMode = () => process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
 const isOperationsEdition = () => process.env.SPECTRAL_EDITION === 'operations'
 
 export async function middleware(request: NextRequest) {

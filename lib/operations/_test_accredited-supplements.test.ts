@@ -25,7 +25,7 @@ describe('accredited training supplements', () => {
   })
 
   it('offline defeat Pk covers shahed and fibre FPV pairs', () => {
-    expect(OFFLINE_ACCREDITED_DEFEAT_PK.length).toBe(7)
+    expect(OFFLINE_ACCREDITED_DEFEAT_PK.length).toBe(8)
     const fpvImmune = OFFLINE_ACCREDITED_DEFEAT_PK.find(
       (r) => r.platform_id === 'fpv-fibre-optic' && r.defeat_system_id === 'edge-horizon',
     )

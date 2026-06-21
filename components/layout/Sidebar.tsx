@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import {
   Database, Radio, Satellite, Shield, Globe,
   Swords, GitCompare, LayoutDashboard, ChevronRight, Map, FileUp,
-  Activity, Coins,
+  Activity, Coins, Crosshair, Target,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
@@ -18,8 +18,10 @@ const BASE_NAV = [
   { href: '/defeat',    icon: Shield,           label: 'Defeat Matrix',    sub: 'Countermeasures' },
   { href: '/conflict',  icon: Activity,         label: 'Conflict Incidents', sub: 'Timeline & map' },
   { href: '/conflicts', icon: Globe,            label: 'Conflict Intel',   sub: 'Case studies' },
-  { href: '/arena',     icon: Swords,           label: 'Red/Blue Arena',   sub: 'Scenario engine' },
+  { href: '/pcm',       icon: Crosshair,        label: 'PCM Training',     sub: 'Adaptive wargaming' },
+  { href: '/arena',     icon: Swords,           label: 'Red/Blue Arena',   sub: 'WOPR scenario engine' },
   { href: '/compare',   icon: GitCompare,       label: '1v1 Overlay',      sub: 'Head-to-head' },
+  { href: '/overlay',   icon: Target,           label: 'SAM Engagement',   sub: '1v1 intercept' },
 ] as const
 
 const OPERATIONS_NAV = {

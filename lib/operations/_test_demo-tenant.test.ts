@@ -4,6 +4,7 @@ import {
   DEFAULT_DEMO_TENANT_ID,
   getDemoAdminUserId,
   getDemoTenantId,
+  isDemoMode,
   isDemoOperationsContext,
 } from '@/lib/demo'
 
@@ -36,5 +37,13 @@ describe('demo operations tenant helpers', () => {
     vi.stubEnv('SPECTRAL_TENANT_ID', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')
     expect(getDemoAdminUserId()).toBe('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')
     expect(getDemoTenantId()).toBe('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')
+  })
+
+  it('isDemoMode is false in production even when demo flag is set', () => {
+    vi.stubEnv('NEXT_PUBLIC_DEMO_MODE', 'true')
+    vi.stubEnv('NODE_ENV', 'production')
+    expect(isDemoMode()).toBe(false)
+    vi.stubEnv('NODE_ENV', 'development')
+    expect(isDemoMode()).toBe(true)
   })
 })

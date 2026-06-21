@@ -6,6 +6,7 @@ import { CompareButton } from '@/components/platforms/CompareButton'
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { CountermeasuresPanel } from '@/components/platforms/CountermeasuresPanel'
 import { PlatformSpecSheet } from '@/components/platforms/PlatformSpecSheet'
+import { SamDefeatPanel } from '@/components/platforms/SamDefeatPanel'
 import { CATEGORY_LABELS } from '@/lib/platforms/constants'
 import { countryFlag } from '@/lib/platforms/flags'
 import {
@@ -59,6 +60,8 @@ export default async function PlatformDetailPage({ params }: PlatformDetailPageP
         <PlatformSpecSheet platform={platform} />
         <CountermeasuresPanel countermeasures={countermeasures} />
       </div>
+
+      <SamDefeatPanel platformId={platform.id} />
     </div>
   )
 }

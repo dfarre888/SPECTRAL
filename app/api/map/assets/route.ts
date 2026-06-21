@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
 import { getMapAssets } from '@/lib/map/queries'
+import { requireSpectralAuth } from '@/lib/pcm/require-auth'
 
 export async function GET() {
+  const auth = await requireSpectralAuth()
+  if (auth.response) return auth.response
+
   try {
     const data = await getMapAssets()
     return NextResponse.json({ data })

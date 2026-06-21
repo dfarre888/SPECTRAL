@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireSpectralAuth } from '@/lib/pcm/require-auth';
 import { createServiceRoleNodeClient } from '@/lib/supabase/service-role-node';
 import { saveForceDesignReport, validateDsPlayer } from '@/lib/moat/moatStore';
+import { authorizeDsRoute } from '@/lib/moat/ds-route-auth';
 import {
   forceDesignEngine,
   type ForceDesignQuestion,
@@ -30,6 +31,9 @@ export async function POST(req: NextRequest) {
     if (!isDs) {
       return NextResponse.json({ error: 'DS role required' }, { status: 403 });
     }
+
+    const authErr = await authorizeDsRoute(supabase, auth.user!.id, dsPlayerId);
+    if (authErr) return authErr;
 
     const now = new Date().toISOString();
     const report = forceDesignEngine.analyse(question, outcomes, now);

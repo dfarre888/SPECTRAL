@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSpectralAuth } from '@/lib/pcm/require-auth';
 import { createServiceRoleNodeClient } from '@/lib/supabase/service-role-node';
+import { authorizeDsRoute } from '@/lib/moat/ds-route-auth';
 import {
   listCurrencyUpdates,
   upsertCurrencyUpdate,
@@ -25,6 +26,9 @@ export async function GET(req: NextRequest) {
     if (!isDs) {
       return NextResponse.json({ error: 'DS role required' }, { status: 403 });
     }
+
+    const authErr = await authorizeDsRoute(supabase, auth.user!.id, dsPlayerId);
+    if (authErr) return authErr;
 
     const updates = await listCurrencyUpdates(supabase, status);
     const report = currencyEngine.currencyReport(updates);
@@ -51,6 +55,9 @@ export async function POST(req: NextRequest) {
     if (!isDs) {
       return NextResponse.json({ error: 'DS role required' }, { status: 403 });
     }
+
+    const authErr = await authorizeDsRoute(supabase, auth.user!.id, dsPlayerId);
+    if (authErr) return authErr;
 
     const proposed = currencyEngine.proposeUpdate({
       type: body.type,
@@ -92,6 +99,9 @@ export async function PATCH(req: NextRequest) {
     if (!isDs) {
       return NextResponse.json({ error: 'DS role required' }, { status: 403 });
     }
+
+    const authErr = await authorizeDsRoute(supabase, auth.user!.id, dsPlayerId);
+    if (authErr) return authErr;
 
     const updates = await listCurrencyUpdates(supabase);
     const existing = updates.find((u) => u.id === updateId);

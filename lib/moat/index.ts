@@ -32,8 +32,11 @@ export {
   assertResidency,
   DEFAULT_SOVEREIGN_POLICY,
   SOVEREIGN_PLATFORM_CATALOGUE,
+  IADS_THREAT_CATALOGUE,
+  getIadsThreat,
   openBuildPerformanceResolver,
   tag,
+  type IadsThreatEntry,
   type SovereignPlatform,
   type DataResidencyPolicy,
 } from '@/lib/moat/sovereignData';
@@ -51,3 +54,10 @@ export {
   getActivePerformanceResolver,
 } from '@/lib/moat/catalogue-performance-resolver';
 export { MockAfsimAdapter } from '@/lib/moat/mock-afsim-adapter';
+
+export {
+  SAM_CATALOGUE_GROUPS,
+  getIadsEntryForSamProfile,
+  getSpectralRoleForSam,
+  type IadsCatalogueGroup,
+} from '@/lib/moat/iads-bridge';

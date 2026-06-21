@@ -13,6 +13,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { resolveCellValue } from '@/lib/defeat/cell-value'
+import { resolveSamKineticPct } from '@/lib/defeat/resolve-sam-pk'
 import { getPrimaryDefeatType } from '@/lib/defeat/defeat-types'
 import type {
   AntiDroneSystem,
@@ -84,7 +85,12 @@ export function AdjudicationPanel({
   if (!platform || !system) return null
 
   const operations = isOperationsEditionClient()
-  const cellValue = resolveCellValue(platform, system, effectiveness ?? undefined)
+  // Resolve kinetic Pk through unified SAM model — same value shown everywhere
+  const resolvedKineticPct = useMemo(
+    () => resolveSamKineticPct(system.id, platform.id, effectiveness?.kinetic_pct ?? null),
+    [system.id, platform.id, effectiveness?.kinetic_pct],
+  )
+  const cellValue = resolveCellValue(platform, system, effectiveness ?? undefined, 'all', null, resolvedKineticPct)
   const primaryType = getPrimaryDefeatType(system)
 
   return (
@@ -151,7 +157,7 @@ export function AdjudicationPanel({
                 />
                 <PctRow
                   label="Kinetic"
-                  pct={effectiveness.kinetic_pct}
+                  pct={resolvedKineticPct}
                   highlight={primaryType === 'Kinetic' || primaryType === 'Net'}
                 />
                 <PctRow

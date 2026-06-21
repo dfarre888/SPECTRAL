@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { resolveCellValue } from '@/lib/defeat/cell-value'
+import { resolveSamKineticPct } from '@/lib/defeat/resolve-sam-pk'
 import { getDefeatCheckData } from '@/lib/map/queries'
 import { adjudicatePcmPair } from '@/lib/pcm/pcm-spectrum-bridge'
 import type { PCM } from '@/lib/pcm/spectral.types'
@@ -30,7 +31,8 @@ export async function GET(request: Request) {
       })
     }
 
-    const cell = resolveCellValue(platform, system, effectiveness ?? undefined)
+    const computedSamPk = resolveSamKineticPct(system.id, platform.id, effectiveness?.kinetic_pct ?? null)
+    const cell = resolveCellValue(platform, system, effectiveness ?? undefined, 'all', null, computedSamPk)
 
     if (cell.kind === 'immune') {
       return NextResponse.json({

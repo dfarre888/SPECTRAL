@@ -60,6 +60,7 @@ export function resolveCellValue(
   row: DefeatEffectiveness | undefined,
   defeatTypeFilter: DefeatTypeFilter = 'all',
   laydownPair?: LaydownSessionPair | null,
+  computedSamPk?: number | null,
 ): CellValue {
   if (row?.is_immune) {
     return { kind: 'immune', reason: row.immune_reason }
@@ -86,10 +87,30 @@ export function resolveCellValue(
     }
   }
 
-  if (!row) return { kind: 'empty' }
 
-  const pct = getPctForSystem(row, system, defeatTypeFilter)
-  if (pct === null) return { kind: 'empty' }
+  const kineticView =
+    defeatTypeFilter === 'Kinetic' ||
+    (defeatTypeFilter === 'all' &&
+      (getPrimaryDefeatType(system) === 'Kinetic' || getPrimaryDefeatType(system) === 'Net'))
+
+  if (!row) {
+    if (kineticView && computedSamPk != null) {
+      return { kind: 'pct', value: computedSamPk, colour: getCellColour(computedSamPk) }
+    }
+    return { kind: 'empty' }
+  }
+
+  let pct = getPctForSystem(row, system, defeatTypeFilter)
+  if (pct === null) {
+    if (kineticView && computedSamPk != null) {
+      return { kind: 'pct', value: computedSamPk, colour: getCellColour(computedSamPk) }
+    }
+    return { kind: 'empty' }
+  }
+
+  if (kineticView && computedSamPk != null) {
+    pct = computedSamPk
+  }
 
   const badge: LaydownPropagationBadge | undefined = laydownPair
     ? {

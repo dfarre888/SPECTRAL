@@ -3,6 +3,7 @@
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';
+import { finaliseExerciseAAR, type AARDocument } from '@/lib/pcm/aar-engine';
 import {
   type AdjudicationCore,
   placeholderAdjudicationCore,
@@ -188,6 +189,14 @@ export function observeTurn(
 function rollingMean(current: number | null, sample: number, n: number): number {
   if (current === null || n <= 1) return sample;
   return Math.round((current * (n - 1) + sample) / n);
+}
+
+export function finaliseExercise(
+  exerciseId: string,
+  turnRecords: PCM.TurnRecord[],
+  finalState: PCM.WorldState,
+): AARDocument {
+  return finaliseExerciseAAR(exerciseId, turnRecords, finalState);
 }
 
 function recordTendency(

@@ -15,7 +15,12 @@ import {
   kindChipLabel,
   emissionBarStyle,
   activeTileIds,
+  computeStackedTileMetrics,
+  applyStackedLayout,
+  stackedBrickStyle,
+  LAYDOWN_TILE_VB_W,
   type LaydownEmission,
+  type StackedTileMetrics,
 } from '@/lib/map/laydown-tiles';
 import { SpectrumPulseOverlay } from './SpectrumPulseOverlay';
 
@@ -103,6 +108,88 @@ function AssetEmissionOverlay({ tile, emissions }: { tile: BandTile; emissions: 
   );
 }
 
+function StackedAssetOverlay({
+  tile,
+  metrics,
+}: {
+  tile: BandTile;
+  metrics: StackedTileMetrics;
+}) {
+  if (metrics.bricks.length === 0) return null;
+  const gutterPct = (metrics.gutterW / LAYDOWN_TILE_VB_W) * 100;
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4 }}>
+      {metrics.bricks.map((brick) => {
+        const style = stackedBrickStyle(brick, tile);
+        if (!style) return null;
+        const topPct = (brick.y / tile.viewBoxH) * 100;
+        const heightPct = (brick.height / tile.viewBoxH) * 100;
+        const label = brick.emission.label;
+        const cap = brick.emission.capabilityLabel;
+
+        return (
+          <React.Fragment key={brick.emission.id}>
+            <div
+              style={{
+                position: 'absolute',
+                left: 0,
+                width: `${gutterPct}%`,
+                top: `${topPct}%`,
+                height: `${heightPct}%`,
+                display: 'flex',
+                alignItems: 'center',
+                paddingLeft: 4,
+                paddingRight: 2,
+                overflow: 'hidden',
+                zIndex: 5,
+              }}
+              title={label}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--sx-mono, monospace)',
+                  fontSize: 8,
+                  letterSpacing: '0.04em',
+                  color: brick.side === 'red' ? 'rgba(248,113,113,0.9)' : 'rgba(74,158,255,0.9)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {label}
+              </span>
+            </div>
+            <div style={style} title={cap ?? label}>
+              {cap && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    left: 4,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    fontFamily: 'var(--sx-mono, monospace)',
+                    fontSize: 7,
+                    letterSpacing: '0.06em',
+                    color: 'rgba(255,255,255,0.85)',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    maxWidth: 'calc(100% - 8px)',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {cap}
+                </span>
+              )}
+            </div>
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
 function Tooltip({ state, expanded }: { state: TooltipState; expanded: boolean }) {
   const MAX_W = expanded ? 320 : 220;
   return (
@@ -152,6 +239,9 @@ export function TileCard({
   showSpectrumPulse = true,
   fillViewport = false,
   spectrumPulseProminent = false,
+  stacked = false,
+  showRed = true,
+  showBlue = true,
 }: {
   tile: BandTile;
   expanded: boolean;
@@ -163,9 +253,29 @@ export function TileCard({
   showSpectrumPulse?: boolean;
   fillViewport?: boolean;
   spectrumPulseProminent?: boolean;
+  stacked?: boolean;
+  showRed?: boolean;
+  showBlue?: boolean;
 }) {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const tileEmissions = emissionsForTile(tile, emissions);
+
+  const stackedMetrics = useMemo(() => {
+    if (!stacked) return null;
+    return computeStackedTileMetrics(tile, emissions, { showRed, showBlue });
+  }, [stacked, tile, emissions, showRed, showBlue]);
+
+  const layoutTile = useMemo(() => {
+    if (stacked && stackedMetrics) return applyStackedLayout(tile, stackedMetrics);
+    return tile;
+  }, [stacked, tile, stackedMetrics]);
+
+  const overlayEmissions = useMemo(() => {
+    if (stacked && stackedMetrics) {
+      return stackedMetrics.bricks.map((b) => b.emission);
+    }
+    return emissions;
+  }, [stacked, stackedMetrics, emissions]);
 
   const handleHover = useCallback(
     (box: AllocationBox, boxRect: DOMRect, tileRect: DOMRect) => {
@@ -186,7 +296,7 @@ export function TileCard({
     if (!expanded && !tooltip) onExpand();
   };
 
-  const aspectPad = `${(tile.viewBoxH / VB_W) * 100}%`;
+  const aspectPad = `${(layoutTile.viewBoxH / VB_W) * 100}%`;
   const chipKinds = Array.from(new Set(tileEmissions.map((e) => e.kind)));
 
   return (
@@ -233,13 +343,18 @@ export function TileCard({
           }}
           draggable={false}
         />
-        <AllocationHitAreas tile={tile} onHover={handleHover} onLeave={() => setTooltip(null)} />
-        {emissions.length > 0 && <AssetEmissionOverlay tile={tile} emissions={emissions} />}
-        {emissions.length > 0 && showSpectrumPulse && (
+        <AllocationHitAreas tile={layoutTile} onHover={handleHover} onLeave={() => setTooltip(null)} />
+        {emissions.length > 0 && stacked && stackedMetrics ? (
+          <StackedAssetOverlay tile={layoutTile} metrics={stackedMetrics} />
+        ) : (
+          emissions.length > 0 && <AssetEmissionOverlay tile={layoutTile} emissions={emissions} />
+        )}
+        {overlayEmissions.length > 0 && showSpectrumPulse && (
           <SpectrumPulseOverlay
-            tile={tile}
-            emissions={emissions}
+            tile={layoutTile}
+            emissions={overlayEmissions}
             showPulse
+            stacked={stacked}
             prominent={
               spectrumPulseProminent || expanded || fullscreenExpand || fillViewport
             }

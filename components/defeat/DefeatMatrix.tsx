@@ -1,7 +1,8 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Download, ShieldCheck, BadgeCheck, Grid3x3 } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { Download, ShieldCheck, BadgeCheck, Grid3x3, Table2, Zap } from 'lucide-react'
 import { EditionBadge } from '@/components/operations/EditionBadge'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import {
@@ -11,21 +12,30 @@ import {
 import { StoreHero } from '@/components/catalog/StoreHero'
 import { AdjudicationPanel } from '@/components/defeat/AdjudicationPanel'
 import { DefeatFilterSidebar } from '@/components/defeat/DefeatFilterSidebar'
+import { DefeatHeatmap } from '@/components/defeat/DefeatHeatmap'
 import { DefeatMatrixTable } from '@/components/defeat/DefeatMatrixTable'
+import { SamInterceptPanel } from '@/components/defeat/SamInterceptPanel'
 import { Button } from '@/components/ui/button'
 import { exportMatrixCsv } from '@/lib/defeat/export-csv'
 import { systemMatchesDefeatType, type DefeatTypeFilter } from '@/lib/defeat/defeat-types'
 import { matchesCategoryPill, type CategoryPill } from '@/lib/platforms/constants'
 import type { DefeatMatrixPayload } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 interface DefeatMatrixProps {
   data: DefeatMatrixPayload
 }
 
+type MatrixView = 'table' | 'heatmap'
+
 export function DefeatMatrix({ data }: DefeatMatrixProps) {
+  const searchParams = useSearchParams()
+  const initialView = searchParams.get('view') === 'heatmap' ? 'heatmap' : 'table'
   const operations = isOperationsEditionClient()
   const [categoryPill, setCategoryPill] = useState<CategoryPill>('all')
   const [defeatType, setDefeatType] = useState<DefeatTypeFilter>('all')
+  const [view, setView] = useState<MatrixView>(initialView)
+  const [showSamCalc, setShowSamCalc] = useState(false)
   const [selectedCell, setSelectedCell] = useState<{
     platformId: string
     systemId: string
@@ -34,12 +44,12 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
   const filteredPlatforms = useMemo(
     () =>
       data.platforms.filter((p) => matchesCategoryPill(p.category, categoryPill)),
-    [data.platforms, categoryPill]
+    [data.platforms, categoryPill],
   )
 
   const filteredSystems = useMemo(
     () => data.systems.filter((s) => systemMatchesDefeatType(s, defeatType)),
-    [data.systems, defeatType]
+    [data.systems, defeatType],
   )
 
   const selectedPlatform = selectedCell
@@ -54,7 +64,7 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
     ? data.effectiveness.find(
         (e) =>
           e.platform_id === selectedCell.platformId &&
-          e.defeat_system_id === selectedCell.systemId
+          e.defeat_system_id === selectedCell.systemId,
       ) ?? null
     : null
 
@@ -63,12 +73,12 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
       filteredPlatforms,
       filteredSystems,
       data.effectiveness,
-      defeatType
+      defeatType,
     )
   }
 
   return (
-    <div className="pb-8">
+    <div className="relative pb-8">
       <StoreHero
         eyebrow="Counter-UAS"
         title={
@@ -124,26 +134,78 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
           title="Effectiveness Matrix"
           meta={`${filteredPlatforms.length} platforms × ${filteredSystems.length} defeat systems`}
           action={
-            <Button variant="outline" size="sm" onClick={handleExport}>
-              <Download className="h-4 w-4" />
-              Export CSV
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex rounded-lg border border-[var(--store-line)] overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setView('table')}
+                  className={cn(
+                    'px-3 py-1.5 text-xs font-mono flex items-center gap-1',
+                    view === 'table' ? 'bg-[#F97316] text-white' : 'store-text-muted',
+                  )}
+                >
+                  <Table2 className="h-3.5 w-3.5" /> Table
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setView('heatmap')}
+                  className={cn(
+                    'px-3 py-1.5 text-xs font-mono flex items-center gap-1',
+                    view === 'heatmap' ? 'bg-[#F97316] text-white' : 'store-text-muted',
+                  )}
+                >
+                  <Grid3x3 className="h-3.5 w-3.5" /> Heat map
+                </button>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowSamCalc((v) => !v)}
+              >
+                <Zap className="h-4 w-4" /> SAM Pk Calc
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleExport}>
+                <Download className="h-4 w-4" /> Export CSV
+              </Button>
+            </div>
           }
         />
 
         <div className="store-panel rounded-2xl overflow-hidden">
-          <DefeatMatrixTable
-            platforms={filteredPlatforms}
-            systems={filteredSystems}
-            effectiveness={data.effectiveness}
-            defeatTypeFilter={defeatType}
-            onCellSelect={(platformId, systemId) =>
-              setSelectedCell({ platformId, systemId })
-            }
-            accreditedPkMap={data.accreditedPkMap}
-          />
+          {view === 'table' ? (
+            <DefeatMatrixTable
+              platforms={filteredPlatforms}
+              systems={filteredSystems}
+              effectiveness={data.effectiveness}
+              defeatTypeFilter={defeatType}
+              onCellSelect={(platformId, systemId) =>
+                setSelectedCell({ platformId, systemId })
+              }
+              accreditedPkMap={data.accreditedPkMap}
+              computedSamPkMap={data.computedSamPkMap}
+            />
+          ) : (
+            <DefeatHeatmap
+              platforms={filteredPlatforms}
+              systems={filteredSystems}
+              effectiveness={data.effectiveness}
+              defeatTypeFilter={defeatType}
+              onCellSelect={(platformId, systemId) =>
+                setSelectedCell({ platformId, systemId })
+              }
+              accreditedPkMap={data.accreditedPkMap}
+              computedSamPkMap={data.computedSamPkMap}
+            />
+          )}
         </div>
       </StoreCatalogLayout>
+
+      {showSamCalc && (
+        <div className="fixed right-4 top-24 z-50">
+          <SamInterceptPanel onClose={() => setShowSamCalc(false)} />
+        </div>
+      )}
 
       <AdjudicationPanel
         open={selectedCell !== null}

@@ -23,27 +23,90 @@ Spectral Training is designed to be ITAR-compliant. This means:
 4. **Seed data is OSINT** — document sources in `description` fields.
 
 ## Authentication & Authorisation
+
 - All routes except `/login` and `/register` are protected by `middleware.ts`
-- Service role key (`SUPABASE_SERVICE_ROLE_KEY`) must NEVER appear in client-side code
-- API key (`ANTHROPIC_API_KEY`) must NEVER appear in client-side code
-- Mapbox and Cesium tokens are `NEXT_PUBLIC_` — these are acceptable to expose (they are domain-restricted)
+- `SUPABASE_SERVICE_ROLE_KEY` must NEVER appear in client-side code
+- AWS Bedrock credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`) are server-only
+- Mapbox and Cesium tokens are `NEXT_PUBLIC_` — acceptable (domain-restricted)
+
+## Supabase Client Tiers — Three Tiers, Never Mix
+
+| Client | File | Key | RLS | When to use |
+|--------|------|-----|-----|-------------|
+| Browser | `lib/supabase/client.ts` | anon | enforced | Client components only |
+| Server | `lib/supabase/server.ts createClient()` | anon + cookies | enforced | Server components, API routes |
+| Service | `lib/supabase/server.ts createServiceClient()` | service role | bypassed | Admin ops only — explicit call |
+| Node | `lib/supabase/service-role-node.ts` | service role | bypassed | PCM WorldStateEngine, scripts |
+
+**NEVER** import `createServiceClient()` from a client component or page.
+**NEVER** import `service-role-node.ts` from anything under `app/` — it is for Node.js scripts and PCM only.
+
+## Demo Mode — Production Safety
+
+`NEXT_PUBLIC_DEMO_MODE=true` bypasses all authentication and auto-elevates the server client
+to service role (bypasses RLS). This is intentional for local development ONLY.
+
+**Critical rules:**
+- `NEXT_PUBLIC_DEMO_MODE` must NEVER be set to `true` in Vercel production or staging environments
+- `isDemoMode()` must NOT be true when `SPECTRAL_EDITION=operations`
+- If you see `isDemoMode()` returning true in a non-local context, treat it as a P0 security incident
 
 ## Environment Variable Rules
-```
-# Server-only (never prefix with NEXT_PUBLIC_)
-SUPABASE_SERVICE_ROLE_KEY
-ANTHROPIC_API_KEY
 
-# Client-safe (domain-restricted tokens only)
+```bash
+# Server-only — never prefix with NEXT_PUBLIC_
+SUPABASE_SERVICE_ROLE_KEY
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+BEDROCK_MODEL_ID
+WINDY_API_KEY
+SPECTRAL_OIDC_CLIENT_SECRET
+
+# Client-safe — domain-restricted tokens only
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 NEXT_PUBLIC_CESIUM_ION_TOKEN
-NEXT_PUBLIC_MAPBOX_TOKEN
+NEXT_PUBLIC_CESIUM_BASE_URL
 NEXT_PUBLIC_APP_URL
+
+# Danger — controls demo bypass and edition
+NEXT_PUBLIC_DEMO_MODE        # must be false/unset in production
+NEXT_PUBLIC_SPECTRAL_EDITION # controls UI edition gates
+SPECTRAL_EDITION             # server-side edition gate (operations | training)
 ```
 
+## DS Route Authorization — Required for All DS-Facing Routes
+
+Any API route accessed by a Directing Staff (DS) player must call `authorizeDsRoute()` before
+processing the request:
+
+```ts
+import { authorizeDsRoute } from '@/lib/moat/ds-route-auth'
+
+export async function GET(req: Request, { params }: { params: { id: string } }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+
+  // DS routes must also check scope — not just auth
+  const authError = await authorizeDsRoute(supabase, user.id, params.dsPlayerId, params.targetPlayerId)
+  if (authError) return authError  // returns 403 if scope fails
+  // ... route logic
+}
+```
+
+Affected routes (must have authorizeDsRoute wired):
+- `/api/spectral/players/[id]/competency`
+- `/api/spectral/players/[id]/training-plan`
+- `/api/spectral/exercises/[id]/debrief`
+- `/api/spectral/aar`
+- `/api/spectral/currency`
+
 ## Classification Banner (Legal Requirement)
-The banner `UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY` must appear on every page. This is a legal / contractual requirement for operating in defence-adjacent markets, not a design choice. Do not remove it, hide it, or make it toggleable.
+
+The banner `UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY` must appear on every page.
+This is a legal / contractual requirement for operating in defence-adjacent markets.
+Do not remove it, hide it, or make it toggleable.
 
 ## Data Entry Validation
 When users add platforms or scenarios:

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_AGL_M, planMissionPath } from '@/lib/map/mission-path-planner'
-import type { MapCuasAsset, MapUasAsset, PlacedCuas } from '@/lib/map/types'
+import type { MapCuasAsset, MapUasAsset, PlacedCuas, PlacedRadar } from '@/lib/map/types'
 
 const uasAsset: MapUasAsset = {
   id: 'shahed-136', name: 'Shahed-136', slug: 'shahed-136', category: 'loitering_munition',
@@ -10,37 +10,118 @@ const uasAsset: MapUasAsset = {
 
 const cuasAsset: MapCuasAsset = {
   id: 'dronegun-tactical', name: 'DroneGun Tactical', categoryLabel: 'RF JAMMING', image_url: null,
-  defeat_range_m: 2000, defeat_range_km: 2, defeat_methods: ['RF_jamming'],
+  defeat_range_m: 1000, defeat_range_km: 1, defeat_methods: ['RF_jamming'],
 }
 
 function placedCuas(lon: number, lat: number): PlacedCuas {
   return { instanceId: 'cuas-1', asset: cuasAsset, lon, lat, terrainAMSL: 10, hasTerrainMasking: false }
 }
 
+function placedRadar(lon: number, lat: number, detectionKm = 120): PlacedRadar {
+  return {
+    instanceId: 'radar-1',
+    asset: {
+      id: 'radar-giraffe-amb',
+      name: 'Giraffe AMB',
+      side: 'blue',
+      role: 'counter_uas',
+      roleLabel: 'Surveillance',
+      image_url: null,
+      detection_range_km: detectionKm,
+      dome_range_km: 40,
+      sector_deg: 360,
+      bandsLabel: 'S-band',
+    },
+    lon,
+    lat,
+    terrainAMSL: 100,
+  }
+}
+
+function shortPdRadar(lon: number, lat: number): PlacedRadar {
+  return {
+    instanceId: 'radar-short',
+    asset: {
+      id: 'test-radar-short',
+      name: 'Short-range test radar',
+      side: 'blue',
+      role: 'counter_uas',
+      roleLabel: 'Surveillance',
+      image_url: null,
+      detection_range_km: 1.2,
+      dome_range_km: 1.2,
+      sector_deg: 360,
+      bandsLabel: 'X-band',
+    },
+    lon,
+    lat,
+    terrainAMSL: 10,
+  }
+}
+
 describe('mission-path-planner', () => {
-  it('path detours around C-UAS sphere', () => {
+  it('pk route detours around C-UAS sphere', () => {
     const startLon = 55.0, startLat = 26.0, goalLon = 55.04, goalLat = 26.0
     const plan = planMissionPath({
       startLon, startLat, startTerrainAMSL: 10, goalLon, goalLat, goalTerrainAMSL: 10,
       goalKind: 'target', asset: uasAsset,
       placedCuas: [placedCuas((startLon + goalLon) / 2, startLat)],
-      placedRadars: [], placedEffectors: [], emcon: false,
+      placedRadars: [], placedEffectors: [], emcon: false, routeObjective: 'pk',
     })
     expect(plan.waypoints.length).toBeGreaterThan(2)
   })
 
-  it('prefers low altitude near radar', () => {
+  it('A* picks a compact flank around C-UAS (not zigzag)', () => {
+    const startLon = 55.0, startLat = 26.0, goalLon = 55.04, goalLat = 26.0
+    const plan = planMissionPath({
+      startLon, startLat, startTerrainAMSL: 10, goalLon, goalLat, goalTerrainAMSL: 10,
+      goalKind: 'target', asset: uasAsset,
+      placedCuas: [placedCuas((startLon + goalLon) / 2, startLat)],
+      placedRadars: [], placedEffectors: [], emcon: false, routeObjective: 'pk',
+    })
+    expect(plan.waypoints.length).toBeLessThanOrEqual(4)
+  })
+
+  it('prefers low altitude near radar on pd route', () => {
     const plan = planMissionPath({
       startLon: 55.0, startLat: 26.0, startTerrainAMSL: 100, goalLon: 55.02, goalLat: 26.0, goalTerrainAMSL: 100,
       goalKind: 'aoi', asset: uasAsset, placedCuas: [], placedEffectors: [], emcon: false,
-      placedRadars: [{
-        instanceId: 'radar-1',
-        asset: { id: 'radar-giraffe-amb', name: 'Giraffe AMB', side: 'blue', role: 'counter_uas', roleLabel: 'Surveillance', image_url: null, detection_range_km: 120, dome_range_km: 40, sector_deg: 360, bandsLabel: 'S-band' },
-        lon: 55.01, lat: 26.0, terrainAMSL: 100,
-      }],
+      placedRadars: [placedRadar(55.01, 26.0)],
+      routeObjective: 'pd',
     })
     const transit = plan.waypoints.filter((wp) => wp.kind === 'start' || wp.kind === 'detour')
     for (const wp of transit) expect(wp.alt_m - wp.terrainAMSL).toBeLessThanOrEqual(DEFAULT_AGL_M + 5)
+  })
+
+  it('EMCON reduces max Pd estimate on pd route', () => {
+    const base = {
+      startLon: 55.0, startLat: 26.0, startTerrainAMSL: 100,
+      goalLon: 55.015, goalLat: 26.0, goalTerrainAMSL: 100,
+      goalKind: 'aoi' as const, asset: uasAsset,
+      placedCuas: [], placedEffectors: [],
+      placedRadars: [placedRadar(55.008, 26.0)],
+      routeObjective: 'pd' as const,
+    }
+    const active = planMissionPath({ ...base, emcon: false })
+    const emcon = planMissionPath({ ...base, emcon: true })
+    expect(emcon.maxPd_pct).toBeLessThan(active.maxPd_pct)
+  })
+
+  it('pd vs pk objectives produce different paths when radar and cuas both present', () => {
+    const startLon = 55.0, startLat = 26.0, goalLon = 55.04, goalLat = 26.0
+    const midLon = (startLon + goalLon) / 2
+    const shared = {
+      startLon, startLat, startTerrainAMSL: 10, goalLon, goalLat, goalTerrainAMSL: 10,
+      goalKind: 'target' as const, asset: uasAsset, emcon: false,
+      placedCuas: [placedCuas(midLon, startLat)],
+      placedRadars: [shortPdRadar(midLon, startLat + 0.008)],
+      placedEffectors: [],
+    }
+    const pdPlan = planMissionPath({ ...shared, routeObjective: 'pd' })
+    const pkPlan = planMissionPath({ ...shared, routeObjective: 'pk' })
+    const pdCoords = pdPlan.waypoints.map((wp) => `${wp.lon.toFixed(5)},${wp.lat.toFixed(5)}`).join('|')
+    const pkCoords = pkPlan.waypoints.map((wp) => `${wp.lon.toFixed(5)},${wp.lat.toFixed(5)}`).join('|')
+    expect(pdCoords).not.toEqual(pkCoords)
   })
 
   it('returns within max_range_km', () => {
@@ -49,5 +130,6 @@ describe('mission-path-planner', () => {
       goalKind: 'target', asset: uasAsset, placedCuas: [], placedRadars: [], placedEffectors: [], emcon: false,
     })
     expect(plan.totalDistance_km).toBeLessThanOrEqual(uasAsset.max_range_km + 0.01)
+    expect(plan.routeObjective).toBe('pd')
   })
 })

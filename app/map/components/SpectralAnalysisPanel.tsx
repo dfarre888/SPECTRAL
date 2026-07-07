@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/sheet'
 import { cuasAssetToSpectrumBlue } from '@/lib/map/spectrum-bridge'
 import type { LaydownSpectralAnalysis, PairLaydownAssessment } from '@/lib/map/laydown-analysis'
+import type { LaydownEvaluation, SelectedLaydownItem } from '@/lib/map/laydown-evaluation'
 import { resolveJamTransmit } from '@/lib/spectrum/erp-resolve'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import type {
@@ -31,6 +32,7 @@ import { LaydownTileModal } from '@/app/map/components/LaydownTileModal'
 import {
   activeTileIds,
   mergeLaydownEmissions,
+  resolveEvaluationDefenderEmissions,
   resolveLaydownEmissions,
   resolveRecommendationEmissions,
 } from '@/lib/map/laydown-tiles'
@@ -55,6 +57,8 @@ interface SpectralAnalysisPanelProps {
   analysis: LaydownSpectralAnalysis
   adjudicationSource: AdjudicationSource
   fallbackReason?: string
+  laydownEvaluation?: LaydownEvaluation | null
+  selectedLaydownItem?: SelectedLaydownItem | null
 }
 
 function pctClass(pct: number): string {
@@ -98,6 +102,8 @@ export function SpectralAnalysisPanel({
   analysis,
   adjudicationSource,
   fallbackReason,
+  laydownEvaluation = null,
+  selectedLaydownItem = null,
 }: SpectralAnalysisPanelProps) {
   const [showRecommendations, setShowRecommendations] = useState(false)
   const [expandedTile, setExpandedTile] = useState<BandTile | null>(null)
@@ -115,9 +121,25 @@ export function SpectralAnalysisPanel({
     [showRecommendations, threatAssessments, catalogCuas],
   )
 
+  const evaluationDefenderEmissions = useMemo(() => {
+    if (
+      !laydownEvaluation ||
+      !selectedLaydownItem ||
+      selectedLaydownItem.kind !== 'uas' ||
+      selectedLaydownItem.instanceId !== laydownEvaluation.subject.instanceId
+    ) {
+      return []
+    }
+    return resolveEvaluationDefenderEmissions(laydownEvaluation, catalogCuas)
+  }, [laydownEvaluation, selectedLaydownItem, catalogCuas])
+
   const displayEmissions = useMemo(
-    () => mergeLaydownEmissions(placedEmissions, recommendationEmissions),
-    [placedEmissions, recommendationEmissions],
+    () =>
+      mergeLaydownEmissions(
+        mergeLaydownEmissions(placedEmissions, recommendationEmissions),
+        evaluationDefenderEmissions,
+      ),
+    [placedEmissions, recommendationEmissions, evaluationDefenderEmissions],
   )
 
   const activeBandCount = useMemo(

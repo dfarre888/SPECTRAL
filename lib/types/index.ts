@@ -8,12 +8,60 @@ export type PlatformCategory =
   | 'interceptor_uas' | 'combat_hexacopter' | 'carrier_uas' | 'tube_launched_lm'
   // C-UAS / effector categories (Blue systems in the defeat layer)
   | 'c_uas_gun' | 'c_uas_laser' | 'c_uas_rf' | 'manpads' | 'c_uas_system'
+  // Missile categories
+  | 'ballistic_missile_srbm'   // Short Range Ballistic Missile (<1,000 km)
+  | 'ballistic_missile_mrbm'   // Medium Range Ballistic Missile (1,000–3,500 km)
+  | 'cruise_missile'           // Land-attack cruise missile (subsonic/transonic/supersonic)
 
 export type DataConfidence = 'high' | 'medium' | 'estimated' | 'classified'
 
 export type GuidanceType =
   | 'INS+GPS' | 'INS+EO' | 'RF_command' | 'fibre_optic'
   | 'autonomous' | 'INS_only' | 'mesh' | 'preprogrammed' | 'unknown'
+  // Extended UAS guidance (prior migrations)
+  | 'FPV+thermal' | 'INS+GPS+GLONASS' | 'AI+GPS+BeiDou' | 'AI+EO+GPS'
+  | 'passive_RF+INS+GPS' | 'EO+INS+GPS' | 'GPS+NavIC' | 'visual_nav+INS' | 'EO+man-in-loop'
+  // Missile-specific guidance types
+  | 'INS+GPS+TERCOM'   // Cruise: inertial + GPS + terrain contour matching
+  | 'INS+MaRV+GPS'     // Maneuvering reentry vehicle with GPS terminal corrections
+  | 'INS+MaRV+EO'      // MaRV with electro-optical terminal seeker
+  | 'INS+boost_glide'  // Hypersonic boost-glide: INS + aerodynamic glide body
+  | 'INS_only_liquid'  // Legacy liquid-fuel ballistic: pure inertial (CEP 1,000–3,000 m)
+  | 'INS+GPS+MaRV+EO'  // Advanced: combined INS + GPS + maneuvering RV + EO seeker
+  // Allied LACM guidance (20260624130000)
+  | 'INS+GPS+TERCOM+IIR'   // TERCOM mid-course + EO scene-match terminal
+  | 'INS+GPS+IIR+ATA'      // IIR autonomous target acquisition (JASSM-ER)
+  | 'INS+GPS+IIR+RF_seeker' // Passive IIR + AESA radar terminal (LRASM)
+  | 'passive_IIR+INS+GPS'  // Passive IIR terminal only (NSM, JSM)
+  | 'INS+GPS+active_radar' // Active radar terminal seeker (BrahMos)
+  | 'INS+GPS+IIR'          // IIR terminal without TERCOM (Delilah)
+
+
+// ─── Guidance mode constants (migration-sourced) ───────────────────────────────
+
+/** Iranian missile guidance modes — migration 20260624120000 */
+export const IRANIAN_GUIDANCE_MODES = {
+  INS_GPS_TERCOM: 'INS+GPS+TERCOM',
+  INS_MARV_GPS: 'INS+MaRV+GPS',
+  INS_MARV_EO: 'INS+MaRV+EO',
+  INS_BOOST_GLIDE: 'INS+boost_glide',
+  INS_ONLY_LIQUID: 'INS_only_liquid',
+  INS_GPS_MARV_EO: 'INS+GPS+MaRV+EO',
+} as const
+
+export type IranianGuidanceMode = typeof IRANIAN_GUIDANCE_MODES[keyof typeof IRANIAN_GUIDANCE_MODES]
+
+/** Allied LACM guidance modes — migration 20260624130000 */
+export const ALLIED_LACM_GUIDANCE_MODES = {
+  INS_GPS_TERCOM_IIR: 'INS+GPS+TERCOM+IIR',
+  INS_GPS_IIR_ATA: 'INS+GPS+IIR+ATA',
+  INS_GPS_IIR_RF_SEEKER: 'INS+GPS+IIR+RF_seeker',
+  PASSIVE_IIR_INS_GPS: 'passive_IIR+INS+GPS',
+  INS_GPS_ACTIVE_RADAR: 'INS+GPS+active_radar',
+  INS_GPS_IIR: 'INS+GPS+IIR',
+} as const
+
+export type AlliedLacmGuidanceMode = typeof ALLIED_LACM_GUIDANCE_MODES[keyof typeof ALLIED_LACM_GUIDANCE_MODES]
 
 export type NatoConfidence = 'Confirmed' | 'Assessed' | 'Estimated' | 'Reported'
 

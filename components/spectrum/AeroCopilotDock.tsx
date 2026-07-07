@@ -129,7 +129,7 @@ export function AeroCopilotDock({ platforms, radars, effectors = [], onAction }:
             >
               {turns.length === 0 && (
                 <div className="sx-dim" style={{ fontSize: 12.5, lineHeight: 1.6 }}>
-                  I'm <b style={{ color: 'var(--sx-ink)' }}>AeroCopilot</b> — I reason over every platform, radar, and band in the system. Ask me to place defences on the map, find which drones survive a threat picture, run a what-if engagement, or explain any radar. I'll take you to the right screen and highlight what to pick.
+                  I&apos;m <b style={{ color: 'var(--sx-ink)' }}>AeroCopilot</b> — I reason over every platform, radar, and band in the system. Ask me to place defences on the map, find which drones survive a threat picture, run a what-if engagement, or explain any radar. I&apos;ll take you to the right screen and highlight what to pick.
                 </div>
               )}
               {turns.map((t, i) => (

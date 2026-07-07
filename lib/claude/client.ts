@@ -1,6 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk'
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+import { callBedrock } from '@/lib/claude/bedrock'
 
 export interface SpectralQuery {
   question: string
@@ -23,18 +21,12 @@ Format responses with clear structure. Use metric units. Reference sources where
     .map(([k, v]) => `## ${k}\n${JSON.stringify(v, null, 2)}`)
     .join('\n\n')
 
-  const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 2048,
+  return callBedrock({
     system: systemPrompt,
-    messages: [{
-      role: 'user',
-      content: contextStr
-        ? `Context data:\n${contextStr}\n\nQuestion: ${question}`
-        : question,
-    }],
+    userContent: contextStr
+      ? `Context data:\n${contextStr}\n\nQuestion: ${question}`
+      : question,
+    maxTokens: 2048,
+    temperature: 0.3,
   })
-
-  const block = message.content[0]
-  return block.type === 'text' ? block.text : ''
 }

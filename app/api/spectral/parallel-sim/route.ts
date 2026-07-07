@@ -4,6 +4,8 @@ import { assertResidency } from '@/lib/moat/sovereignData';
 import type { ForceDesignQuestion } from '@/lib/moat/forceDesignEngine';
 import { parallelSimOrchestrator } from '@/lib/pcm/parallel-sim-orchestrator';
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   assertResidency('ap-southeast-2');
   const supabase = await createClient();

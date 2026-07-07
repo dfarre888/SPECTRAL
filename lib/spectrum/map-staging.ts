@@ -34,3 +34,13 @@ export function clearMapStaging(): void {
   if (typeof window === 'undefined') return
   sessionStorage.removeItem(MAP_STAGING_KEY)
 }
+
+/** SPECTRA engagement overlays use 'eff-' prefix; Map Intel expects bare anti_drone_systems.id values. */
+export function resolveMapStagingId(id: string): string {
+  return id.startsWith('eff-') ? id.slice(4) : id
+}
+
+export function resolveMapStagingIds(ids: string[]): string[] {
+  return ids.map(resolveMapStagingId)
+}
+

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { worldStateEngine } from '@/lib/pcm/worldStateEngine';
 import { requireSpectralAuth } from '@/lib/pcm/require-auth';
+import { writeAuditLog } from '@/lib/operations/audit';
+import { getDemoTenantId } from '@/lib/demo';
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(
   req: NextRequest,
@@ -21,6 +25,15 @@ export async function POST(
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 403 });
     }
+
+    void writeAuditLog({
+      tenantId: getDemoTenantId(),
+      userId: auth.user!.id,
+      action: 'pcm.exercise.start',
+      resourceType: 'exercise',
+      resourceId: params.id,
+      classification: 'UNCLASSIFIED',
+    });
 
     return NextResponse.json({ success: true, exercise_id: params.id });
   } catch (err) {

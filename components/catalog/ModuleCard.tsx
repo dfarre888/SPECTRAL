@@ -4,13 +4,16 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
+  Crosshair,
   Database,
   GitCompare,
   Globe,
+  Map,
   Radio,
   Satellite,
   Shield,
   Swords,
+  Target,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -23,6 +26,9 @@ const MODULE_ICONS = {
   globe: Globe,
   swords: Swords,
   'git-compare': GitCompare,
+  map: Map,
+  crosshair: Crosshair,
+  target: Target,
 } as const satisfies Record<string, LucideIcon>
 
 export type ModuleIconName = keyof typeof MODULE_ICONS

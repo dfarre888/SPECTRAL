@@ -197,27 +197,27 @@ export class CurriculumEngine {
     const assignments: TrainingAssignment[] = [];
 
     for (const bs of activeBlindSpots) {
-      const module = this.selectModule(bs);
-      if (!module) continue;
+      const trainingModule = this.selectModule(bs);
+      if (!trainingModule) continue;
 
       assignments.push({
         priority: this.priorityFromSeverity(bs.severity),
         blind_spot_id: bs.id,
         competency: bs.competency,
-        module,
+        module: trainingModule,
         rationale: this.buildRationale(bs, record),
         next_exercise_config: {
           emphasise_conditions: bs.trigger_conditions.length
             ? bs.trigger_conditions
-            : module.trains_under,
-          recommended_injects: module.recommended_injects,
+            : trainingModule.trains_under,
+          recommended_injects: trainingModule.recommended_injects,
           difficulty_note: this.difficultyNote(bs, record),
           ...(options?.scenario_id ? { scenario_id: options.scenario_id } : {}),
         },
       });
 
       // Mark the module as assigned on the blind spot (caller persists this)
-      bs.curriculum_module_assigned = module.id;
+      bs.curriculum_module_assigned = trainingModule.id;
     }
 
     return {

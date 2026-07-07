@@ -79,7 +79,7 @@ export function LaydownTileModal({ tile, emissions, onClose }: LaydownTileModalP
                 textTransform: 'uppercase',
               }}
             >
-              Red
+              {showRed ? 'Hide red (threat)' : 'Show red (threat)'}
             </button>
             <button
               type="button"
@@ -99,7 +99,7 @@ export function LaydownTileModal({ tile, emissions, onClose }: LaydownTileModalP
                 textTransform: 'uppercase',
               }}
             >
-              Blue
+              {showBlue ? 'Hide blue (defence)' : 'Show blue (defence)'}
             </button>
           </div>
           <button

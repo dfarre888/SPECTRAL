@@ -9,6 +9,8 @@ import {
   type RunOutcome,
 } from '@/lib/moat/forceDesignEngine';
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   const auth = await requireSpectralAuth();
   if (auth.response) return auth.response;

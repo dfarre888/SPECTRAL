@@ -5,7 +5,15 @@ import { analyzeLaydown } from '@/lib/map/laydown-analysis'
 import { planMissionPath } from '@/lib/map/mission-path-planner'
 import { sampleTerrainAMSL } from '@/lib/map/terrain'
 import type { CesiumContext } from '@/app/map/hooks/usePlatformPlacement'
-import type { OverlapVolume, PlacedCuas, PlacedEffector, PlacedRadar, PlacedUas, PlacementMode } from '@/lib/map/types'
+import type {
+  MissionRouteObjective,
+  OverlapVolume,
+  PlacedCuas,
+  PlacedEffector,
+  PlacedRadar,
+  PlacedUas,
+  PlacementMode,
+} from '@/lib/map/types'
 
 export function useMissionPlanning(
   placementMode: PlacementMode,
@@ -21,7 +29,14 @@ export function useMissionPlanning(
   const replanTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const buildMissionForUas = useCallback(
-    async (uas: PlacedUas, goalKind: 'target' | 'aoi', goalLon: number, goalLat: number, emcon: boolean, manualOverride: boolean) => {
+    async (
+      uas: PlacedUas,
+      goalKind: 'target' | 'aoi',
+      goalLon: number,
+      goalLat: number,
+      emcon: boolean,
+      routeObjective: MissionRouteObjective,
+    ) => {
       const ctx = getCesium()
       if (!ctx) return null
       const goalTerrainAMSL = await sampleTerrainAMSL(ctx.Cesium, ctx.terrainProvider, goalLon, goalLat, ctx.viewer)
@@ -57,6 +72,7 @@ export function useMissionPlanning(
         placedRadars,
         placedEffectors,
         emcon,
+        routeObjective,
         overlapVolumes: overlapForPlanner,
       })
     },
@@ -71,7 +87,7 @@ export function useMissionPlanning(
     if (!placementMode.active || placementMode.kind !== 'mission-goal') return
     const uas = placedUas.find((u) => u.instanceId === placementMode.uasInstanceId)
     if (!uas) return
-    const mission = await buildMissionForUas(uas, placementMode.goalKind, lon, lat, false, false)
+    const mission = await buildMissionForUas(uas, placementMode.goalKind, lon, lat, false, 'pd')
     if (!mission) return
     setPlacedUas((prev) => prev.map((u) => (u.instanceId === uas.instanceId ? { ...u, mission, infoPanelClosed: true } : u)))
     setPlacementMode({ active: false })
@@ -80,7 +96,14 @@ export function useMissionPlanning(
   const replanMission = useCallback(async (uasInstanceId: string) => {
     const uas = placedUas.find((u) => u.instanceId === uasInstanceId)
     if (!uas?.mission || uas.mission.manualOverride) return
-    const mission = await buildMissionForUas(uas, uas.mission.goalKind, uas.mission.goalLon, uas.mission.goalLat, uas.mission.emcon, false)
+    const mission = await buildMissionForUas(
+      uas,
+      uas.mission.goalKind,
+      uas.mission.goalLon,
+      uas.mission.goalLat,
+      uas.mission.emcon,
+      uas.mission.routeObjective ?? 'pd',
+    )
     if (!mission) return
     setPlacedUas((prev) => prev.map((u) => (u.instanceId === uasInstanceId ? { ...u, mission: { ...mission, manualOverride: false } } : u)))
   }, [placedUas, buildMissionForUas, setPlacedUas])
@@ -93,9 +116,53 @@ export function useMissionPlanning(
     }))
   }, [setPlacedUas])
 
-  const setEmcon = useCallback((uasInstanceId: string, emcon: boolean) => {
-    setPlacedUas((prev) => prev.map((u) => (u.instanceId === uasInstanceId && u.mission ? { ...u, mission: { ...u.mission, emcon } } : u)))
-  }, [setPlacedUas])
+  const setEmcon = useCallback(async (uasInstanceId: string, emcon: boolean) => {
+    const uas = placedUas.find((u) => u.instanceId === uasInstanceId)
+    if (!uas?.mission) return
+    if (uas.mission.manualOverride) {
+      setPlacedUas((prev) =>
+        prev.map((u) => (u.instanceId === uasInstanceId && u.mission ? { ...u, mission: { ...u.mission, emcon } } : u)),
+      )
+      return
+    }
+    const mission = await buildMissionForUas(
+      uas,
+      uas.mission.goalKind,
+      uas.mission.goalLon,
+      uas.mission.goalLat,
+      emcon,
+      uas.mission.routeObjective ?? 'pd',
+    )
+    if (!mission) return
+    setPlacedUas((prev) =>
+      prev.map((u) => (u.instanceId === uasInstanceId ? { ...u, mission: { ...mission, manualOverride: false } } : u)),
+    )
+  }, [placedUas, buildMissionForUas, setPlacedUas])
+
+  const setRouteObjective = useCallback(async (uasInstanceId: string, routeObjective: MissionRouteObjective) => {
+    const uas = placedUas.find((u) => u.instanceId === uasInstanceId)
+    if (!uas?.mission) return
+    if (uas.mission.manualOverride) {
+      setPlacedUas((prev) =>
+        prev.map((u) =>
+          u.instanceId === uasInstanceId && u.mission ? { ...u, mission: { ...u.mission, routeObjective } } : u,
+        ),
+      )
+      return
+    }
+    const mission = await buildMissionForUas(
+      uas,
+      uas.mission.goalKind,
+      uas.mission.goalLon,
+      uas.mission.goalLat,
+      uas.mission.emcon,
+      routeObjective,
+    )
+    if (!mission) return
+    setPlacedUas((prev) =>
+      prev.map((u) => (u.instanceId === uasInstanceId ? { ...u, mission: { ...mission, manualOverride: false } } : u)),
+    )
+  }, [placedUas, buildMissionForUas, setPlacedUas])
 
   const setManualOverride = useCallback((uasInstanceId: string, manualOverride: boolean) => {
     setPlacedUas((prev) => prev.map((u) => (u.instanceId === uasInstanceId && u.mission ? { ...u, mission: { ...u.mission, manualOverride } } : u)))
@@ -128,7 +195,7 @@ export function useMissionPlanning(
             u.mission.goalLon,
             u.mission.goalLat,
             u.mission.emcon,
-            false,
+            u.mission.routeObjective ?? 'pd',
           )
           if (!mission) continue
           setPlacedUas((prev) =>
@@ -144,5 +211,14 @@ export function useMissionPlanning(
     }
   }, [laydownKey, setPlacedUas])
 
-  return { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEmcon, setManualOverride, clearMission }
+  return {
+    startMissionGoal,
+    placeMissionGoal,
+    replanMission,
+    updateWaypoint,
+    setEmcon,
+    setRouteObjective,
+    setManualOverride,
+    clearMission,
+  }
 }

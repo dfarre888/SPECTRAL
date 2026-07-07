@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { worldStateEngine } from '@/lib/pcm/worldStateEngine';
 import { requireSpectralAuth } from '@/lib/pcm/require-auth';
+import { createClient } from '@/lib/supabase/server';
+import { authorizeDsRoute } from '@/lib/moat/ds-route-auth';
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(
   req: NextRequest,
@@ -16,6 +20,10 @@ export async function GET(
     if (!ds_player_id) {
       return NextResponse.json({ error: 'ds_player_id is required' }, { status: 400 });
     }
+
+    const supabase = await createClient();
+    const authErr = await authorizeDsRoute(supabase, auth.user!.id, ds_player_id);
+    if (authErr) return authErr;
 
     const debrief = await worldStateEngine.getDebrief(params.id, ds_player_id);
 

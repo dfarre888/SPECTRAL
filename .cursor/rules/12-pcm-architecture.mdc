@@ -1,0 +1,172 @@
+---
+description: PCM (Persistent Combat Model) engine architecture — WorldStateEngine, adjudication cores, SPECTRAL-REF, learner model, accredited data isolation. Apply to all PCM files.
+globs: lib/pcm/**, lib/moat/**, app/api/spectral/exercises/**, app/api/spectral/players/**
+alwaysApply: false
+---
+
+# PCM Architecture — Persistent Combat Model
+
+## Module Map
+
+```
+lib/pcm/
+  worldStateEngine.ts          ← Singleton SSoT. All world state reads/writes here.
+  adjudicationCore.ts          ← AdjudicationCore interface + 3 concrete implementations
+  trainingAdjudicationCore.ts  ← Full training resolution (default)
+  spectralRefOrchestrator.ts   ← Selects core, runs adjudication, calls REF, wraps in OversightGate
+  spectralRefApi.ts            ← SPECTRAL-REF narrator (calls callBedrock)
+  accredited-data-layer.ts     ← Preloads accredited Pk Map for in-turn use only
+  gnss-adjudication-bridge.ts  ← ONLY permitted GNSS↔PCM connection
+  turn-logic.ts                ← Pure helpers: calculateTimeOfDay, calculatePhase, evaluateOutcome
+  require-auth.ts              ← requireSpectralAuth() — auth only, no role check yet
+
+lib/moat/
+  moatStore.ts                 ← MOAT persistence (spectral_competency_records + training_plans)
+  learnerModelEngine.ts        ← ingestTurn() — idempotent per (exercise, turn)
+  curriculumEngine.ts          ← Maps competency gaps → training assignments
+  ds-route-auth.ts             ← DS scope: resolveSessionDsPlayerId, dsCanAccessLearner, authorizeDsRoute
+```
+
+## Exercise Lifecycle (start → process → endpoint)
+
+```
+POST /exercises             → createExercise() → spectral_exercises INSERT
+POST /exercises/[id]/start  → startExercise()  → status = active
+POST /exercises/[id]/orders → submitOrders()   → spectral_orders INSERT (both forces)
+POST /exercises/[id]/turn   → advanceTurn()    → adjudication → REF → MOAT → DB update
+GET  /exercises/[id]/aar    → AARDocument      → from spectral_aar_documents
+```
+
+## advanceTurn() — The Main Pipeline
+
+Order is fixed. Do not reorder steps.
+
+```
+1. requireSpectralAuth()               → auth gate (no role check yet — task #82 pending)
+2. worldStateEngine.advanceTurn()
+   a. preloadAccreditedData()          → AccreditedDataLayer Map (PCM-scoped, never exported)
+   b. defaultCore()                    → selects adjudication core:
+        SPECTRAL_PCM_STUB_ADJUDICATION=true → placeholderAdjudicationCore
+        isOperationsEdition()          → operationalAdjudicationCore
+        else                           → trainingAdjudicationCore
+   c. core.resolveTurn(worldState, redOrders, blueOrders, seed, ctx)
+   d. generateRefNarrative()           → callBedrock (narrator only, NO Pk in message)
+   e. wrapInOversightGate()            → OversightGate { requires_ds_approval, proposed_result }
+   f. Fog of War filter                → red_sensor_picture / blue_sensor_picture (no raw state)
+   g. processMoatAfterTurn()           → MOAT learner model update
+   h. worldStateEngine.saveWorldState() → spectral_world_states INSERT + spectral_exercises UPDATE
+3. Return AdvanceTurnResponse to client
+```
+
+## Adjudication Core Selection
+
+```ts
+// lib/pcm/spectralRefOrchestrator.ts — defaultCore()
+function defaultCore(): AdjudicationCore {
+  if (process.env.SPECTRAL_PCM_STUB_ADJUDICATION === 'true') return placeholderAdjudicationCore
+  if (isOperationsEdition()) return operationalAdjudicationCore
+  return trainingAdjudicationCore   // ← default for all training deployments
+}
+```
+
+All three cores share the same `AdjudicationCore` interface — interchangeable without touching WSE:
+```ts
+interface AdjudicationCore {
+  resolveTurn(
+    worldState: WorldState,
+    redOrders: Order | null,
+    blueOrders: Order | null,
+    seed: number,
+    ctx?: AdjudicationContext
+  ): Promise<ResolvedWorldState>
+}
+```
+
+## Accredited Data Isolation — Critical Rules
+
+```ts
+// lib/pcm/accredited-data-layer.ts
+// Preloaded once per turn by worldStateEngine — for resolveTurn() ONLY
+const layer: Map<string, AccreditedDefeatPkRow> = await preloadAccreditedData(threatIds, defeatSystemIds)
+// selectAccreditedPk(row, defenderGroup) → picks pk_rf_jamming_pct | pk_dew_pct | pk_kinetic_pct
+```
+
+**NEVER:**
+- Pass AccreditedDataLayer to `processMoatAfterTurn()` or any MOAT function
+- Pass Pk values to `generateRefNarrative()` or `buildRefUserMessage()`
+- Export accredited Pk to client components or API response bodies
+- Access `accredited_defeat_pk` table outside `lib/operations/accredited-supplements.ts`
+
+**Accredited data is PCM-scoped and in-turn only. It is destroyed after turn resolution.**
+
+## GNSS–PCM Bridge — Only One Permitted Connection
+
+```ts
+// lib/pcm/gnss-adjudication-bridge.ts ← ONLY file allowed to import from lib/gnss/
+export function gnssVulnerabilityForPlatform(platformId, deps): GnssVulnerability
+export function countGnssDependentThreats(threatIds, deps, activeJamming): number
+```
+
+Any future GNSS–PCM coupling MUST go through this file. Direct imports from `lib/gnss/`
+into any other `lib/pcm/` file are prohibited.
+
+## MOAT (Learner Model) — One Write Path
+
+```ts
+// processMoatAfterTurn() is the ONLY permitted write path to spectral_competency_records
+// Called at the end of advanceTurn(), after adjudication, NEVER with Pk values
+await processMoatAfterTurn({
+  exerciseId,
+  turn,
+  observation: {
+    decision_time_sec,
+    context_flags,
+    behaviours: extractedBehaviours,   // trainee decisions only — not combat outcomes
+  }
+})
+```
+
+**Direct INSERT to `spectral_competency_records` or `spectral_training_plans` is prohibited.**
+TurnObservation contains trainee decisions (what they chose to do), not combat outcomes (what Pk resolved).
+
+## WorldStateEngine — Singleton Pattern
+
+```ts
+// lib/pcm/worldStateEngine.ts
+// Uses createServiceRoleNodeClient() — service role + WebSocket transport
+// Module-level singleton — re-initialised on cold start (stateless between requests)
+export const worldStateEngine = new WorldStateEngine()
+```
+
+WSE is the only class with access to raw world state. Players receive filtered sensor pictures:
+- `red_sensor_picture` — Red detections only
+- `blue_sensor_picture` — Blue detections only
+- Raw `all_contacts` / `world_state` never sent to client
+
+## Seeded RNG — Deterministic Adjudication
+
+```ts
+// lib/pcm/seeded-rng.ts
+// hashTurnSeed(exerciseId, turn) → deterministic seed
+// Same exercise + turn always produces the same adjudication result
+// Critical for AAR replay and automated testing
+```
+
+Always use the seeded RNG inside `resolveTurn()`. Never use `Math.random()` directly in
+adjudication logic.
+
+## OversightGate — DS Approval Required
+
+```ts
+// Every turn result is wrapped before returning to client
+interface OversightGate {
+  requires_ds_approval: boolean    // true by default
+  proposed_result: AdjudicationResult
+  ds_approved: boolean
+  ds_player_id: string | null
+  ds_notes: string | null
+}
+```
+
+The DS must approve the proposed result before it is committed. `force_advance: true` in the
+POST body skips DS approval (for automated test scenarios only).

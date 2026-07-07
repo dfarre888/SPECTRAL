@@ -32,6 +32,7 @@ export type SelectedLaydownItem =
   | { kind: 'effector'; instanceId: string }
 
 export interface EvaluatedItem {
+  kind: LaydownKind
   assetId: string
   name: string
   reason: string
@@ -207,6 +208,7 @@ function radarRow(
 ): EvaluatedItem {
   const rangeKm = classRangeKm(radar, tc)
   return {
+    kind: 'radar',
     assetId: radar.id,
     name: radar.name,
     placed,
@@ -280,6 +282,7 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
     if (scored.canShoot) {
       canShootIds.add(cuasAsset.id)
       canShoot.push({
+        kind: 'cuas',
         assetId: cuasAsset.id,
         name: cuasAsset.name,
         pct: scored.defeatPct,
@@ -294,6 +297,7 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
     if (shot.can) {
       canShootIds.add(effector.id)
       canShoot.push({
+        kind: 'effector',
         assetId: effector.id,
         name: effector.name,
         pct: shot.pct,
@@ -311,6 +315,7 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
   for (const radar of ALL_RADARS) {
     if (canDetectIds.has(radar.id)) continue
     complement.push({
+      kind: 'radar',
       assetId: radar.id,
       name: radar.name,
       placed: placed.radar.has(radar.id),
@@ -320,6 +325,7 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
   for (const cuasAsset of state.catalogCuas) {
     if (canShootIds.has(cuasAsset.id)) continue
     complement.push({
+      kind: 'cuas',
       assetId: cuasAsset.id,
       name: cuasAsset.name,
       placed: placed.cuas.has(cuasAsset.id),
@@ -329,6 +335,7 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
   for (const effector of ALL_EFFECTORS) {
     if (canShootIds.has(effector.id)) continue
     complement.push({
+      kind: 'effector',
       assetId: effector.id,
       name: effector.name,
       placed: placed.effector.has(effector.id),
@@ -366,6 +373,7 @@ export function evaluateRadar(radar: PlacedRadar, state: LaydownState): LaydownE
     const altKm = typicalCatalogUasAltKm(asset, radar.terrainAMSL)
 
     const row: EvaluatedItem = {
+      kind: 'uas',
       assetId: asset.id,
       name: asset.name,
       placed: placed.uas.has(asset.id),
@@ -420,6 +428,7 @@ export function evaluateCuas(cuas: PlacedCuas, state: LaydownState): LaydownEval
     }
     const scored = scoreCuasVsUas(virtualUas, cuas.asset, cuas.lon, cuas.lat, cuas.terrainAMSL)
     const row: EvaluatedItem = {
+      kind: 'uas',
       assetId: asset.id,
       name: asset.name,
       pct: scored.defeatPct,
@@ -471,7 +480,12 @@ export function evaluateEffector(effector: MapPlacedEffector, state: LaydownStat
         {
           title: 'Cannot shoot down',
           tone: 'cannot',
-          items: [{ assetId: effector.asset.id, name: effector.asset.name, reason: 'No effector seed data' }],
+          items: [{
+            kind: 'effector',
+            assetId: effector.asset.id,
+            name: effector.asset.name,
+            reason: 'No effector seed data',
+          }],
         },
       ],
     }
@@ -493,6 +507,7 @@ export function evaluateEffector(effector: MapPlacedEffector, state: LaydownStat
     }
     const shot = effectorCanShootUas(seed, virtualUas, effector.lon, effector.lat)
     const row: EvaluatedItem = {
+      kind: 'uas',
       assetId: asset.id,
       name: asset.name,
       pct: shot.pct,

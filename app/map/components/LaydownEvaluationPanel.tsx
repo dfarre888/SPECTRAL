@@ -22,6 +22,7 @@ interface LaydownEvaluationPanelProps {
   placedItems: PlacedItemChip[]
   selectedItem: SelectedLaydownItem | null
   onSelectItem: (item: SelectedLaydownItem) => void
+  onAddCatalogItem: (item: EvaluatedItem) => void
   adjudicationSource?: string
 }
 
@@ -45,11 +46,23 @@ function kindIcon(kind: SelectedLaydownItem['kind']) {
   }
 }
 
-function EvalRow({ item, tone }: { item: EvaluatedItem; tone: 'can' | 'cannot' }) {
+function EvalRow({
+  item,
+  tone,
+  onAdd,
+}: {
+  item: EvaluatedItem
+  tone: 'can' | 'cannot'
+  onAdd: (item: EvaluatedItem) => void
+}) {
   return (
-    <div
+    <button
+      type="button"
+      title="Click globe to place"
+      onClick={() => onAdd(item)}
       className={cn(
-        'store-panel-inner rounded-lg px-2.5 py-2',
+        'store-panel-inner rounded-lg px-2.5 py-2 w-full text-left cursor-pointer transition-colors',
+        'hover:bg-[var(--store-surface-2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--store-accent-border)]',
         tone === 'can' ? 'border-l-2 border-green-500/60' : 'opacity-80',
       )}
     >
@@ -72,7 +85,7 @@ function EvalRow({ item, tone }: { item: EvaluatedItem; tone: 'can' | 'cannot' }
         )}
       </div>
       <p className="text-[9px] store-text-muted mt-0.5 leading-relaxed">{item.reason}</p>
-    </div>
+    </button>
   )
 }
 
@@ -81,6 +94,7 @@ export function LaydownEvaluationPanel({
   placedItems,
   selectedItem,
   onSelectItem,
+  onAddCatalogItem,
   adjudicationSource,
 }: LaydownEvaluationPanelProps) {
   if (!evaluation) return null
@@ -88,7 +102,7 @@ export function LaydownEvaluationPanel({
   const Icon = kindIcon(evaluation.subject.kind)
 
   return (
-    <StorePanel className="absolute top-3 right-3 z-20 w-[min(100%,22rem)] max-h-[calc(100%-1.5rem)] overflow-y-auto p-3 shadow-xl pointer-events-auto border-[var(--store-accent-border)]">
+    <StorePanel className="absolute top-14 right-3 z-20 w-[min(100%,22rem)] max-h-[calc(100%-4rem)] overflow-y-auto p-3 shadow-xl pointer-events-auto border-[var(--store-accent-border)]">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--store-accent)] flex items-center gap-1.5">
@@ -152,7 +166,12 @@ export function LaydownEvaluationPanel({
             ) : (
               <div className="space-y-1.5 max-h-48 overflow-y-auto pr-0.5">
                 {section.items.map((item) => (
-                  <EvalRow key={item.assetId} item={item} tone={section.tone} />
+                  <EvalRow
+                    key={`${item.kind}-${item.assetId}`}
+                    item={item}
+                    tone={section.tone}
+                    onAdd={onAddCatalogItem}
+                  />
                 ))}
               </div>
             )}

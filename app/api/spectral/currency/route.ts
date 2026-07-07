@@ -9,6 +9,8 @@ import {
   currencyEngine,
 } from '@/lib/moat/moatStore';
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest) {
   const auth = await requireSpectralAuth();
   if (auth.response) return auth.response;

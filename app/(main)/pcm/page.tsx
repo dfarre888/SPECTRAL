@@ -13,7 +13,7 @@ export default function PcmHubPage() {
         <Link href="/pcm/scenario" className="store-panel rounded-xl border border-[var(--store-line)] p-5 hover:border-[var(--store-accent)]/40 transition-colors">
           <Crosshair className="w-5 h-5 text-[var(--store-accent)] mb-3" />
           <h2 className="store-display font-semibold text-white text-sm">Scenario Generator</h2>
-          <p className="text-xs store-text-muted mt-1">AI-configured exercises from trainee blind spots.</p>
+          <p className="text-xs store-text-muted mt-1">Generate DS/RPIC scenarios from competency blind spots, injects, and instructor focus points.</p>
         </Link>
         <Link href="/pcm/force-design" className="store-panel rounded-xl border border-[var(--store-line)] p-5 hover:border-[var(--store-accent)]/40 transition-colors">
           <BarChart3 className="w-5 h-5 text-cyan mb-3" />
@@ -26,6 +26,9 @@ export default function PcmHubPage() {
           <p className="text-xs store-text-muted mt-1">Live SSE scenario engine.</p>
         </Link>
       </div>
+      <p className="text-xs store-text-muted font-mono mt-6 max-w-3xl">
+        Live PCM globe: open <span className="text-cyan">/pcm/exercise/[id]</span> and paste the exercise UUID manually after you start a run.
+      </p>
     </HubPageShell>
   )
 }

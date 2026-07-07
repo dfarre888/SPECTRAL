@@ -4,6 +4,8 @@ import { createServiceRoleNodeClient } from '@/lib/supabase/service-role-node';
 import { listSovereignPlatforms } from '@/lib/moat/moatStore';
 import { SOVEREIGN_PLATFORM_CATALOGUE } from '@/lib/moat/sovereignData';
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest) {
   const auth = await requireSpectralAuth();
   if (auth.response) return auth.response;

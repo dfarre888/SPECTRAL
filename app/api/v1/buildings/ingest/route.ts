@@ -6,6 +6,8 @@ import { osmElementsToFootprints, fetchOsmBuildings } from '@/lib/buildings/osm-
 import { cacheBuildingsForTenant, invalidateBuildingCache } from '@/lib/buildings/store'
 import type { BuildingFootprint } from '@/lib/buildings/types'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: Request) {
   const ctx = await requireTenantContext(request)
   if (!ctx.userId) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })

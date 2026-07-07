@@ -61,9 +61,18 @@ export function EntityInfoPanel({
         {uas.mission && (
           <>
             <DataRow label="Mission" value={uas.mission.goalKind.toUpperCase()} accent />
+            <DataRow
+              label="Route objective"
+              value={uas.mission.routeObjective === 'pk' ? 'Pk (defeat)' : 'Pd (detection)'}
+            />
             <DataRow label="Path distance" value={`${uas.mission.totalDistance_km.toFixed(1)} km`} />
+            <DataRow
+              label="Max Pd"
+              value={`${uas.mission.maxPd_pct}%`}
+              accent={uas.mission.pdThresholdExceeded}
+            />
             <DataRow label="Max Pk" value={`${uas.mission.maxPk_pct}%`} accent={uas.mission.pkThresholdExceeded} />
-            <DataRow label="EMCON" value={uas.mission.emcon ? "ON" : "OFF (transit)"} />
+            <DataRow label="EMCON" value={uas.mission.emcon ? 'ON' : 'OFF (transit)'} />
           </>
         )}
         {uas.loiter?.exceedsEndurance && (

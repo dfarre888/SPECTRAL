@@ -36,7 +36,7 @@ function platformEmissionHighlights(
 
   return (
     <>
-      {inTile.map((em, i) => {
+      {inTile.map((em) => {
         const clip = emissionClipInTile(em, tile)
         if (!clip) return null
         const x0 = scale(clip.lo)
@@ -60,10 +60,7 @@ function platformEmissionHighlights(
               pointerEvents: 'none',
               zIndex: 7,
               border: `2px solid rgba(${accent}, ${prominent ? 0.95 : 0.7})`,
-              background: `linear-gradient(90deg, transparent 0%, rgba(${accent}, 0.15) 20%, rgba(${accent}, 0.45) 50%, rgba(${accent}, 0.15) 80%, transparent 100%)`,
-              backgroundSize: '200% 100%',
-              animation: `spectrum-emission-glow ${2.4 + (i % 3) * 0.4}s ease-in-out infinite alternate, spectrum-emission-scan ${3.5 + (i % 2)}s linear infinite`,
-              animationDelay: `${i * 0.35}s`,
+              background: `rgba(${accent}, ${prominent ? 0.25 : 0.18})`,
               boxSizing: 'border-box',
             }}
             aria-hidden
@@ -89,10 +86,6 @@ export function SpectrumPulseOverlay({
 
   if (inTile.length === 0) return null
 
-  const topPct = (tile.rowTopY / tile.viewBoxH) * 100
-  const heightPct = ((tile.rowBotY + tile.rowH - tile.rowTopY) / tile.viewBoxH) * 100
-  const beamWidth = prominent ? 18 : 10
-
   return (
     <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 5, overflow: 'hidden' }}>
       {zones.map((zone, i) => (
@@ -103,41 +96,7 @@ export function SpectrumPulseOverlay({
         />
       ))}
       {!stacked && platformEmissionHighlights(tile, emissions, prominent)}
-      {showPulse && (
-        <>
-          <div
-            style={{
-              position: 'absolute',
-              top: `${topPct}%`,
-              height: `${heightPct}%`,
-              width: beamWidth,
-              left: 0,
-              background: `linear-gradient(90deg, transparent, rgba(6,182,212,${prominent ? 0.35 : 0.2}), rgba(6,182,212,${prominent ? 1 : 0.85}), rgba(249,115,22,${prominent ? 0.9 : 0.6}), rgba(6,182,212,${prominent ? 1 : 0.85}), rgba(6,182,212,${prominent ? 0.35 : 0.2}), transparent)`,
-              boxShadow: prominent
-                ? '0 0 24px rgba(6,182,212,0.9), 0 0 48px rgba(249,115,22,0.35)'
-                : '0 0 12px rgba(6,182,212,0.7)',
-              animation: `spectrum-pulse-sweep ${prominent ? 3.2 : 4}s linear infinite`,
-              zIndex: 8,
-            }}
-            aria-hidden
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: `${topPct}%`,
-              height: `${heightPct}%`,
-              width: beamWidth * 0.6,
-              left: 0,
-              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
-              animation: `spectrum-pulse-sweep ${prominent ? 3.2 : 4}s linear infinite`,
-              animationDelay: '0.12s',
-              zIndex: 8,
-              opacity: 0.6,
-            }}
-            aria-hidden
-          />
-        </>
-      )}
+      {showPulse && null}
     </div>
   )
 }
@@ -207,28 +166,11 @@ export function SpectrumPulseLegend({ compact = false }: { compact?: boolean }) 
       <span style={itemStyle}>
         <span
           style={swatch({
-            position: 'relative',
-            overflow: 'hidden',
-            background: 'rgba(6,182,212,0.12)',
+            background: 'rgba(6,182,212,0.25)',
             border: '1px solid rgba(6,182,212,0.45)',
           })}
-        >
-          <span
-            style={{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              width: '55%',
-              left: 0,
-              background:
-                'linear-gradient(90deg, transparent, rgba(6,182,212,0.85), rgba(249,115,22,0.65), rgba(6,182,212,0.85), transparent)',
-              boxShadow: '0 0 6px rgba(6,182,212,0.55)',
-              animation: 'spectrum-pulse-sweep 3.2s linear infinite',
-            }}
-            aria-hidden
-          />
-        </span>
-        Platform band scan
+        />
+        Platform band
       </span>
     </div>
   )

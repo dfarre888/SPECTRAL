@@ -1,7 +1,7 @@
 import type { Entity } from '@/components/arena/CesiumArena'
 import { operationalEnvelopeRadiusKm } from '@/lib/map/range-declaration'
 import type { MapUasAsset } from '@/lib/map/types'
-import { DefeatMatrixCache } from '@/lib/pcm/defeat-matrix-lookup'
+import { offlineSystemEffectiveRangeKm } from '@/lib/pcm/defeat-matrix-offline-data'
 import { resolveDefenderSystemId, resolvePcmPlatformId } from '@/lib/pcm/pcm-platform-ids'
 import { resolveSpectrumUas } from '@/lib/map/spectrum-bridge'
 import type { PlatformCategory } from '@/lib/types'
@@ -13,13 +13,6 @@ const FALLBACK_KM: Record<Entity['type'], number> = {
   defeat_system: 5,
   jammer: 12,
   radar: 40,
-}
-
-let offlineCache: DefeatMatrixCache | null = null
-
-function getOfflineCache(): DefeatMatrixCache {
-  offlineCache ??= DefeatMatrixCache.createOffline()
-  return offlineCache
 }
 
 function spectrumCategory(p: SpectrumPlatform): PlatformCategory {
@@ -58,9 +51,9 @@ function resolveDroneRangeKm(slug: string): number {
 
 function resolveBlueRangeKm(slug: string, type: Entity['type']): number {
   const systemId = resolveDefenderSystemId(slug, '')
-  const km = getOfflineCache().systemEffectiveRangeKm(systemId)
+  const km = offlineSystemEffectiveRangeKm(systemId)
   if (km !== undefined && km > 0) return km
-  const slugKm = getOfflineCache().systemEffectiveRangeKm(slug)
+  const slugKm = offlineSystemEffectiveRangeKm(slug)
   if (slugKm !== undefined && slugKm > 0) return slugKm
   return FALLBACK_KM[type]
 }

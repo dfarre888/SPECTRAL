@@ -99,6 +99,7 @@ export default function CesiumMapPanel({
   const terrainRef = useRef<CesiumTerrainProvider | null>(null)
   const handlerRef = useRef<unknown | null>(null)
   const initRef = useRef(false)
+  const terrainSettleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [cesiumReady, setCesiumReady] = useState(false)
   const [terrainEpoch, setTerrainEpoch] = useState(0)
 
@@ -241,12 +242,15 @@ export default function CesiumMapPanel({
 
       viewer.scene.globe.tileLoadProgressEvent.addEventListener((queued: number) => {
         if (queued === 0) {
-          setTerrainEpoch((n) => {
-            const next = n + 1
-            onTerrainEpochChangeRef.current?.(next)
-            return next
-          })
-          viewer.scene.requestRender()
+          if (terrainSettleTimer.current) clearTimeout(terrainSettleTimer.current)
+          terrainSettleTimer.current = setTimeout(() => {
+            setTerrainEpoch((n) => {
+              const next = n + 1
+              onTerrainEpochChangeRef.current?.(next)
+              return next
+            })
+            if (!viewer.isDestroyed?.()) viewer.scene.requestRender()
+          }, 600)
         }
       })
 
@@ -291,6 +295,10 @@ export default function CesiumMapPanel({
 
     return () => {
       destroyed = true
+      if (terrainSettleTimer.current) {
+        clearTimeout(terrainSettleTimer.current)
+        terrainSettleTimer.current = null
+      }
       setCesiumReady(false)
       const handler = handlerRef.current as { destroy?: () => void } | null
       handler?.destroy?.()

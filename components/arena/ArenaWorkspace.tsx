@@ -82,7 +82,7 @@ export function ArenaWorkspace() {
             ))}
           </div>
         </div>
-        <div className="flex-1 min-h-[480px] rounded-xl overflow-hidden">
+        <div className="relative h-[480px] w-full rounded-xl overflow-hidden shrink-0">
           <CesiumArena entities={entities} center={center} />
         </div>
       </StorePanel>

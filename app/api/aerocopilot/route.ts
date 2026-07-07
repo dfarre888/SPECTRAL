@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
+import { callBedrock } from '@/lib/claude/bedrock'
 import { createClient } from '@/lib/supabase/server'
 import {
   AEROCOPILOT_SYSTEM,
@@ -10,7 +10,7 @@ import type { Platform } from '@/lib/spectrum/types'
 import type { RadarSystem } from '@/lib/spectrum/radar-types'
 import type { EffectorSystem } from '@/lib/spectrum/effector-types'
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+export const dynamic = 'force-dynamic'
 
 function parseCopilotResponse(text: string): CopilotResponse | null {
   const cleaned = text.replace(/```json|```/g, '').trim()
@@ -33,8 +33,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: 'API not configured' }, { status: 503 })
+  if (!process.env.AWS_ACCESS_KEY_ID && !process.env.AWS_EXECUTION_ENV) {
+    return NextResponse.json({ error: 'Bedrock credentials not configured' }, { status: 503 })
   }
 
   let body: {
@@ -60,22 +60,12 @@ export async function POST(req: Request) {
   const effectors = body.effectors ?? []
 
   try {
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+    const text = await callBedrock({
       system: AEROCOPILOT_SYSTEM,
-      messages: [
-        {
-          role: 'user',
-          content: buildCopilotUserMessage(query, platforms, radars, effectors),
-        },
-      ],
+      userContent: buildCopilotUserMessage(query, platforms, radars, effectors),
+      maxTokens: 1200,
+      temperature: 0.3,
     })
-
-    const text = message.content
-      .filter((b) => b.type === 'text')
-      .map((b) => (b.type === 'text' ? b.text : ''))
-      .join('')
 
     const parsed = parseCopilotResponse(text)
     if (!parsed) {

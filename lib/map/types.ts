@@ -1,4 +1,4 @@
-import type { PlatformCategory } from '@/lib/types'
+import type { PlatformCategory, PlatformSide } from '@/lib/types'
 import type { EffectorTier, EffectType } from '@/lib/spectrum/effector-types'
 import type { RadarRole } from '@/lib/spectrum/radar-types'
 import type { Side } from '@/lib/spectrum/types'
@@ -12,6 +12,8 @@ export interface MapUasAsset {
   slug: string
   category: PlatformCategory
   categoryLabel: string
+  /** Red threat, blue friendly, or both (neutral). Omitted in tests defaults via uasForceSides. */
+  side?: PlatformSide | null
   image_url: string | null
   max_altitude_agl_m: number
   /** Whether max_altitude_agl_m is AGL (above launch terrain) or absolute AMSL. */
@@ -107,6 +109,9 @@ export interface MissionWaypoint {
   kind: 'start' | 'transit' | 'detour' | 'terminal' | 'goal'
 }
 
+/** Minimise C-UAS Pk exposure vs radar detection (Pd) exposure. */
+export type MissionRouteObjective = 'pk' | 'pd'
+
 export interface MissionPlan {
   goalKind: 'target' | 'aoi'
   goalLon: number
@@ -114,12 +119,21 @@ export interface MissionPlan {
   goalTerrainAMSL: number
   waypoints: MissionWaypoint[]
   emcon: boolean
+  /** pk = minimise defeat envelope exposure; pd = minimise radar detection exposure. */
+  routeObjective: MissionRouteObjective
   manualOverride: boolean
   totalDistance_km: number
   maxPk_pct: number
+  maxPd_pct: number
+  /** Integrated Pd × distance along route (km). */
+  pdExposure_km: number
+  /** Integrated Pk × distance along route (km). */
+  pkExposure_km: number
   /** True when max segment Pk ≥ 20% and hard avoid was not fully achievable. */
   pkThresholdExceeded: boolean
-  pathMode: 'hard-avoid' | 'soft-minimize'
+  /** True when max segment Pd ≥ 25%. */
+  pdThresholdExceeded: boolean
+  pathMode: 'hard-avoid' | 'soft-minimize' | 'optimized'
   updatedAt: string
 }
 

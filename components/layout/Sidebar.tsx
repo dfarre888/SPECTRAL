@@ -20,8 +20,8 @@ const BASE_NAV = [
   { href: '/conflicts', icon: Globe,            label: 'Conflict Intel',   sub: 'Case studies' },
   { href: '/pcm',       icon: Crosshair,        label: 'PCM Training',     sub: 'Adaptive wargaming' },
   { href: '/arena',     icon: Swords,           label: 'Red/Blue Arena',   sub: 'WOPR scenario engine' },
-  { href: '/compare',   icon: GitCompare,       label: '1v1 Overlay',      sub: 'Head-to-head' },
-  { href: '/overlay',   icon: Target,           label: 'SAM Engagement',   sub: '1v1 intercept' },
+  { href: '/compare',   icon: GitCompare,       label: '1v1 Overlay',      sub: 'Platform compare (needs 2 from library)' },
+  { href: '/overlay',   icon: Target,           label: 'SAM Engagement',   sub: 'SAM vs UAS Pk + rings' },
 ] as const
 
 const OPERATIONS_NAV = {

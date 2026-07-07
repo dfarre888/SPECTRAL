@@ -17,6 +17,7 @@ import {
 } from '@/lib/pcm/turn-logic';
 import { fogOfWarEngine } from '@/lib/pcm/fogOfWarEngine';
 import { SpectralRefOrchestrator, finaliseExercise } from '@/lib/pcm/spectralRefOrchestrator';
+import { persistAarDocument } from '@/lib/pcm/aar-persistence';
 import { hashTurnSeed } from '@/lib/pcm/seeded-rng';
 import { buildAdjudicationContext, preloadAccreditedData, preloadAccreditedErpRows } from '@/lib/pcm/adjudication-preload';
 import { processMoatAfterTurn } from '@/lib/moat/moatStore';
@@ -374,9 +375,22 @@ export class WorldStateEngine {
         }).catch((err) => console.error('[Moat] processMoatAfterTurn failed:', err));
       }
 
-      if (exerciseComplete && req.ds_player_id) {
-        const history = await this.getTurnHistory(req.exercise_id, req.ds_player_id);
-        void finaliseExercise(req.exercise_id, history, resolvedWorldState);
+      if (exerciseComplete) {
+        const dsId = req.ds_player_id ?? exercise.ds_player_id;
+        const history = dsId
+          ? await this.getTurnHistory(req.exercise_id, dsId)
+          : await this.fetchTurnHistoryInternal(req.exercise_id);
+        if (history.length > 0) {
+          const doc = finaliseExercise(req.exercise_id, history, resolvedWorldState);
+          const learnerIds = [exercise.blue_player_id, exercise.red_player_id].filter(
+            (id): id is string => !!id,
+          );
+          for (const playerId of learnerIds) {
+            void persistAarDocument(this.supabase, req.exercise_id, playerId, doc).catch((err) =>
+              console.error('[AAR] persistAarDocument failed:', err),
+            );
+          }
+        }
       }
 
       return {
@@ -483,7 +497,10 @@ export class WorldStateEngine {
   async getTurnHistory(exercise_id: string, ds_player_id: string): Promise<TurnRecord[]> {
     const isDS = await this.validateDS(exercise_id, ds_player_id);
     if (!isDS) return [];
+    return this.fetchTurnHistoryInternal(exercise_id);
+  }
 
+  private async fetchTurnHistoryInternal(exercise_id: string): Promise<TurnRecord[]> {
     const { data, error } = await this.supabase
       .from('spectral_turn_records')
       .select('*')

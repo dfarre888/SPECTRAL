@@ -1,10 +1,12 @@
+import 'server-only'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies'
 import { isDemoMode } from '@/lib/demo'
+import { isOperationsEdition } from '@/lib/operations/edition'
 
 export async function createClient() {
-  if (isDemoMode()) {
+  if (isDemoMode() && !isOperationsEdition()) {
     return createServiceClient()
   }
 

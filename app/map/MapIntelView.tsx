@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
-import { readMapStaging, clearMapStaging } from '@/lib/spectrum/map-staging'
+import { readMapStaging, clearMapStaging, resolveMapStagingIds } from '@/lib/spectrum/map-staging'
 import { AssetSidebar } from '@/app/map/components/AssetSidebar'
 import { SpectralAnalysisPanel } from '@/app/map/components/SpectralAnalysisPanel'
 import { MapNavigationWheel } from '@/app/map/components/MapNavigationWheel'
@@ -30,13 +30,18 @@ import { writeLaydownSession } from '@/lib/map/laydown-session'
 import { haversineM } from '@/lib/propagation/geo'
 import {
   buildLaydownEvaluation,
+  catalogEffectors,
+  catalogRadars,
   isSameLaydownItem,
   listPlacedLaydownItems,
+  type EvaluatedItem,
   type SelectedLaydownItem,
 } from '@/lib/map/laydown-evaluation'
+import { getSpectraMapAssets, toMapEffectorAsset, toMapRadarAsset } from '@/lib/map/spectra-assets'
 import { buildThreatAssessments } from '@/lib/map/threat-assessment'
 import { envelopeDiscAltitudeM } from '@/lib/map/range-declaration'
 import type { TerrainHeightUpdate } from '@/lib/map/terrain'
+import { cn } from '@/lib/utils'
 import type { MapAssetsPayload, CursorPosition, PlacementMode, PlacedCuas, PlacedEffector, PlacedRadar, PlacedUas } from '@/lib/map/types'
 
 import { CollateralRiskPanel } from '@/app/map/components/CollateralRiskPanel'
@@ -171,6 +176,49 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     setPlacedEffectors,
     getCesium,
     (uas) => setPendingMissionUasId(uas.instanceId),
+  )
+
+  const handleAddFromEvaluation = useCallback(
+    (item: EvaluatedItem) => {
+      switch (item.kind) {
+        case 'uas': {
+          const asset = assets.uas.find((a) => a.id === item.assetId)
+          if (asset) startUasPlacement(asset)
+          break
+        }
+        case 'cuas': {
+          const asset = assets.cuas.find((a) => a.id === item.assetId)
+          if (asset) startCuasPlacement(asset)
+          break
+        }
+        case 'radar': {
+          let asset = assets.radars.find((a) => a.id === item.assetId)
+          if (!asset) {
+            const seed = catalogRadars().find((r) => r.id === item.assetId)
+            if (seed) asset = toMapRadarAsset(seed)
+            else asset = getSpectraMapAssets().radars.find((r) => r.id === item.assetId)
+          }
+          if (asset) startRadarPlacement(asset)
+          break
+        }
+        case 'effector': {
+          let asset = assets.effectors.find((a) => a.id === item.assetId)
+          if (!asset) {
+            const seed = catalogEffectors().find((e) => e.id === item.assetId)
+            if (seed) {
+              const { radars } = getSpectraMapAssets()
+              const radarById = new Map(radars.map((r) => [r.id, r]))
+              asset = toMapEffectorAsset(seed, radarById)
+            } else {
+              asset = getSpectraMapAssets().effectors.find((e) => e.id === item.assetId)
+            }
+          }
+          if (asset) startEffectorPlacement(asset)
+          break
+        }
+      }
+    },
+    [assets, startUasPlacement, startCuasPlacement, startRadarPlacement, startEffectorPlacement],
   )
 
   const { startLoiterMode, placeLoiterWaypoint, clearLoiter } = useLoiterPlanning(
@@ -312,7 +360,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     }
   }, [])
 
-const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEmcon, clearMission } = useMissionPlanning(
+const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEmcon, setRouteObjective, clearMission } = useMissionPlanning(
     placementMode, setPlacementMode, placedUas, placedCuas, placedRadars, placedEffectors, overlaps, setPlacedUas, getCesium,
   )
 
@@ -611,32 +659,51 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
     return () => window.removeEventListener('keydown', onKey)
   }, [cancelPlacement, placedUas.length, placedCuas.length])
 
+  const stagingHandledRef = useRef(false)
+
   useEffect(() => {
+    if (stagingHandledRef.current) return
     if (searchParams.get('from') !== 'spectra') return
 
     const staging = readMapStaging()
     if (!staging) return
 
+    stagingHandledRef.current = true
     const stagedIds = staging.placeIds ?? staging.highlightIds ?? []
+    const resolvedIds = resolveMapStagingIds(stagedIds)
+    clearMapStaging()
+
     const assetIds = new Set([
       ...assets.uas.map((a) => a.id),
       ...assets.cuas.map((a) => a.id),
       ...assets.radars.map((a) => a.id),
       ...assets.effectors.map((a) => a.id),
     ])
-    const matchStagedId = (id: string): string | null => {
-      if (assetIds.has(id)) return id
-      if (id.startsWith('eff-')) {
-        const stripped = id.slice(4)
-        if (assetIds.has(stripped)) return stripped
-      }
-      return null
-    }
-    const matched = [...new Set(stagedIds.map(matchStagedId).filter((id): id is string => id !== null))]
+    const matched = [...new Set(resolvedIds.filter((id) => assetIds.has(id)))]
 
     setStagingBanner({ stagedCount: stagedIds.length, matchedCount: matched.length })
     setHighlightedIds(matched)
-  }, [searchParams, assets])
+
+    const firstId = matched[0]
+    if (!firstId) return
+    const cuas = assets.cuas.find((a) => a.id === firstId)
+    if (cuas) {
+      startCuasPlacement(cuas)
+      return
+    }
+    const uas = assets.uas.find((a) => a.id === firstId)
+    if (uas) {
+      startUasPlacement(uas)
+      return
+    }
+    const radar = assets.radars.find((a) => a.id === firstId)
+    if (radar) {
+      startRadarPlacement(radar)
+      return
+    }
+    const effector = assets.effectors.find((a) => a.id === firstId)
+    if (effector) startEffectorPlacement(effector)
+  }, [searchParams, assets, startCuasPlacement, startUasPlacement, startRadarPlacement, startEffectorPlacement])
 
   const dismissStagingBanner = useCallback(() => {
     setStagingBanner(null)
@@ -686,6 +753,7 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
         onReplanMission={replanMission}
         onClearMission={clearMission}
         onMissionEmcon={setEmcon}
+        onMissionRouteObjective={setRouteObjective}
         onRemoveUas={handleRemoveUas}
         onRemoveCuas={handleRemoveCuas}
         placedRadars={placedRadars}
@@ -716,6 +784,8 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
         analysis={adjudication.analysis}
         adjudicationSource={adjudication.source}
         fallbackReason={adjudication.fallbackReason}
+        laydownEvaluation={laydownEvaluation}
+        selectedLaydownItem={selectedLaydownItem}
       />
 
       <div className="relative flex-1 flex flex-col min-w-0">
@@ -811,6 +881,26 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
             />
           )}
 
+
+        {heatmapEnabled && !heatmap.loading && (
+          <div
+            className={cn(
+              'absolute top-12 left-3 z-20 max-w-sm px-3 py-2 rounded-xl store-panel border text-[10px] font-mono shadow-lg pointer-events-none',
+              heatmap.error
+                ? 'border-amber/40 text-amber'
+                : 'border-cyan/30 text-cyan',
+            )}
+          >
+            {heatmap.error
+              ? heatmap.error
+              : !placedCuas.some((c) => c.asset.defeat_methods.includes('RF_jamming'))
+                ? 'No jammer with RF band placed — place C-UAS with RF jamming'
+                : heatmap.cells.length === 0
+                  ? 'Jam heatmap — no coverage cells returned'
+                  : `Jam coverage heatmap — ${heatmap.cells.length} cells around ${heatmapJammer?.asset.name ?? 'jammer'}`}
+          </div>
+        )}
+
           <MapNavigationWheel getCesium={getCesium} />
 
           <LaydownEvaluationPanel
@@ -818,6 +908,7 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
             placedItems={placedLaydownChips}
             selectedItem={selectedLaydownItem}
             onSelectItem={setSelectedLaydownItem}
+            onAddCatalogItem={handleAddFromEvaluation}
             adjudicationSource={adjudication.source}
           />
 

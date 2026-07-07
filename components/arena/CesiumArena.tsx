@@ -53,7 +53,7 @@ export default function CesiumArena({ entities, center, onEntityClick }: Props) 
     loadCesium().then((Cesium) => {
       if (!containerRef.current) return
 
-      const { Viewer, Ion, Cartesian3, Color } = Cesium
+      const { Viewer, Ion, Color } = Cesium
 
       Ion.defaultAccessToken = process.env.NEXT_PUBLIC_CESIUM_ION_TOKEN || ''
 
@@ -71,37 +71,14 @@ export default function CesiumArena({ entities, center, onEntityClick }: Props) 
         selectionIndicator: false,
       })
 
-      viewer.scene.globe.enableLighting = true
+      viewer.scene.globe.enableLighting = false
       viewer.scene.backgroundColor = Color.fromCssColorString('#0A0A0F')
+      viewer.resize()
 
       // Fix: allow engagement spheres to render through the terrain surface.
       // Without this, any sphere whose lower hemisphere intersects terrain is
       // depth-culled and becomes invisible (especially ground-level entities).
       viewer.scene.globe.depthTestAgainstTerrain = false
-
-      // Fly to center
-      const c = center || { lon: 33.5, lat: 48.5 } // Ukraine default
-      viewer.camera.flyTo({
-        destination: Cartesian3.fromDegrees(c.lon, c.lat, 80000),
-        duration: 1.5,
-      })
-
-      // Click handler — strips disc/sphere suffix so radius click returns base entity id
-      viewer.screenSpaceEventHandler.setInputAction((click: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-        const picked = viewer.scene.pick(click.position)
-        if (picked?.id?.id && onEntityClickRef.current) {
-          const rawId: string = picked.id.id
-          let entityId = rawId
-          if (rawId.startsWith('disc-')) {
-            entityId = rawId.slice(5)
-          } else if (rawId.endsWith('_disc')) {
-            entityId = rawId.slice(0, -5)
-          } else if (rawId.endsWith('_sphere')) {
-            entityId = rawId.slice(0, -7)
-          }
-          onEntityClickRef.current(entityId)
-        }
-      }, 0 /* LEFT_CLICK */)
 
       cesiumRef.current = Cesium
       viewerRef.current = viewer
@@ -119,6 +96,66 @@ export default function CesiumArena({ entities, center, onEntityClick }: Props) 
       cesiumRef.current = null
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Click handler (after viewer ready) ─────────────────────────────────────
+  useEffect(() => {
+    const viewer = viewerRef.current
+    if (!cesiumReady || !viewer || viewer.isDestroyed()) return
+
+    viewer.screenSpaceEventHandler.setInputAction((click: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+      const picked = viewer.scene.pick(click.position)
+      if (picked?.id?.id && onEntityClickRef.current) {
+        const rawId: string = picked.id.id
+        let entityId = rawId
+        if (rawId.startsWith('disc-')) {
+          entityId = rawId.slice(5)
+        } else if (rawId.endsWith('_disc')) {
+          entityId = rawId.slice(0, -5)
+        } else if (rawId.endsWith('_sphere')) {
+          entityId = rawId.slice(0, -7)
+        }
+        onEntityClickRef.current(entityId)
+      }
+    }, 0 /* LEFT_CLICK */)
+
+    return () => {
+      const v = viewerRef.current
+      if (!v || v.isDestroyed?.() || !v.screenSpaceEventHandler) return
+      v.screenSpaceEventHandler.removeInputAction(0)
+    }
+  }, [cesiumReady])
+
+  // ── Frame scenario when center or entities change ─────────────────────────
+  useEffect(() => {
+    const viewer = viewerRef.current
+    const Cesium = cesiumRef.current
+    if (!cesiumReady || !viewer || viewer.isDestroyed() || !Cesium) return
+
+    viewer.resize()
+
+    const { Cartesian3, Math: CMath, BoundingSphere, HeadingPitchRange } = Cesium
+
+    if (entities.length > 0) {
+      const positions = entities.map((e) => Cartesian3.fromDegrees(e.lon, e.lat, e.altM))
+      const sphere = BoundingSphere.fromPoints(positions)
+      viewer.camera.flyToBoundingSphere(sphere, {
+        duration: 1.2,
+        offset: new HeadingPitchRange(0, CMath.toRadians(-55), Math.max(sphere.radius * 3.5, 12000)),
+      })
+      return
+    }
+
+    const c = center ?? { lon: 149.13, lat: -35.28 }
+    viewer.camera.flyTo({
+      destination: Cartesian3.fromDegrees(c.lon, c.lat, 45000),
+      orientation: {
+        heading: 0,
+        pitch: CMath.toRadians(-55),
+        roll: 0,
+      },
+      duration: 1.2,
+    })
+  }, [cesiumReady, center, entities])
 
   // ── Sync entities whenever prop changes ──────────────────────────────────
   // Runs after viewer init (cesiumReady flips true) and on every entities update.
@@ -202,8 +239,8 @@ export default function CesiumArena({ entities, center, onEntityClick }: Props) 
   return (
     <div
       ref={containerRef}
-      className="w-full h-full rounded-xl overflow-hidden border border-[var(--store-line)]"
-      style={{ minHeight: 480, background: '#0A0A0F' }}
+      className="absolute inset-0 w-full h-full rounded-xl overflow-hidden border border-[var(--store-line)]"
+      style={{ background: '#0A0A0F' }}
     />
   )
 }

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { worldStateEngine } from '@/lib/pcm/worldStateEngine';
 import { requireSpectralAuth } from '@/lib/pcm/require-auth';
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: { id: string } },

@@ -5,6 +5,7 @@ import { EXTRA_RADARS } from '@/data/seed-radars-extra'
 import { BLUE_EFFECTORS } from '@/data/seed-effectors-blue'
 import { RED_EFFECTORS } from '@/data/seed-effectors-red'
 import { cuasAssetToSpectrumBlue, resolveSpectrumUas } from '@/lib/map/spectrum-bridge'
+import type { EvaluatedItem, LaydownEvaluation } from '@/lib/map/laydown-evaluation'
 import type { ThreatAssessment } from '@/lib/map/threat-assessment'
 import type {
   MapCuasAsset,
@@ -238,6 +239,117 @@ export function mergeLaydownEmissions(
   const ids = new Set(placed.map((e) => e.id))
   const extra = recommended.filter((e) => !ids.has(e.id))
   return [...placed, ...extra]
+}
+
+
+function effectorEmissionsFromSeed(seed: EffectorSystem, idPrefix: string, label: string): LaydownEmission[] {
+  const out: LaydownEmission[] = []
+  const effect = seed.effect
+
+  if (effect === 'laser' || effect === 'hpm') {
+    const [lo, hi] = effect === 'laser' ? [1.0, 1.07] : DEW_UM
+    out.push({
+      id: `${idPrefix}-dew`,
+      label,
+      kind: 'effector',
+      unit: 'um',
+      lo,
+      hi,
+      recommended: true,
+      side: seed.side,
+      capabilityLabel: effect === 'laser' ? 'HEL / laser' : 'HPM',
+    })
+    return out
+  }
+
+  for (const radarId of seed.cueing_radar_ids ?? []) {
+    const rSeed = radarSeedForAsset(radarId)
+    if (!rSeed) continue
+    const cap = radarToCapability(rSeed)
+    const e = emissionFromCapability(cap, {
+      idPrefix: `${idPrefix}-${radarId}`,
+      label: `${label} · ${rSeed.name}`,
+      kind: 'effector',
+      recommended: true,
+      side: seed.side,
+    })
+    if (e) out.push(e)
+  }
+  return out
+}
+
+/** Virtual defender emissions from a single laydown-evaluation catalog row (not yet placed). */
+export function catalogEmissionFromEvalItem(
+  item: EvaluatedItem,
+  catalogCuas: MapCuasAsset[],
+): LaydownEmission[] {
+  const idPrefix = `virtual-eval-${item.assetId}`
+
+  switch (item.kind) {
+    case 'radar': {
+      const seed = radarSeedForAsset(item.assetId)
+      if (!seed) return []
+      const cap = radarToCapability(seed)
+      const e = emissionFromCapability(cap, {
+        idPrefix,
+        label: item.name,
+        kind: 'radar',
+        recommended: true,
+        side: seed.side,
+      })
+      return e ? [e] : []
+    }
+    case 'cuas': {
+      const asset = catalogCuas.find((c) => c.id === item.assetId)
+      if (!asset) return []
+      const blue = cuasAssetToSpectrumBlue(asset)
+      const out: LaydownEmission[] = []
+      pushCapabilityEmissions(out, blue.capabilities ?? [], {
+        idPrefix,
+        label: item.name,
+        kind: 'cuas',
+        recommended: true,
+        side: 'blue',
+      })
+      return out
+    }
+    case 'effector': {
+      const seed = EFFECTOR_BY_ID.get(item.assetId)
+      if (!seed) return []
+      return effectorEmissionsFromSeed(seed, idPrefix, item.name)
+    }
+    default:
+      return []
+  }
+}
+
+const EVAL_DEFENDER_SECTIONS = ['Radars — can detect', 'Can shoot down'] as const
+
+/** Virtual blue-force emissions from UAS laydown evaluation (skips already-placed defenders). */
+export function resolveEvaluationDefenderEmissions(
+  evaluation: LaydownEvaluation | null,
+  catalogCuas: MapCuasAsset[],
+): LaydownEmission[] {
+  if (!evaluation || evaluation.subject.kind !== 'uas') return []
+
+  const seen = new Set<string>()
+  const out: LaydownEmission[] = []
+
+  for (const title of EVAL_DEFENDER_SECTIONS) {
+    const section = evaluation.sections.find((s) => s.title === title && s.tone === 'can')
+    if (!section) continue
+    for (const item of section.items) {
+      if (item.placed) continue
+      const emissions = catalogEmissionFromEvalItem(item, catalogCuas)
+      for (const emission of emissions) {
+        if (seen.has(emission.id)) continue
+        seen.add(emission.id)
+        out.push(emission)
+      }
+    }
+  }
+
+  return out
 }
 
 function emissionRangeInTileUnit(

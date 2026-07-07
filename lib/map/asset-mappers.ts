@@ -12,6 +12,7 @@ export function toMapUasAsset(platform: Platform): MapUasAsset {
     slug: platform.id,
     category: platform.category,
     categoryLabel: CATEGORY_LABELS[platform.category] ?? platform.category,
+    side: platform.side ?? null,
     image_url: resolvePlatformImagePath(platform.id),
     max_altitude_agl_m: platform.service_ceiling_m ?? 500,
     altitude_reference: 'AGL',

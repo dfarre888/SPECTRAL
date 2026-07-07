@@ -22,6 +22,15 @@ import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import { StoreFilterSection } from '@/components/catalog/StoreFilterSidebar'
 import { StoreEyebrow, StorePanel } from '@/components/ui/store-surface'
+import {
+  applyForceFilter,
+  matchesForceFilter,
+  assetSideForceSides,
+  cuasForceSides,
+  filterMapAssetHits,
+  type MapForceFilter,
+  uasForceSides,
+} from '@/lib/map/force-filter'
 import { filterMapAssets, type MapAssetSearchHit } from '@/lib/map/map-asset-search'
 import { operationalEnvelopeRadiusKm } from '@/lib/map/range-declaration'
 import type { SelectedLaydownItem } from '@/lib/map/laydown-evaluation'
@@ -55,6 +64,7 @@ interface AssetSidebarProps {
   onReplanMission?: (uasInstanceId: string) => void
   onClearMission?: (uasInstanceId: string) => void
   onMissionEmcon?: (uasInstanceId: string, emcon: boolean) => void
+  onMissionRouteObjective?: (uasInstanceId: string, objective: 'pd' | 'pk') => void
   onRemoveUas: (instanceId: string) => void
   onRemoveCuas: (instanceId: string) => void
   placedRadars: PlacedRadar[]
@@ -87,6 +97,7 @@ export function AssetSidebar({
   onReplanMission,
   onClearMission,
   onMissionEmcon,
+  onMissionRouteObjective,
   onRemoveUas,
   onRemoveCuas,
   placedRadars,
@@ -111,13 +122,35 @@ export function AssetSidebar({
   const [placedOpen, setPlacedOpen] = useState(false)
   const [legendOpen, setLegendOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [forceFilter, setForceFilter] = useState<MapForceFilter>('both')
 
   const filtered = useMemo(() => filterMapAssets(assets, search), [assets, search])
   const searchActive = search.trim().length > 0
-  const displayUas = searchActive ? filtered.uas : assets.uas
-  const displayCuas = searchActive ? filtered.cuas : assets.cuas
-  const displayRadars = searchActive ? filtered.radars : assets.radars
-  const displayEffectors = searchActive ? filtered.effectors : assets.effectors
+  const baseUas = searchActive ? filtered.uas : assets.uas
+  const baseCuas = searchActive ? filtered.cuas : assets.cuas
+  const baseRadars = searchActive ? filtered.radars : assets.radars
+  const baseEffectors = searchActive ? filtered.effectors : assets.effectors
+
+  const visibleUas = useMemo(
+    () => applyForceFilter(baseUas, forceFilter, uasForceSides),
+    [baseUas, forceFilter],
+  )
+  const visibleCuas = useMemo(
+    () => applyForceFilter(baseCuas, forceFilter, cuasForceSides),
+    [baseCuas, forceFilter],
+  )
+  const visibleRadars = useMemo(
+    () => applyForceFilter(baseRadars, forceFilter, assetSideForceSides),
+    [baseRadars, forceFilter],
+  )
+  const visibleEffectors = useMemo(
+    () => applyForceFilter(baseEffectors, forceFilter, assetSideForceSides),
+    [baseEffectors, forceFilter],
+  )
+  const visibleHits = useMemo(
+    () => filterMapAssetHits(filtered.hits, forceFilter),
+    [filtered.hits, forceFilter],
+  )
 
   const placingUasId =
     placementMode.active && placementMode.kind === 'uas' ? placementMode.asset.id : null
@@ -139,6 +172,15 @@ export function AssetSidebar({
       setPlacedOpen(true)
     }
   }, [highlightedIds, assets.cuas])
+
+  useEffect(() => {
+    if (forceFilter === 'red' && visibleUas.length > 0) setUasOpen(true)
+    if (forceFilter === 'blue') {
+      if (visibleCuas.length > 0) setCuasOpen(true)
+      if (visibleRadars.length > 0) setRadarsOpen(true)
+      if (visibleEffectors.length > 0) setEffectorsOpen(true)
+    }
+  }, [forceFilter, visibleUas.length, visibleCuas.length, visibleRadars.length, visibleEffectors.length])
 
     const dualRoleIds = new Set(
     assets.uas.filter((u) => assets.cuas.some((c) => c.id === u.id)).map((u) => u.id),
@@ -173,6 +215,26 @@ export function AssetSidebar({
           <StoreEyebrow icon={<Crosshair size={12} />}>Place assets on globe</StoreEyebrow>
           <EditionBadge />
         </div>
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <ForceFilterButton
+            label="RED"
+            active={forceFilter === 'red'}
+            activeClassName="bg-red-600 text-white border-red-600"
+            onClick={() => setForceFilter('red')}
+          />
+          <ForceFilterButton
+            label="BLUE"
+            active={forceFilter === 'blue'}
+            activeClassName="bg-blue-600 text-white border-blue-600"
+            onClick={() => setForceFilter('blue')}
+          />
+          <ForceFilterButton
+            label="BOTH"
+            active={forceFilter === 'both'}
+            activeClassName="bg-orange text-[#0a0a0a] border-orange"
+            onClick={() => setForceFilter('both')}
+          />
+        </div>
       </div>
 
       <div className="px-5 py-3 border-b border-[var(--store-line)]">
@@ -204,15 +266,15 @@ export function AssetSidebar({
         {searchActive && (
           <StoreFilterSection label="Search results">
             <p className="text-[11px] font-mono store-text-muted mb-2">
-              {filtered.total} {filtered.total === 1 ? 'match' : 'matches'}
+              {visibleHits.length} {visibleHits.length === 1 ? 'match' : 'matches'}
             </p>
-            {filtered.total === 0 ? (
+            {visibleHits.length === 0 ? (
               <p className="text-[13px] store-text-muted py-2">
                 No assets match &ldquo;{search.trim()}&rdquo;
               </p>
             ) : (
               <div className="space-y-2 max-h-64 overflow-y-auto pr-0.5">
-                {filtered.hits.map((hit) => (
+                {visibleHits.map((hit) => (
                   <MapSearchResultCard
                     key={`${hit.kind}-${hit.asset.id}`}
                     hit={hit}
@@ -232,16 +294,16 @@ export function AssetSidebar({
           </StoreFilterSection>
         )}
 
-        {(!searchActive || displayUas.length > 0) && (
+        {(!searchActive || visibleUas.length > 0) && (
           <CollapsibleSection
           open={uasOpen}
           onToggle={() => setUasOpen(!uasOpen)}
           label="Threat platforms"
-          count={displayUas.length}
+          count={visibleUas.length}
           icon={<Plane size={14} className="text-[var(--store-accent)]" />}
         >
           <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
-            {displayUas.map((asset) => (
+            {visibleUas.map((asset) => (
               <MapAssetPickCard
                 key={asset.id}
                 id={asset.id}
@@ -259,16 +321,16 @@ export function AssetSidebar({
         </CollapsibleSection>
         )}
 
-        {(!searchActive || displayCuas.length > 0) && (
+        {(!searchActive || visibleCuas.length > 0) && (
         <CollapsibleSection
           open={cuasOpen}
           onToggle={() => setCuasOpen(!cuasOpen)}
           label="Defeat systems"
-          count={displayCuas.length}
+          count={visibleCuas.length}
           icon={<Shield size={14} className="text-[var(--store-success)]" />}
         >
           <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
-            {displayCuas.map((asset) => (
+            {visibleCuas.map((asset) => (
               <MapAssetPickCard
                 key={`${asset.id}-${asset.name}`}
                 id={asset.id}
@@ -286,16 +348,16 @@ export function AssetSidebar({
         </CollapsibleSection>
         )}
 
-        {displayRadars.length > 0 && (
+        {visibleRadars.length > 0 && (
           <CollapsibleSection
             open={radarsOpen}
             onToggle={() => setRadarsOpen(!radarsOpen)}
             label="Radars"
-            count={displayRadars.length}
+            count={visibleRadars.length}
             icon={<Radar size={14} className="text-cyan" />}
           >
             <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
-              {displayRadars.map((asset) => (
+              {visibleRadars.map((asset) => (
                 <MapAssetPickCard
                   key={asset.id}
                   id={asset.id}
@@ -313,16 +375,16 @@ export function AssetSidebar({
           </CollapsibleSection>
         )}
 
-        {displayEffectors.length > 0 && (
+        {visibleEffectors.length > 0 && (
           <CollapsibleSection
             open={effectorsOpen}
             onToggle={() => setEffectorsOpen(!effectorsOpen)}
             label="SAM / BMD / effectors"
-            count={displayEffectors.length}
+            count={visibleEffectors.length}
             icon={<Target size={14} className="text-orange" />}
           >
             <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
-              {displayEffectors.map((asset) => (
+              {visibleEffectors.map((asset) => (
                 <MapAssetPickCard
                   key={asset.id}
                   id={asset.id}
@@ -398,6 +460,7 @@ export function AssetSidebar({
                       onReplan={() => onReplanMission?.(u.instanceId)}
                       onClear={() => onClearMission?.(u.instanceId)}
                       onEmconChange={(v) => onMissionEmcon?.(u.instanceId, v)}
+                      onRouteObjectiveChange={(objective) => onMissionRouteObjective?.(u.instanceId, objective)}
                     />
                     <LoiterControls
                       uas={u}
@@ -538,10 +601,20 @@ export function AssetSidebar({
                     ? 'border-cyan/40 bg-cyan/10 text-cyan'
                     : 'store-panel-inner store-text-body hover:border-cyan/30',
                 )}
-                title="Keyboard: H — jam coverage heatmap (Operations)"
+                title="Keyboard: H — jam coverage heatmap (Operations edition + placed RF jammer)"
               >
                 {heatmapLoading ? 'Computing heatmap…' : heatmapEnabled ? 'Hide jam heatmap' : 'Show jam heatmap'}
               </button>
+            )}
+            {operations && placedCuas.length > 0 && (
+              <p className="text-[10px] store-text-muted text-center leading-relaxed">
+                Jam heatmap requires Operations edition and a placed C-UAS with RF jamming capability.
+              </p>
+            )}
+            {heatmapEnabled && !heatmapLoading && !heatmapError && (
+              <p className="text-[10px] font-mono text-cyan text-center">
+                Heatmap overlay active on globe — cyan = stronger jam field, orange = weaker path loss
+              </p>
             )}
             {heatmapError && (
               <p className="text-[10px] font-mono text-amber text-center">{heatmapError}</p>
@@ -597,6 +670,33 @@ export function AssetSidebar({
         )}
       </div>
     </aside>
+  )
+}
+
+function ForceFilterButton({
+  label,
+  active,
+  activeClassName,
+  onClick,
+}: {
+  label: string
+  active: boolean
+  activeClassName: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'rounded-xl border px-2 py-2 text-[10px] font-semibold tracking-widest uppercase transition-colors',
+        active
+          ? activeClassName
+          : 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-muted hover:text-white',
+      )}
+    >
+      {label}
+    </button>
   )
 }
 

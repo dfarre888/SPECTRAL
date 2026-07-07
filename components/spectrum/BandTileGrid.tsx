@@ -12,6 +12,7 @@ import {
 } from './band-tile-data';
 import {
   emissionsForTile,
+  emissionClipInTile,
   kindChipLabel,
   emissionBarStyle,
   activeTileIds,
@@ -22,6 +23,7 @@ import {
   type LaydownEmission,
   type StackedTileMetrics,
 } from '@/lib/map/laydown-tiles';
+import { formatNativeSpectrumValue } from '@/lib/spectrum/scale';
 import { SpectrumPulseOverlay } from './SpectrumPulseOverlay';
 
 const VB_W = 680;
@@ -40,6 +42,14 @@ export interface BandTileGridProps {
 
 interface TooltipState {
   box: AllocationBox;
+  left: number;
+  top: number;
+}
+
+interface EmissionTooltipState {
+  label: string;
+  lo: number;
+  hi: number;
   left: number;
   top: number;
 }
@@ -93,7 +103,17 @@ function AllocationHitAreas({
   );
 }
 
-function AssetEmissionOverlay({ tile, emissions }: { tile: BandTile; emissions: LaydownEmission[] }) {
+function AssetEmissionOverlay({
+  tile,
+  emissions,
+  onEmissionHover,
+  onEmissionLeave,
+}: {
+  tile: BandTile;
+  emissions: LaydownEmission[];
+  onEmissionHover: (em: LaydownEmission, barRect: DOMRect, tileRect: DOMRect) => void;
+  onEmissionLeave: () => void;
+}) {
   const inTile = emissionsForTile(tile, emissions);
   if (inTile.length === 0) return null;
 
@@ -101,8 +121,31 @@ function AssetEmissionOverlay({ tile, emissions }: { tile: BandTile; emissions: 
     <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4 }}>
       {inTile.map((em) => {
         const style = emissionBarStyle(em, tile, 'top');
-        if (!style) return null;
-        return <div key={em.id} style={style} title={em.capabilityLabel ?? em.label} />;
+        const clip = emissionClipInTile(em, tile);
+        if (!style || !clip) return null;
+        return (
+          <div
+            key={em.id}
+            style={{
+              ...style,
+              pointerEvents: 'auto',
+              cursor: 'default',
+              zIndex: 10,
+            }}
+            onPointerEnter={(e) => {
+              e.stopPropagation();
+              const barRect = e.currentTarget.getBoundingClientRect();
+              const tileRect = e.currentTarget.closest('[data-tile-card]')?.getBoundingClientRect();
+              if (tileRect) onEmissionHover(em, barRect, tileRect);
+            }}
+            onPointerLeave={(e) => {
+              e.stopPropagation();
+              onEmissionLeave();
+            }}
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+          />
+        );
       })}
     </div>
   );
@@ -111,9 +154,13 @@ function AssetEmissionOverlay({ tile, emissions }: { tile: BandTile; emissions: 
 function StackedAssetOverlay({
   tile,
   metrics,
+  onEmissionHover,
+  onEmissionLeave,
 }: {
   tile: BandTile;
   metrics: StackedTileMetrics;
+  onEmissionHover: (em: LaydownEmission, barRect: DOMRect, tileRect: DOMRect) => void;
+  onEmissionLeave: () => void;
 }) {
   if (metrics.bricks.length === 0) return null;
   const gutterPct = (metrics.gutterW / LAYDOWN_TILE_VB_W) * 100;
@@ -160,7 +207,26 @@ function StackedAssetOverlay({
                 {label}
               </span>
             </div>
-            <div style={style} title={cap ?? label}>
+            <div
+              style={{
+                ...style,
+                pointerEvents: 'auto',
+                cursor: 'default',
+                zIndex: 10,
+              }}
+              onPointerEnter={(e) => {
+                e.stopPropagation();
+                const barRect = e.currentTarget.getBoundingClientRect();
+                const tileRect = e.currentTarget.closest('[data-tile-card]')?.getBoundingClientRect();
+                if (tileRect) onEmissionHover(brick.emission, barRect, tileRect);
+              }}
+              onPointerLeave={(e) => {
+                e.stopPropagation();
+                onEmissionLeave();
+              }}
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
               {cap && (
                 <span
                   style={{
@@ -186,6 +252,62 @@ function StackedAssetOverlay({
           </React.Fragment>
         );
       })}
+    </div>
+  );
+}
+
+function EmissionTooltip({
+  tile,
+  state,
+  expanded,
+}: {
+  tile: BandTile;
+  state: EmissionTooltipState;
+  expanded: boolean;
+}) {
+  const MAX_W = expanded ? 280 : 220;
+  const lo = Math.min(state.lo, state.hi);
+  const hi = Math.max(state.lo, state.hi);
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: Math.min(state.left, (expanded ? 900 : 380) - MAX_W - 8),
+        top: state.top - 8,
+        transform: 'translate(-50%, -100%)',
+        width: MAX_W,
+        background: 'rgba(6,8,10,0.97)',
+        border: '1px solid rgba(6,182,212,0.4)',
+        borderRadius: 10,
+        padding: '10px 13px',
+        zIndex: 50,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.7)',
+        pointerEvents: 'none',
+      }}
+    >
+      <div
+        style={{
+          fontFamily: 'var(--sx-mono, monospace)',
+          fontSize: 11,
+          fontWeight: 700,
+          color: '#06B6D4',
+          letterSpacing: '0.06em',
+          marginBottom: 5,
+        }}
+      >
+        {state.label}
+      </div>
+      <div
+        style={{
+          fontFamily: 'var(--sx-mono, monospace)',
+          fontSize: 11,
+          color: 'rgba(255,255,255,0.75)',
+          lineHeight: 1.55,
+        }}
+      >
+        {formatNativeSpectrumValue(tile.unit, lo)} – {formatNativeSpectrumValue(tile.unit, hi)}
+      </div>
     </div>
   );
 }
@@ -258,6 +380,7 @@ export function TileCard({
   showBlue?: boolean;
 }) {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+  const [emissionTooltip, setEmissionTooltip] = useState<EmissionTooltipState | null>(null);
   const tileEmissions = emissionsForTile(tile, emissions);
 
   const stackedMetrics = useMemo(() => {
@@ -276,6 +399,21 @@ export function TileCard({
     }
     return emissions;
   }, [stacked, stackedMetrics, emissions]);
+
+  const handleEmissionHover = useCallback(
+    (em: LaydownEmission, barRect: DOMRect, tileRect: DOMRect) => {
+      const clip = emissionClipInTile(em, layoutTile);
+      if (!clip) return;
+      setEmissionTooltip({
+        label: em.capabilityLabel ?? em.label,
+        lo: clip.lo,
+        hi: clip.hi,
+        left: barRect.left - tileRect.left + barRect.width / 2,
+        top: barRect.top - tileRect.top,
+      });
+    },
+    [layoutTile],
+  );
 
   const handleHover = useCallback(
     (box: AllocationBox, boxRect: DOMRect, tileRect: DOMRect) => {
@@ -319,7 +457,10 @@ export function TileCard({
         minHeight: fillViewport ? 0 : undefined,
       }}
       onClick={handleCardClick}
-      onMouseLeave={() => setTooltip(null)}
+      onMouseLeave={() => {
+        setTooltip(null);
+        setEmissionTooltip(null);
+      }}
     >
       <div
         style={
@@ -345,9 +486,21 @@ export function TileCard({
         />
         <AllocationHitAreas tile={layoutTile} onHover={handleHover} onLeave={() => setTooltip(null)} />
         {emissions.length > 0 && stacked && stackedMetrics ? (
-          <StackedAssetOverlay tile={layoutTile} metrics={stackedMetrics} />
+          <StackedAssetOverlay
+            tile={layoutTile}
+            metrics={stackedMetrics}
+            onEmissionHover={handleEmissionHover}
+            onEmissionLeave={() => setEmissionTooltip(null)}
+          />
         ) : (
-          emissions.length > 0 && <AssetEmissionOverlay tile={layoutTile} emissions={emissions} />
+          emissions.length > 0 && (
+            <AssetEmissionOverlay
+              tile={layoutTile}
+              emissions={emissions}
+              onEmissionHover={handleEmissionHover}
+              onEmissionLeave={() => setEmissionTooltip(null)}
+            />
+          )
         )}
         {overlayEmissions.length > 0 && showSpectrumPulse && (
           <SpectrumPulseOverlay
@@ -361,6 +514,9 @@ export function TileCard({
           />
         )}
         {tooltip && <Tooltip state={tooltip} expanded={expanded} />}
+        {emissionTooltip && (
+          <EmissionTooltip tile={layoutTile} state={emissionTooltip} expanded={expanded} />
+        )}
       </div>
 
       <div
@@ -582,7 +738,7 @@ function DefaultBandTileGrid() {
           Band Tiles
         </span>
         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', flex: 1 }}>
-          Hover allocation bars for intelligence · Click tile to expand
+          Hover emission bars for frequency range · allocation bars for intel · Click tile to expand
         </span>
       </div>
 
@@ -604,7 +760,10 @@ export function BandTileGrid(props?: BandTileGridProps) {
   if (!props) {
     return <DefaultBandTileGrid />;
   }
+  return <BandTileGridConfigured {...props} />;
+}
 
+function BandTileGridConfigured(props: BandTileGridProps) {
   const {
     emissions = [],
     tiles,

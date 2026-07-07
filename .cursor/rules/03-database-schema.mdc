@@ -1,10 +1,42 @@
 ---
-description: Spectral Supabase schema, TypeScript types, RLS rules, and query patterns.
+description: Spectral Supabase schema, TypeScript types, client tiers, RLS rules, and query patterns.
 globs: lib/supabase/**, lib/types/**, supabase/**, app/**/page.tsx, app/**/route.ts
 alwaysApply: false
 ---
 
 # Database Schema Reference
+
+## Supabase Client Tiers — Always Pick the Right One
+
+```ts
+// Browser (client components only) — anon key, RLS enforced
+import { createBrowserClient } from '@/lib/supabase/client'
+
+// Server (Server Components + API routes) — anon + cookie session, RLS enforced
+import { createClient } from '@/lib/supabase/server'
+const supabase = await createClient()
+
+// Service role server (admin ops only, explicit call) — bypasses RLS
+import { createServiceClient } from '@/lib/supabase/server'
+
+// Node.js runtime service role (PCM WorldStateEngine + scripts only) — WebSocket transport
+import { createServiceRoleNodeClient } from '@/lib/supabase/service-role-node'
+```
+
+**Rules:**
+- `createServiceClient()` and `createServiceRoleNodeClient()` NEVER appear in client components or page components
+- `service-role-node.ts` is for `lib/pcm/worldStateEngine.ts` and standalone Node scripts ONLY
+- Demo mode auto-elevates `createClient()` to service role — never set `NEXT_PUBLIC_DEMO_MODE=true` in production
+
+## Migration Files
+
+`supabase/migrations/` — 30+ timestamped migration files. Apply in order.
+Apply with: `supabase db push` OR Supabase MCP `apply_migration`.
+Never modify existing migration files. Always create new ones: `YYYYMMDDHHMMSS_description.sql`
+
+**Pending (must apply in order):**
+1. `20260624120000_iran_missile_platforms.sql`
+2. `20260624130000_us_allied_cruise_missiles.sql` — has guidance_type constraint dependency on #1
 
 ## Tables (Supabase PostgreSQL)
 
@@ -106,6 +138,46 @@ alwaysApply: false
 ### `scenario_templates` + `scenario_injects`
 - `scenario_templates` — Red/Blue scenario configs with terrain, ORBAT, phase timeline
 - `scenario_injects` — 15 pre-seeded injects (GNSS Degraded, ROE Change, Swarm Detected, Spoof Alert, Fiber Optic FPV, etc.)
+
+### Defeat / Accredited Tables
+| Table | Purpose |
+|-------|---------|
+| `defeat_matrix_entries` | Platform × defeat system matchings with base kinetic/EW/DEW Pk |
+| `accredited_defeat_pk` | Accredited Pk overrides per platform × defeat system (PCM-scoped only) |
+| `accredited_erp_profiles` | Accredited ERP emission profiles for EW defeat systems |
+| `accredited_waveform_profiles` | Accredited waveform data for signal analysis |
+
+**Critical isolation rule:** Accredited table data NEVER flows to the learner model (`spectral_competency_records`), client components, or any Claude call. Access via `lib/operations/accredited-supplements.ts` only.
+
+### PCM (Persistent Combat Model) Tables
+| Table | Purpose | Write path |
+|-------|---------|------------|
+| `spectral_scenarios` | Scenario templates for exercise creation | Migration only |
+| `spectral_players` | Player records (role: red/blue/ds) | Exercise creation |
+| `spectral_exercises` | Active exercise state + world state snapshot | WorldStateEngine only |
+| `spectral_world_states` | Per-turn world state history | WorldStateEngine only |
+| `spectral_orders` | Red/Blue orders per turn | submitOrders() route |
+| `spectral_turn_records` | Turn adjudication results | WorldStateEngine only |
+| `spectral_aar_documents` | After Action Review documents | finaliseExerciseAAR() only |
+
+### MOAT (Learner Model) Tables
+| Table | Purpose | Write path |
+|-------|---------|------------|
+| `spectral_competency_records` | Longitudinal trainee competency | `processMoatAfterTurn()` ONLY |
+| `spectral_training_plans` | Next training assignments | `processMoatAfterTurn()` ONLY |
+
+**NEVER** insert directly into MOAT tables. All writes must go through `processMoatAfterTurn()`.
+
+### WOPR Tables
+| Table | Purpose |
+|-------|---------|
+| `wopr_scenarios` | WOPR Red/Blue Arena scenario state |
+
+### Operations Tables
+| Table | Purpose |
+|-------|---------|
+| `tenant_members` | Tenant ↔ user ↔ role mapping (Operations edition) |
+| `audit_log` | Append-only audit trail (write via `writeAuditLog()` only) |
 
 ## TypeScript Interfaces
 All types live in `lib/types/index.ts`:

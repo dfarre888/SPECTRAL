@@ -20,21 +20,7 @@ const VERDICT_META = {
 
 export function EvolutionArc({ platform }: { platform: Platform }) {
   const variants = useVariants(platform.id);
-  const [idx, setIdx] = useState(variants.length - 1); // start at latest
-
-  if (variants.length === 0) {
-    return (
-      <GlassCard style={{ padding: 28, borderRadius: 18 }}>
-        <div className="sx-display" style={{ fontWeight: 600, fontSize: 15 }}>
-          {platform.name}
-        </div>
-        <div className="sx-dim" style={{ fontSize: 13, marginTop: 8 }}>
-          No generational variants are catalogued for this platform yet. The evolution arc is
-          available for platforms with a versioned capability history (e.g. Shahed-136 Gen 0–4).
-        </div>
-      </GlassCard>
-    );
-  }
+  const [idx, setIdx] = useState(() => Math.max(variants.length - 1, 0));
 
   const current = variants[idx];
   const meta = current.defeat_verdict ? VERDICT_META[current.defeat_verdict] : null;
@@ -62,6 +48,20 @@ export function EvolutionArc({ platform }: { platform: Platform }) {
       caps,
     }));
   }, [current]);
+  if (variants.length === 0 || !current) {
+    return (
+      <GlassCard style={{ padding: 28, borderRadius: 18 }}>
+        <div className="sx-display" style={{ fontWeight: 600, fontSize: 15 }}>
+          {platform.name}
+        </div>
+        <div className="sx-dim" style={{ fontSize: 13, marginTop: 8 }}>
+          No generational variants are catalogued for this platform yet. The evolution arc is
+          available for platforms with a versioned capability history (e.g. Shahed-136 Gen 0–4).
+        </div>
+      </GlassCard>
+    );
+  }
+
 
   return (
     <div>

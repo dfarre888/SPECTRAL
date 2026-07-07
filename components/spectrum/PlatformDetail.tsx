@@ -6,12 +6,15 @@
  */
 
 import React, { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { writeMapStaging } from '@/lib/spectrum/map-staging';
 import type { Platform, SpectrumCapability, DefeatResistance } from '@/lib/spectrum/types';
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail';
 import { GlassCard, SideBadge } from '@/components/ui/primitives';
 import { LAYER_COLOR, capabilityExtent } from '@/lib/spectrum/scale';
 
 export function PlatformDetail({ platform }: { platform: Platform }) {
+  const router = useRouter();
   const caps = platform.capabilities ?? [];
   const red = platform.side === 'red';
 
@@ -57,6 +60,28 @@ export function PlatformDetail({ platform }: { platform: Platform }) {
               </GlassCard>
             ))}
           </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              writeMapStaging({ placeIds: [platform.id], highlightIds: [platform.id] });
+              router.push('/map?from=spectra');
+            }}
+            style={{
+              marginTop: 18,
+              width: '100%',
+              padding: '10px 16px',
+              borderRadius: 11,
+              fontSize: 12,
+              fontWeight: 600,
+              background: 'var(--sx-orange)',
+              color: '#0a0c0e',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            View on Map →
+          </button>
 
           {platform.intel_note && (
             <div

@@ -1,3 +1,4 @@
+import 'server-only'
 import { createClient } from '@/lib/supabase/server'
 import { createDefaultWorldState } from '@/lib/wopr/engine'
 import type { WoprScenario } from '@/lib/wopr/types'

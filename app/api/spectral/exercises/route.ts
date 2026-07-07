@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { worldStateEngine } from '@/lib/pcm/worldStateEngine';
 import { requireSpectralAuth } from '@/lib/pcm/require-auth';
+import { writeAuditLog } from '@/lib/operations/audit';
+import { getDemoTenantId } from '@/lib/demo';
 import type { PCM } from '@/lib/pcm/spectral.types';
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
   const auth = await requireSpectralAuth();
@@ -22,6 +26,15 @@ export async function POST(req: NextRequest) {
     if (result.error) {
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
+
+    void writeAuditLog({
+      tenantId: getDemoTenantId(),
+      userId: auth.user!.id,
+      action: 'pcm.exercise.create',
+      resourceType: 'exercise',
+      resourceId: result.exercise_id,
+      classification: 'UNCLASSIFIED',
+    });
 
     return NextResponse.json(result, { status: 201 });
   } catch (err) {

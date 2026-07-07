@@ -63,6 +63,11 @@ export function makeLogScale(
 
 /* ----------------------------- AXIS DEFINITIONS ----------------------------- */
 
+const trim = (n: number): string => {
+  const r = Math.round(n * 100) / 100;
+  return Number.isInteger(r) ? String(r) : String(r);
+};
+
 const fmtHz = (hz: number): string => {
   if (hz >= 1e9) return `${trim(hz / 1e9)} GHz`;
   if (hz >= 1e6) return `${trim(hz / 1e6)} MHz`;
@@ -73,10 +78,11 @@ const fmtUm = (um: number): string => {
   if (um < 1) return `${trim(um * 1000)} nm`;
   return `${trim(um)} µm`;
 };
-const trim = (n: number): string => {
-  const r = Math.round(n * 100) / 100;
-  return Number.isInteger(r) ? String(r) : String(r);
-};
+
+/** Format a native-axis value (Hz or µm) for display in band-tile probes. */
+export function formatNativeSpectrumValue(unit: 'hz' | 'um', value: number): string {
+  return unit === 'hz' ? fmtHz(value) : fmtUm(value);
+}
 
 /**
  * Axis presets. Each canvas mounts one of these.

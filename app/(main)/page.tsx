@@ -12,6 +12,7 @@ import {
   StoreFilterSection,
   StoreFilterSidebar,
 } from '@/components/catalog/StoreFilterSidebar'
+import { StartHereWizard } from '@/components/dashboard/StartHereWizard'
 import { StoreHero } from '@/components/catalog/StoreHero'
 import { StorePanel } from '@/components/ui/store-surface'
 
@@ -22,7 +23,10 @@ const MODULES = [
   { href: '/defeat', icon: 'shield' as const, kicker: 'C-UAS', label: 'Defeat Matrix', count: '15', unit: 'systems', accent: 'text-[var(--store-success)] bg-[rgba(74,222,128,0.10)] border-[rgba(74,222,128,0.20)]', desc: 'Platform × countermeasure effectiveness grid' },
   { href: '/conflicts', icon: 'globe' as const, kicker: 'CASE STUDY', label: 'Conflict Intel', count: '7', unit: 'incidents', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Named engagements and operational lessons' },
   { href: '/arena', icon: 'swords' as const, kicker: 'WARGAME', label: 'Red/Blue Arena', count: '20+', unit: 'injects', accent: 'text-red bg-red/10 border-red/25', desc: 'Scenario engine and exercise briefs' },
-  { href: '/compare', icon: 'git-compare' as const, kicker: 'ANALYSIS', label: '1v1 Overlay', count: '∞', unit: 'matchups', accent: 'text-amber bg-amber/10 border-amber/25', desc: 'Head-to-head engagement comparison' },
+  { href: '/map', icon: 'map' as const, kicker: 'COP', label: 'Map Intel', count: 'Live', unit: 'laydown', accent: 'text-cyan bg-cyan/10 border-cyan/25', desc: 'Cesium laydown, mission paths, and force evaluation' },
+  { href: '/pcm', icon: 'crosshair' as const, kicker: 'PCM', label: 'PCM Training', count: 'AI', unit: 'scenarios', accent: 'text-purple bg-purple/10 border-purple/25', desc: 'Learner-driven exercises, globe runs, and force design' },
+  { href: '/overlay', icon: 'target' as const, kicker: 'SAM', label: 'SAM Engagement', count: 'Pk', unit: 'envelope', accent: 'text-red bg-red/10 border-red/25', desc: 'SAM intercept geometry, range rings, and salvo Pk' },
+  { href: '/compare', icon: 'git-compare' as const, kicker: 'ANALYSIS', label: '1v1 Overlay', count: '∞', unit: 'matchups', accent: 'text-amber bg-amber/10 border-amber/25', desc: 'Library platform dossier side-by-side comparison' },
 ]
 
 const RECENT_INCIDENTS = [
@@ -113,7 +117,9 @@ export default function Dashboard() {
           </StoreFilterSidebar>
         }
       >
-        <StoreCatalogHeader title="Intelligence Modules" meta="7 modules · select to open" />
+        <StartHereWizard />
+
+        <StoreCatalogHeader title="Intelligence Modules" meta="10 modules · select to open" />
 
         <div
           className="grid gap-4 mb-8"
@@ -141,7 +147,7 @@ export default function Dashboard() {
             {RECENT_INCIDENTS.map(({ id, label, status, type }) => (
               <Link
                 key={id}
-                href={`/conflicts/${id}`}
+                href="/conflicts"
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--store-surface-2)] transition-colors group"
               >
                 {status === 'ongoing' ? (

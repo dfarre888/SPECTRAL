@@ -6,7 +6,7 @@ export type GnssDependencyLevel = 'primary' | 'secondary' | 'none' | 'immune';
 
 export type GnssJammingEffect = 'mission_kill' | 'degraded' | 'minimal' | 'none';
 
-export type GnssJammingType = 'broadband' | 'meaconing' | 'spoofing' | 'selective';
+export type GnssJammingType = 'broadband' | 'meaconing' | 'spoofing' | 'selective' | 'spoofing+jamming';
 
 export interface GnssSignalBand {
   band: string;

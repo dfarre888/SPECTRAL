@@ -1,3 +1,4 @@
+import 'server-only'
 import { createClient } from '@/lib/supabase/server'
 import { buildComputedSamPkMap, SAM_MATRIX_PLATFORMS, isSamSystemId } from '@/lib/defeat/sam-matrix-bridge'
 import type { AccreditedDefeatPkRow, DefeatMatrixPayload } from '@/lib/types'

@@ -1,3 +1,4 @@
+import 'server-only'
 /**
  * Server-side defeat matrix lookup with per-turn cache.
  */
@@ -14,6 +15,7 @@ import {
   resolveDefenderSystemId,
   resolvePcmPlatformId,
 } from '@/lib/pcm/pcm-platform-ids';
+import { OFFLINE_DEFEAT_SYSTEMS } from '@/lib/pcm/defeat-matrix-offline-data';
 import type { AntiDroneSystem, DefeatEffectiveness, Platform } from '@/lib/types';
 
 export interface DefeatLookupResult {
@@ -165,118 +167,6 @@ const OFFLINE_EFFECTIVENESS: DefeatEffectiveness[] = [
   },
 ];
 
-const OFFLINE_SYSTEMS: AntiDroneSystem[] = [
-  {
-    id: 'coyote-block-3',
-    name: 'Coyote Block 3',
-    manufacturer: 'Raytheon',
-    country: 'United States',
-    defeat_method: ['kinetic'],
-    effective_range_m: 15000,
-    frequency_bands_covered_mhz: {},
-    power_output_w: null,
-    weight_kg: null,
-    portability: 'vehicle',
-    price_usd_approx: null,
-    platforms_can_defeat: [],
-    conflict_validated: true,
-    conflict_notes: null,
-    sources: [],
-    data_confidence: 'high',
-  },
-  {
-    id: 'dronegun-tactical',
-    name: 'DroneGun Tactical',
-    manufacturer: 'DroneShield',
-    country: 'Australia',
-    defeat_method: ['RF_jamming'],
-    effective_range_m: 2000,
-    frequency_bands_covered_mhz: {},
-    power_output_w: null,
-    weight_kg: null,
-    portability: 'man-portable',
-    price_usd_approx: null,
-    platforms_can_defeat: [],
-    conflict_validated: true,
-    conflict_notes: null,
-    sources: [],
-    data_confidence: 'high',
-  },
-  {
-    id: 'drone-dome',
-    name: 'Drone Dome',
-    manufacturer: 'Rafael',
-    country: 'Israel',
-    defeat_method: ['RF_jamming', 'kinetic'],
-    effective_range_m: 3500,
-    frequency_bands_covered_mhz: {},
-    power_output_w: null,
-    weight_kg: null,
-    portability: 'vehicle',
-    price_usd_approx: null,
-    platforms_can_defeat: [],
-    conflict_validated: true,
-    conflict_notes: null,
-    sources: [],
-    data_confidence: 'high',
-  },
-
-  {
-    id: 'edge-horizon',
-    name: 'Edge Horizon EW',
-    manufacturer: 'Edge Group',
-    country: 'United Arab Emirates',
-    defeat_method: ['RF_jamming'],
-    effective_range_m: 12000,
-    frequency_bands_covered_mhz: {},
-    power_output_w: null,
-    weight_kg: null,
-    portability: 'vehicle',
-    price_usd_approx: null,
-    platforms_can_defeat: [],
-    conflict_validated: true,
-    conflict_notes: null,
-    sources: [],
-    data_confidence: 'estimated',
-  },
-  {
-    id: 'skynex',
-    name: 'Rheinmetall Skynex',
-    manufacturer: 'Rheinmetall',
-    country: 'Germany',
-    defeat_method: ['kinetic'],
-    effective_range_m: 4000,
-    frequency_bands_covered_mhz: {},
-    power_output_w: null,
-    weight_kg: null,
-    portability: 'vehicle',
-    price_usd_approx: null,
-    platforms_can_defeat: [],
-    conflict_validated: true,
-    conflict_notes: null,
-    sources: [],
-    data_confidence: 'high',
-  },
-  {
-    id: 'ah-64e-apache-cuas',
-    name: 'AH-64E Guardian C-UAS',
-    manufacturer: 'Boeing',
-    country: 'United Arab Emirates',
-    defeat_method: ['kinetic'],
-    effective_range_m: 8000,
-    frequency_bands_covered_mhz: {},
-    power_output_w: null,
-    weight_kg: null,
-    portability: 'airborne',
-    price_usd_approx: null,
-    platforms_can_defeat: [],
-    conflict_validated: true,
-    conflict_notes: null,
-    sources: [],
-    data_confidence: 'high',
-  },
-];
-
 const OFFLINE_PLATFORMS: Partial<Platform>[] = [
   {
     id: 'shahed-136',
@@ -340,7 +230,7 @@ export class DefeatMatrixCache {
     for (const p of OFFLINE_PLATFORMS) {
       if (p.id) c.platforms.set(p.id, p as Platform);
     }
-    for (const s of OFFLINE_SYSTEMS) c.systems.set(s.id, s);
+    for (const s of OFFLINE_DEFEAT_SYSTEMS) c.systems.set(s.id, s);
     for (const row of OFFLINE_EFFECTIVENESS) {
       c.effectiveness.set(`${row.platform_id}:${row.defeat_system_id}`, row);
     }

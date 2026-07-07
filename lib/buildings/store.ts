@@ -1,3 +1,4 @@
+import 'server-only'
 import { createClient } from '@/lib/supabase/server'
 import type { BuildingFootprint, BuildingMaterialClass } from '@/lib/buildings/types'
 

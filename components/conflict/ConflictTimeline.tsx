@@ -1,6 +1,6 @@
 'use client';
 
-import type { ConflictIncident } from '@/lib/conflict/conflict-types';
+import type { ConflictIncident } from '@/lib/conflicts/types';
 
 export function ConflictTimeline({
   incidents,

@@ -1,0 +1,53 @@
+{
+  "extends": [
+    "next/core-web-vitals"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "components/**/*.{ts,tsx}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@/lib/supabase/server",
+                "message": "server-only \u2014 do not import in client components"
+              },
+              {
+                "name": "@/lib/defeat/queries",
+                "message": "server-only"
+              },
+              {
+                "name": "@/lib/map/queries",
+                "message": "server-only"
+              },
+              {
+                "name": "@/lib/platforms/queries",
+                "message": "server-only"
+              },
+              {
+                "name": "@/lib/pcm/defeat-matrix-lookup",
+                "message": "server-only"
+              },
+              {
+                "name": "@/lib/operations/accredited-supplements",
+                "message": "server-only"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "rules": {
+    "react-hooks/exhaustive-deps": "off",
+    "@next/next/no-img-element": "off"
+  }
+}

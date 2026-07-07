@@ -1,3 +1,4 @@
+import 'server-only'
 import { createClient } from '@/lib/supabase/server'
 import type { ClassificationMarking } from '@/lib/operations/classification'
 

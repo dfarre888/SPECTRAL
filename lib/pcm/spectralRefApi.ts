@@ -2,7 +2,7 @@
  * SPECTRAL PCM Phase 3 — SPECTRAL-REF API (narrative + coaching only).
  */
 
-import Anthropic from '@anthropic-ai/sdk';
+import { callBedrock } from '@/lib/claude/bedrock';
 import type { PCM } from '@/lib/pcm/spectral.types';
 
 type WorldState = PCM.WorldState;
@@ -10,16 +10,9 @@ type Order = PCM.Order;
 type AdjudicationResult = PCM.AdjudicationResult;
 
 export const REF_MODEL_CONFIG = {
-  model: process.env.SPECTRAL_REF_MODEL ?? 'claude-sonnet-4-6',
   max_tokens: 4096,
   temperature: 0.3,
 } as const;
-
-const getClient = (): Anthropic => {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('SPECTRAL-REF: ANTHROPIC_API_KEY not set');
-  return new Anthropic({ apiKey });
-};
 
 export interface RefRawResponse {
   reasoning: string;
@@ -53,15 +46,13 @@ export async function generateRefNarrative(
   redOrders: Order | null,
   blueOrders: Order | null,
 ): Promise<RefRawResponse> {
-  const client = getClient();
-  const response = await client.messages.create({
-    model: REF_MODEL_CONFIG.model,
-    max_tokens: REF_MODEL_CONFIG.max_tokens,
-    temperature: REF_MODEL_CONFIG.temperature,
+  const raw = await callBedrock({
     system: buildRefSystemPrompt(),
-    messages: [{ role: 'user', content: buildRefUserMessage(resolvedWorldState, redOrders, blueOrders) }],
+    userContent: buildRefUserMessage(resolvedWorldState, redOrders, blueOrders),
+    maxTokens: REF_MODEL_CONFIG.max_tokens,
+    temperature: REF_MODEL_CONFIG.temperature,
   });
-  return parseRefResponse(response);
+  return parseRefRaw(raw);
 }
 
 function buildRefSystemPrompt(): string {
@@ -101,9 +92,7 @@ function buildRefUserMessage(
   );
 }
 
-function parseRefResponse(response: Anthropic.Message): RefRawResponse {
-  const textBlock = response.content.find((b) => b.type === 'text');
-  const raw = textBlock && 'text' in textBlock ? textBlock.text : '{}';
+function parseRefRaw(raw: string): RefRawResponse {
   const clean = raw.replace(/```json|```/g, '').trim();
   try {
     const parsed = JSON.parse(clean);

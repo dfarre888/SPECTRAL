@@ -1,3 +1,4 @@
+import 'server-only'
 import { createClient } from '@/lib/supabase/server'
 import { toMapCuasAsset, toMapUasAsset } from '@/lib/map/asset-mappers'
 import { getSpectraMapAssets } from '@/lib/map/spectra-assets'

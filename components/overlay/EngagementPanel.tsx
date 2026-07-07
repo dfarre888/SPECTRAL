@@ -16,6 +16,7 @@ import {
   type EcmLevel,
   type UasTargetCategory,
 } from '@/lib/risk/sam-intercept'
+import type { OverlayPlacementMode } from '@/components/overlay/OverlayGeometryMap'
 import type { Platform } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -32,10 +33,17 @@ const PHASE_STYLE: Record<EngagementResult['phase'], string> = {
 
 interface EngagementPanelProps {
   platforms: Platform[]
+  scenario?: EngagementScenario
+  onScenarioChange?: (scenario: EngagementScenario) => void
+  placementMode?: OverlayPlacementMode
+  onStartPlacement?: (mode: OverlayPlacementMode) => void
 }
 
-function defaultScenario(platforms: Platform[]): EngagementScenario {
-  const platform = platforms.find((p) => p.id === 'shahed-136') ?? platforms[0]
+export function defaultEngagementScenario(platforms: Platform[]): EngagementScenario {
+  const matrixPlatforms = platforms.filter((p) =>
+    (SAM_MATRIX_PLATFORMS as readonly string[]).includes(p.id),
+  )
+  const platform = matrixPlatforms.find((p) => p.id === 'shahed-136') ?? matrixPlatforms[0]
   const cat = platform ? platformToUasCategory(platform.id) ?? 'owa' : 'owa'
   return {
     system_id: 'sa-15-gauntlet',
@@ -52,16 +60,33 @@ function defaultScenario(platforms: Platform[]): EngagementScenario {
   }
 }
 
-export function EngagementPanel({ platforms }: EngagementPanelProps) {
+export function EngagementPanel({
+  platforms,
+  scenario: controlledScenario,
+  onScenarioChange,
+  placementMode: _placementMode,
+  onStartPlacement: _onStartPlacement,
+}: EngagementPanelProps) {
   const matrixPlatforms = useMemo(
     () => platforms.filter((p) => (SAM_MATRIX_PLATFORMS as readonly string[]).includes(p.id)),
     [platforms],
   )
-  const [scenario, setScenario] = useState<EngagementScenario>(() => defaultScenario(matrixPlatforms))
+  const [internalScenario, setInternalScenario] = useState<EngagementScenario>(() =>
+    defaultEngagementScenario(matrixPlatforms),
+  )
+
+  const scenario = controlledScenario ?? internalScenario
 
   const result = useMemo(() => computeEngagement(scenario), [scenario])
 
-  const update = (patch: Partial<EngagementScenario>) => setScenario((s) => ({ ...s, ...patch }))
+  const update = (patch: Partial<EngagementScenario>) => {
+    const next = { ...scenario, ...patch }
+    if (controlledScenario !== undefined) {
+      onScenarioChange?.(next)
+    } else {
+      setInternalScenario(next)
+    }
+  }
 
   return (
     <div className="w-full max-w-[420px] space-y-4 p-4 overflow-y-auto max-h-[calc(100vh-160px)]">

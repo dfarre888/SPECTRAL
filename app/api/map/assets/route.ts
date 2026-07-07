@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { getMapAssets } from '@/lib/map/queries'
 import { requireSpectralAuth } from '@/lib/pcm/require-auth'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   const auth = await requireSpectralAuth()
   if (auth.response) return auth.response

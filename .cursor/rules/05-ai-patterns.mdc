@@ -1,86 +1,150 @@
 ---
-description: Claude AI integration patterns — how to use the Spectral Intelligence AI correctly.
-globs: lib/claude/**, app/**/route.ts, app/**/actions.ts
+description: Claude AI integration patterns — AWS Bedrock sovereign inference. Apply to all AI caller files and API routes.
+globs: lib/claude/**, app/**/route.ts, app/**/actions.ts, app/api/aerocopilot/**, app/api/spectral/**/turn/**
 alwaysApply: false
 ---
 
-# Spectral AI — Claude Integration Rules
+# Spectral AI — AWS Bedrock Sovereign Layer
 
-## The Wrapper
-Always use `lib/claude/client.ts` — never call `@anthropic-ai/sdk` directly from components or pages.
+## Architecture: Single Bedrock Client
+
+All Claude inference routes through ONE file. Never import `@anthropic-ai/sdk` or
+instantiate a BedrockRuntimeClient outside `lib/claude/bedrock.ts`.
+
+```
+lib/claude/bedrock.ts        ← ONLY Bedrock client. callBedrock() + callBedrockMultiTurn()
+lib/claude/client.ts         ← querySpectral() wrapper — calls callBedrock() internally
+lib/pcm/spectralRefApi.ts    ← SPECTRAL-REF narrator — calls callBedrock() internally
+app/api/aerocopilot/route.ts ← AeroCopilot route — calls callBedrock() directly
+```
+
+## callBedrock() — Primary API
 
 ```ts
-// lib/claude/client.ts signature
-export async function querySpectral({
-  question,
-  context,
-}: SpectralQuery): Promise<string>
+// lib/claude/bedrock.ts
+export async function callBedrock(params: {
+  system: string
+  userContent: string
+  maxTokens?: number       // default: 2048
+  temperature?: number     // default: 0.3
+}): Promise<string>
 
-// SpectralQuery type
-interface SpectralQuery {
+export async function callBedrockMultiTurn(params: {
+  system: string
+  messages: Array<{ role: 'user' | 'assistant'; content: string }>
+  maxTokens?: number
+  temperature?: number
+}): Promise<string>
+```
+
+## Model & Region
+
+```
+Model ID : BEDROCK_MODEL_ID env var
+           → ap.anthropic.claude-sonnet-4-6-20250514-v1:0  (verify in AWS Console)
+Region   : ap-southeast-2 — Geo cross-region routing (AU/NZ AP geography)
+Transport: ConverseCommand via @aws-sdk/client-bedrock-runtime
+```
+
+## querySpectral() — Intelligence Analysis Wrapper
+
+```ts
+// lib/claude/client.ts — correct call signature
+export interface SpectralQuery {
   question: string
-  context?: string[]  // optional array of platform/system descriptions for grounding
+  context: {
+    platforms?:     object[]   // platforms table rows — OSINT fields only, NO Pk values
+    jammers?:       object[]
+    defeatSystems?: object[]
+    incidents?:     object[]
+  }
 }
+export async function querySpectral({ question, context }: SpectralQuery): Promise<string>
 ```
 
-## System Prompt (fixed — do not change without discussion)
-```
-You are Spectral Intelligence, an AI analyst for the Spectral drone threat platform.
-You provide military-grade analysis of unmanned aerial systems, electronic warfare,
-and counter-drone capabilities. All your analysis is based on open-source intelligence.
-You do not speculate about classified capabilities. You provide precise, direct answers
-in the style of an experienced intelligence analyst briefing operators.
-```
+**CRITICAL:** The context type does NOT include Pk values, ERP data, or waveform profiles.
+Never extend SpectralQuery to carry accredited data — that isolation is structural.
 
-## Correct Usage Pattern (Server Action)
+## AeroCopilot Pattern (POST /api/aerocopilot)
+
 ```ts
-// app/platforms/actions.ts
-'use server'
-import { querySpectral } from '@/lib/claude/client'
-
-export async function analyzeePlatform(platformId: string, question: string) {
-  const platform = await getPlatformById(platformId)
-  return querySpectral({
-    question,
-    context: [
-      `Platform: ${platform.name} (${platform.country_of_origin})`,
-      `Role: ${platform.role.join(', ')}`,
-      `Max range: ${platform.max_range_km}km`,
-      `Status: ${platform.status}`,
-    ],
-  })
-}
+const text = await callBedrock({
+  system: AEROCOPILOT_SYSTEM,     // lib/spectrum/aerocopilot-llm.ts
+  userContent: buildCopilotUserMessage(query, platforms, radars, effectors),
+  maxTokens: 1200,
+  temperature: 0.3,
+})
+const parsed = parseCopilotResponse(text)  // safe JSON parse with null fallback
 ```
 
-## Model & Limits
-- Model: `claude-sonnet-4-6`
-- Max tokens: 2048 (AI answers should be briefing-length, not essays)
-- Temperature: default (do not adjust)
-- No streaming in this codebase yet — returns full string
+## SPECTRAL-REF Pattern (PCM narrator only)
 
-## ITAR / Data Compliance Rules for AI
-The AI **must not** be given:
-- Classified signal parameters
-- Specific weapons system vulnerabilities that aren't public knowledge
-- Personnel information
-- Real-time operational data
+```ts
+// lib/pcm/spectralRefApi.ts
+// REF is a narrator. It does NOT resolve combat. Narrate and coach only.
+const raw = await callBedrock({
+  system: buildRefSystemPrompt(),
+  userContent: buildRefUserMessage(worldState, redOrders, blueOrders),
+  maxTokens: 4096,
+  temperature: 0.3,
+})
+return parseRefRaw(raw)   // safe fallback: { ds_briefing: 'REF narrative parse error...' }
+```
 
-The AI **should** receive as context:
-- Platform specs from the `platforms` table
-- GNSS jammer characteristics from `gnss_jammers`
-- Conflict case study summaries from `conflict_incidents`
-- Anti-drone system capabilities from `anti_drone_systems`
+**buildRefUserMessage() must NEVER include:** raw Pk values, ERP/waveform data,
+AccreditedDataLayer content. Message contains: turn/phase/contact counts/magazine remaining/
+platform counts/inject queue/order summaries ONLY.
 
-## Rate Limiting
-Wrap AI calls in server actions or API routes — never call from the browser directly (exposes API key). The ANTHROPIC_API_KEY is a server-only environment variable.
+## Environment Variables
+
+```bash
+# Server-only — never prefix with NEXT_PUBLIC_
+AWS_ACCESS_KEY_ID=your-iam-key
+AWS_SECRET_ACCESS_KEY=your-iam-secret
+BEDROCK_MODEL_ID=ap.anthropic.claude-sonnet-4-6-20250514-v1:0
+
+# Verify exact model ID: AWS Console → Bedrock → Model catalog → ap-southeast-2 → Claude Sonnet 4.6
+```
+
+## What NOT to do
+
+```ts
+// ❌ WRONG — SDK removed, use callBedrock() instead
+import Anthropic from '@anthropic-ai/sdk'
+
+// ❌ WRONG — never instantiate BedrockRuntimeClient outside bedrock.ts
+import { BedrockRuntimeClient } from '@aws-sdk/client-bedrock-runtime'
+const client = new BedrockRuntimeClient(...)
+
+// ❌ WRONG — never call Claude from a client component
+'use client'
+const result = await callBedrock(...)
+
+// ❌ WRONG — never pass Pk or accredited data to any Claude call
+callBedrock({ userContent: JSON.stringify({ pk_kinetic_pct: 0.87, pk_rf_jamming_pct: 0.65 }) })
+```
 
 ## Error Handling
+
+Always catch callBedrock() errors at the API route level. Never surface raw Bedrock errors
+to the client — return a safe degraded message instead.
+
 ```ts
-try {
-  const result = await querySpectral({ question })
-  return result
-} catch (error) {
-  // Return a safe degraded message — never surface API errors to the user
-  return 'Analysis temporarily unavailable. Please consult the platform database directly.'
+} catch (err) {
+  console.error('[POST /api/aerocopilot]', err)
+  return NextResponse.json({ error: 'Copilot request failed' }, { status: 500 })
 }
 ```
+
+## ITAR / Data Compliance
+
+Claude **must not** receive:
+- Raw Pk / Pd values or accredited defeat probability data
+- Classified signal parameters or weapons system vulnerabilities beyond public domain
+- Real-time operational tracking data or personnel information
+
+Claude **may** receive:
+- Platform specs from `platforms` table (OSINT fields only)
+- GNSS jammer characteristics (public spec sheets)
+- Conflict case study summaries
+- Wargame turn state (contact counts, phase, magazine remaining — no Pk)

@@ -8,7 +8,7 @@ function lossToColour(Cesium: CesiumModule, pathLossDb: number, losState: string
   const r = Math.round(249 * t + 6 * (1 - t))
   const g = Math.round(115 * t + 182 * (1 - t))
   const b = Math.round(22 * t + 212 * (1 - t))
-  const alpha = losState === 'NLOS' ? 0.48 : 0.55
+  const alpha = losState === 'NLOS' ? 0.62 : 0.72
   return Cesium.Color.fromBytes(r, g, b, Math.round(alpha * 255))
 }
 
@@ -49,10 +49,11 @@ export function syncHeatmapLayer(
     const rectGraphics = {
       coordinates: rect,
       material,
-      height: 8,
+      height: 20,
       heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
       classificationType: Cesium.ClassificationType.TERRAIN,
-      outline: false,
+      outline: true,
+      outlineColor: Cesium.Color.fromBytes(255, 255, 255, 40),
       zIndex: 0,
     }
     if (!entity) {

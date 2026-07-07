@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import type { ConflictIncident } from '@/lib/conflict/conflict-types';
+import type { ConflictIncident } from '@/lib/conflicts/types';
 import { ConflictMap } from '@/components/conflict/ConflictMap';
 import { ConflictTimeline } from '@/components/conflict/ConflictTimeline';
 

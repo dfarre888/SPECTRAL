@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { geoMercator, geoPath } from 'd3-geo';
-import type { ConflictIncident } from '@/lib/conflict/conflict-types';
+import type { ConflictIncident } from '@/lib/conflicts/types';
 
 const W = 720;
 const H = 360;
@@ -14,6 +14,7 @@ const TYPE_COLOR: Record<ConflictIncident['incident_type'], string> = {
   naval: '#38BDF8',
   isr: '#4ADE80',
   swarm: '#FB7185',
+  cruise_strike: '#EAB308',
   other: '#94A3B8',
 };
 

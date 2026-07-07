@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { getOidcConfig } from '@/lib/operations/auth-config'
 import { writeAuditLog } from '@/lib/operations/audit'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * OIDC authorization-code callback.
  * Exchanges code with IdP token endpoint when SPECTRAL_OIDC_CLIENT_SECRET is set,

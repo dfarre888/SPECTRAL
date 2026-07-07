@@ -1,4 +1,4 @@
-import { fetchConflictIncidents } from '@/lib/conflict/conflict-queries';
+import { fetchConflictIncidents } from '@/lib/conflicts/queries';
 import { ConflictIntelClient } from '@/components/conflict/ConflictIntelClient';
 
 export default async function ConflictIntelPage() {

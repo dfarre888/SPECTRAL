@@ -82,14 +82,17 @@ export function AdjudicationPanel({
     return { pd, pair }
   }, [open, platform, system])
 
+  const resolvedKineticPct = useMemo(
+    () =>
+      platform && system
+        ? resolveSamKineticPct(system.id, platform.id, effectiveness?.kinetic_pct ?? null)
+        : null,
+    [platform, system, effectiveness?.kinetic_pct],
+  )
+
   if (!platform || !system) return null
 
   const operations = isOperationsEditionClient()
-  // Resolve kinetic Pk through unified SAM model — same value shown everywhere
-  const resolvedKineticPct = useMemo(
-    () => resolveSamKineticPct(system.id, platform.id, effectiveness?.kinetic_pct ?? null),
-    [system.id, platform.id, effectiveness?.kinetic_pct],
-  )
   const cellValue = resolveCellValue(platform, system, effectiveness ?? undefined, 'all', null, resolvedKineticPct)
   const primaryType = getPrimaryDefeatType(system)
 

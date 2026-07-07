@@ -1,0 +1,128 @@
+/**
+ * Client-safe OSINT defeat system ranges — no Supabase / next/headers.
+ * Shared by WOPR COP range rings and server-side DefeatMatrixCache.createOffline().
+ */
+
+import { resolveDefenderSystemId } from '@/lib/pcm/pcm-platform-ids'
+import type { AntiDroneSystem } from '@/lib/types'
+
+export const OFFLINE_DEFEAT_SYSTEMS: AntiDroneSystem[] = [
+  {
+    id: 'coyote-block-3',
+    name: 'Coyote Block 3',
+    manufacturer: 'Raytheon',
+    country: 'United States',
+    defeat_method: ['kinetic'],
+    effective_range_m: 15000,
+    frequency_bands_covered_mhz: {},
+    power_output_w: null,
+    weight_kg: null,
+    portability: 'vehicle',
+    price_usd_approx: null,
+    platforms_can_defeat: [],
+    conflict_validated: true,
+    conflict_notes: null,
+    sources: [],
+    data_confidence: 'high',
+  },
+  {
+    id: 'dronegun-tactical',
+    name: 'DroneGun Tactical',
+    manufacturer: 'DroneShield',
+    country: 'Australia',
+    defeat_method: ['RF_jamming'],
+    effective_range_m: 2000,
+    frequency_bands_covered_mhz: {},
+    power_output_w: null,
+    weight_kg: null,
+    portability: 'man-portable',
+    price_usd_approx: null,
+    platforms_can_defeat: [],
+    conflict_validated: true,
+    conflict_notes: null,
+    sources: [],
+    data_confidence: 'high',
+  },
+  {
+    id: 'drone-dome',
+    name: 'Drone Dome',
+    manufacturer: 'Rafael',
+    country: 'Israel',
+    defeat_method: ['RF_jamming', 'kinetic'],
+    effective_range_m: 3500,
+    frequency_bands_covered_mhz: {},
+    power_output_w: null,
+    weight_kg: null,
+    portability: 'vehicle',
+    price_usd_approx: null,
+    platforms_can_defeat: [],
+    conflict_validated: true,
+    conflict_notes: null,
+    sources: [],
+    data_confidence: 'high',
+  },
+  {
+    id: 'edge-horizon',
+    name: 'Edge Horizon EW',
+    manufacturer: 'Edge Group',
+    country: 'United Arab Emirates',
+    defeat_method: ['RF_jamming'],
+    effective_range_m: 12000,
+    frequency_bands_covered_mhz: {},
+    power_output_w: null,
+    weight_kg: null,
+    portability: 'vehicle',
+    price_usd_approx: null,
+    platforms_can_defeat: [],
+    conflict_validated: true,
+    conflict_notes: null,
+    sources: [],
+    data_confidence: 'estimated',
+  },
+  {
+    id: 'skynex',
+    name: 'Rheinmetall Skynex',
+    manufacturer: 'Rheinmetall',
+    country: 'Germany',
+    defeat_method: ['kinetic'],
+    effective_range_m: 4000,
+    frequency_bands_covered_mhz: {},
+    power_output_w: null,
+    weight_kg: null,
+    portability: 'vehicle',
+    price_usd_approx: null,
+    platforms_can_defeat: [],
+    conflict_validated: true,
+    conflict_notes: null,
+    sources: [],
+    data_confidence: 'high',
+  },
+  {
+    id: 'ah-64e-apache-cuas',
+    name: 'AH-64E Guardian C-UAS',
+    manufacturer: 'Boeing',
+    country: 'United Arab Emirates',
+    defeat_method: ['kinetic'],
+    effective_range_m: 8000,
+    frequency_bands_covered_mhz: {},
+    power_output_w: null,
+    weight_kg: null,
+    portability: 'airborne',
+    price_usd_approx: null,
+    platforms_can_defeat: [],
+    conflict_validated: true,
+    conflict_notes: null,
+    sources: [],
+    data_confidence: 'high',
+  },
+]
+
+const systemById = new Map(OFFLINE_DEFEAT_SYSTEMS.map((s) => [s.id, s]))
+
+/** OSINT effective range (km) for a defender system id or PCM type slug. */
+export function offlineSystemEffectiveRangeKm(systemIdOrType: string): number | undefined {
+  const id = resolveDefenderSystemId(systemIdOrType, '')
+  const system = systemById.get(id) ?? systemById.get(systemIdOrType)
+  if (!system?.effective_range_m) return undefined
+  return system.effective_range_m / 1000
+}

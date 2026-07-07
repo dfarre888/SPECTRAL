@@ -7,6 +7,8 @@ import {
 } from '@/lib/moat/moatStore';
 import { authorizeDsRoute } from '@/lib/moat/ds-route-auth';
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } },

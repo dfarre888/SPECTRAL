@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { requireTenantContext } from '@/lib/operations/tenant'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: Request) {
   try {
     const ctx = await requireTenantContext(request)

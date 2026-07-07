@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { requireSpectralAuth } from '@/lib/pcm/require-auth'
 
+export const dynamic = 'force-dynamic'
+
 interface WindyResponse {
   'wind_u-surface'?: number[]
   'wind_v-surface'?: number[]

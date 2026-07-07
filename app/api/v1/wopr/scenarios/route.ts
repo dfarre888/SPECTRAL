@@ -5,6 +5,8 @@ import { worldStateFromTemplate } from '@/lib/wopr/scenario-templates'
 import { createClient } from '@/lib/supabase/server'
 import { createScenario, listScenarios } from '@/lib/wopr/store'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: Request) {
   const ctx = await requireTenantContext(request)
   if (!ctx.userId) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })

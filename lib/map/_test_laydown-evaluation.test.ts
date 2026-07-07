@@ -212,4 +212,16 @@ describe('laydown-evaluation', () => {
     expect(evalResult?.subject.kind).toBe('uas')
     expect(listPlacedLaydownItems(state)).toHaveLength(1)
   })
+
+  it('evaluateUas items include kind on every row', () => {
+    const evalResult = evaluateUas(placedShahed(), baseState())
+    for (const section of evalResult.sections) {
+      for (const item of section.items) {
+        expect(item.kind).toBeDefined()
+        expect(['uas', 'cuas', 'radar', 'effector']).toContain(item.kind)
+      }
+    }
+    const canDetect = evalResult.sections.find((s) => s.title === 'Radars — can detect')!
+    expect(canDetect.items.every((i) => i.kind === 'radar')).toBe(true)
+  })
 })

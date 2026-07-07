@@ -10,6 +10,8 @@ import {
 import { curriculumEngine } from '@/lib/moat/curriculumEngine';
 import { authorizeDsRoute } from '@/lib/moat/ds-route-auth';
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } },

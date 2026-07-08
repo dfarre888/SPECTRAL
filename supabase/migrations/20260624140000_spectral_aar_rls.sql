@@ -1,6 +1,7 @@
 -- SPECTRAL PCM — RLS policies for spectral_aar_documents
 -- Pattern: 20260613120003_spectral_learner_model.sql (competency records)
 
+DROP POLICY IF EXISTS "Players view own AAR documents" ON spectral_aar_documents;
 CREATE POLICY "Players view own AAR documents"
   ON spectral_aar_documents FOR SELECT
   USING (
@@ -10,6 +11,7 @@ CREATE POLICY "Players view own AAR documents"
     )
   );
 
+DROP POLICY IF EXISTS "DS views all AAR documents" ON spectral_aar_documents;
 CREATE POLICY "DS views all AAR documents"
   ON spectral_aar_documents FOR SELECT
   USING (
@@ -19,6 +21,7 @@ CREATE POLICY "DS views all AAR documents"
     )
   );
 
+DROP POLICY IF EXISTS "DS inserts AAR documents" ON spectral_aar_documents;
 CREATE POLICY "DS inserts AAR documents"
   ON spectral_aar_documents FOR INSERT
   WITH CHECK (
@@ -28,6 +31,7 @@ CREATE POLICY "DS inserts AAR documents"
     )
   );
 
+DROP POLICY IF EXISTS "DS updates AAR documents" ON spectral_aar_documents;
 CREATE POLICY "DS updates AAR documents"
   ON spectral_aar_documents FOR UPDATE
   USING (

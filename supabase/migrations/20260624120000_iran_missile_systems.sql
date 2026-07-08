@@ -552,9 +552,6 @@ ON CONFLICT (id) DO NOTHING;
 -- Hypersonic: essentially GPS-immune (INS + aerodynamic)
 -- Cruise: primary GPS + TERCOM secondary; TERCOM works without GPS
 
-CREATE UNIQUE INDEX IF NOT EXISTS gnss_deps_platform_constellation_unique
-  ON gnss_platform_dependencies (platform_id, constellation);
-
 INSERT INTO gnss_platform_dependencies
   (platform_id, constellation, dependency_level, jamming_effect, notes, data_source)
 VALUES
@@ -589,9 +586,7 @@ VALUES
   ('hoveizeh','gps',      'primary', 'minimal',     'TERCOM fallback — GPS jamming degraded by terrain-matching; effectiveness retained in most terrain', 'osint'),
   ('paveh-lacm','gps',    'primary', 'minimal',     'GPS + TERCOM + EO terminal; TERCOM fallback preserves delivery accuracy even under GPS jamming', 'osint'),
   ('quds-1',  'gps',      'primary', 'minimal',     'Simplified TERCOM backup; GPS jamming forces TERCOM-only; CEP degrades from ~100 m to ~500 m', 'osint'),
-  ('ya-ali',  'gps',      'primary', 'degraded',    'Active radar terminal seeker provides terminal correction; GPS jamming degrades mid-course accuracy', 'osint')
-
-ON CONFLICT (platform_id, constellation) DO NOTHING;
+  ('ya-ali',  'gps',      'primary', 'degraded',    'Active radar terminal seeker provides terminal correction; GPS jamming degrades mid-course accuracy', 'osint');
 
 
 -- ═══════════════════════════════════════════════════════════════════════════════

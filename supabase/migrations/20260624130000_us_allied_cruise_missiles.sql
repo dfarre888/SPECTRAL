@@ -638,9 +638,7 @@ VALUES
 
   ('brahmos-block-iii', 'gps', 'primary', 'degraded',
    'GPS + GLONASS dual-constellation mid-course — simultaneously harder to jam than single-constellation systems. Active Ku-band radar terminal seeker is GPS-independent — emits own signal for terminal homing. GPS jamming effect: mid-course accuracy degradation; radar terminal seeker compensates. Spoofing minimal impact (active radar terminal ignores GPS for aimpoint). Dual constellation provides stronger GPS jamming resilience than GPS-only LACMs.',
-   'osint')
-
-ON CONFLICT (platform_id, constellation) DO NOTHING;
+   'osint');
 
 
 -- ═══════════════════════════════════════════════════════════════════════════════

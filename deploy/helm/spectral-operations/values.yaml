@@ -57,3 +57,10 @@ resources:
     limits:
       cpu: 2
       memory: 4Gi
+
+secrets:
+  databaseUrl: ""
+  supabaseServiceRoleKey: ""
+  awsAccessKeyId: ""
+  awsSecretAccessKey: ""
+  bedrockModelId: "ap.anthropic.claude-sonnet-4-6-20250514-v1:0"

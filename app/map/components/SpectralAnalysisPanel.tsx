@@ -1,4 +1,5 @@
 'use client'
+import { EmconTimeline } from '@/components/spectrum/EmconTimeline'
 
 import {
   AdjudicationSourceBanner,
@@ -292,7 +293,7 @@ export function SpectralAnalysisPanel({
                 {overlaps.length === 1 ? '' : 's'}).
               </p>
             )}
-          </div>
+          <div className="mt-4 pt-3 border-t border-[var(--store-line)]"><p className="text-[10px] font-mono store-text-muted uppercase mb-2">EMCON timeline</p><EmconTimeline placedUas={placedUas} /></div></div>
         )}
       </SheetContent>
     </Sheet>

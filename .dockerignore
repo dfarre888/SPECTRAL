@@ -1,0 +1,53 @@
+# ── Build artefacts ───────────────────────────────────────────────────────────
+.next
+out
+build
+
+# ── Dependencies (builder stage re-installs from package-lock.json) ───────────
+node_modules
+
+# ── Cesium public copy (builder stage re-runs copy-cesium-public.mjs) ─────────
+public/static/Cesium
+
+# ── Dev / local ───────────────────────────────────────────────────────────────
+.env*
+!.env.local.example
+.spectral-local-credentials
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+.git
+.gitignore
+
+# ── IDE / OS ──────────────────────────────────────────────────────────────────
+.cursor
+.vscode
+.DS_Store
+*.swp
+
+# ── Test / docs (not needed in image) ────────────────────────────────────────
+docs
+research
+slides
+workbooks
+assessments
+outputs
+images
+brand
+skills
+__tests__
+*.test.ts
+*.spec.ts
+vitest.config.ts
+
+# ── Supabase local dev ────────────────────────────────────────────────────────
+supabase/.branches
+supabase/.temp
+
+# ── Playwright ────────────────────────────────────────────────────────────────
+.playwright-mcp
+test-results
+playwright-report
+
+# ── Large binaries in deploy/ that aren't part of the image ──────────────────
+deploy/helm
+deploy/ecr-push.sh

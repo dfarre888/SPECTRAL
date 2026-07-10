@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { LoiterControls } from '@/app/map/components/LoiterControls'
 import { MissionPathControls } from '@/app/map/components/MissionPathControls'
+import { RoutePlanner } from '@/app/map/components/RoutePlanner'
 import { EditionBadge } from '@/components/operations/EditionBadge'
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
@@ -35,6 +36,7 @@ import { filterMapAssets, type MapAssetSearchHit } from '@/lib/map/map-asset-sea
 import { operationalEnvelopeRadiusKm } from '@/lib/map/range-declaration'
 import type { SelectedLaydownItem } from '@/lib/map/laydown-evaluation'
 import { isSameLaydownItem } from '@/lib/map/laydown-evaluation'
+import type { RcsFacets } from '@/lib/spectral/detectionPhysicsConstants'
 import type {
   MapAssetsPayload,
   MapCuasAsset,
@@ -65,6 +67,8 @@ interface AssetSidebarProps {
   onClearMission?: (uasInstanceId: string) => void
   onMissionEmcon?: (uasInstanceId: string, emcon: boolean) => void
   onMissionRouteObjective?: (uasInstanceId: string, objective: 'pd' | 'pk') => void
+  rcsOverrides?: Record<string, RcsFacets>
+  onRcsChange?: (instanceId: string, facets: RcsFacets | undefined) => void
   onRemoveUas: (instanceId: string) => void
   onRemoveCuas: (instanceId: string) => void
   placedRadars: PlacedRadar[]
@@ -98,6 +102,8 @@ export function AssetSidebar({
   onClearMission,
   onMissionEmcon,
   onMissionRouteObjective,
+  rcsOverrides,
+  onRcsChange,
   onRemoveUas,
   onRemoveCuas,
   placedRadars,
@@ -455,6 +461,11 @@ export function AssetSidebar({
                       loiterPlacingId === u.instanceId && 'ring-1 ring-[var(--store-accent-border)] rounded-xl',
                     )}
                   >
+                    <RoutePlanner
+                      uas={u}
+                      rcsOverride={rcsOverrides?.[u.instanceId]}
+                      onRcsChange={(id, facets) => onRcsChange?.(id, facets)}
+                    />
                     <MissionPathControls
                       uas={u}
                       onReplan={() => onReplanMission?.(u.instanceId)}

@@ -580,6 +580,8 @@ export interface CreateExerciseRequest {
   blue_player_id: string | null;
   ds_player_id: string;
   blind_mode: boolean;          // each side sees only own ORBAT
+  /** Optional Map Intel laydown override — platforms only; EW/C2 from scenario template. */
+  custom_orbat?: { red: Platform[]; blue: Platform[] };
 }
 
 export interface CreateExerciseResponse {

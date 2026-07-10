@@ -8,6 +8,7 @@ import { formatHHMM } from '@/lib/map/format'
 import { missionWaypointEntityId } from '@/lib/map/mission-path-planner'
 import { TERRAIN_SURFACE_AGL_M, placementNeedsTerrainRefresh } from '@/lib/map/terrain'
 import { PIN_SVG, SHIELD_SVG, UAS_SILHOUETTE_SVG, windArrowSvg } from '@/lib/map/icons'
+import { app6Sidc, app6Label } from '@/lib/map/app6-symbols'
 import {
   domeHeightAtDistanceM,
   offsetBearingM,
@@ -560,7 +561,7 @@ export function syncMapEntities(
     })
 
     entity.label = new Cesium.LabelGraphics({
-      text: `${uas.asset.name}\n${rangeLabel} · ${formatHHMM(uas.annotationTime_min)}`,
+      text: app6Label(uas.asset.name, app6Sidc('uas', uas.asset.side === 'blue' ? 'friendly' : 'hostile')) + '\n' + `${uas.asset.name}\n${rangeLabel} · ${formatHHMM(uas.annotationTime_min)}`,
       font: '12px JetBrains Mono',
       fillColor: Cesium.Color.WHITE,
       outlineColor: Cesium.Color.BLACK,

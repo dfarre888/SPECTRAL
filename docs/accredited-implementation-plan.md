@@ -82,6 +82,18 @@ ewInterceptPenalty = Math.min(0.4, ewInterceptPenalty + activeRedEw.length * 0.0
 // loaded from spectral_accredited_platform_specs per platform type
 ```
 
+
+### 2.7 Map Intel — Platform RCS (`getRcsFacets`)
+
+```typescript
+// lib/spectral/detectionPhysicsConstants.ts
+getRcsFacets(platformId, categoryFallback?)
+// Open build: PLATFORM_RCS_CATALOGUE OSINT nominals; SOVEREIGN_CORE_BOUNDARY entries
+// return geometry-inference facets only (never controlled σ).
+// Accredited override: lib/operations/accredited-rcs-resolver.ts intercepts before
+// DetectionFieldEngine.pdAtPoint() when SPECTRAL_ACCREDITED=true.
+```
+
 ### 2.6 `ForceDesignReport.data_provenance`
 
 ```typescript

@@ -43,7 +43,8 @@ export async function POST(request: Request) {
   try {
     const { createClient } = await import('@/lib/supabase/server')
     const client = await createClient()
-    for (const b of buildings.slice(0, 500)) {
+    const BUILDING_INGEST_CAP = 5000
+    for (const b of buildings.slice(0, BUILDING_INGEST_CAP)) {
       await client.from('building_footprints').insert({
         tenant_id: ctx.tenantId,
         source: b.source,

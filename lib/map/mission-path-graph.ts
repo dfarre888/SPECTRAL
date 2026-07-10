@@ -8,6 +8,7 @@ import {
   PD_EXPOSURE_WEIGHT,
   PK_EXPOSURE_WEIGHT,
   scorePathSegment,
+  type PathScoringOptions,
 } from '@/lib/map/mission-path-scoring'
 
 export const DETOUR_BUFFER_M = 150
@@ -183,6 +184,7 @@ function edgeCostKm(
   objective: RouteObjective,
   emcon: boolean,
   cruiseAltM: number,
+  scoringOptions?: PathScoringOptions,
 ): { cost: number; score: PathSegmentScore } {
   const score = scorePathSegment(
     a.lon,
@@ -196,6 +198,7 @@ function edgeCostKm(
     placedRadars,
     overlapVolumes,
     emcon,
+    scoringOptions,
   )
 
   const exposure =
@@ -236,6 +239,7 @@ export function findOptimalRoute(
   cruiseAltM: number,
   overlapVolumes?: OverlapVolume[],
   emcon = false,
+  scoringOptions?: PathScoringOptions,
 ): GraphPoint[] {
   const hardThreats =
     objective === 'pk'
@@ -279,6 +283,7 @@ export function findOptimalRoute(
         objective,
         emcon,
         cruiseAltM,
+        scoringOptions,
       )
       const tentativeG = (gScore.get(current.idx) ?? Infinity) + cost
       if (tentativeG >= (gScore.get(j) ?? Infinity)) continue

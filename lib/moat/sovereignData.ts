@@ -178,6 +178,148 @@ export const SOVEREIGN_PLATFORM_CATALOGUE: SovereignPlatform[] = [
     performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
     open_sources: ['Janes 2026', 'Defence.gov.au 2026'],
   },
+
+  // ── Taipan Strike 26 — GBAD CEA/SM-2 prototype (added 2026-07-09) ──────────
+
+  {
+    id: 'AUS-GBAD-CEA-SM2',
+    display_name: 'GBAD SM-2 / CEA-Aegis (Prototype)',
+    origin_country: 'Australia',
+    category: 'Ground-Based Air and Missile Defence',
+    role: 'blue_force',
+    sovereign_program: 'CEA Technologies / Lockheed Martin / Exercise Taipan Strike 26 / 2026 NDS IAMD',
+    status: 'trials',
+    open_source_summary:
+      'Prototype Australian ground-based integrated air and missile defence (IAMD) system. ' +
+      'CEA Technologies CEAFAR2-L active phased array radar (sovereign Australian sensor) integrated with ' +
+      'US Lockheed Martin Aegis Combat System weapon control and a Derringer trailer-mounted Expeditionary Launch System ' +
+      '(ELS). Effector: Standard Missile-2 (SM-2) Block IIIB, up to 166 km range, already in Royal Australian Navy (RAN) service. ' +
+      'Live-fired against a BQM-74E Chukar III target drone (simulating cruise missile profile) at Woomera Test Range, ' +
+      'South Australia, during Exercise Taipan Strike 26 (June 2026). ' +
+      'Described by ADF as "first of type live-fire test" of this CEA/Aegis/SM-2 land-based integration. ' +
+      'Directed by 2026 National Defence Strategy and 2026 Integrated Investment Plan — both identify medium-range ' +
+      'ground-based air defence as a priority, with capability acquisition decisions anticipated in 2026. ' +
+      'ADF IAMD budget: $7B–$10B over next decade. ' +
+      'Fills medium engagement layer (~40–166 km) above NASAMS/SHORAD and below any future BMD-capable upper tier. ' +
+      'Sovereignty architecture: Australian sensor (CEAFAR2-L), RAN-inventory effector (SM-2), ' +
+      'US Aegis fire control — Australian configuration authority on the sensor front-end. ' +
+      'CEAFAR2-L pedigree: operational on all three RAN Hobart-class Aegis AWDs (HMAS Hobart, Brisbane, Sydney) ' +
+      'since 2017 — land-based adaptation de-risked by existing naval integration. ' +
+      'NOT rated vs hypersonic terminal phase (Kinzhal/Zircon class). ' +
+      'Key personnel: Air Vice-Marshal Martin Nussio AM (Head Air Defence and Space Systems Division); ' +
+      'Air Marshal Stephen Chappell (Chief of Air Force).',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: [
+      'ABC News Australia, 9 Jul 2026 — Tom Lowrey, ADF missile interceptor test, SM-2 166 km confirmed',
+      'Australian DoD press release, 9 Jul 2026 — Taipan Strike 26 first-of-type live fire (public)',
+      'Deputy PM / Defence Minister Richard Marles statement, 9 Jul 2026',
+      'Chief of Air Force Air Marshal Stephen Chappell statement — Taipan Strike 26 IAMD options',
+      '2026 National Defence Strategy — medium-range ground-based air defence acceleration directed',
+      '2026 Integrated Investment Plan — IAMD $7B–$10B 10-year programme; decisions anticipated 2026',
+      'CEA Technologies CEAFAR2-L public product brief — Hobart-class AWD operational deployment',
+      'Raytheon/Lockheed SM-2 Block IIIB public spec — range up to 166 km (90 nm), dual-mode seeker',
+    ],
+  },
+
+  {
+    id: 'AUS-RADAR-CEAFAR2L',
+    display_name: 'CEA CEAFAR2-L (Sovereign AESA Radar)',
+    origin_country: 'Australia',
+    category: 'Active Phased Array Radar',
+    role: 'enabler',
+    sovereign_program: 'CEA Technologies / RAN Hobart-class AWD / Taipan Strike 26 GBAD prototype',
+    status: 'in_service',   // in_service for naval role; trials status for land-based GBAD role
+    open_source_summary:
+      'Australian-sovereign Active Electronic Scanned Array (AESA) radar designed and manufactured ' +
+      'by CEA Technologies (Canberra). L-band primary, multifunction architecture: simultaneous search, ' +
+      'track, and fire control in a single aperture. Operationally deployed on all three RAN Hobart-class ' +
+      'Air Warfare Destroyers (AWDs) — HMAS Hobart, Brisbane, Sydney — replacing legacy SPY-1 radar in the ' +
+      'RAN Aegis configuration since 2017. ' +
+      'Land-based variant integrated with US Aegis Combat System for the Taipan Strike 26 GBAD prototype ' +
+      '(Woomera, June 2026). The CEAFAR2-L provided fire control cueing for the SM-2 engagement against a ' +
+      'BQM-74E target drone. ' +
+      'Represents the critical Australian sovereign sensor component within an allied (US Aegis) fire control ' +
+      'architecture — the element that preserves Australian configuration authority and differentiates this ' +
+      'from a straight US Aegis IBMS export. ' +
+      'Note: in_service status reflects current RAN AWD operational role. Land-based GBAD role remains at ' +
+      'prototype/trials stage as of July 2026.',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: [
+      'CEA Technologies CEAFAR2-L public product brief — L-band AESA, multifunction, simultaneous S/T/FC',
+      'RAN AWD Alliance — CEAFAR2-L operational on Hobart-class 2017–present',
+      'ABC News Australia, 9 Jul 2026 — "Australian radar system" confirmed as cueing sensor',
+      'Australian DoD press release, 9 Jul 2026 — CEA Technologies role confirmed',
+      'Janes Naval Weapons Systems 2025 — CEAFAR2-L profile',
+    ],
+  },
+
+  // ── JL-3 SLBM test (6 Jul 2026) — Australian detection sensors (added 2026-07-09) ──
+
+  {
+    id: 'AUS-RADAR-JORN',
+    display_name: 'JORN — Jindalee Operational Radar Network',
+    origin_country: 'Australia',
+    category: 'Over-The-Horizon Radar (OTH)',
+    role: 'enabler',
+    sovereign_program: 'BAE Systems Australia / Northrop Grumman / Australian DST',
+    status: 'in_service',
+    open_source_summary:
+      'Australian sovereign over-the-horizon (OTH) radar network operating in HF band (5–30 MHz) ' +
+      'via ionospheric sky-wave propagation. Three sites: Longreach QLD, Alice Springs NT, Laverton WA. ' +
+      'Coverage arc: 1,000–3,700 km from Australia — reaches South China Sea, western Pacific, ' +
+      'Indian Ocean approaches, and Southeast Asia. ' +
+      'Primary peacetime missions: maritime surveillance, aircraft detection, and early warning. ' +
+      'Ballistic missile detection: demonstrated capability. ' +
+      'Historical precedent: prototype JORN detected Chinese missile tests near Taiwan (1997) and relayed data to US. ' +
+      'JL-3 Pacific test (6 Jul 2026): JORN geometry covers the SCS launch arc and was assessed to be in ' +
+      'detection arc for the boost-phase launch plume. ' +
+      'Pd vs SLBM launch from SCS: Assessed ~0.65 (ionospheric propagation dependency limits reliability ' +
+      'compared to satellite IR at ~0.99; HF OTH variability noted). ' +
+      'JORN is a DETECTION-ONLY system. Integration into a multilateral BMD early warning architecture ' +
+      'is discussed in open-source Australian defence analysis — would require allied interoperability protocols. ' +
+      'SOVEREIGN_CORE_BOUNDARY applies to all operational waveform parameters.',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: [
+      'BAE Systems Australia — JORN public product brief',
+      'DST (Defence Science Technology Group) — JORN capability overview (public)',
+      'Wikipedia — Jindalee Operational Radar Network; 1997 Chinese missile detection confirmed',
+      'Australian Defence Magazine — JORN and missile defence early warning potential',
+      'Missile Defense Advocacy Alliance — Australia BMD cooperation; JORN noted as EW asset',
+      'Arms Control Association — US/allied BMD in Asia-Pacific; JORN integration potential',
+    ],
+  },
+
+  {
+    id: 'AUS-RADAR-CBAND-EXMOUTH',
+    display_name: 'C-Band Space Surveillance Radar — NCS Harold E. Holt (Exmouth)',
+    origin_country: 'Australia',
+    category: 'Space Surveillance Radar',
+    role: 'enabler',
+    sovereign_program: 'US Space Force / Australian DoD — Joint Defence Facility',
+    status: 'in_service',
+    open_source_summary:
+      'C-band space surveillance radar at Naval Communication Station Harold E. Holt (NCS HEH), ' +
+      'North West Cape, Exmouth, Western Australia (~21.8°S 114.2°E). ' +
+      'Joint Australian/US facility. Operating frequency: C-band (~5.4–5.9 GHz). ' +
+      'Mission: provides southern hemisphere coverage for the US Space Surveillance Network (SSN) — ' +
+      'resident space object catalogue maintenance, space object identification (SOI), and special-event tracking. ' +
+      'Capability: tracks hundreds of space objects per day including debris, satellites, and ballistic reentry bodies. ' +
+      'History: radar originated at NASA Carnarvon tracking station (1963), subsequently operated from Antigua ' +
+      'for US launch telemetry, relocated to Exmouth and reached Full Operational Capability (FOC) March 2017. ' +
+      'Relevance to JL-3 Pacific test (6 Jul 2026): impact point ~300 km east of Tonga falls within ' +
+      'C-band SSR tracking geometry from Exmouth for terminal and post-impact phase. ' +
+      'Pd vs ballistic reentry body in southern hemisphere arc: Assessed ~0.85 for terminal phase tracking. ' +
+      'Data feeds into US Space Surveillance Network and can cue allied BMD assets. ' +
+      'DETECTION-ONLY system. No defeat capability.',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: [
+      'Australia Defence Ministers — Space Surveillance Radar reaches FOC, 7 Mar 2017 (public release)',
+      'AFSPC (Air Force Space Command) — C-Band Holt Radar one year on, 2017',
+      'Wikipedia — NCS Harold E. Holt; C-band radar mission description',
+      'Raytheon Australia — We Are Space; Exmouth C-band SSR contribution to space domain awareness',
+      'Nautilus Institute — NCS Harold E. Holt (North West Cape) facility analysis',
+    ],
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -336,6 +478,31 @@ export const IADS_THREAT_CATALOGUE: IadsThreatEntry[] = [
     performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
     open_sources: ['CSIS Missile Threat Pantsir-S1', 'Ukraine/Red Sea Pantsir combat reporting 2022-2026', 'KBP public Pantsir-S1 data'],
     confidence: 'confirmed',
+  },
+
+  // ── PLA Navy — JL-3 SLBM (Pacific test 6 Jul 2026) — added 2026-07-09 ───────
+  // NOTE: JL-3 is NOT an air defence system — it is a strategic offensive SLBM.
+  // Included here to support SPECTRAL Red/Blue Arena strategic threat modelling,
+  // Conflict Intel module, and the critical training lesson that NO current ADF
+  // system can defeat an ICBM/SLBM-class threat (Pk = 0 across all organic systems).
+  // The capability gap IS the lesson.
+
+  {
+    id: 'cn-jl3-slbm-threat',
+    display_name: 'JL-3 SLBM (CSS-N-14 Mod) — PLA Navy strategic threat',
+    // No sam_profile_id — SLBM is a strategic offensive system, not an air-defence node
+    spectral_role: 'strategic_slbm_pla_navy',
+    performance_ref: 'SOVEREIGN_CORE_BOUNDARY',
+    open_sources: [
+      'USNI News, 6 Jul 2026 — China tests SLBM, kicks off annual exercise with Russia',
+      'The Warzone (TWZ), 6 Jul 2026 — China SLBM test in Pacific (analysis)',
+      'CSIS Missile Threat — JL-3 SLBM Pacific test Jul 2026 analysis',
+      'Janes, Jul 2026 — Special report Chinese SLBM undersea nuclear deterrent',
+      'US State Department, 6 Jul 2026 — China launches nuclear-capable ballistic missile (statement)',
+      'GlobalSecurity.org — JL-3 / JL-2C specification profile',
+      'Missile Defense Advocacy — JL-3 range, MIRV, guidance (OSINT public)',
+    ],
+    confidence: 'assessed',  // Type unconfirmed JL-2A vs JL-3; analysts assess JL-3 from Type 094A context
   },
 ];
 

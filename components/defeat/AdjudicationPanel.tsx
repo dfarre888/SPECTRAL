@@ -29,6 +29,7 @@ import {
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import { cn } from '@/lib/utils'
 import { AdjudicationProvenancePanel } from '@/components/pcm/AdjudicationProvenancePanel'
+import { computeExchangeRatio, OSINT_THREAT_COSTS_USD } from '@/lib/planner/engagement-economics'
 
 interface AdjudicationPanelProps {
   open: boolean
@@ -232,6 +233,21 @@ export function AdjudicationPanel({
                 </p>
               )}
             </>
+          )}
+          {platform && system && (
+            <div className="store-panel-inner rounded-xl px-3 py-2">
+              <p className="text-xs store-text-muted uppercase tracking-wider font-semibold mb-2">Engagement economics</p>
+              {(() => {
+                const threat = OSINT_THREAT_COSTS_USD[platform.id] ?? 50_000
+                const effector = 1_000_000
+                const pk = (effectiveness?.kinetic_pct ?? 50) / 100
+                const ex = computeExchangeRatio(threat, effector, pk)
+                return (
+                  <p className="text-sm font-mono text-cyan">{ex.exchangeRatio.toFixed(0)}:1 exchange · {ex.doctrineHint}</p>
+                )
+              })()}
+              <Link href="/economics" className="text-[10px] font-mono text-[var(--store-accent)] hover:underline mt-2 inline-block">Open economics workspace</Link>
+            </div>
           )}
           {/* PCM engine provenance — wired when pair/Pd available from live adjudication */}
           <AdjudicationProvenancePanel pd={provenance.pd} pair={provenance.pair} />

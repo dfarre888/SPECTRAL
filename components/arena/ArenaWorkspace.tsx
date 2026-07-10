@@ -1,4 +1,5 @@
 'use client'
+import { SwarmSaturationPanel } from '@/components/arena/SwarmSaturationPanel'
 
 import dynamic from 'next/dynamic'
 import { useCallback, useMemo, useState } from 'react'
@@ -13,7 +14,8 @@ const CesiumArena = dynamic(() => import('@/components/arena/CesiumArena'), {
   loading: () => (
     <div className="h-full min-h-[480px] store-text-muted text-sm font-mono flex items-center justify-center">
       Loading 3D COP…
-    </div>
+    <SwarmSaturationPanel />
+</div>
   ),
 })
 

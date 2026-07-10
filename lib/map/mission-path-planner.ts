@@ -22,6 +22,7 @@ import type {
   PlacedEffector,
   PlacedRadar,
 } from '@/lib/map/types'
+import type { RcsFacets } from '@/lib/spectral/detectionPhysicsConstants'
 
 export { scorePathSegment, PD_THRESHOLD_PCT } from '@/lib/map/mission-path-scoring'
 export type { PathSegmentScore } from '@/lib/map/mission-path-scoring'
@@ -44,6 +45,8 @@ export interface MissionPathPlannerInput {
   emcon: boolean
   routeObjective?: MissionRouteObjective
   overlapVolumes?: OverlapVolume[]
+  rcsOverride?: RcsFacets
+  heading_deg?: number
 }
 
 function supportsLowFlight(asset: MapUasAsset): boolean {
@@ -161,6 +164,9 @@ export function planMissionPath(input: MissionPathPlannerInput): MissionPlan {
       cruiseAlt,
       input.overlapVolumes,
       input.emcon,
+      input.rcsOverride
+        ? { heading_deg: input.heading_deg ?? 0, rcsOverride: input.rcsOverride }
+        : undefined,
     ),
     input.asset.max_range_km,
   )
@@ -224,6 +230,9 @@ export function planMissionPath(input: MissionPathPlannerInput): MissionPlan {
       input.placedRadars,
       input.overlapVolumes,
       input.emcon,
+      input.rcsOverride
+        ? { heading_deg: input.heading_deg ?? 0, rcsOverride: input.rcsOverride }
+        : { heading_deg: input.heading_deg ?? 0 },
     )
     totalDistance_km += score.distance_km
     maxPk_pct = Math.max(maxPk_pct, score.maxPk_pct)

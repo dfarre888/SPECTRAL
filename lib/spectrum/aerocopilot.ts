@@ -69,6 +69,7 @@ type Intent =
   | 'counter'          // "how do I defeat X"
   | 'killchain'        // "can I find/fix/finish X" / "what's the kill chain on X"
   | 'explain_radar'    // "tell me about the S-400 radar / what band is X"
+  | 'explain_defeat'  // exchange ratio / economics defeat pairing
   | 'threat_assess'    // "what's the threat from X"
   | 'unknown';
 
@@ -80,6 +81,7 @@ const RX = {
   counter: /\bhow (do|can|would) i (defeat|beat|counter|stop|kill|engage|jam|down|intercept)\b|\bcounter\b|\bdefeat\b|\bintercept\b|\bshoot down\b/i,
   killchain: /\bkill chain\b|\bfind.{0,4}fix.{0,4}finish\b|\bf3\b|\bcan i (find|fix|finish|track|detect and)\b|\bengage(ment)? chain\b/i,
   explainRadar: /\b(radar|band|frequency|ghz|mhz)\b/i,
+  explainDefeat: /\b(exchange ratio|cost exchange|economics|magazine|salvo|125:1|defeat cost)\b/i,
   threat: /\bthreat\b|\bdanger\b|\brisk\b|\bhow (dangerous|capable)\b/i,
 };
 
@@ -91,6 +93,7 @@ function detectIntent(q: string): Intent {
   if (RX.compare.test(q)) return 'compare';
   if (RX.counter.test(q)) return 'counter';
   if (RX.threat.test(q)) return 'threat_assess';
+  if (RX.explainDefeat.test(q)) return 'explain_defeat';
   if (RX.explainRadar.test(q)) return 'explain_radar';
   return 'unknown';
 }
@@ -177,6 +180,8 @@ export function askCopilot(query: string, ctx: CopilotContext): CopilotResponse 
       return handleWhatIf(query, ctx, matchedPlatforms);
     case 'counter':
       return handleCounter(query, ctx, matchedPlatforms);
+    case 'explain_defeat':
+      return handleExplainDefeat(query, ctx, matchedPlatforms);
     case 'explain_radar':
       return handleExplainRadar(query, ctx, matchedRadars);
     case 'threat_assess':
@@ -447,6 +452,26 @@ function handleThreat(
   }
   if (redRadar) return handleExplainRadar(q, ctx, [redRadar]);
   return handleUnknown(q, ctx);
+}
+
+function handleExplainDefeat(
+  _q: string,
+  ctx: CopilotContext,
+  platforms: Platform[],
+): CopilotResponse {
+  const threat = platforms.find((p) => p.side === 'red') ?? platforms[0];
+  const name = threat?.name ?? 'the threat';
+  return {
+    answer: `Engagement economics for ${name}: compare effector unit cost vs threat unit cost at stated Pk. Shahed-class threats (~$20k OSINT) against NASAMS AMRAAM-ER (~$1M) yields ~50:1 unfavourable exchange — cue Gepard/point-defence first. Open /economics or Defeat Matrix for full pairing table.`,
+    reasoning: [
+      'Cost-exchange ratio = (effector round cost / Pk) / threat unit cost.',
+      'Magazine depth limits saturation defence — salvo simulator models leak-through.',
+      'Training tier uses OSINT unit costs with Assessed/Estimated confidence labels.',
+    ],
+    action: { navigate: 'map', highlightIds: threat ? [threat.id] : [] },
+    refs: threat ? [{ id: threat.id, name: threat.name, side: threat.side ?? 'red' }] : [],
+    followups: [`How do I defeat ${name}?`, 'Show swarm saturation for 8x Shahed', 'Open economics page'],
+  };
 }
 
 function handleUnknown(q: string, ctx: CopilotContext): CopilotResponse {

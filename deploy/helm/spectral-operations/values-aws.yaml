@@ -1,0 +1,112 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# SPECTRAL Operations — AWS overrides (ap-southeast-2)
+# Use as: helm upgrade spectral ./deploy/helm/spectral-operations \
+#           --values ./deploy/helm/spectral-operations/values.yaml \
+#           --values ./deploy/helm/spectral-operations/values-aws.yaml \
+#           --set image.tag=<git-sha>
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Image (ECR) ───────────────────────────────────────────────────────────────
+image:
+  # Replace <ACCOUNT_ID> with your AWS account number
+  repository: <ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/spectral-operations
+  tag: latest
+  pullPolicy: Always
+
+# ── Replicas ──────────────────────────────────────────────────────────────────
+replicaCount: 2
+
+# ── Spectral config ───────────────────────────────────────────────────────────
+spectral:
+  env:
+    SPECTRAL_EDITION: operations
+    NEXT_PUBLIC_SPECTRAL_EDITION: operations
+    NEXT_PUBLIC_CESIUM_BASE_URL: /static/Cesium
+    # NEXT_PUBLIC_ vars that are baked at build time — must match Dockerfile build args
+    NEXT_PUBLIC_APP_ENV: production
+    NEXT_PUBLIC_DEMO_MODE: "false"
+    NEXT_PUBLIC_ACCREDITED_RESOLVER: "true"
+  oidc:
+    enabled: false    # set true + issuer/clientId for OIDC SSO tenants
+
+# ── Ingress (AWS ALB via aws-load-balancer-controller) ───────────────────────
+ingress:
+  enabled: true
+  className: alb
+  host: spectral.yourdomain.com.au    # replace with your domain
+  tls: true
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-2:<ACCOUNT_ID>:certificate/<CERT_ID>
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+
+# ── Database ──────────────────────────────────────────────────────────────────
+# AWS: Use Supabase cloud (wzsoajpvcoesgsmuwuwm, ap-southeast-2) — disable in-cluster postgres.
+# For fully sovereign: provision RDS PostgreSQL 16 in ap-southeast-2 + self-hosted Supabase,
+# or use Amazon Aurora PostgreSQL-Compatible.
+postgres:
+  enabled: false    # Supabase cloud handles this
+
+# ── Redis ─────────────────────────────────────────────────────────────────────
+# Option A (default): in-cluster Redis (simple, no extra cost)
+# Option B: AWS ElastiCache Redis — set enabled: false and point REDIS_URL to
+#   elasticache endpoint via Kubernetes secret
+redis:
+  enabled: true
+  image: redis:7-alpine
+
+# ── MinIO (object storage) ────────────────────────────────────────────────────
+# Option A (default): in-cluster MinIO
+# Option B: AWS S3 — set enabled: false, configure S3 bucket + IAM role for pod identity
+minio:
+  enabled: false    # use S3 instead — see IAM section below
+
+# ── Propagation workers ───────────────────────────────────────────────────────
+propagationWorkers:
+  enabled: true
+  replicaCount: 2
+
+# ── Terrain bundle ────────────────────────────────────────────────────────────
+# For internet-connected AWS: Cesium Ion serves terrain — no local bundle needed.
+# For air-gapped: enable + mount terrain PVC from S3-backed EFS or local EBS.
+terrainBundle:
+  enabled: false
+
+# ── Resources ─────────────────────────────────────────────────────────────────
+resources:
+  web:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 4Gi
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Secrets — DO NOT store real values here. Use one of:
+#   A) AWS Secrets Manager + External Secrets Operator (recommended for EKS)
+#   B) kubectl create secret generic spectral-secrets --from-env-file=.env.production
+#
+# Required Kubernetes secrets (name: spectral-secrets):
+#   database-url              → postgresql://spectral:<pw>@host:5432/spectral
+#                               (or Supabase direct connection string)
+#   SUPABASE_SERVICE_ROLE_KEY → from Supabase Dashboard → Settings → API
+#   AWS_ACCESS_KEY_ID         → IAM user for Bedrock (or use IRSA pod identity)
+#   AWS_SECRET_ACCESS_KEY     → as above
+#   NEXT_PUBLIC_SUPABASE_URL  → https://wzsoajpvcoesgsmuwuwm.supabase.co
+#   NEXT_PUBLIC_SUPABASE_ANON_KEY → from Supabase Dashboard
+#   NEXT_PUBLIC_CESIUM_ION_TOKEN  → from ion.cesium.com
+#
+# To create (development/staging):
+#   kubectl create secret generic spectral-secrets \
+#     --from-literal=database-url='postgres://...' \
+#     --from-literal=SUPABASE_SERVICE_ROLE_KEY='eyJ...' \
+#     --from-literal=AWS_ACCESS_KEY_ID='AKIA...' \
+#     --from-literal=AWS_SECRET_ACCESS_KEY='...' \
+#     --from-literal=NEXT_PUBLIC_SUPABASE_URL='https://...' \
+#     --from-literal=NEXT_PUBLIC_SUPABASE_ANON_KEY='eyJ...' \
+#     --from-literal=NEXT_PUBLIC_CESIUM_ION_TOKEN='...'
+# ─────────────────────────────────────────────────────────────────────────────

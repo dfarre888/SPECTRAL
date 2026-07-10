@@ -27,6 +27,11 @@ import { useTerrainMasking } from '@/app/map/hooks/useTerrainMasking'
 import { useMapBuildings } from '@/app/map/hooks/useMapBuildings'
 import { useWindData } from '@/app/map/hooks/useWindData'
 import { writeLaydownSession } from '@/lib/map/laydown-session'
+import { useBattlespacePlan } from '@/app/map/hooks/useBattlespacePlan'
+import { PlannerToolbar } from '@/components/planner/PlannerToolbar'
+import { IadsStackPanel } from '@/app/map/components/IadsStackPanel'
+import { getVignette, vignetteToLaydown } from '@/lib/planner/vignettes'
+import { hydrateLaydown } from '@/lib/planner/battlespace-plan'
 import { haversineM } from '@/lib/propagation/geo'
 import {
   buildLaydownEvaluation,
@@ -43,26 +48,17 @@ import { envelopeDiscAltitudeM } from '@/lib/map/range-declaration'
 import type { TerrainHeightUpdate } from '@/lib/map/terrain'
 import { cn } from '@/lib/utils'
 import type { MapAssetsPayload, CursorPosition, PlacementMode, PlacedCuas, PlacedEffector, PlacedRadar, PlacedUas } from '@/lib/map/types'
+import type { RcsFacets } from '@/lib/spectral/detectionPhysicsConstants'
 
 import { CollateralRiskPanel } from '@/app/map/components/CollateralRiskPanel'
 import { CuasSitingPlanner } from '@/app/map/components/CuasSitingPlanner'
 import { EwFootprintAnalyser } from '@/app/map/components/EwFootprintAnalyser'
-import { useRiskOverlayDrag } from '@/app/map/hooks/useRiskOverlayDrag'
-import {
-  addBlastOverlay,
-  addJammingOverlay,
-  moveRiskOverlay,
-  removeRiskOverlay,
-  updateRiskOverlayOpacity,
-  type RiskOverlayEntities,
-} from '@/lib/map/risk-overlay'
+import { useRiskOverlayController } from '@/app/map/hooks/useRiskOverlayController'
 import type { CesiumModule, CesiumViewer } from '@/lib/map/cesium-types'
 import {
   computeCde,
   WARHEAD_DB,
   JAMMER_DB,
-  type BlastRadii,
-  type JammingRadii,
   type CdeResult,
   type PopulationDensityTier,
   type TimeOfDay,
@@ -101,6 +97,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const searchParams = useSearchParams()
   const [assets] = useState(initialAssets)
   const [placedUas, setPlacedUas] = useState<PlacedUas[]>([])
+  const [rcsOverrides, setRcsOverrides] = useState<Record<string, RcsFacets>>({})
   const [placedCuas, setPlacedCuas] = useState<PlacedCuas[]>([])
   const [placedRadars, setPlacedRadars] = useState<PlacedRadar[]>([])
   const [placedEffectors, setPlacedEffectors] = useState<PlacedEffector[]>([])
@@ -123,22 +120,12 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const [waypointContextMenu, setWaypointContextMenu] = useState<WaypointContextTarget | null>(null)
 
   type MapToolMode = 'none' | 'cuas-siting' | 'ew-deconflict'
-  type RiskMode = 'blast' | 'jamming' | 'none'
 
   const [mapTool, setMapTool] = useState<MapToolMode>('none')
-  const [riskMode, setRiskMode] = useState<RiskMode>('none')
-  const [riskLon, setRiskLon] = useState<number | null>(null)
-  const [riskLat, setRiskLat] = useState<number | null>(null)
-  const [selectedWarhead, setSelectedWarhead] = useState<BlastRadii | null>(WARHEAD_DB[0] ?? null)
-  const [selectedJammer, setSelectedJammer] = useState<JammingRadii | null>(JAMMER_DB[0] ?? null)
   const [riskPopTier, setRiskPopTier] = useState<PopulationDensityTier>('urban')
   const [riskTimeOfDay, setRiskTimeOfDay] = useState<TimeOfDay>('business_day')
   const [riskProtection, setRiskProtection] = useState<BuildingProtection>('light')
   const [cdeResult, setCdeResult] = useState<CdeResult | null>(null)
-  const [riskRingShade, setRiskRingShade] = useState(55)
-  const riskRingShadeRef = useRef(55)
-  const riskOverlayRef = useRef<RiskOverlayEntities | null>(null)
-  const riskOverlayGenRef = useRef(0)
   const cesiumViewerRef = useRef<CesiumViewer | null>(null)
   const cesiumModuleRef = useRef<CesiumModule | null>(null)
   const placementModeRef = useRef<PlacementMode>({ active: false })
@@ -153,6 +140,41 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     cesiumModuleRef.current = ctx.Cesium
     setCesiumReady(true)
   }, [])
+
+
+  const {
+    riskMode,
+    riskLon,
+    riskLat,
+    selectedWarhead,
+    setSelectedWarhead,
+    selectedJammer,
+    setSelectedJammer,
+    riskRingShade,
+    setRiskRingShade,
+    activateBlastRisk: activateBlastRiskBase,
+    activateJammingRisk: activateJammingRiskBase,
+    closeRiskOverlay,
+    repositionRiskAt,
+  } = useRiskOverlayController({
+    cesiumCtxRef,
+    cesiumReady,
+    cesiumViewerRef,
+    cesiumModuleRef,
+    placementModeRef,
+    cursorLon: cursor.lon,
+    cursorLat: cursor.lat,
+  })
+
+  const activateBlastRisk = useCallback(() => {
+    setMapTool('none')
+    activateBlastRiskBase()
+  }, [activateBlastRiskBase])
+
+  const activateJammingRisk = useCallback(() => {
+    setMapTool('none')
+    activateJammingRiskBase()
+  }, [activateJammingRiskBase])
 
   const {
     placeAt,
@@ -259,109 +281,19 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     )
   }, [selectedWarhead, riskLon, riskLat, riskPopTier, riskTimeOfDay, riskProtection])
 
-  useEffect(() => {
-    riskRingShadeRef.current = riskRingShade
-  }, [riskRingShade])
-
-  const syncRiskOverlay = useCallback(async () => {
-    const ctx = cesiumCtxRef.current
-    if (!ctx || riskMode === 'none' || riskLon === null || riskLat === null) return
-    const { viewer } = ctx
-
-    // Generation token: bail if a newer sync has started by the time an await resolves
-    const gen = ++riskOverlayGenRef.current
-
-    if (riskOverlayRef.current) {
-      removeRiskOverlay(viewer, riskOverlayRef.current)
-      riskOverlayRef.current = null
-    }
-
-    if (riskMode === 'blast' && selectedWarhead) {
-      const overlay = await addBlastOverlay(viewer, riskLon, riskLat, {
-        lethal_m: selectedWarhead.lethal_m,
-        injury_m: selectedWarhead.injury_m,
-        structural_m: selectedWarhead.structural_m,
-        hazard_m: selectedWarhead.hazard_m,
-      }, selectedWarhead.weapon_name)
-      if (riskOverlayGenRef.current !== gen) {
-        removeRiskOverlay(viewer, overlay)
-        return
+  const handleRcsChange = useCallback((uasInstanceId: string, facets: RcsFacets | undefined) => {
+    setRcsOverrides((prev) => {
+      if (!facets) {
+        const next = { ...prev }
+        delete next[uasInstanceId]
+        return next
       }
-      riskOverlayRef.current = overlay
-    } else if (riskMode === 'jamming' && selectedJammer) {
-      const overlay = await addJammingOverlay(
-        viewer, riskLon, riskLat,
-        selectedJammer.gps_l1_radius_m,
-        selectedJammer.rc_link_radius_m,
-        selectedJammer.max_radius_m,
-        selectedJammer.jammer_name,
-      )
-      if (riskOverlayGenRef.current !== gen) {
-        removeRiskOverlay(viewer, overlay)
-        return
-      }
-      riskOverlayRef.current = overlay
-    }
-
-    if (riskOverlayRef.current) {
-      await updateRiskOverlayOpacity(viewer, riskOverlayRef.current, riskRingShadeRef.current)
-    }
-  }, [riskMode, riskLon, riskLat, selectedWarhead, selectedJammer])
-
-  useEffect(() => {
-    if (!cesiumReady) return
-    void syncRiskOverlay()
-  }, [cesiumReady, syncRiskOverlay])
-
-  useEffect(() => {
-    const ctx = cesiumCtxRef.current
-    if (!ctx || !riskOverlayRef.current) return
-    void updateRiskOverlayOpacity(ctx.viewer, riskOverlayRef.current, riskRingShade)
-  }, [riskRingShade, cesiumReady])
-
-  const handleRiskOverlayMove = useCallback((lon: number, lat: number) => {
-    setRiskLon(lon)
-    setRiskLat(lat)
-    const ctx = cesiumCtxRef.current
-    if (ctx && riskOverlayRef.current) {
-      void moveRiskOverlay(ctx.viewer, riskOverlayRef.current, lon, lat)
-    }
+      return { ...prev, [uasInstanceId]: facets }
+    })
   }, [])
 
-  useRiskOverlayDrag(
-    riskMode !== 'none',
-    cesiumReady,
-    cesiumViewerRef,
-    cesiumModuleRef,
-    placementModeRef,
-    handleRiskOverlayMove,
-  )
-
-  const activateBlastRisk = useCallback(() => {
-    setMapTool('none')
-    setRiskMode('blast')
-    setRiskLon((lon) => lon ?? cursor.lon)
-    setRiskLat((lat) => lat ?? cursor.lat)
-  }, [cursor.lon, cursor.lat])
-
-  const activateJammingRisk = useCallback(() => {
-    setMapTool('none')
-    setRiskMode('jamming')
-    setRiskLon((lon) => lon ?? cursor.lon)
-    setRiskLat((lat) => lat ?? cursor.lat)
-  }, [cursor.lon, cursor.lat])
-
-  const closeRiskOverlay = useCallback(() => {
-    setRiskMode('none')
-    const ctx = cesiumCtxRef.current
-    if (ctx && riskOverlayRef.current) {
-      removeRiskOverlay(ctx.viewer, riskOverlayRef.current)
-      riskOverlayRef.current = null
-    }
-  }, [])
-
-const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEmcon, setRouteObjective, clearMission } = useMissionPlanning(
-    placementMode, setPlacementMode, placedUas, placedCuas, placedRadars, placedEffectors, overlaps, setPlacedUas, getCesium,
+  const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEmcon, setRouteObjective, clearMission } = useMissionPlanning(
+    placementMode, setPlacementMode, placedUas, placedCuas, placedRadars, placedEffectors, overlaps, setPlacedUas, getCesium, rcsOverrides,
   )
 
   const pendingMissionUas = useMemo(() => placedUas.find((u) => u.instanceId === pendingMissionUasId) ?? null, [placedUas, pendingMissionUasId])
@@ -373,6 +305,13 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
     maskingPolygons,
     getCesium,
   )
+  const planner = useBattlespacePlan(
+    assets,
+    { placedUas, placedCuas, placedRadars, placedEffectors },
+    { setPlacedUas, setPlacedCuas, setPlacedRadars, setPlacedEffectors },
+  )
+  const [showIadsPanel, setShowIadsPanel] = useState(false)
+
   const heatmapJammer =
     placedCuas.find((c) => c.asset.defeat_methods.includes('RF_jamming')) ?? placedCuas[0] ?? null
   const heatmapReceiverAlt =
@@ -509,12 +448,7 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
   const handleGlobeClick = useCallback(
     async (lon: number, lat: number) => {
       if (riskMode !== 'none') {
-        setRiskLon(lon)
-        setRiskLat(lat)
-        const ctx = cesiumCtxRef.current
-        if (ctx && riskOverlayRef.current) {
-          await moveRiskOverlay(ctx.viewer, riskOverlayRef.current, lon, lat)
-        }
+        await repositionRiskAt(lon, lat)
         return
       }
       if (placementMode.active && placementMode.kind === 'mission-goal') {
@@ -527,7 +461,7 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
       }
       await placeAt(lon, lat)
     },
-    [placementMode, placeAt, placeLoiterWaypoint, placeMissionGoal, riskMode]
+    [placementMode, placeAt, placeLoiterWaypoint, placeMissionGoal, riskMode, repositionRiskAt]
   )
 
   const handleClearAll = useCallback(() => {
@@ -659,6 +593,49 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
     return () => window.removeEventListener('keydown', onKey)
   }, [cancelPlacement, placedUas.length, placedCuas.length])
 
+
+  useEffect(() => {
+    if (searchParams.get('from') !== 'defeat') return
+    const cuasId = searchParams.get('cuas')
+    const stageId = searchParams.get('stage')
+    const highlight: string[] = []
+    if (stageId) {
+      const uas = assets.uas.find((a) => a.id === stageId)
+      if (uas) {
+        startUasPlacement(uas)
+        highlight.push(stageId)
+      }
+    }
+    if (cuasId) {
+      const cuas = assets.cuas.find((a) => a.id === cuasId)
+      if (cuas) {
+        startCuasPlacement(cuas)
+        highlight.push(cuasId)
+      }
+    }
+    if (highlight.length) setHighlightedIds(highlight)
+    if (stageId || cuasId) setSpectralOpen(true)
+  }, [searchParams, assets.uas, assets.cuas, startUasPlacement, startCuasPlacement])
+
+  useEffect(() => {
+    const vignetteId = searchParams.get('planVignette')
+    if (!vignetteId) return
+    const v = getVignette(vignetteId)
+    if (!v) return
+    const doc = vignetteToLaydown(v)
+    const hydrated = hydrateLaydown(doc, assets)
+    setPlacedUas(hydrated.placedUas)
+    setPlacedCuas(hydrated.placedCuas)
+    setPlacedRadars(hydrated.placedRadars)
+    setPlacedEffectors(hydrated.placedEffectors)
+    planner.setPlanName(v.name)
+  }, [searchParams, assets])
+
+  useEffect(() => {
+    const planId = searchParams.get('planId') ?? searchParams.get('plan')
+    if (planId) void planner.loadPlan(planId)
+  }, [searchParams])
+
   const stagingHandledRef = useRef(false)
 
   useEffect(() => {
@@ -754,6 +731,8 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
         onClearMission={clearMission}
         onMissionEmcon={setEmcon}
         onMissionRouteObjective={setRouteObjective}
+        rcsOverrides={rcsOverrides}
+        onRcsChange={handleRcsChange}
         onRemoveUas={handleRemoveUas}
         onRemoveCuas={handleRemoveCuas}
         placedRadars={placedRadars}
@@ -789,6 +768,37 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
       />
 
       <div className="relative flex-1 flex flex-col min-w-0">
+        <PlannerToolbar
+          planName={planner.planName}
+          planId={planner.planId}
+          saving={planner.saving}
+          lastSaved={planner.lastSaved}
+          error={planner.error}
+          onSave={() => void planner.savePlan()}
+          onNew={planner.newPlan}
+          onLoadClick={() => {
+            const id = window.prompt('Plan ID to load')
+            if (id) void planner.loadPlan(id)
+          }}
+          onPublishWopr={() => void planner.publishWopr().then((id) => { if (id) window.location.href = `/arena?scenario=${id}` })}
+          onPublishPcm={() => void planner.publishPcm().then((id) => { if (id) window.location.href = `/pcm/exercise/${id}` })}
+        />
+        {showIadsPanel && (
+          <div className="absolute bottom-16 left-3 z-20 w-72 max-h-64 overflow-y-auto rounded-xl border border-zinc-700 bg-[#0A0A0F]/95 shadow-lg">
+            <div className="flex justify-between items-center px-2 py-1 border-b border-zinc-800">
+              <span className="text-[10px] font-mono text-cyan">IADS stacks</span>
+              <button type="button" className="text-zinc-500 text-xs" onClick={() => setShowIadsPanel(false)}>✕</button>
+            </div>
+            <IadsStackPanel
+              assets={assets}
+              onApply={({ radars, effectors, cuas }) => {
+                setPlacedRadars((p) => [...p, ...radars])
+                setPlacedEffectors((p) => [...p, ...effectors])
+                setPlacedCuas((p) => [...p, ...cuas])
+              }}
+            />
+          </div>
+        )}
         {stagingBanner && (
           <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl store-panel border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3 shadow-lg">
             <span>
@@ -830,6 +840,7 @@ const { startMissionGoal, placeMissionGoal, replanMission, updateWaypoint, setEm
             <button type="button" onClick={activateJammingRisk} className={mapToolbarBtn(riskMode === 'jamming', 'cyan')}>EW Jam</button>
             <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'cuas-siting' ? 'none' : 'cuas-siting')) }} className={mapToolbarBtn(mapTool === 'cuas-siting', 'cyan')}>C-UAS Siting</button>
             <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'ew-deconflict' ? 'none' : 'ew-deconflict')) }} className={mapToolbarBtn(mapTool === 'ew-deconflict', 'cyan')}>EW Deconflict</button>
+            <button type="button" onClick={() => setShowIadsPanel((v) => !v)} className={mapToolbarBtn(showIadsPanel, 'cyan')}>IADS</button>
             {riskMode === 'blast' && (
               <select className="text-[10px] rounded-lg bg-[#111118] border border-[#3f3f46] shadow-md px-2 py-1.5 font-mono text-zinc-100 max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
                 {WARHEAD_DB.map((w) => (<option key={w.weapon_id} value={w.weapon_id}>{w.weapon_name}</option>))}

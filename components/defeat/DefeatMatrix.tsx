@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Download, ShieldCheck, BadgeCheck, Grid3x3, Table2, Zap } from 'lucide-react'
 import { EditionBadge } from '@/components/operations/EditionBadge'
@@ -165,6 +166,7 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
               >
                 <Zap className="h-4 w-4" /> SAM Pk Calc
               </Button>
+              <Link href="/economics" className="px-3 py-1.5 text-xs font-mono border border-[var(--store-line)] rounded-lg hover:border-cyan/30 text-cyan">Economics</Link>
               <Button variant="outline" size="sm" onClick={handleExport}>
                 <Download className="h-4 w-4" /> Export CSV
               </Button>

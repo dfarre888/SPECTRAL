@@ -32,12 +32,16 @@ function sectionTitle(pill: CategoryPill): string {
 export function PlatformLibrary({ platforms, countries, sovereignPlatforms = [] }: PlatformLibraryProps) {
   const [categoryPill, setCategoryPill] = useState<CategoryPill>('all')
   const [country, setCountry] = useState('all')
+  const [employment, setEmployment] = useState<'all' | 'blue' | 'red' | 'combat_proven'>('all')
   const [search, setSearch] = useState('')
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
     return platforms.filter((p) => {
       if (!matchesCategoryPill(p.category, categoryPill)) return false
+      if (employment === 'blue' && p.side !== 'blue') return false
+      if (employment === 'red' && p.side !== 'red') return false
+      if (employment === 'combat_proven' && !(p.conflict_deployments?.length)) return false
       if (country !== 'all' && p.country_of_origin !== country) return false
       if (!q) return true
       return (
@@ -47,7 +51,7 @@ export function PlatformLibrary({ platforms, countries, sovereignPlatforms = [] 
         (p.country_of_origin?.toLowerCase().includes(q) ?? false)
       )
     })
-  }, [platforms, categoryPill, country, search])
+  }, [platforms, categoryPill, country, search, employment])
 
   return (
     <div className="pb-24">
@@ -103,6 +107,18 @@ export function PlatformLibrary({ platforms, countries, sovereignPlatforms = [] 
           sovereignCount={sovereignPlatforms.length}
         />
 
+        <div className="flex flex-wrap gap-2 mb-4">
+          {(["all", "blue", "red", "combat_proven"] as const).map((f) => (
+            <button
+              key={f}
+              type="button"
+              onClick={() => setEmployment(f)}
+              className={`px-2 py-1 rounded-lg text-[10px] font-mono border ${employment === f ? "border-[var(--store-accent-border)] text-[var(--store-accent)]" : "border-[var(--store-line)] store-text-muted"}`}
+            >
+              {f === "combat_proven" ? "Combat proven" : f === "all" ? "All forces" : `${f.toUpperCase()} force`}
+            </button>
+          ))}
+        </div>
         <StoreCatalogHeader
           title={sectionTitle(categoryPill)}
           meta={

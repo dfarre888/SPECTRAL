@@ -25,6 +25,7 @@ export function useMissionPlanning(
   overlaps: OverlapVolume[],
   setPlacedUas: React.Dispatch<React.SetStateAction<PlacedUas[]>>,
   getCesium: () => CesiumContext | null,
+  rcsOverrides?: Record<string, import('@/lib/spectral/detectionPhysicsConstants').RcsFacets>,
 ) {
   const replanTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -74,9 +75,10 @@ export function useMissionPlanning(
         emcon,
         routeObjective,
         overlapVolumes: overlapForPlanner,
+        rcsOverride: rcsOverrides?.[uas.instanceId],
       })
     },
-    [getCesium, overlaps, placedCuas, placedRadars, placedEffectors],
+    [getCesium, overlaps, placedCuas, placedRadars, placedEffectors, rcsOverrides],
   )
 
   const startMissionGoal = useCallback((uas: PlacedUas, kind: 'target' | 'aoi') => {

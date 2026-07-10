@@ -18,13 +18,24 @@ export async function POST(request: Request) {
   const ctx = await requireTenantContext(request)
   if (!ctx.userId) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
-  const body = (await request.json()) as { name?: string; templateId?: string }
+  const body = (await request.json()) as { name?: string; templateId?: string; world_state?: import('@/lib/wopr/types').WorldState; plan_id?: string }
   if (!body.name?.trim()) {
     return NextResponse.json({ error: 'name required' }, { status: 400 })
   }
 
-  let worldState
-  if (body.templateId) {
+  let worldState = body.world_state
+  if (body.plan_id && ctx.userId) {
+    const { getPlan } = await import('@/lib/planner/plan-store')
+    const { publishPlanToWopr } = await import('@/lib/planner/publish-wopr')
+    const { getMapAssets } = await import('@/lib/map/queries')
+    const plan = await getPlan(body.plan_id, ctx.userId)
+    if (plan) {
+      const catalog = await getMapAssets()
+      const pub = await publishPlanToWopr(plan, ctx.tenantId, catalog)
+      worldState = pub.worldState
+    }
+  }
+  if (!worldState && body.templateId) {
     const supabase = await createClient()
     const { data: tpl } = await supabase
       .from('scenario_templates')

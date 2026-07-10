@@ -79,7 +79,7 @@ export class WorldStateEngine {
         };
       }
 
-      const initialWorldState = this.buildInitialWorldState(scenario, req.difficulty);
+      const initialWorldState = this.buildInitialWorldState(scenario, req.difficulty, req.custom_orbat);
 
       const { data: exercise, error: exerciseError } = await this.supabase
         .from('spectral_exercises')
@@ -566,11 +566,21 @@ export class WorldStateEngine {
   private buildInitialWorldState(
     scenario: Record<string, unknown>,
     difficulty: string,
+    customOrbat?: { red: PCM.Platform[]; blue: PCM.Platform[] },
   ): WorldState {
     const now = new Date().toISOString();
 
     const redOrbat = applyDifficultyModifiers(scenario.red_base_orbat, difficulty, 'RED');
     const blueOrbat = applyDifficultyModifiers(scenario.blue_base_orbat, difficulty, 'BLUE');
+
+    if (customOrbat?.red?.length) {
+      redOrbat.platforms = customOrbat.red;
+      redOrbat.platforms_active = customOrbat.red.length;
+    }
+    if (customOrbat?.blue?.length) {
+      blueOrbat.platforms = customOrbat.blue;
+      blueOrbat.platforms_active = customOrbat.blue.length;
+    }
 
     if (!blueOrbat.magazine_by_type) {
       blueOrbat.magazine_by_type = defaultMagazineByType(blueOrbat.magazine_remaining ?? 40);

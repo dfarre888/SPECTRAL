@@ -6,9 +6,11 @@ import { HubPageShell } from '@/components/hub/HubPageShell'
 import { StorePanel } from '@/components/ui/store-surface'
 import { getConflictCaseStudies, getConflictCaseStudy } from '@/lib/conflicts/queries'
 import { cn } from '@/lib/utils'
+import { CONFLICT_DIGEST } from '@/lib/conflicts/digest'
 
 export default function ConflictsPage() {
   const cases = getConflictCaseStudies()
+  const [tab, setTab] = useState<'cases' | 'digest'>('cases')
   const [selectedId, setSelectedId] = useState<string | null>(cases[0]?.id ?? null)
   const selected = selectedId ? getConflictCaseStudy(selectedId) : null
 
@@ -18,6 +20,23 @@ export default function ConflictsPage() {
       title="Conflict Intel"
       subtitle="Named engagements and operational lessons — OSINT case studies"
     >
+      <div className="flex gap-2 mb-4">
+        <button type="button" onClick={() => setTab('cases')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'cases' ? 'border-cyan text-cyan' : 'border-zinc-700 text-zinc-400')}>Case studies</button>
+        <button type="button" onClick={() => setTab('digest')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'digest' ? 'border-cyan text-cyan' : 'border-zinc-700 text-zinc-400')}>OSINT digest</button>
+      </div>
+      {tab === 'digest' ? (
+        <div className="space-y-3">
+          {CONFLICT_DIGEST.map((d) => (
+            <StorePanel key={d.id} className="p-4">
+              <p className="text-[10px] font-mono text-zinc-500">{d.sourceDate} · {d.confidence}</p>
+              <h3 className="text-sm font-semibold text-white mt-1">{d.title}</h3>
+              <p className="text-xs text-zinc-400 mt-2"><strong>Employment:</strong> {d.employmentPattern}</p>
+              <p className="text-xs text-zinc-400 mt-1"><strong>Countermeasure:</strong> {d.countermeasure}</p>
+              <p className="text-[10px] font-mono text-orange mt-2">THREAT: {d.threatLevel}</p>
+            </StorePanel>
+          ))}
+        </div>
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <StorePanel className="p-4 lg:col-span-1">
           <h2 className="text-xs font-semibold store-text-muted uppercase tracking-wider mb-3">
@@ -110,6 +129,7 @@ export default function ConflictsPage() {
           )}
         </StorePanel>
       </div>
+      )}
     </HubPageShell>
   )
 }

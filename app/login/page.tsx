@@ -86,7 +86,7 @@ export default function LoginPage() {
               Enterprise access
             </p>
             <p className="text-sm store-text-body mb-6">
-              UNCLASSIFIED training tier — authenticate for instructor-grade threat analysis modules.
+              UNCLASSIFIED — authenticate for full threat analysis and wargaming modules.
             </p>
 
             {oidcHref ? (
@@ -136,7 +136,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full py-2.5 rounded-xl border border-[var(--store-line)] text-sm font-medium text-white hover:border-[var(--store-accent-border)] disabled:opacity-50"
               >
-                {loading ? 'Please wait…' : mode === 'login' ? 'Sign in with email' : 'Create training account'}
+                {loading ? 'Please wait…' : mode === 'login' ? 'Sign in with email' : 'Create account'}
               </button>
             </form>
 

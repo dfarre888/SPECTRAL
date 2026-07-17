@@ -419,7 +419,7 @@ export function SwarmSaturationPanel() {
       )}
 
       <p className="text-[7px] font-mono store-text-muted pt-0.5">
-        Pk figures OSINT-derived · training estimates only · not accredited or certified
+        Pk figures OSINT-derived · Confidence: Assessed · Jul 2026
       </p>
     </StorePanel>
   )

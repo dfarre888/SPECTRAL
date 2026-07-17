@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { PCM_EYEBROW } from '@/lib/pcm/presentation-copy'
+import { SHOWCASE_EXERCISE_ID } from '@/lib/pcm/showcase-exercise'
 import { HubPageShell } from '@/components/hub/HubPageShell'
 import { StorePanel } from '@/components/ui/store-surface'
 import { Crosshair, Swords, BarChart3 } from 'lucide-react'
@@ -7,7 +9,7 @@ export default function PcmHubPage() {
   return (
     <HubPageShell
       eyebrow="Wargaming"
-      title="PCM Training"
+      title={PCM_EYEBROW}
       subtitle="Sovereign Persistent Combat Model — learner-driven scenarios, live globe, structured AAR, and force-design analysis."
       headerAction={
         <p className="text-[10px] font-mono store-text-muted">Date of information: Jul 2026</p>
@@ -49,6 +51,12 @@ export default function PcmHubPage() {
           </Link>{' '}
           — the exercise opens on the live globe when the run is published.
         </p>
+        <Link
+          href={`/pcm/exercise/${SHOWCASE_EXERCISE_ID}`}
+          className="store-btn-secondary px-4 py-2 text-xs font-semibold shrink-0 text-center border border-[var(--store-line)] rounded-xl hover:border-[var(--store-accent-border)]"
+        >
+          Open active exercise
+        </Link>
         <Link
           href="/pcm/scenario"
           className="store-btn-primary px-4 py-2 text-xs font-semibold shrink-0 text-center"

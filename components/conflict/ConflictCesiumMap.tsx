@@ -28,68 +28,18 @@ export function ConflictCesiumMap({
   const handlerRef = useRef<{ destroy?: () => void } | null>(null)
   const onSelectRef = useRef(onSelect)
   const [failed, setFailed] = useState(false)
+  const [viewerReady, setViewerReady] = useState(false)
 
   onSelectRef.current = onSelect
 
-  const initViewer = useCallback(async () => {
-    if (!containerRef.current || viewerRef.current) return
-    const Cesium = await loadCesium()
-    cesiumRef.current = Cesium
-    const token = process.env.NEXT_PUBLIC_CESIUM_ION_TOKEN
-    if (token) Cesium.Ion.defaultAccessToken = token
-
-    const viewer = new Cesium.Viewer(containerRef.current, {
-      animation: false,
-      timeline: false,
-      baseLayerPicker: false,
-      geocoder: false,
-      homeButton: false,
-      sceneModePicker: false,
-      navigationHelpButton: false,
-      fullscreenButton: false,
-      infoBox: false,
-      selectionIndicator: false,
-      creditContainer: document.createElement('div'),
-      requestRenderMode: true,
-    }) as CesiumViewer
-
-    viewerRef.current = viewer
-    viewer.scene.globe.depthTestAgainstTerrain = true
-
-    const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
-    handlerRef.current = handler
-    handler.setInputAction((click: { position: unknown }) => {
-      const picked = viewer.scene.pick(click.position as never)
-      const id: string | undefined = picked?.id?.id
-      if (typeof id === 'string' && id.startsWith('conflict-incident-')) {
-        onSelectRef.current(id.slice('conflict-incident-'.length))
-      }
-    }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
-  }, [])
-
-  useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduced) {
-      setFailed(true)
-      return
-    }
-    void initViewer().catch(() => setFailed(true))
-    return () => {
-      handlerRef.current?.destroy?.()
-      handlerRef.current = null
-      viewerRef.current?.destroy()
-      viewerRef.current = null
-      cesiumRef.current = null
-    }
-  }, [initViewer])
-
-  useEffect(() => {
+  const syncEntities = useCallback(() => {
     const viewer = viewerRef.current
     const Cesium = cesiumRef.current
-    if (!viewer || !Cesium || failed) return
+    if (!viewer || !Cesium) return
 
     const keep = new Set<string>()
     for (const inc of incidents) {
+      if (!Number.isFinite(inc.lat) || !Number.isFinite(inc.lon)) continue
       const id = entityId(inc.id)
       keep.add(id)
       const type = normalizeIncidentType(inc.incident_type)
@@ -133,26 +83,120 @@ export function ConflictCesiumMap({
       if (e.id?.startsWith('conflict-incident-') && !keep.has(e.id)) stale.push(e)
     })
     stale.forEach((e) => viewer.entities.remove(e))
-
     viewer.scene.requestRender()
-  }, [incidents, selectedId, failed])
+  }, [incidents, selectedId])
 
-  useEffect(() => {
+  const flyCamera = useCallback(() => {
     const viewer = viewerRef.current
     const Cesium = cesiumRef.current
-    if (!viewer || !Cesium || failed) return
-    const selected = incidents.find((i) => i.id === selectedId)
+    if (!viewer || !Cesium) return
+
+    const geo = incidents.filter((i) => Number.isFinite(i.lat) && Number.isFinite(i.lon))
+    const selected = geo.find((i) => i.id === selectedId)
     if (selected) {
       viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(selected.lon, selected.lat, 1_200_000),
         duration: 0.8,
       })
-    } else if (incidents.length > 0) {
-      const positions = incidents.map((i) => Cesium.Cartesian3.fromDegrees(i.lon, i.lat))
+    } else if (geo.length > 0) {
+      const positions = geo.map((i) => Cesium.Cartesian3.fromDegrees(i.lon, i.lat))
       const bs = Cesium.BoundingSphere.fromPoints(positions)
-      viewer.camera.flyToBoundingSphere(bs, { duration: 0, offset: new Cesium.HeadingPitchRange(0, -0.6, bs.radius * 2.2) })
+      viewer.camera.flyToBoundingSphere(bs, {
+        duration: 0,
+        offset: new Cesium.HeadingPitchRange(0, -0.6, Math.max(bs.radius * 2.2, 500_000)),
+      })
     }
-  }, [selectedId, incidents, failed])
+  }, [incidents, selectedId])
+
+  const initViewer = useCallback(async (cancelled: () => boolean) => {
+    if (!containerRef.current || viewerRef.current) return
+    const Cesium = await loadCesium()
+    if (cancelled()) return
+
+    cesiumRef.current = Cesium
+    const token = process.env.NEXT_PUBLIC_CESIUM_ION_TOKEN
+    if (token) Cesium.Ion.defaultAccessToken = token
+    if (cancelled() || !containerRef.current) return
+
+    const viewer = new Cesium.Viewer(containerRef.current, {
+      animation: false,
+      timeline: false,
+      baseLayerPicker: false,
+      geocoder: false,
+      homeButton: false,
+      sceneModePicker: false,
+      navigationHelpButton: false,
+      fullscreenButton: false,
+      infoBox: false,
+      selectionIndicator: false,
+      creditContainer: document.createElement('div'),
+      requestRenderMode: true,
+    }) as CesiumViewer
+
+    if (cancelled()) {
+      viewer.destroy()
+      return
+    }
+
+    viewerRef.current = viewer
+    viewer.scene.globe.depthTestAgainstTerrain = true
+
+    const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
+    handlerRef.current = handler
+    handler.setInputAction((click: { position: unknown }) => {
+      const picked = viewer.scene.pick(click.position as never)
+      const id: string | undefined = picked?.id?.id
+      if (typeof id === 'string' && id.startsWith('conflict-incident-')) {
+        onSelectRef.current(id.slice('conflict-incident-'.length))
+      }
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+
+    if (cancelled()) {
+      handler.destroy()
+      handlerRef.current = null
+      viewer.destroy()
+      viewerRef.current = null
+      cesiumRef.current = null
+      return
+    }
+
+    setViewerReady(true)
+  }, [])
+
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduced) {
+      setFailed(true)
+      return
+    }
+
+    let cancelled = false
+    const isCancelled = () => cancelled
+
+    void initViewer(isCancelled).catch(() => {
+      if (!cancelled) setFailed(true)
+    })
+
+    return () => {
+      cancelled = true
+      setViewerReady(false)
+      handlerRef.current?.destroy?.()
+      handlerRef.current = null
+      viewerRef.current?.destroy()
+      viewerRef.current = null
+      cesiumRef.current = null
+    }
+  }, [initViewer])
+
+  useEffect(() => {
+    if (!viewerReady || failed) return
+    syncEntities()
+  }, [viewerReady, failed, syncEntities])
+
+  useEffect(() => {
+    if (!viewerReady || failed) return
+    flyCamera()
+  }, [viewerReady, failed, flyCamera])
 
   if (failed) {
     return <ConflictMap incidents={incidents} selectedId={selectedId} onSelect={onSelect} />
@@ -161,6 +205,11 @@ export function ConflictCesiumMap({
   return (
     <div className="relative rounded-xl border border-[var(--store-line)] overflow-hidden bg-[#0A0A0F]" style={{ height: MAP_HEIGHT }}>
       <div ref={containerRef} className="absolute inset-0" />
+      {!viewerReady ? (
+        <div className="absolute inset-0 flex items-center justify-center text-xs font-mono store-text-muted bg-[#0A0A0F]/80">
+          Loading globe…
+        </div>
+      ) : null}
       <div className="absolute bottom-2 left-2 flex flex-wrap gap-1.5 max-w-[70%] pointer-events-none">
         {(['cruise_strike', 'ballistic_strike', 'swarm', 'naval', 'intercept', 'uas_strike'] as const).map((t) => (
           <span key={t} className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/60 text-white/90 border border-white/10">
@@ -169,6 +218,11 @@ export function ConflictCesiumMap({
           </span>
         ))}
       </div>
+      {viewerReady && incidents.length === 0 ? (
+        <p className="absolute top-2 right-2 text-[10px] font-mono store-text-muted bg-black/60 px-2 py-1 rounded">
+          No geolocated incidents
+        </p>
+      ) : null}
     </div>
   )
 }

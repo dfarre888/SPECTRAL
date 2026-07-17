@@ -88,7 +88,7 @@ export function AdjudicationProvenancePanel({
           )}
           {showAccreditedLegend && (
             <p className="text-[11px] store-text-muted italic font-mono mt-2 px-2">
-              Pk figures marked ACCREDITED are training-contract analogues, not MoD-verified.
+              Pk figures marked ACCREDITED are contract-analogue supplements, not MoD-verified.
             </p>
           )}
         </div>

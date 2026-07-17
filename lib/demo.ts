@@ -1,4 +1,4 @@
-/** Local training / sales demo — bypasses auth gate and uses service-role reads server-side. */
+/** Local full-capability mode — bypasses auth gate and uses service-role reads server-side. */
 export const DEFAULT_DEMO_TENANT_ID = '00000000-0000-0000-0000-000000000001'
 export const DEFAULT_DEMO_ADMIN_USER_ID = '00000000-0000-0000-0000-000000000099'
 

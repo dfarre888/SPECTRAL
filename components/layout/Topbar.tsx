@@ -76,12 +76,6 @@ export function Topbar() {
 
       <OperationsChrome />
 
-      {process.env.NEXT_PUBLIC_DEMO_MODE === 'true' && (
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]">
-          <span className="text-[10px] font-mono font-semibold text-[var(--store-accent)]">DEMO MODE</span>
-        </div>
-      )}
-
       <div className="relative">
         <button
           type="button"
@@ -98,7 +92,7 @@ export function Topbar() {
         </button>
         {notifOpen && (
           <div className="absolute top-full right-0 mt-1 z-50 w-56 store-panel rounded-xl border border-[var(--store-line)] shadow-xl p-3">
-            <p className="text-[10px] font-mono uppercase tracking-wider store-text-muted">Training alerts</p>
+            <p className="text-[10px] font-mono uppercase tracking-wider store-text-muted">Operational alerts</p>
             <p className="mt-2 text-[11px] store-text-body">No active alerts. Exercise injects and scenario notices will appear here.</p>
           </div>
         )}

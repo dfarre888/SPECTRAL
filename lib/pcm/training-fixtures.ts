@@ -171,16 +171,16 @@ export interface TrainingExerciseMeta {
   scenario_id: string
   status: string
   current_turn: number
-  training: true
+  read_only?: boolean
 }
 
-/** PCM exercise metadata when DB session unavailable (demo / instructor walkthrough). */
+/** Exercise metadata when persisted session unavailable (showcase vignette). */
 export function getTrainingExerciseMeta(exerciseId: string): TrainingExerciseMeta {
   return {
     id: exerciseId,
     scenario_id: 'ukraine-owa-intercept-vignette',
     status: 'active',
     current_turn: 12,
-    training: true,
+    read_only: true,
   }
 }

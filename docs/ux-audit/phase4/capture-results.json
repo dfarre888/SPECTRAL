@@ -65,7 +65,7 @@
   },
   {
     "slug": "compare",
-    "route": "/compare?ids=shahed-136,mq-9-reaper",
+    "route": "/compare?a=shahed-136&b=mq-9-reaper",
     "ok": true,
     "errors": [],
     "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/compare-1440x900.png",

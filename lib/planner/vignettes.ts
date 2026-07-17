@@ -64,7 +64,7 @@ export const PLANNER_VIGNETTES: PlannerVignette[] = [
   {
     id: 'north-qld-cuas',
     name: 'North Queensland C-UAS Belt',
-    description: 'Shahed swarm economics — 8× Shahed vs Giraffe/NASAMS/Gepard layered belt (125:1 exchange demo).',
+    description: 'Shahed swarm economics — 8× Shahed vs Giraffe/NASAMS/Gepard layered belt (125:1 exchange ratio).',
     iadsStackId: 'stack-north-qld-cuas',
     economicsHighlight: { platformId: 'shahed-136', defeatSystemId: 'nasams-amraam-er', label: '125:1 cost catastrophe' },
     swarmCount: 8,

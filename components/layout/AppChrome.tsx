@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { MobileNavProvider } from '@/components/layout/MobileNavContext'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Topbar } from '@/components/layout/Topbar'
+import { CLASSIFICATION_STRIP } from '@/lib/pcm/presentation-copy'
 import { cn } from '@/lib/utils'
 
 interface AppChromeProps {
@@ -34,7 +35,7 @@ export function AppChrome({
           {moduleLabel ? (
             <div className="h-8 shrink-0 flex items-center px-4 border-b border-[var(--store-line)] bg-[var(--store-surface)]">
               <span className="text-[10px] font-mono store-text-muted uppercase tracking-wider">
-                SPECTRAL · {moduleLabel} · UNCLASSIFIED // training
+                SPECTRAL · {moduleLabel} · {CLASSIFICATION_STRIP}
               </span>
             </div>
           ) : null}

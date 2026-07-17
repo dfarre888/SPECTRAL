@@ -61,7 +61,7 @@ export function ThreatAssessmentPanel({
             <Target className="w-3.5 h-3.5" />
             Threat assessment
           </p>
-          <p className="text-[9px] store-text-muted mt-0.5">OSINT training estimate · not live fire control</p>
+          <p className="text-[9px] store-text-muted mt-0.5">OSINT estimate · Confidence: Assessed · not fire control</p>
         </div>
         {adjudicationSource && adjudicationSource !== 'client' && (
           <Badge variant="assessed" className="text-[9px] shrink-0">

@@ -6,14 +6,23 @@ import { useCallback, useEffect, useState } from 'react'
 import { HubPageShell } from '@/components/hub/HubPageShell'
 import { TurnControlPanel } from '@/components/pcm/TurnControlPanel'
 import { GlobeSkeleton } from '@/components/ui/loading-skeleton'
+import { SHOWCASE_EXERCISE_SUBTITLE } from '@/lib/pcm/showcase-exercise'
+import { PCM_EYEBROW } from '@/lib/pcm/presentation-copy'
+import { SHOWCASE_EXERCISE_ID } from '@/lib/pcm/showcase-exercise'
 
 const SpectralGlobe = dynamic(() => import('@/components/pcm/SpectralGlobe'), {
   ssr: false,
   loading: () => <GlobeSkeleton className="h-full min-h-[320px]" />,
 })
 
+interface ExerciseMeta {
+  status: string
+  current_turn: number
+  readOnly?: boolean
+}
+
 export function PcmExerciseWorkspace({ exerciseId }: { exerciseId: string }) {
-  const [meta, setMeta] = useState<{ status: string; current_turn: number; training?: boolean } | null>(null)
+  const [meta, setMeta] = useState<ExerciseMeta | null>(null)
   const [loaded, setLoaded] = useState(false)
 
   const refreshMeta = useCallback(() => {
@@ -25,16 +34,16 @@ export function PcmExerciseWorkspace({ exerciseId }: { exerciseId: string }) {
           return {
             status: String(data.status ?? 'unknown'),
             current_turn: data.current_turn as number,
-            training: false,
+            readOnly: exerciseId === SHOWCASE_EXERCISE_ID,
           }
         }
-        const trainingRes = await fetch(`/api/v1/training/exercise/${exerciseId}`)
-        if (!trainingRes.ok) return null
-        const data = await trainingRes.json()
+        const archiveRes = await fetch(`/api/v1/training/exercise/${exerciseId}`)
+        if (!archiveRes.ok) return null
+        const data = await archiveRes.json()
         return {
           status: String(data.status ?? 'active'),
           current_turn: data.current_turn as number,
-          training: true,
+          readOnly: Boolean(data.read_only),
         }
       })
       .then((next) => {
@@ -51,9 +60,17 @@ export function PcmExerciseWorkspace({ exerciseId }: { exerciseId: string }) {
     refreshMeta()
   }, [refreshMeta])
 
+  const subtitle = meta
+    ? exerciseId === SHOWCASE_EXERCISE_ID || meta.readOnly
+      ? SHOWCASE_EXERCISE_SUBTITLE
+      : 'Live globe — fog of war, detection envelopes, engagement geometry.'
+    : loaded
+      ? 'Start an exercise from Scenario Generator or sign in if this session expired.'
+      : 'Fetching exercise metadata…'
+
   return (
     <HubPageShell
-      eyebrow="PCM Exercise"
+      eyebrow={PCM_EYEBROW}
       title={
         !loaded
           ? 'Loading exercise…'
@@ -61,15 +78,7 @@ export function PcmExerciseWorkspace({ exerciseId }: { exerciseId: string }) {
             ? `Turn ${meta.current_turn}`
             : 'Exercise unavailable'
       }
-      subtitle={
-        meta?.training
-          ? 'OSINT training fixture — Kyiv OWA intercept vignette (Turn 12 snapshot).'
-          : meta
-            ? 'Live globe — fog of war, detection envelopes, engagement geometry.'
-            : loaded
-              ? 'Start an exercise from Scenario Generator or sign in if this session expired.'
-              : 'Fetching exercise metadata…'
-      }
+      subtitle={subtitle}
       headerAction={
         meta ? (
           <Link
@@ -89,7 +98,7 @@ export function PcmExerciseWorkspace({ exerciseId }: { exerciseId: string }) {
         exerciseId={exerciseId}
         currentTurn={meta?.current_turn ?? 0}
         status={meta?.status ?? (loaded ? 'unavailable' : 'loading')}
-        training={meta?.training}
+        readOnly={exerciseId === SHOWCASE_EXERCISE_ID || meta?.readOnly}
         onTurnAdvanced={refreshMeta}
       />
       <div className="h-[min(72vh,720px)] rounded-xl overflow-hidden border border-[var(--store-line)]">

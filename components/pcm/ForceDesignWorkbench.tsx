@@ -4,11 +4,15 @@ import { useState } from 'react';
 import type { ForceDesignReport } from '@/lib/moat/forceDesignEngine';
 import { OpsPanel } from '@/components/ui/ops-panel';
 import { PanelSkeleton } from '@/components/ui/loading-skeleton';
+import {
+  FORCE_DESIGN_ARCHIVE_NOTE,
+  FORCE_DESIGN_DESCRIPTION,
+} from '@/lib/pcm/presentation-copy';
 
 export function ForceDesignWorkbench() {
   const [report, setReport] = useState<ForceDesignReport | null>(null);
   const [loading, setLoading] = useState(false);
-  const [training, setTraining] = useState(false);
+  const [archiveRun, setArchiveRun] = useState(false);
 
   async function runAnalysis() {
     setLoading(true);
@@ -30,7 +34,9 @@ export function ForceDesignWorkbench() {
       });
       if (!res.ok) {
         res = await fetch('/api/v1/training/force-design', { method: 'POST' });
-        setTraining(true);
+        setArchiveRun(true);
+      } else {
+        setArchiveRun(false);
       }
       if (res.ok) {
         const data = await res.json();
@@ -46,7 +52,7 @@ export function ForceDesignWorkbench() {
       <OpsPanel
         title="Parallel force-design analysis"
         kicker="Procurement decision support"
-        description="Structures accredited run outcomes into a capability-manager brief. Open build uses OSINT placeholder runs when DS auth unavailable."
+        description={FORCE_DESIGN_DESCRIPTION}
         actions={
           <button
             type="button"
@@ -61,9 +67,9 @@ export function ForceDesignWorkbench() {
         {loading ? <PanelSkeleton rows={4} /> : null}
         {report && !loading ? (
           <div className="space-y-4">
-            {training ? (
+            {archiveRun ? (
               <p className="text-[10px] font-mono text-[var(--store-accent)]">
-                Training fixture — placeholder statistics for instructor demo
+                {FORCE_DESIGN_ARCHIVE_NOTE}
               </p>
             ) : null}
             <p className="text-xs store-text-body leading-relaxed">{report.recommendation}</p>

@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { ShieldCheck } from 'lucide-react'
+import { CLASSIFICATION_BANNER } from '@/lib/operations/classification'
 import { StoreHero } from '@/components/catalog/StoreHero'
 import { DashboardHomeTabs } from '@/components/dashboard/DashboardHomeTabs'
 import { DashboardCommandCenter } from '@/components/dashboard/DashboardCommandCenter'
@@ -50,11 +51,11 @@ export default async function Dashboard() {
                   />
                   {skin === 'a3dm'
                     ? 'CASA-aligned RPAS training'
-                    : 'OSINT · UNCLASSIFIED · instructor-grade threat analysis'}
+                    : 'OSINT · UNCLASSIFIED · sovereign threat intelligence'}
                 </>
               }
               trustItems={[
-                { icon: ShieldCheck, label: 'UNCLASSIFIED // training use only' },
+                { icon: ShieldCheck, label: CLASSIFICATION_BANNER.UNCLASSIFIED },
               ]}
             />
             <Suspense fallback={null}>

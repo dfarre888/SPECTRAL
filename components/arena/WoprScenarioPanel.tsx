@@ -67,7 +67,7 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
       if (!res.ok) {
         setApiStatus('fallback')
         setScenarios(TRAINING_WOPR_SCENARIOS)
-        setError(`Live WOPR unavailable (${res.status}) — OSINT training vignettes loaded.`)
+        setError(`Live WOPR unavailable (${res.status}) — OSINT scenario library loaded.`)
         return
       }
       const json = await res.json()
@@ -77,7 +77,7 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
     } catch {
       setApiStatus('fallback')
       setScenarios(TRAINING_WOPR_SCENARIOS)
-      setError('Network error — OSINT training vignettes loaded.')
+      setError('Network error — OSINT scenario library loaded.')
     }
   }, [operations])
 

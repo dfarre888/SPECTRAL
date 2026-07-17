@@ -7,6 +7,7 @@ import { requireSpectralAuth } from '@/lib/pcm/require-auth';
 import { authorizeDsRoute, resolveSessionDsPlayerId } from '@/lib/moat/ds-route-auth';
 import { isDemoMode } from '@/lib/demo';
 import { getTrainingAarDocument } from '@/lib/pcm/training-fixtures';
+import { normalizeExerciseId } from '@/lib/pcm/showcase-exercise';
 
 export const dynamic = 'force-dynamic'
 
@@ -15,8 +16,13 @@ export async function GET(req: NextRequest) {
   if (auth.response) return auth.response;
 
   const supabase = await createClient();
-  const exerciseId = req.nextUrl.searchParams.get('exercise_id');
-  if (!exerciseId) return NextResponse.json({ error: 'exercise_id required' }, { status: 400 });
+  const exerciseIdParam = req.nextUrl.searchParams.get('exercise_id');
+  if (!exerciseIdParam) return NextResponse.json({ error: 'exercise_id required' }, { status: 400 });
+  const canonicalExerciseId = normalizeExerciseId(exerciseIdParam);
+  const dbExerciseIds =
+    exerciseIdParam === canonicalExerciseId
+      ? [exerciseIdParam]
+      : [exerciseIdParam, canonicalExerciseId];
 
   const dsPlayerId = req.nextUrl.searchParams.get('ds_player_id');
   const targetPlayerId = req.nextUrl.searchParams.get('player_id');
@@ -39,34 +45,37 @@ export async function GET(req: NextRequest) {
 
   const playerId = targetPlayerId ?? player?.id;
   if (!playerId) {
-    const doc = getTrainingAarDocument(exerciseId);
+    const doc = getTrainingAarDocument(canonicalExerciseId);
     return NextResponse.json({
-      exercise_id: exerciseId,
-      player_id: 'training-fixture',
+      exercise_id: canonicalExerciseId,
+      player_id: 'spectral-player',
       aar_document: doc,
       overall_grade: doc.overall_grade,
       accreditation_eligible: doc.accreditation_eligible,
-      training: true,
-      demo: isDemoMode(),
     });
   }
 
-  const { data } = await supabase
-    .from('spectral_aar_documents')
-    .select('*')
-    .eq('exercise_id', exerciseId)
-    .eq('player_id', playerId)
-    .maybeSingle();
+  let data: Record<string, unknown> | null = null;
+  for (const id of dbExerciseIds) {
+    const { data: row } = await supabase
+      .from('spectral_aar_documents')
+      .select('*')
+      .eq('exercise_id', id)
+      .eq('player_id', playerId)
+      .maybeSingle();
+    if (row) {
+      data = row as Record<string, unknown>;
+      break;
+    }
+  }
   if (!data) {
-    const doc = getTrainingAarDocument(exerciseId);
+    const doc = getTrainingAarDocument(canonicalExerciseId);
     return NextResponse.json({
-      exercise_id: exerciseId,
+      exercise_id: canonicalExerciseId,
       player_id: playerId,
       aar_document: doc,
       overall_grade: doc.overall_grade,
       accreditation_eligible: doc.accreditation_eligible,
-      training: true,
-      demo: isDemoMode(),
     });
   }
   return NextResponse.json(data);

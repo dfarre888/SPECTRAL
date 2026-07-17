@@ -19,7 +19,7 @@ const BASE_NAV = [
   { href: '/defeat',    icon: Shield,           label: 'Defeat Matrix',    sub: 'Countermeasures' },
   { href: '/conflicts', icon: Globe,            label: 'Conflict Intel',   sub: 'Case studies' },
   { href: '/conflict',  icon: Activity,         label: 'Incident Timeline', sub: 'Live incident feed' },
-  { href: '/pcm',       icon: Crosshair,        label: 'PCM Training',     sub: 'Adaptive wargaming' },
+  { href: '/pcm',       icon: Crosshair,        label: 'PCM',              sub: 'Persistent combat model' },
   { href: '/arena',     icon: Swords,           label: 'Red/Blue Arena',   sub: 'WOPR scenario engine' },
   { href: '/compare',   icon: GitCompare,       label: 'Platform Compare', sub: 'Side-by-side dossiers' },
   { href: '/overlay',   icon: Target,           label: 'SAM Engagement',   sub: 'Pk envelope & salvo' },

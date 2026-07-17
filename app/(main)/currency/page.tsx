@@ -22,7 +22,7 @@ export default async function CurrencyPage() {
     <HubPageShell
       eyebrow="Moat Builder"
       title="Currency Updates"
-      subtitle="Tactical currency proposals require DS review before they inform training emphasis. Players see approved updates only."
+      subtitle="Tactical currency proposals require DS review before publication. Operators see approved updates only."
       headerAction={
         <p className="text-[10px] font-mono store-text-muted">
           Date of information: Jul 2026 · {updates.length} records

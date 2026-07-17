@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { HubPageShell } from '@/components/hub/HubPageShell'
 import { StorePanel } from '@/components/ui/store-surface'
+import { ConflictCaseStudyMap } from '@/components/conflict/ConflictCaseStudyMap'
 import { getConflictCaseStudies, getConflictCaseStudy } from '@/lib/conflicts/seed-queries'
 import { cn } from '@/lib/utils'
 import { CONFLICT_DIGEST } from '@/lib/conflicts/digest'
@@ -40,6 +41,15 @@ export default function ConflictsPage() {
           ))}
         </div>
       ) : (
+      <div className="space-y-4">
+        {selected ? (
+          <StorePanel className="p-3">
+            <p className="text-[10px] font-mono store-text-muted uppercase tracking-wider mb-2">
+              Incident map · {selected.name}
+            </p>
+            <ConflictCaseStudyMap key={selected.id} study={selected} />
+          </StorePanel>
+        ) : null}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <StorePanel className="p-4 lg:col-span-1">
           <h2 className="text-xs font-semibold store-text-muted uppercase tracking-wider mb-3">
@@ -131,6 +141,7 @@ export default function ConflictsPage() {
             <p className="store-text-muted text-sm font-mono">Select a case study</p>
           )}
         </StorePanel>
+      </div>
       </div>
       )}
     </HubPageShell>

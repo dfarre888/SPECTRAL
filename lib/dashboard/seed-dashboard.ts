@@ -85,7 +85,7 @@ export const DEMO_ASSETS: TrackedAsset[] = [
     status: 'pre-flight',
     batteryHealthPct: 88,
     batteryCycles: 31,
-    payloadProfile: 'Thermal · LiDAR (training payload)',
+    payloadProfile: 'Thermal · LiDAR ISR payload',
     payloadActive: true,
     operator: 'S. Laurent',
     jsaStatus: 'pending',

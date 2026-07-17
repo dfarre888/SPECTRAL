@@ -279,7 +279,7 @@ function formatAssetName(assetId: string): string {
 
 function inferPayload(assetId: string): string {
   if (assetId.includes('shahed')) return 'OWA warhead · INS/GPS'
-  if (assetId.includes('matrice') || assetId.includes('mavic')) return 'EO/IR · training payload'
+  if (assetId.includes('matrice') || assetId.includes('mavic')) return 'EO/IR · LiDAR payload'
   if (assetId.includes('lids')) return 'Ku-band effector · EO cue'
   return 'OSINT catalogue asset'
 }

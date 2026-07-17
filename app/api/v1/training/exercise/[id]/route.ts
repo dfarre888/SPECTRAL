@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
 import { getTrainingExerciseMeta } from '@/lib/pcm/training-fixtures'
+import { normalizeExerciseId } from '@/lib/pcm/showcase-exercise'
 
 export const dynamic = 'force-dynamic'
 
-/** Training exercise metadata — no auth / player row required. */
 export async function GET(
   _req: Request,
   { params }: { params: { id: string } },
 ) {
-  return NextResponse.json(getTrainingExerciseMeta(params.id))
+  const exerciseId = normalizeExerciseId(params.id)
+  return NextResponse.json(getTrainingExerciseMeta(exerciseId))
 }

@@ -7,17 +7,17 @@ interface TurnControlPanelProps {
   exerciseId: string;
   currentTurn: number;
   status: string;
-  training?: boolean;
+  readOnly?: boolean;
   onTurnAdvanced?: () => void;
 }
 
-export function TurnControlPanel({ exerciseId, currentTurn, status, training, onTurnAdvanced }: TurnControlPanelProps) {
+export function TurnControlPanel({ exerciseId, currentTurn, status, readOnly, onTurnAdvanced }: TurnControlPanelProps) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
   const advanceTurn = async () => {
-    if (training) {
-      setMsg("Training fixture — turn frozen at instructor snapshot");
+    if (readOnly) {
+      setMsg("Turn locked — published snapshot");
       return;
     }
     setBusy(true);
@@ -39,8 +39,8 @@ export function TurnControlPanel({ exerciseId, currentTurn, status, training, on
   };
 
   const startExercise = async () => {
-    if (training) {
-      setMsg("Training fixture already active");
+    if (readOnly) {
+      setMsg("Exercise active — snapshot loaded");
       return;
     }
     setBusy(true);
@@ -61,14 +61,13 @@ export function TurnControlPanel({ exerciseId, currentTurn, status, training, on
     <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] px-3 py-2">
       <span className="text-[10px] font-mono store-text-muted">
         Turn <span className="text-white tabular-nums">{turnLabel}</span> · {status}
-        {training ? ' · training fixture' : ''}
       </span>
-      {status === "setup" && !training && (
+      {status === "setup" && !readOnly && (
         <button type="button" disabled={busy} onClick={startExercise} className="rounded border border-[var(--store-accent-border)] px-2 py-1 text-[10px] font-mono text-[var(--store-accent)]">
           Start exercise
         </button>
       )}
-      {!training && (
+      {!readOnly && (
         <button type="button" disabled={busy} onClick={advanceTurn} className="rounded border border-[var(--store-line)] px-2 py-1 text-[10px] font-mono text-white hover:border-[var(--store-accent-border)]">
           Advance turn
         </button>

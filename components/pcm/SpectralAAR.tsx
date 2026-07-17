@@ -7,11 +7,13 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { GlobeSkeleton, PanelSkeleton } from '@/components/ui/loading-skeleton';
 import { OpsPanel } from '@/components/ui/ops-panel';
 import type { AARDocument } from '@/lib/pcm/aar-engine';
+import { AAR_ADJUDICATED_SUBTITLE, AAR_ARCHIVE_SUBTITLE, AAR_EMPTY_DESCRIPTION, PCM_EYEBROW } from '@/lib/pcm/presentation-copy';
+import { SHOWCASE_EXERCISE_ID } from '@/lib/pcm/showcase-exercise';
 import { FileBarChart } from 'lucide-react';
 
 export function SpectralAAR({ exerciseId }: { exerciseId: string }) {
   const [doc, setDoc] = useState<AARDocument | null>(null);
-  const [training, setTraining] = useState(false);
+  const [archiveSource, setArchiveSource] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -23,16 +25,20 @@ export function SpectralAAR({ exerciseId }: { exerciseId: string }) {
         const res = await fetch('/api/spectral/aar?exercise_id=' + encodeURIComponent(exerciseId));
         if (res.ok) {
           const row = await res.json();
-          setDoc(row.aar_document as AARDocument);
-          setTraining(Boolean(row.training));
+          if (!cancelled) {
+            setDoc(row.aar_document as AARDocument);
+            setArchiveSource(
+              exerciseId === SHOWCASE_EXERCISE_ID || row.player_id === 'spectral-player',
+            );
+          }
           return;
         }
-        const trainingRes = await fetch('/api/v1/training/aar?exercise_id=' + encodeURIComponent(exerciseId));
-        if (!trainingRes.ok) throw new Error('AAR not available');
-        const row = await trainingRes.json();
+        const archiveRes = await fetch('/api/v1/training/aar?exercise_id=' + encodeURIComponent(exerciseId));
+        if (!archiveRes.ok) throw new Error('AAR not available');
+        const row = await archiveRes.json();
         if (!cancelled) {
           setDoc(row.aar_document as AARDocument);
-          setTraining(true);
+          setArchiveSource(true);
         }
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load AAR');
@@ -45,13 +51,9 @@ export function SpectralAAR({ exerciseId }: { exerciseId: string }) {
 
   return (
     <HubPageShell
-      eyebrow="PCM Training"
+      eyebrow={PCM_EYEBROW}
       title="After Action Review"
-      subtitle={
-        training
-          ? 'OSINT training fixture — illustrative debrief for instructor walkthrough.'
-          : 'Persisted exercise debrief from adjudicated turn history.'
-      }
+      subtitle={archiveSource ? AAR_ARCHIVE_SUBTITLE : AAR_ADJUDICATED_SUBTITLE}
       headerAction={
         <Link href={`/pcm/exercise/${exerciseId}`} className="text-xs font-mono text-cyan hover:opacity-80">
           ← Live exercise
@@ -69,12 +71,17 @@ export function SpectralAAR({ exerciseId }: { exerciseId: string }) {
         <EmptyState
           icon={FileBarChart}
           title="AAR not yet available"
-          description="Complete at least one exercise turn, or use the training fixture for demo walkthrough."
+          description={AAR_EMPTY_DESCRIPTION}
           primaryAction={{ href: `/pcm/exercise/${exerciseId}`, label: 'Return to exercise' }}
           secondaryAction={{ href: '/pcm/scenario', label: 'Start new scenario →' }}
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-3">
+          {archiveSource ? (
+            <p className="lg:col-span-3 text-[10px] font-mono text-[var(--store-accent)]">
+              {AAR_ARCHIVE_SUBTITLE}
+            </p>
+          ) : null}
           <OpsPanel title="Grade" kicker="Overall">
             <p className="font-mono text-2xl text-cyan capitalize">{doc.overall_grade}</p>
             <p className="text-[10px] font-mono store-text-muted mt-2">

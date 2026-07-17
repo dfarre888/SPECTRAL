@@ -64,7 +64,7 @@ export function PlatformLibrary({ platforms, countries, sovereignPlatforms = [] 
             Curated for Threat Analysis
           </>
         }
-        subtitle="World UAS order of battle from open sources — specifications, EW bands, combat employment, and defeat cross-reference. Built for instructor-led UNCLASSIFIED training."
+        subtitle="World UAS order of battle from open sources — specifications, EW bands, combat employment, and defeat cross-reference. OSINT catalogue for operational threat analysis."
         trustChip={
           <>
             <span

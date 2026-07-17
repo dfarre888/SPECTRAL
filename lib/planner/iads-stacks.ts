@@ -74,7 +74,7 @@ export const IADS_STACK_PRESETS: IadsStackPreset[] = [
   {
     id: 'stack-north-qld-cuas',
     name: 'North QLD C-UAS Belt — Giraffe → NASAMS → Gepard',
-    description: 'Shahed swarm economics demo — layered C-UAS belt for northern Australia AO.',
+    description: 'Shahed swarm economics — layered C-UAS belt for northern Australia AO.',
     anchor: { lon: 145.7, lat: -16.9 },
     threatContext: '8× Shahed-136 saturation — 125:1 exchange risk',
     confidence: 'Estimated',

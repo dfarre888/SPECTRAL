@@ -30,7 +30,7 @@ function buildModules(stats: ModuleCatalogStats) {
     { href: '/spectrum', icon: 'radio' as const, kicker: 'EW', label: 'Spectrum View', count: '6', unit: 'GHz span', accent: 'text-cyan bg-cyan/10 border-cyan/25', desc: 'RF spectrum visualiser and SPECTRA kill-chain', priority: 7 },
     { href: '/overlay', icon: 'target' as const, kicker: 'SAM', label: 'SAM Engagement', count: 'Pk', unit: 'envelope', accent: 'text-red bg-red/10 border-red/25', desc: 'SAM intercept geometry, range rings, and salvo Pk', priority: 8 },
     { href: '/planner', icon: 'map' as const, kicker: 'PLANNER', label: 'SPECTRAL Planner', count: String(stats.plannerVignetteCount), unit: 'vignettes', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Battlespace plans, IADS stacks, engagement economics', priority: 9 },
-    { href: '/pcm', icon: 'crosshair' as const, kicker: 'PCM', label: 'PCM Training', count: 'Live', unit: 'exercises', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Learner-driven exercises, globe runs, and force design', priority: 10 },
+    { href: '/pcm', icon: 'crosshair' as const, kicker: 'PCM', label: 'Persistent Combat Model', count: 'Live', unit: 'exercises', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Learner-driven exercises, globe runs, and force design', priority: 10 },
     { href: '/compare', icon: 'git-compare' as const, kicker: 'ANALYSIS', label: 'Platform Compare', count: '2', unit: 'min pick', accent: 'text-amber bg-amber/10 border-amber/25', desc: 'Library platform dossier side-by-side comparison', priority: 11 },
   ] as const
 }

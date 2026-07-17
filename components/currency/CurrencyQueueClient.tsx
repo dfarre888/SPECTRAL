@@ -109,10 +109,10 @@ export function CurrencyQueueClient({
             title={isDs ? 'No proposals in queue' : 'No approved currency updates'}
             description={
               isDs
-                ? 'Tactical currency proposals from learners appear here for DS review before they inform training emphasis.'
+                ? 'Tactical currency proposals from operators appear here for DS review before publication to the force.'
                 : 'Approved tactical currency updates from your directing staff will appear here.'
             }
-            primaryAction={{ href: '/pcm', label: 'Open PCM training' }}
+            primaryAction={{ href: '/pcm', label: 'Open PCM' }}
           />
         )}
       </div>

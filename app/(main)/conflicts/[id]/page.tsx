@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { HubPageShell } from '@/components/hub/HubPageShell'
+import { ConflictCaseStudyMap } from '@/components/conflict/ConflictCaseStudyMap'
 import { OpsPanel } from '@/components/ui/ops-panel'
 import { StorePanel } from '@/components/ui/store-surface'
 import { getConflictCaseStudy } from '@/lib/conflicts/seed-queries'
+import { caseStudyToMapIncidents } from '@/lib/conflicts/case-study-map'
 
 interface ConflictDetailPageProps {
   params: { id: string }
@@ -13,6 +15,8 @@ export default function ConflictDetailPage({ params }: ConflictDetailPageProps) 
   const study = getConflictCaseStudy(params.id)
   if (!study) notFound()
 
+  const mapIncidents = caseStudyToMapIncidents(study)
+
   return (
     <HubPageShell
       eyebrow="Case Studies"
@@ -20,6 +24,14 @@ export default function ConflictDetailPage({ params }: ConflictDetailPageProps) 
       subtitle={`${study.region} · ${study.period} · OSINT case study`}
     >
       <div className="space-y-4 max-w-4xl">
+        {mapIncidents.length > 0 ? (
+          <StorePanel className="p-3">
+            <p className="text-[10px] font-mono store-text-muted uppercase tracking-wider mb-2">
+              Incident map
+            </p>
+            <ConflictCaseStudyMap key={study.id} study={study} />
+          </StorePanel>
+        ) : null}
         <OpsPanel title="Threat assessment" kicker={study.classification}>
           <p className="text-sm store-text-body leading-relaxed">{study.summary}</p>
         </OpsPanel>

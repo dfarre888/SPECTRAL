@@ -34,6 +34,8 @@ export type GnssBand =
   | 'GALILEO_E5'  // 1191.795 MHz
   | 'BEIDOU_B1'   // 1561.098 MHz
   | 'BEIDOU_B2'   // 1207.14 MHz
+  | 'NAVIC_L5'    // 1176.45 MHz — India regional
+  | 'NAVIC_S'     // 2492.028 MHz — India regional S-band
   | 'control_link_2_4ghz'   // 2.4 GHz C2 link
   | 'control_link_900mhz'   // 900 MHz C2 link
   | 'control_link_5_8ghz'   // 5.8 GHz video/control
@@ -50,6 +52,8 @@ export const BAND_REFERENCE: Record<GnssBand, { label: string; centre_mhz: numbe
   GALILEO_E5:{ label: 'Galileo E5',  centre_mhz: 1191.795, note: 'Galileo wideband signal — robust against narrowband interference.' },
   BEIDOU_B1: { label: 'BeiDou B1',   centre_mhz: 1561.098, note: 'Chinese constellation. Distinct from GPS L1 — adds diversity.' },
   BEIDOU_B2: { label: 'BeiDou B2',   centre_mhz: 1207.14, note: 'BeiDou second frequency.' },
+  NAVIC_L5:  { label: 'NavIC L5',    centre_mhz: 1176.45, note: 'Indian regional GNSS — co-band with GPS L5.' },
+  NAVIC_S:   { label: 'NavIC S',     centre_mhz: 2492.028, note: 'Indian regional S-band — distinct from L-band jamming.' },
   control_link_2_4ghz: { label: 'C2 link 2.4 GHz', centre_mhz: 2400, note: 'Command-and-control link, not positioning. Jamming this is loss-of-control, not loss-of-position.' },
   control_link_900mhz: { label: 'C2 link 900 MHz', centre_mhz: 900, note: 'Longer-range C2 link.' },
   control_link_5_8ghz: { label: 'C2 / video 5.8 GHz', centre_mhz: 5800, note: 'Video downlink and some control.' },
@@ -57,7 +61,7 @@ export const BAND_REFERENCE: Record<GnssBand, { label: string; centre_mhz: numbe
   unknown:   { label: 'Unknown / unstated', centre_mhz: null, note: 'No band information available for this incident.' },
 };
 
-export type Constellation = 'GPS' | 'GLONASS' | 'GALILEO' | 'BEIDOU' | 'QZSS' | 'multi' | 'unknown';
+export type Constellation = 'GPS' | 'GLONASS' | 'GALILEO' | 'BEIDOU' | 'NavIC' | 'QZSS' | 'Starlink' | 'multi' | 'unknown';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FAILURE-MODE CATEGORISATION — the taxonomy

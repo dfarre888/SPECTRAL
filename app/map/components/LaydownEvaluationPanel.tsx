@@ -1,15 +1,17 @@
 'use client'
 
+import { useMemo, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { StorePanel } from '@/components/ui/store-surface'
 import type {
   EvaluatedItem,
+  EvaluationSection,
   LaydownEvaluation,
   SelectedLaydownItem,
 } from '@/lib/map/laydown-evaluation'
-import { isSameLaydownItem } from '@/lib/map/laydown-evaluation'
+import { groupEvaluatedByIadsStack, isSameLaydownItem } from '@/lib/map/laydown-evaluation'
 import { cn } from '@/lib/utils'
-import { Crosshair, Radar, Shield, Target } from 'lucide-react'
+import { ChevronDown, Crosshair, Radar, Shield, Target } from 'lucide-react'
 
 interface PlacedItemChip {
   kind: SelectedLaydownItem['kind']
@@ -22,7 +24,7 @@ interface LaydownEvaluationPanelProps {
   placedItems: PlacedItemChip[]
   selectedItem: SelectedLaydownItem | null
   onSelectItem: (item: SelectedLaydownItem) => void
-  onAddCatalogItem: (item: EvaluatedItem) => void
+  onEvalItemClick: (item: EvaluatedItem) => void
   adjudicationSource?: string
 }
 
@@ -49,26 +51,42 @@ function kindIcon(kind: SelectedLaydownItem['kind']) {
 function EvalRow({
   item,
   tone,
-  onAdd,
+  selectedItem,
+  onItemClick,
+  compactStack,
 }: {
   item: EvaluatedItem
   tone: 'can' | 'cannot'
-  onAdd: (item: EvaluatedItem) => void
+  selectedItem: SelectedLaydownItem | null
+  onItemClick: (item: EvaluatedItem) => void
+  /** When true, parent system is shown on the stack header — omit per-row duplicate. */
+  compactStack?: boolean
 }) {
+  const displayName =
+    item.kind === 'radar' && item.natoName ? `${item.name} · ${item.natoName}` : item.name
+
+  const selected =
+    item.instanceId != null &&
+    isSameLaydownItem(selectedItem, { kind: item.kind, instanceId: item.instanceId })
+  const actionLabel = item.placed || item.instanceId ? 'Select on map' : 'Place on map'
+
   return (
     <button
       type="button"
-      title="Click globe to place"
-      onClick={() => onAdd(item)}
+      title={actionLabel}
+      onClick={() => onItemClick(item)}
       className={cn(
-        'store-panel-inner rounded-lg px-2.5 py-2 w-full text-left cursor-pointer transition-colors',
+        'store-panel-inner rounded-lg px-2.5 py-2 w-full text-left cursor-pointer transition-colors border',
         'hover:bg-[var(--store-surface-2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--store-accent-border)]',
-        tone === 'can' ? 'border-l-2 border-green-500/60' : 'opacity-80',
+        selected
+          ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
+          : 'border-transparent',
+        tone === 'can' ? 'border-l-2 border-l-green-500/60' : 'opacity-80',
       )}
     >
       <div className="flex items-start justify-between gap-2">
         <p className={cn('text-xs font-mono truncate', tone === 'can' ? 'text-white' : 'store-text-muted')}>
-          {item.name}
+          {displayName}
           {item.placed && (
             <span className="ml-1.5 text-[9px] uppercase text-[var(--store-accent)]">on map</span>
           )}
@@ -84,8 +102,163 @@ function EvalRow({
           </span>
         )}
       </div>
+      {item.parentSystem && !compactStack && (
+        <p className="text-[9px] font-mono text-cyan-400/90 mt-0.5">{item.parentSystem}</p>
+      )}
+      {item.roleLabel && item.kind === 'radar' && (
+        <p className="text-[9px] store-text-muted mt-0.5 capitalize">{item.roleLabel} radar</p>
+      )}
+      {item.linkedEffectors && item.linkedEffectors.length > 0 && (
+        <p className="text-[9px] store-text-muted mt-0.5 leading-relaxed">
+          <span className="text-[var(--store-accent)]/90">Finish chain: </span>
+          {item.linkedEffectors.join(' · ')}
+        </p>
+      )}
+      {item.linkedRadars && item.linkedRadars.length > 0 && (
+        <p className="text-[9px] store-text-muted mt-0.5 leading-relaxed">
+          <span className="text-[var(--store-accent)]/90">Cueing radar: </span>
+          {item.linkedRadars.join(' · ')}
+        </p>
+      )}
       <p className="text-[9px] store-text-muted mt-0.5 leading-relaxed">{item.reason}</p>
     </button>
+  )
+}
+
+function IadsStackBlock({
+  stackKey,
+  stackLabel,
+  items,
+  finishChainSummary,
+  tone,
+  defaultOpen,
+  selectedItem,
+  onItemClick,
+}: {
+  stackKey: string
+  stackLabel: string
+  items: EvaluatedItem[]
+  finishChainSummary?: string
+  tone: 'can' | 'cannot'
+  defaultOpen: boolean
+  selectedItem: SelectedLaydownItem | null
+  onItemClick: (item: EvaluatedItem) => void
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+
+  return (
+    <div className="rounded-lg border border-[var(--store-line)] overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={cn(
+          'w-full px-2.5 py-2 text-left flex items-start gap-2 transition-colors',
+          'hover:bg-[var(--store-surface-2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--store-accent-border)]',
+          tone === 'can' ? 'bg-green-950/20' : 'bg-[var(--store-surface-1)]',
+        )}
+      >
+        <ChevronDown
+          className={cn(
+            'w-3.5 h-3.5 shrink-0 mt-0.5 store-text-muted transition-transform',
+            !open && '-rotate-90',
+          )}
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="text-[10px] font-mono font-semibold text-cyan-400 truncate">{stackLabel}</p>
+            <span className="text-[9px] font-mono store-text-muted shrink-0">{items.length}</span>
+          </div>
+          {finishChainSummary && (
+            <p className="text-[9px] store-text-muted mt-0.5 leading-relaxed">
+              <span className="text-[var(--store-accent)]/90">Finish chain: </span>
+              {finishChainSummary}
+            </p>
+          )}
+        </div>
+      </button>
+      {open && (
+        <div className="space-y-1 p-1.5 pt-0">
+          {items.map((item) => (
+            <EvalRow
+              key={`${stackKey}-${item.kind}-${item.assetId}`}
+              item={item}
+              tone={tone}
+              selectedItem={selectedItem}
+              onItemClick={onItemClick}
+              compactStack
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function SectionItemList({
+  section,
+  selectedItem,
+  onItemClick,
+}: {
+  section: EvaluationSection
+  selectedItem: SelectedLaydownItem | null
+  onItemClick: (item: EvaluatedItem) => void
+}) {
+  const radarItems = useMemo(
+    () => section.items.filter((item) => item.kind === 'radar'),
+    [section.items],
+  )
+  const otherItems = useMemo(
+    () => section.items.filter((item) => item.kind !== 'radar'),
+    [section.items],
+  )
+  const radarGroups = useMemo(() => groupEvaluatedByIadsStack(section.items), [section.items])
+  const isRadarSection = section.title.startsWith('Radars')
+  const groupRadars = isRadarSection || (radarItems.length > 0 && radarGroups.length > 0)
+
+  if (section.items.length === 0) {
+    return <p className="text-[10px] store-text-muted italic">None</p>
+  }
+
+  if (groupRadars && radarItems.length > 0) {
+    return (
+      <div className="space-y-2 max-h-48 overflow-y-auto pr-0.5">
+        {radarGroups.map((group, index) => (
+          <IadsStackBlock
+            key={group.stackKey}
+            stackKey={group.stackKey}
+            stackLabel={group.stackLabel}
+            items={group.items}
+            finishChainSummary={group.finishChainSummary}
+            tone={section.tone}
+            defaultOpen={section.tone === 'can' ? true : index < 4}
+            selectedItem={selectedItem}
+              onItemClick={onItemClick}
+          />
+        ))}
+        {otherItems.length > 0 && (
+          <div className="space-y-1.5 pt-1 border-t border-[var(--store-line)]">
+            {otherItems.map((item) => (
+              <EvalRow
+                key={`${item.kind}-${item.assetId}`}
+                item={item}
+                tone={section.tone}
+                selectedItem={selectedItem}
+              onItemClick={onItemClick}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-1.5 max-h-48 overflow-y-auto pr-0.5">
+      {section.items.map((item) => (
+        <EvalRow key={`${item.kind}-${item.assetId}`} item={item} tone={section.tone} selectedItem={selectedItem}
+              onItemClick={onItemClick} />
+      ))}
+    </div>
   )
 }
 
@@ -94,7 +267,7 @@ export function LaydownEvaluationPanel({
   placedItems,
   selectedItem,
   onSelectItem,
-  onAddCatalogItem,
+  onEvalItemClick,
   adjudicationSource,
 }: LaydownEvaluationPanelProps) {
   if (!evaluation) return null
@@ -161,20 +334,7 @@ export function LaydownEvaluationPanel({
               {section.title}
               <span className="ml-1.5 font-mono font-normal normal-case">({section.items.length})</span>
             </p>
-            {section.items.length === 0 ? (
-              <p className="text-[10px] store-text-muted italic">None</p>
-            ) : (
-              <div className="space-y-1.5 max-h-48 overflow-y-auto pr-0.5">
-                {section.items.map((item) => (
-                  <EvalRow
-                    key={`${item.kind}-${item.assetId}`}
-                    item={item}
-                    tone={section.tone}
-                    onAdd={onAddCatalogItem}
-                  />
-                ))}
-              </div>
-            )}
+            <SectionItemList section={section} selectedItem={selectedItem} onItemClick={onEvalItemClick} />
           </div>
         ))}
       </div>

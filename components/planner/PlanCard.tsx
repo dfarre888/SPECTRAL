@@ -16,7 +16,7 @@ export function PlanCard({ plan }: { plan: BattlespacePlanRow }) {
       <div className="flex gap-2 mt-3">
         <Link href={`/map?plan=${plan.id}`} className="text-[10px] font-mono text-[var(--store-accent)] hover:underline">Open in Map</Link>
         {plan.published_wopr_id && (
-          <Link href="/arena" className="text-[10px] font-mono text-cyan hover:underline">WOPR</Link>
+          <Link href={`/arena?scenario=${plan.published_wopr_id}`} className="text-[10px] font-mono text-cyan hover:underline">WOPR</Link>
         )}
         {plan.published_pcm_exercise_id && (
           <Link href={`/pcm/exercise/${plan.published_pcm_exercise_id}`} className="text-[10px] font-mono text-purple hover:underline">PCM</Link>

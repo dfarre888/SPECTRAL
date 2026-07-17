@@ -1,5 +1,5 @@
 import { PLATFORMS } from '@/data/seed-platforms'
-import { getConflictCaseStudies } from '@/lib/conflicts/queries'
+import { getConflictCaseStudies } from '@/lib/conflicts/seed-queries'
 
 export interface SearchHit {
   id: string

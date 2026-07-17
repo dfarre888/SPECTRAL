@@ -12,6 +12,12 @@ export type PlatformCategory =
   | 'ballistic_missile_srbm'   // Short Range Ballistic Missile (<1,000 km)
   | 'ballistic_missile_mrbm'   // Medium Range Ballistic Missile (1,000–3,500 km)
   | 'cruise_missile'           // Land-attack cruise missile (subsonic/transonic/supersonic)
+  | 'hypersonic_missile'       // Hypersonic boost-glide or scramjet weapons
+  | 'ballistic_missile_slbm'   // Submarine-launched ballistic missile
+  // Maritime autonomous
+  | 'AUV'                      // Autonomous Undersea Vehicle (e.g. Ghost Shark XLUAV)
+  // Electronic warfare platforms
+  | 'strategic_ew'             // Strategic EW complex (e.g. Murmansk-BN, Krasukha-2)
 
 export type DataConfidence = 'high' | 'medium' | 'estimated' | 'classified'
 

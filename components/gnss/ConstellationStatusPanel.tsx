@@ -1,6 +1,14 @@
 'use client'
 
-import type { GnssConstellation, GnssJammingIncident } from '@/lib/gnss/gnss-types'
+import type { GnssConstellation, GnssJammingIncident, GnssSystemCategory } from '@/lib/gnss/gnss-types'
+import { formatSignalFreqMhz, LEO_COMMS_IDS } from '@/lib/gnss/constellation-meta'
+
+const CATEGORY_LABEL: Record<GnssSystemCategory, string> = {
+  global_gnss: 'Global GNSS',
+  regional_gnss: 'Regional GNSS',
+  augmentation: 'Augmentation',
+  leo_pnt_comms: 'LEO PNT / Comms',
+}
 
 const STATUS_STYLES: Record<string, string> = {
   operational: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
@@ -13,6 +21,9 @@ const OPERATOR_FLAG: Record<string, string> = {
   Russia: '🇷🇺',
   China: '🇨🇳',
   EU: '🇪🇺',
+  India: '🇮🇳',
+  Japan: '🇯🇵',
+  'United States': '🇺🇸',
 }
 
 interface ConstellationStatusPanelProps {
@@ -33,7 +44,7 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
   const jammed = jammedBandIds(incidents)
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {constellations.map((c) => (
         <div
           key={c.id}
@@ -46,11 +57,21 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
                 {OPERATOR_FLAG[c.operator] ?? '🌐'} {c.operator}
               </p>
             </div>
-            <span
-              className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border font-medium ${STATUS_STYLES[c.status] ?? STATUS_STYLES.testing}`}
-            >
-              {c.status}
-            </span>
+            <div className="flex flex-col items-end gap-1">
+              {LEO_COMMS_IDS.has(c.id) ? (
+                <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border font-medium bg-violet-500/15 text-violet-300 border-violet-500/30">
+                  LEO SATCOM
+                </span>
+              ) : null}
+              <span
+                className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border font-medium ${STATUS_STYLES[c.status] ?? STATUS_STYLES.testing}`}
+              >
+                {c.status}
+              </span>
+              <span className="text-[9px] uppercase tracking-wider text-zinc-500">
+                {CATEGORY_LABEL[c.system_category]}
+              </span>
+            </div>
           </div>
           <p className="text-xs font-mono text-cyan-400">
             {c.satellites_active ?? '—'}/{c.satellites_nominal ?? '—'} SV active
@@ -68,7 +89,7 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
                 return (
                   <tr key={`${c.id}-${b.band}`} className={inJamZone ? 'text-orange-400' : 'text-zinc-300'}>
                     <td className="py-0.5">{b.band}</td>
-                    <td className="py-0.5 text-right font-mono">{b.freq_mhz.toFixed(2)}</td>
+                    <td className="py-0.5 text-right font-mono">{formatSignalFreqMhz(b.freq_mhz)}</td>
                   </tr>
                 )
               })}

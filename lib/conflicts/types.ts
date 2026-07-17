@@ -10,6 +10,9 @@ export type ConflictIncidentType =
   | 'isr'
   | 'swarm'
   | 'cruise_strike'
+  | 'ballistic_strike'
+  | 'intercept'
+  | 'strike'
   | 'other';
 
 export interface ConflictIncident {

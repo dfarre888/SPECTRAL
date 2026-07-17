@@ -18,6 +18,7 @@ interface DefeatMatrixTableProps {
   onCellSelect: (platformId: string, systemId: string) => void
   accreditedPkMap?: Record<string, AccreditedDefeatPkRow>
   computedSamPkMap?: Record<string, number>
+  variant?: 'default' | 'fullscreen'
 }
 
 function findRow(
@@ -38,7 +39,10 @@ export function DefeatMatrixTable({
   onCellSelect,
   accreditedPkMap,
   computedSamPkMap,
+  variant = 'default',
 }: DefeatMatrixTableProps) {
+  const platformColMin = variant === 'fullscreen' ? 'min-w-[220px]' : 'min-w-[180px]'
+  const systemColMin = variant === 'fullscreen' ? 'min-w-[120px]' : 'min-w-[100px]'
   if (platforms.length === 0 || systems.length === 0) {
     return (
       <div className="store-panel rounded-2xl p-12 text-center">
@@ -54,7 +58,7 @@ export function DefeatMatrixTable({
       <table className="w-max min-w-full border-collapse">
         <thead>
           <tr>
-            <th className="sticky left-0 z-30 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 text-left min-w-[180px]">
+            <th className={`sticky left-0 z-30 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 text-left ${platformColMin}`}>
               <span className="text-xs store-text-muted uppercase tracking-wider font-semibold">
                 Platform
               </span>
@@ -62,7 +66,7 @@ export function DefeatMatrixTable({
             {systems.map((system) => (
                 <th
                   key={system.id}
-                  className="sticky top-0 z-20 bg-[var(--store-surface)] border border-[var(--store-line)] px-3 py-3 text-center min-w-[100px]"
+                  className={`sticky top-0 z-20 bg-[var(--store-surface)] border border-[var(--store-line)] px-3 py-3 text-center ${systemColMin}`}
                 >
                   <div className="flex flex-col items-center gap-1">
                     <PlatformThumbnail

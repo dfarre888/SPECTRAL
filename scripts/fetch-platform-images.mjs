@@ -24,8 +24,8 @@ const PLATFORM_FILES = {
   v2u: ['Uvision Hero-90 at ILA-2022.jpg', 'Green Dragon Loitering Munition at ADAS 2018.jpg'],
   'uj-22-airborne': ['UKRJET UJ-22 Airborne, Kyiv 2021, 07.jpg'],
   'uj-26-bober': ['Бобер 02.jpg'],
-  'baba-yaga': ['Drone R18, Ukraine 1.jpg', 'Hexacopter.jpg'],
-  vampire: ['Drone R18, Ukraine 1.jpg'],
+  'baba-yaga': ['FPV Quadrocopter.jpg', '71188-fpv-components.jpg'],
+  vampire: ['71188-fpv-components.jpg', 'FPV Quadrocopter.jpg'],
   kazhan: ['FPV Quadrocopter.jpg', '71188-fpv-components.jpg'],
   'fpv-interceptor': ['P1-Sun interceptor drone at Dubai Airshow 2025.jpg', '1020th Regiment Drone Interceptor Battalion.png'],
   'rotem-l': ['Green Dragon Loitering Munition at ADAS 2018.jpg'],
@@ -98,6 +98,54 @@ const PLATFORM_SEARCH = {
   'hq-17': 'HQ-17 air defense',
   'starstreak-hvm': 'Starstreak HVM',
   'smash-hopper': 'Smart Shooter SMASH Hopper',
+  'zala-eleron-3sv': 'ZALA Eleron-3SV drone',
+  'supercam-s350': 'Supercam S350 UAV',
+  'supercam-s250': 'Supercam S350 UAV',
+  'st-35-silent-thunder': 'Silent Thunder loitering munition Ukraine',
+  'cdet-ram': 'CDET RAM loitering munition',
+  'uj-32-lastivka': 'UJ-32 Lastivka drone Ukraine',
+  'gerbera-parody': 'Shahed decoy drone Gerbera',
+  'privet-82': 'Privet 82 drone Russia',
+  'molniya-2-fpv': 'FPV drone Ukraine',
+  'shahed-129': 'Shahed 129 UAV',
+  'shahed-149-gaza': 'Shahed 149 Gaza drone',
+  'mohajer-6': 'Mohajer-6 UAV',
+  'mohajer-mersad': 'Mohajer Mersad UAV Iran',
+  'qasef-1': 'Qasef-1 drone Yemen',
+  'arash-kian': 'Arash drone Iran',
+  'samad-2': 'Samad-2 drone Yemen',
+  'shahed-238': 'Shahed 238 jet drone',
+  'elbit-skystriker': 'Elbit Skystriker loitering munition',
+  'iai-point-blank': 'IAI Point Blank loitering munition',
+  'iai-green-dragon': 'IAI Green Dragon loitering munition',
+  'rafael-spike-firefly': 'Spike FireFly loitering munition',
+  'uvision-hero-30': 'UVision Hero-30 loitering munition',
+  'uvision-hero-70': 'UVision Hero-70 loitering munition',
+  'uvision-hero-900': 'UVision Hero-900 loitering munition',
+  'casc-ch-901': 'CASC CH-901 drone',
+  'northrop-jackal': 'Northrop Grumman Jackal drone',
+  'ncsist-chien-hsiang': 'NCSIST Chien Hsiang drone Taiwan',
+  'lentatek-kargi': 'Kargi kamikaze drone Turkey',
+  'bayraktar-kizilelma': 'Bayraktar Kızılelma',
+  'tai-anka': 'TAI Anka drone',
+  'avic-nine-sky': 'AVIC Wing Loong drone',
+  'ga-xq-67a-obss': 'GA XQ-67A drone',
+  'ga-mq-20-avenger': 'General Atomics MQ-20 Avenger',
+  'rq-4-global-hawk': 'RQ-4 Global Hawk',
+  'mq-1-predator': 'MQ-1 Predator',
+  'schiebel-camcopter-s100': 'Schiebel Camcopter S-100',
+  'magura-v5': 'Magura V5 USV Ukraine',
+  'houthi-owa-maritime': 'Houthi Samad drone',
+  'black-sea-usv-swarm': 'Magura USV Ukraine',
+  'lite-beam': 'Rafael Lite Beam laser',
+  'pulsar-l': 'Anduril Pulsar RF',
+  'pulsar-v': 'Anduril Pulsar RF',
+  'dronesentry-sentrycs': 'DroneSentry counter drone',
+  'jco-swarm-kit': 'drone swarm',
+  'goalkeeper-ciws': 'Goalkeeper CIWS',
+  'millennium-35mm': 'OTO Melara 35mm Millennium Gun',
+  'dardo-fast-forty': 'DARDO 40mm naval gun',
+  'phalanx-ciws': 'Phalanx CIWS',
 }
 
 function commonsUrl(filename, width = 800) {
@@ -154,7 +202,7 @@ async function searchCommons(term) {
   if (!res.ok) throw new Error(`Search HTTP ${res.status}`)
   const data = await res.json()
   const pages = Object.values(data.query?.pages ?? {})
-  const reject = /logo|variation|NARA|\.djvu|emblem|icon|badge|diagram only/i
+  const reject = /logo|variation|NARA|\.djvu|emblem|icon|badge|diagram only|Viking assigned|S-3B|EXERCISE SABER|Marines Partner/i
   for (const page of pages) {
     const info = page.imageinfo?.[0]
     if (!info?.mime?.startsWith('image/')) continue
@@ -170,7 +218,8 @@ async function fetchPlatform(id, files) {
   for (const file of files) {
     const ext = extFromFilename(file)
     const dest = path.join(OUT_DIR, `${id}${ext}`)
-    if (fs.existsSync(dest) && fs.statSync(dest).size > 2500) {
+    const forceRefresh = id === 'baba-yaga' || id === 'vampire'
+    if (!forceRefresh && fs.existsSync(dest) && fs.statSync(dest).size > 2500) {
       return { id, status: 'skip', file, path: `${PUBLIC_PREFIX}/${id}${ext}` }
     }
     try {

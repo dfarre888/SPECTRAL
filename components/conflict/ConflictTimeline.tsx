@@ -1,5 +1,6 @@
 'use client';
 
+import { INCIDENT_TYPE_COLOR, INCIDENT_TYPE_LABEL, normalizeIncidentType } from '@/lib/conflicts/incident-style';
 import type { ConflictIncident } from '@/lib/conflicts/types';
 
 export function ConflictTimeline({
@@ -26,7 +27,20 @@ export function ConflictTimeline({
                   : 'border-transparent hover:border-[var(--store-line)]'
               }`}
             >
-              <p className="text-[10px] font-mono store-text-muted">{inc.occurred_at.slice(0, 10)} · {inc.conflict_name}</p>
+              <p className="text-[10px] font-mono store-text-muted flex items-center gap-1.5 flex-wrap">
+                <span>{inc.occurred_at.slice(0, 10)}</span>
+                <span>·</span>
+                <span>{inc.conflict_name}</span>
+                <span
+                  className="px-1 py-0.5 rounded text-[9px] uppercase tracking-wide"
+                  style={{
+                    color: INCIDENT_TYPE_COLOR[normalizeIncidentType(inc.incident_type)],
+                    background: 'rgba(255,255,255,0.06)',
+                  }}
+                >
+                  {INCIDENT_TYPE_LABEL[normalizeIncidentType(inc.incident_type)]}
+                </span>
+              </p>
               <p className="text-sm font-medium text-white mt-1">{inc.incident_title}</p>
               <p className="text-xs store-text-muted mt-1 line-clamp-2">{inc.summary}</p>
             </button>

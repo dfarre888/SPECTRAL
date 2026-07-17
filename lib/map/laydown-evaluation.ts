@@ -38,12 +38,88 @@ export interface EvaluatedItem {
   reason: string
   pct?: number
   placed?: boolean
+  /** Placed map instance — when set, UI can select without search. */
+  instanceId?: string
+  /** Parent SAM/IADS platform (e.g. S-400 Triumf). */
+  parentSystem?: string
+  /** NATO reporting name when applicable. */
+  natoName?: string
+  /** Radar role or effector tier label. */
+  roleLabel?: string
+  /** Kill-chain: effectors that cue this radar for engagement. */
+  linkedEffectors?: string[]
+  /** Kill-chain: radars that cue this effector. */
+  linkedRadars?: string[]
 }
 
 export interface EvaluationSection {
   title: string
   tone: 'can' | 'cannot'
   items: EvaluatedItem[]
+}
+
+export interface IadsStackGroup {
+  stackKey: string
+  stackLabel: string
+  items: EvaluatedItem[]
+  /** Unique finish-chain effectors across radars in this stack. */
+  finishChainSummary?: string
+}
+
+const STANDALONE_IADS_KEY = '__standalone__'
+
+/** Normalise parent system strings so S-400 variants collapse into one stack. */
+export function iadsStackGroupKey(parentSystem?: string | null): string {
+  if (!parentSystem?.trim()) return STANDALONE_IADS_KEY
+  return parentSystem
+    .replace(/\s*\([^)]*\)/g, '')
+    .trim()
+    .toLowerCase()
+}
+
+export function iadsStackDisplayLabel(parentSystem?: string | null): string {
+  if (!parentSystem?.trim()) return 'Standalone sensors'
+  return parentSystem.replace(/\s*\([^)]*\)/g, '').trim()
+}
+
+function finishChainSummaryForStack(items: EvaluatedItem[]): string | undefined {
+  const labels = new Set<string>()
+  for (const item of items) {
+    for (const effector of item.linkedEffectors ?? []) {
+      labels.add(effector)
+    }
+  }
+  if (labels.size === 0) return undefined
+  const sorted = [...labels].sort((a, b) => a.localeCompare(b))
+  if (sorted.length <= 4) return sorted.join(' · ')
+  return `${sorted.slice(0, 4).join(' · ')} · +${sorted.length - 4} more`
+}
+
+/** Group radar evaluation rows by parent IADS / SAM stack. */
+export function groupEvaluatedByIadsStack(items: EvaluatedItem[]): IadsStackGroup[] {
+  const radarItems = items.filter((item) => item.kind === 'radar')
+  if (radarItems.length === 0) return []
+
+  const buckets = new Map<string, IadsStackGroup>()
+  for (const item of radarItems) {
+    const stackKey = iadsStackGroupKey(item.parentSystem)
+    const stackLabel = iadsStackDisplayLabel(item.parentSystem)
+    const bucket = buckets.get(stackKey) ?? { stackKey, stackLabel, items: [] }
+    bucket.items.push(item)
+    buckets.set(stackKey, bucket)
+  }
+
+  return [...buckets.values()]
+    .map((group) => ({
+      ...group,
+      finishChainSummary: finishChainSummaryForStack(group.items),
+      items: [...group.items].sort((a, b) => a.name.localeCompare(b.name)),
+    }))
+    .sort((a, b) => {
+      if (a.stackKey === STANDALONE_IADS_KEY) return 1
+      if (b.stackKey === STANDALONE_IADS_KEY) return -1
+      return b.items.length - a.items.length || a.stackLabel.localeCompare(b.stackLabel)
+    })
 }
 
 export interface LaydownEvaluationSubject {
@@ -72,6 +148,25 @@ const ALL_RADARS: RadarSystem[] = [...RED_RADARS, ...BLUE_RADARS, ...EXTRA_RADAR
 const ALL_EFFECTORS: EffectorSystem[] = [...BLUE_EFFECTORS, ...RED_EFFECTORS]
 const RADAR_BY_ID = new Map(ALL_RADARS.map((r) => [r.id, r]))
 const EFFECTOR_BY_ID = new Map(ALL_EFFECTORS.map((e) => [e.id, e]))
+
+function buildEffectorsByRadarId(): Map<string, EffectorSystem[]> {
+  const map = new Map<string, EffectorSystem[]>()
+  for (const effector of ALL_EFFECTORS) {
+    for (const radarId of effector.cueing_radar_ids ?? []) {
+      const bucket = map.get(radarId) ?? []
+      bucket.push(effector)
+      map.set(radarId, bucket)
+    }
+  }
+  return map
+}
+
+const EFFECTORS_BY_RADAR_ID = buildEffectorsByRadarId()
+
+function effectorKillChainLabel(effector: EffectorSystem): string {
+  const parent = effector.associated_system ? ` · ${effector.associated_system}` : ''
+  return `${effector.name}${parent}`
+}
 
 export function catalogRadars(): RadarSystem[] {
   return ALL_RADARS
@@ -178,6 +273,52 @@ export function scoreCuasVsUas(
   return { inRange: pair.inDefeatRange, canShoot, defeatPct, detectionPct, pair }
 }
 
+export function resolvePlacedInstance(
+  state: LaydownState,
+  kind: LaydownKind,
+  assetId: string,
+): SelectedLaydownItem | null {
+  switch (kind) {
+    case 'uas': {
+      const hit = state.placedUas.find((u) => u.asset.id === assetId)
+      return hit ? { kind: 'uas', instanceId: hit.instanceId } : null
+    }
+    case 'cuas': {
+      const hit = state.placedCuas.find((c) => c.asset.id === assetId)
+      return hit ? { kind: 'cuas', instanceId: hit.instanceId } : null
+    }
+    case 'radar': {
+      const hit = state.placedRadars.find((r) => r.asset.id === assetId)
+      return hit ? { kind: 'radar', instanceId: hit.instanceId } : null
+    }
+    case 'effector': {
+      const hit = state.placedEffectors.find((e) => e.asset.id === assetId)
+      return hit ? { kind: 'effector', instanceId: hit.instanceId } : null
+    }
+    default:
+      return null
+  }
+}
+
+function enrichEvaluation(state: LaydownState, evaluation: LaydownEvaluation): LaydownEvaluation {
+  return {
+    ...evaluation,
+    sections: evaluation.sections.map((section) => ({
+      ...section,
+      items: enrichEvalItems(state, section.items),
+    })),
+  }
+}
+
+function enrichEvalItems(state: LaydownState, items: EvaluatedItem[]): EvaluatedItem[] {
+  return items.map((item) => {
+    if (item.instanceId) return item
+    if (!item.placed) return item
+    const resolved = resolvePlacedInstance(state, item.kind, item.assetId)
+    return resolved ? { ...item, instanceId: resolved.instanceId } : item
+  })
+}
+
 function placedSet(state: LaydownState) {
   return {
     uas: new Set(state.placedUas.map((u) => u.asset.id)),
@@ -207,12 +348,17 @@ function radarRow(
   placed: boolean,
 ): EvaluatedItem {
   const rangeKm = classRangeKm(radar, tc)
+  const linked = EFFECTORS_BY_RADAR_ID.get(radar.id) ?? []
   return {
     kind: 'radar',
     assetId: radar.id,
     name: radar.name,
     placed,
-    reason: `${tc.replace(/_/g, ' ')} in can_detect · ${rangeKm.toFixed(0)} km class range · ${distanceKm.toFixed(1)} km`,
+    parentSystem: radar.associated_system ?? undefined,
+    natoName: radar.nato_name ?? undefined,
+    roleLabel: radar.role.replace(/_/g, ' '),
+    linkedEffectors: linked.map((e) => effectorKillChainLabel(e)),
+    reason: `${tc.replace(/_/g, ' ')} · ${rangeKm.toFixed(0)} km class range · ${distanceKm.toFixed(1)} km virtual`,
   }
 }
 
@@ -302,6 +448,11 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
         name: effector.name,
         pct: shot.pct,
         placed: placed.effector.has(effector.id),
+        parentSystem: effector.associated_system ?? undefined,
+        linkedRadars: (effector.cueing_radar_ids ?? [])
+          .map((id) => RADAR_BY_ID.get(id))
+          .filter((r): r is RadarSystem => r != null)
+          .map((r) => (r.nato_name ? `${r.name} (${r.nato_name})` : r.name)),
         reason: shot.reason,
       })
     }
@@ -544,19 +695,19 @@ export function buildLaydownEvaluation(
   switch (selected.kind) {
     case 'uas': {
       const uas = state.placedUas.find((u) => u.instanceId === selected.instanceId)
-      return uas ? evaluateUas(uas, state) : null
+      return uas ? enrichEvaluation(state, evaluateUas(uas, state)) : null
     }
     case 'cuas': {
       const cuas = state.placedCuas.find((c) => c.instanceId === selected.instanceId)
-      return cuas ? evaluateCuas(cuas, state) : null
+      return cuas ? enrichEvaluation(state, evaluateCuas(cuas, state)) : null
     }
     case 'radar': {
       const r = state.placedRadars.find((x) => x.instanceId === selected.instanceId)
-      return r ? evaluateRadar(r, state) : null
+      return r ? enrichEvaluation(state, evaluateRadar(r, state)) : null
     }
     case 'effector': {
       const e = state.placedEffectors.find((x) => x.instanceId === selected.instanceId)
-      return e ? evaluateEffector(e, state) : null
+      return e ? enrichEvaluation(state, evaluateEffector(e, state)) : null
     }
     default:
       return null

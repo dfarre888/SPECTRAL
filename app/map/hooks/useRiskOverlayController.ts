@@ -117,6 +117,7 @@ export function useRiskOverlayController({
   const riskOverlayGenRef = useRef(0)
   const riskLonRef = useRef<number | null>(null)
   const riskLatRef = useRef<number | null>(null)
+  const syncLockRef = useRef(Promise.resolve())
 
   const syncCtx: RiskOverlaySyncContext = {
     cesiumCtxRef,
@@ -139,9 +140,24 @@ export function useRiskOverlayController({
     riskLatRef.current = riskLat
   }, [riskLat])
 
+  const updateRiskPosition = useCallback((lon: number, lat: number) => {
+    setRiskLon(lon)
+    setRiskLat(lat)
+    riskLonRef.current = lon
+    riskLatRef.current = lat
+    const ctx = cesiumCtxRef.current
+    if (ctx && riskOverlayRef.current) {
+      void moveRiskOverlay(ctx.viewer, riskOverlayRef.current, lon, lat)
+    }
+  }, [cesiumCtxRef])
+
   const syncRiskOverlay = useCallback(async () => {
-    await syncRiskOverlayImpl(syncCtx, riskMode, selectedWarhead, selectedJammer)
-  }, [riskMode, selectedWarhead, selectedJammer])
+    const task = syncLockRef.current.then(() =>
+      syncRiskOverlayImpl(syncCtx, riskMode, selectedWarhead, selectedJammer),
+    )
+    syncLockRef.current = task.catch(() => {})
+    await task
+  }, [riskMode, selectedWarhead, selectedJammer, syncCtx])
 
   useEffect(() => {
     if (!cesiumReady) return
@@ -153,17 +169,6 @@ export function useRiskOverlayController({
     if (!ctx || !riskOverlayRef.current) return
     void updateRiskOverlayOpacity(ctx.viewer, riskOverlayRef.current, riskRingShade)
   }, [riskRingShade, cesiumReady, cesiumCtxRef])
-
-  const updateRiskPosition = useCallback((lon: number, lat: number) => {
-    setRiskLon(lon)
-    setRiskLat(lat)
-    riskLonRef.current = lon
-    riskLatRef.current = lat
-    const ctx = cesiumCtxRef.current
-    if (ctx && riskOverlayRef.current) {
-      void moveRiskOverlay(ctx.viewer, riskOverlayRef.current, lon, lat)
-    }
-  }, [cesiumCtxRef])
 
   const handleRiskOverlayMove = useCallback(
     (lon: number, lat: number) => {

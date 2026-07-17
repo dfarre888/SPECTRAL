@@ -12,6 +12,17 @@ export async function middleware(request: NextRequest) {
       url.pathname = '/'
       return NextResponse.redirect(url)
     }
+    // Operations demo: inject tenant header for adjudication/import APIs (tenant_members RLS context).
+    if (isOperationsEdition()) {
+      const requestHeaders = new Headers(request.headers)
+      if (!requestHeaders.get('x-spectral-tenant-id')) {
+        requestHeaders.set(
+          'x-spectral-tenant-id',
+          process.env.SPECTRAL_TENANT_ID ?? '00000000-0000-0000-0000-000000000001',
+        )
+      }
+      return NextResponse.next({ request: { headers: requestHeaders } })
+    }
     return NextResponse.next()
   }
 

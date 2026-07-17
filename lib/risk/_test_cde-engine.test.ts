@@ -74,4 +74,35 @@ describe('computeCde', () => {
     expect(dense.expected_injured).toBeGreaterThan(urban.expected_injured)
     expect(dense.population_in_hazard_disk).toBeGreaterThan(urban.population_in_hazard_disk)
   })
+
+  it('impact location changes effective population density and casualties', () => {
+    const blast = getWarhead('shahed-136-warhead')
+    expect(blast).not.toBeNull()
+
+    const kyiv = computeCde({
+      ...baseInput,
+      impact_lon: 30.52,
+      impact_lat: 50.45,
+      blast: blast!,
+      population_tier: 'urban',
+      time_of_day: 'business_day',
+      building_protection: 'light',
+      nearby_infrastructure: ['none'],
+    })
+
+    const remote = computeCde({
+      ...baseInput,
+      impact_lon: 35.8,
+      impact_lat: 48.2,
+      blast: blast!,
+      population_tier: 'urban',
+      time_of_day: 'business_day',
+      building_protection: 'light',
+      nearby_infrastructure: ['none'],
+    })
+
+    expect(kyiv.pop_density_pkm2).not.toBe(remote.pop_density_pkm2)
+    expect(kyiv.expected_casualties).not.toBe(remote.expected_casualties)
+    expect(kyiv.proportionality_summary).toContain('Impact')
+  })
 })

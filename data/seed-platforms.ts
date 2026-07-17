@@ -1164,6 +1164,26 @@ export const CORE_PLATFORMS: Platform[] = [
       'UK flagship DEW programme — MBDA, Leonardo, QinetiQ, DSTL consortium. First airborne target engagement January 2024 at Hebrides range. Two production systems contracted for Royal Navy Type 45 destroyers January 2026 (service expected 2027). ~£10 per shot vs ~£1M per Aster 30 missile intercept.',
   },
 
+  {
+    id: 'apollo-helw',
+    name: 'Raytheon Apollo HELW',
+    side: 'blue',
+    origin: 'USA (Raytheon RTX)',
+    category: 'High-Energy Laser',
+    role: 'HMMWV/JLTV-mounted HEL — C-UAS, mortar and RPG defeat',
+    range_km: 2,
+    year_introduced: 2022,
+    propulsion: 'N/A (HMMWV or JLTV prime power; 20 kW solid-state fiber-combined laser)',
+    guidance_type: 'N/A (EO/IR autonomous slew-to-cue; 20 kW output; scalable to 50 kW in follow-on variants; MOSA architecture)',
+    defeat_note: 'Group 1–3 UAS defeat; mortar and RPG intercept demonstrated; <$1/shot operating cost; weather-limited in rain/dense fog; integrated sensor suite for autonomous cueing',
+    control_link_freq: 'N/A (laser)',
+    gnss_dependency: 'none',
+    confidence: 'assessed',
+    icon: '◉',
+    intel_note:
+      'Raytheon RTX High Energy Laser Weapon System — marketed as Apollo HELW from 2024. 20 kW solid-state fiber laser on HMMWV/JLTV platform. Extensively tested at White Sands Missile Range against Group 1–3 UAS, mortars, and artillery projectiles. Part of the US Army IFPC (Indirect Fire Protection Capability) layered defence stack alongside Coyote and Stinger. Under evaluation for SHORAD integration and international partner sales. <$1/shot cost structure designed to address uneconomical exchange ratios against low-cost drone threats.',
+  },
+
   // ─────────────────── Autonomous Sensing ──────────────────────────────────
 
   {

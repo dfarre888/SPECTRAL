@@ -48,7 +48,9 @@ export function GnssIntelClient({ constellations, dependencies, incidents }: Gns
       {tab === 'constellations' ? (
         <ConstellationStatusPanel constellations={constellations} incidents={incidents} />
       ) : null}
-      {tab === 'vulnerability' ? <GnssVulnerabilityMatrix dependencies={dependencies} /> : null}
+      {tab === 'vulnerability' ? (
+        <GnssVulnerabilityMatrix constellations={constellations} dependencies={dependencies} />
+      ) : null}
       {tab === 'incidents' ? <JammingIncidentsPanel incidents={incidents} /> : null}
     </div>
   )

@@ -24,6 +24,11 @@ export const CATEGORY_SHORT: Partial<Record<PlatformCategory, string>> = {
   ballistic_missile_srbm: 'SRBM',
   ballistic_missile_mrbm: 'MRBM',
   cruise_missile: 'CRUISE',
+  hypersonic_missile: 'HYPERSONIC',
+  ballistic_missile_slbm: 'SLBM',
+  // Maritime autonomous + EW
+  AUV: 'AUV',
+  strategic_ew: 'STRAT EW',
 }
 
 export const CATEGORY_LABELS: Record<PlatformCategory, string> = {
@@ -49,6 +54,11 @@ export const CATEGORY_LABELS: Record<PlatformCategory, string> = {
   ballistic_missile_srbm: 'Short-Range Ballistic Missile (SRBM)',
   ballistic_missile_mrbm: 'Medium-Range Ballistic Missile (MRBM)',
   cruise_missile: 'Land-Attack Cruise Missile',
+  hypersonic_missile: 'Hypersonic Missile',
+  ballistic_missile_slbm: 'Submarine-Launched Ballistic Missile (SLBM)',
+  // Maritime autonomous + EW
+  AUV: 'Autonomous Undersea Vehicle (AUV)',
+  strategic_ew: 'Strategic EW Complex',
 }
 
 export type CategoryPill =

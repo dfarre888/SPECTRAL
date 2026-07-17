@@ -6,6 +6,18 @@ import { loadCesium } from '@/lib/map/load-cesium'
 
 export const RISK_ANCHOR_ID = 'spectral-risk-anchor'
 
+/** All Cesium entity ids used by blast / jamming overlays — for stale cleanup. */
+export const RISK_OVERLAY_ENTITY_IDS = [
+  RISK_ANCHOR_ID,
+  'spectral-risk-hazard',
+  'spectral-risk-structural',
+  'spectral-risk-injury',
+  'spectral-risk-lethal',
+  'spectral-risk-jam-max',
+  'spectral-risk-jam-rc',
+  'spectral-risk-jam-gps',
+] as const
+
 export interface RiskOverlayRingMeta {
   id: string
   fill: [number, number, number, number]
@@ -56,6 +68,9 @@ function addRing(
   lat: number,
   spec: RingSpec,
 ) {
+  const existing = viewer.entities.getById(spec.id)
+  if (existing) viewer.entities.remove(existing)
+
   const [fr, fg, fb, fa] = spec.fill
   const [or, og, ob, oa] = spec.outline
   viewer.entities.add({
@@ -84,6 +99,9 @@ function addAnchor(
   lat: number,
   label: string,
 ) {
+  const existing = viewer.entities.getById(RISK_ANCHOR_ID)
+  if (existing) viewer.entities.remove(existing)
+
   viewer.entities.add({
     id: RISK_ANCHOR_ID,
     position: Cesium.Cartesian3.fromDegrees(lon, lat),
@@ -114,6 +132,13 @@ function buildCrosshairDataUri(): string {
   return `data:image/svg+xml;base64,${btoa(svg)}`
 }
 
+export function removeStaleRiskEntities(viewer: CesiumViewer): void {
+  for (const id of RISK_OVERLAY_ENTITY_IDS) {
+    const entity = viewer.entities.getById(id)
+    if (entity) viewer.entities.remove(entity)
+  }
+}
+
 export async function addBlastOverlay(
   viewer: CesiumViewer,
   lon: number,
@@ -122,6 +147,7 @@ export async function addBlastOverlay(
   label: string,
 ): Promise<RiskOverlayEntities> {
   const Cesium = await loadCesium()
+  removeStaleRiskEntities(viewer)
   const specs = buildRingSpecs([
     { id: 'spectral-risk-hazard', radius_m: rings.hazard_m, fill: [59, 130, 246, 0.1], outline: [59, 130, 246, 1] },
     { id: 'spectral-risk-structural', radius_m: rings.structural_m, fill: [234, 179, 8, 0.15], outline: [234, 179, 8, 1] },
@@ -144,6 +170,7 @@ export async function addJammingOverlay(
   label: string,
 ): Promise<RiskOverlayEntities> {
   const Cesium = await loadCesium()
+  removeStaleRiskEntities(viewer)
   // Draw outer→inner; skip r=0 (GNSS-only jammers have no RC band) and dedupe when max===gps.
   const specs = buildRingSpecs([
     { id: 'spectral-risk-jam-max', radius_m: max_m, fill: [234, 179, 8, 0.1], outline: [234, 179, 8, 1] },
@@ -179,6 +206,7 @@ export function removeRiskOverlay(viewer: CesiumViewer, entities: RiskOverlayEnt
     const entity = viewer.entities.getById(id)
     if (entity) viewer.entities.remove(entity)
   }
+  removeStaleRiskEntities(viewer)
   viewer.scene?.requestRender?.()
 }
 

@@ -9,6 +9,8 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import { loadCesium } from '@/lib/map/load-cesium'
+import type { AisVessel } from '@/lib/ais/types'
+import { aisTypeLabel, aisTypeColor } from '@/lib/ais/types'
 
 export interface Entity {
   id: string
@@ -28,14 +30,28 @@ interface Props {
   entities: Entity[]
   center?: { lon: number; lat: number }
   onEntityClick?: (id: string) => void
+  /** AIS vessel positions — rendered in a separate CustomDataSource so they
+   *  never interfere with scenario entities. Default: hidden. */
+  aisVessels?: AisVessel[]
+  /** Show or hide the AIS layer entirely */
+  showAisLayer?: boolean
 }
 
-export default function CesiumArena({ entities, center, onEntityClick }: Props) {
+export default function CesiumArena({
+  entities,
+  center,
+  onEntityClick,
+  aisVessels = [],
+  showAisLayer = false,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const viewerRef = useRef<any>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cesiumRef = useRef<any>(null)
+  // Separate CustomDataSource for AIS — never cleared by scenario entity sync
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const aisDataSourceRef = useRef<any>(null)
   const onEntityClickRef = useRef(onEntityClick)
   onEntityClickRef.current = onEntityClick
 
@@ -80,6 +96,14 @@ export default function CesiumArena({ entities, center, onEntityClick }: Props) 
       // depth-culled and becomes invisible (especially ground-level entities).
       viewer.scene.globe.depthTestAgainstTerrain = false
 
+      // ── AIS layer: dedicated CustomDataSource ─────────────────────────
+      // Using a separate DataSource means viewer.entities.removeAll() in the
+      // scenario sync effect never touches AIS vessels.
+      const aisDs = new Cesium.CustomDataSource('ais-marine')
+      await viewer.dataSources.add(aisDs)
+      aisDs.show = false // default OFF — controlled by showAisLayer prop
+      aisDataSourceRef.current = aisDs
+
       cesiumRef.current = Cesium
       viewerRef.current = viewer
       setCesiumReady(true)
@@ -89,6 +113,7 @@ export default function CesiumArena({ entities, center, onEntityClick }: Props) 
 
     return () => {
       setCesiumReady(false)
+      aisDataSourceRef.current = null
       if (viewerRef.current && !viewerRef.current.isDestroyed()) {
         viewerRef.current.destroy()
       }
@@ -235,6 +260,85 @@ export default function CesiumArena({ entities, center, onEntityClick }: Props) 
       }
     })
   }, [cesiumReady, entities])
+
+  // ── AIS layer: show/hide toggle ──────────────────────────────────────────
+  // Flips CustomDataSource visibility without touching scenario entities.
+  useEffect(() => {
+    const aisDs = aisDataSourceRef.current
+    if (!cesiumReady || !aisDs) return
+    aisDs.show = showAisLayer
+  }, [cesiumReady, showAisLayer])
+
+  // ── AIS layer: vessel sync ────────────────────────────────────────────────
+  // Rebuilds AIS entities whenever the vessel list changes.
+  // Uses a separate CustomDataSource — viewer.entities.removeAll() in the
+  // scenario sync effect above has no effect on this data source.
+  useEffect(() => {
+    const viewer = viewerRef.current
+    const Cesium = cesiumRef.current
+    const aisDs  = aisDataSourceRef.current
+    if (!cesiumReady || !viewer || viewer.isDestroyed() || !Cesium || !aisDs) return
+    if (!showAisLayer) return // skip rebuild when layer is hidden
+
+    const { Cartesian3, Color, VerticalOrigin, LabelStyle, HeightReference } = Cesium
+
+    // Clear previous AIS entities
+    aisDs.entities.removeAll()
+
+    aisVessels.forEach((vessel) => {
+      if (!vessel.mmsi || vessel.lat === 0 && vessel.lon === 0) return
+
+      const hexColor = aisTypeColor(vessel.type)
+      const cesiumColor = Color.fromCssColorString(hexColor).withAlpha(0.9)
+      const label = vessel.name || `MMSI ${vessel.mmsi}`
+      const typeStr = aisTypeLabel(vessel.type)
+      const speed   = vessel.sog > 0 ? ` · ${vessel.sog.toFixed(1)}kt` : ''
+
+      // ── Vessel point ────────────────────────────────────────────────────
+      aisDs.entities.add({
+        id: `ais-${vessel.mmsi}`,
+        position: Cartesian3.fromDegrees(vessel.lon, vessel.lat, 0),
+        point: {
+          pixelSize: 8,
+          color: cesiumColor,
+          outlineColor: Color.WHITE.withAlpha(0.5),
+          outlineWidth: 1,
+          heightReference: HeightReference.CLAMP_TO_GROUND,
+        },
+        label: {
+          text: `${label}\n${typeStr}${speed}`,
+          font: '10px JetBrains Mono',
+          fillColor: Color.fromCssColorString(hexColor),
+          outlineColor: Color.BLACK,
+          outlineWidth: 2,
+          style: LabelStyle.FILL_AND_OUTLINE,
+          verticalOrigin: VerticalOrigin.BOTTOM,
+          pixelOffset: { x: 0, y: -12 } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+          showBackground: true,
+          backgroundColor: Color.fromCssColorString('#0A0A0F').withAlpha(0.75),
+          distanceDisplayCondition: { near: 0, far: 2_000_000 } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        },
+      })
+
+      // ── COG heading line (short, proportional to speed) ─────────────────
+      if (vessel.sog > 0.5 && vessel.cog >= 0) {
+        const cogRad  = (vessel.cog * Math.PI) / 180
+        const lenDeg  = Math.min(vessel.sog * 0.004, 0.3) // ~0.004° per knot
+        const endLon  = vessel.lon + Math.sin(cogRad) * lenDeg
+        const endLat  = vessel.lat + Math.cos(cogRad) * lenDeg
+
+        aisDs.entities.add({
+          id: `ais-cog-${vessel.mmsi}`,
+          polyline: {
+            positions: Cartesian3.fromDegreesArray([vessel.lon, vessel.lat, endLon, endLat]),
+            width: 1.5,
+            material: Color.fromCssColorString(hexColor).withAlpha(0.6),
+            clampToGround: true,
+          },
+        })
+      }
+    })
+  }, [cesiumReady, showAisLayer, aisVessels]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div

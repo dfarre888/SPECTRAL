@@ -6,6 +6,8 @@ import {
   evaluateEffector,
   evaluateRadar,
   evaluateUas,
+  groupEvaluatedByIadsStack,
+  iadsStackGroupKey,
   isSameLaydownItem,
   listPlacedLaydownItems,
   mapUasToTargetClass,
@@ -211,6 +213,20 @@ describe('laydown-evaluation', () => {
     const evalResult = buildLaydownEvaluation(selected, state)
     expect(evalResult?.subject.kind).toBe('uas')
     expect(listPlacedLaydownItems(state)).toHaveLength(1)
+  })
+
+  it('groupEvaluatedByIadsStack collapses S-400 variants and standalone bucket', () => {
+    expect(iadsStackGroupKey('S-400 Triumf (SA-21)')).toBe(iadsStackGroupKey('S-400 Triumf'))
+    const evalResult = evaluateUas(placedShahed(), baseState())
+    const canDetect = evalResult.sections.find((s) => s.title === 'Radars — can detect')!
+    const groups = groupEvaluatedByIadsStack(canDetect.items)
+    expect(groups.length).toBeGreaterThan(1)
+    expect(groups.every((g) => g.items.length > 0)).toBe(true)
+    expect(canDetect.items.length).toBe(groups.reduce((n, g) => n + g.items.length, 0))
+    const standalone = groups.find((g) => g.stackKey === '__standalone__')
+    if (standalone) {
+      expect(standalone.items.every((i) => !i.parentSystem?.trim())).toBe(true)
+    }
   })
 
   it('evaluateUas items include kind on every row', () => {

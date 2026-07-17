@@ -77,17 +77,18 @@ export function useBattlespacePlan(
     }
   }, [planId, planName, laydown, adjudicationPairs]);
 
-  const loadPlan = useCallback(async (id: string) => {
+  const loadPlan = useCallback(async (id: string): Promise<boolean> => {
     setError(null);
     const res = await fetch(`/api/v1/plans/${id}`);
     if (!res.ok) {
       setError('Load failed');
-      return;
+      return false;
     }
     const json = await res.json();
     setPlanId(json.data.id);
     setPlanName(json.data.name);
     applyLaydown(json.data.laydown);
+    return true;
   }, [applyLaydown]);
 
   const newPlan = useCallback(() => {

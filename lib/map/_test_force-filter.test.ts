@@ -78,6 +78,7 @@ const sample: MapAssetsPayload = {
       engagement_max_km: 200,
       engagement_min_km: 0,
       engagement_dome_km: 200,
+      pk_estimate_pct: 90,
       alt_min_km: 40,
       alt_max_km: 150,
       cueing_radar_ids: ['an-tpy-2'],

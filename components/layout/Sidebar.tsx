@@ -11,7 +11,7 @@ import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 
 const BASE_NAV = [
   { href: '/',          icon: LayoutDashboard, label: 'Dashboard',         sub: 'Overview' },
-  { href: '/platforms', icon: Database,         label: 'Platform Library', sub: '39 platforms' },
+  { href: '/platforms', icon: Database,         label: 'Platform Library', sub: 'platforms' },
   { href: '/map',       icon: Map,              label: 'Map Intel',        sub: 'Terrain & envelopes' },
   { href: '/spectrum',  icon: Radio,            label: 'Spectrum View',    sub: 'SPECTRA / EW intel' },
   { href: '/gnss',      icon: Satellite,        label: 'GNSS Intelligence',sub: 'Constellations & jammers' },
@@ -40,9 +40,10 @@ const DS_TOOLS = {
 
 interface SidebarProps {
   proposedCurrencyCount?: number
+  platformCount?: number
 }
 
-export function Sidebar({ proposedCurrencyCount = 0 }: SidebarProps) {
+export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: SidebarProps) {
   const pathname = usePathname()
   const nav = isOperationsEditionClient()
     ? [...BASE_NAV.slice(0, 3), OPERATIONS_NAV, ...BASE_NAV.slice(3)]
@@ -109,7 +110,15 @@ export function Sidebar({ proposedCurrencyCount = 0 }: SidebarProps) {
 
       <nav className="flex-1 py-3 overflow-y-auto">
         {nav.map(({ href, icon, label, sub }) =>
-          renderNavItem({ href, icon, label, sub }),
+          renderNavItem({
+            href,
+            icon,
+            label,
+            sub:
+              href === '/platforms' && platformCount > 0
+                ? `${platformCount} platforms`
+                : sub,
+          }),
         )}
 
         <div className="mt-4 pt-3 mx-4 border-t border-[var(--store-line)]">

@@ -25,6 +25,7 @@ import {
 } from '@/lib/map/laydown-tiles';
 import { formatNativeSpectrumValue } from '@/lib/spectrum/scale';
 import { SpectrumPulseOverlay } from './SpectrumPulseOverlay';
+import { BandTileFullscreenModal } from './BandTileFullscreenModal';
 
 const VB_W = 680;
 
@@ -427,11 +428,12 @@ export function TileCard({
   );
 
   const handleCardClick = () => {
+    if (fillViewport) return;
     if (fullscreenExpand && onTileClick) {
       onTileClick(tile);
       return;
     }
-    if (!expanded && !tooltip) onExpand();
+    onExpand();
   };
 
   const aspectPad = `${(layoutTile.viewBoxH / VB_W) * 100}%`;
@@ -532,6 +534,7 @@ export function TileCard({
         }}
         onClick={(e) => {
           e.stopPropagation();
+          if (fillViewport) return;
           if (fullscreenExpand && onTileClick) onTileClick(tile);
           else onExpand();
         }}
@@ -571,7 +574,7 @@ export function TileCard({
                 flexShrink: 0,
               }}
             >
-              {expanded ? '▲ collapse' : tile.description}
+              {fillViewport ? tile.description : expanded ? '▲ collapse' : tile.description}
             </span>
           )}
         </div>
@@ -689,16 +692,12 @@ function SectionTabs({
 }
 
 function DefaultBandTileGrid() {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [fullscreenTile, setFullscreenTile] = useState<BandTile | null>(null);
   const [activeSectionId, setActiveSectionId] = useState<string>('all');
-
-  const toggle = useCallback((id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id));
-  }, []);
 
   const handleSectionSelect = useCallback((id: string) => {
     setActiveSectionId(id);
-    setExpandedId(null);
+    setFullscreenTile(null);
   }, []);
 
   const activeSection = BAND_TILE_SECTIONS.find((s) => s.id === activeSectionId)!;
@@ -738,7 +737,7 @@ function DefaultBandTileGrid() {
           Band Tiles
         </span>
         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', flex: 1 }}>
-          Hover emission bars for frequency range · allocation bars for intel · Click tile to expand
+          Hover allocation bars for intel · Click any tile to open full-screen · Esc to close
         </span>
       </div>
 
@@ -747,11 +746,19 @@ function DefaultBandTileGrid() {
           <TileCard
             key={tile.id}
             tile={tile}
-            expanded={expandedId === tile.id}
-            onExpand={() => toggle(tile.id)}
+            expanded={false}
+            onExpand={() => setFullscreenTile(tile)}
+            fullscreenExpand
+            onTileClick={setFullscreenTile}
           />
         ))}
       </div>
+
+      <BandTileFullscreenModal
+        tile={fullscreenTile}
+        onClose={() => setFullscreenTile(null)}
+        variant="catalog"
+      />
     </div>
   );
 }

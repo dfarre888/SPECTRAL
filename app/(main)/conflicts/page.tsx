@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { HubPageShell } from '@/components/hub/HubPageShell'
 import { StorePanel } from '@/components/ui/store-surface'
-import { getConflictCaseStudies, getConflictCaseStudy } from '@/lib/conflicts/queries'
+import { getConflictCaseStudies, getConflictCaseStudy } from '@/lib/conflicts/seed-queries'
 import { cn } from '@/lib/utils'
 import { CONFLICT_DIGEST } from '@/lib/conflicts/digest'
 

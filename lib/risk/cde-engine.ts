@@ -58,6 +58,21 @@ const ZONE_INJURY_PK = {
 
 const BUILT_UP_TIERS: ReadonlySet<PopulationDensityTier> = new Set(['urban', 'dense_urban'])
 
+/** Training-tier spatial density modifier — deterministic from impact coordinates. */
+export function locationDensityMultiplier(lon: number, lat: number): number {
+  const x = Math.sin(lon * 12.9898 + lat * 78.233) * 43758.5453
+  const frac = x - Math.floor(x)
+  return 0.35 + frac * 1.65
+}
+
+function effectivePopDensity(
+  tier: PopulationDensityTier,
+  lon: number,
+  lat: number,
+): number {
+  return POP_DENSITY_PKM2[tier] * locationDensityMultiplier(lon, lat)
+}
+
 function diskAreaM2(radius_m: number): number {
   return Math.PI * radius_m * radius_m
 }
@@ -118,8 +133,8 @@ function infraFlags(infra: CriticalInfraType[]): string[] {
 }
 
 function computeCasualtiesOnly(input: CdeInput): number {
-  const { blast, population_tier, time_of_day, building_protection } = input
-  const pop_density = POP_DENSITY_PKM2[population_tier]
+  const { blast, population_tier, time_of_day, building_protection, impact_lon, impact_lat } = input
+  const pop_density = effectivePopDensity(population_tier, impact_lon, impact_lat)
   const exposure = exposureForTier(
     population_tier,
     time_of_day,
@@ -161,8 +176,10 @@ function bestTimeWindow(input: Omit<CdeInput, 'time_of_day'>): TimeOfDay {
 }
 
 export function computeCde(input: CdeInput): CdeResult {
-  const { blast, population_tier, time_of_day, building_protection } = input
-  const pop_density = POP_DENSITY_PKM2[population_tier]
+  const { blast, population_tier, time_of_day, building_protection, impact_lon, impact_lat } = input
+  const pop_density = effectivePopDensity(population_tier, impact_lon, impact_lat)
+  const base_density = POP_DENSITY_PKM2[population_tier]
+  const location_factor = locationDensityMultiplier(impact_lon, impact_lat)
   const exposure = exposureForTier(
     population_tier,
     time_of_day,
@@ -200,7 +217,8 @@ export function computeCde(input: CdeInput): CdeResult {
 
   const proportionality_summary =
     `${blast.weapon_name} (${blast.warhead_kg} kg NEW, TNT-eq ${blast.tnt_equivalent_kg} kg). ` +
-    `Population tier ${population_tier} (~${pop_density.toLocaleString()}/km²), ${time_of_day}. ` +
+    `Impact ${impact_lat.toFixed(4)}°N ${impact_lon.toFixed(4)}°E. ` +
+    `Population tier ${population_tier} (~${Math.round(pop_density).toLocaleString()}/km² effective, base ${base_density.toLocaleString()}/km² × location ${location_factor.toFixed(2)}), ${time_of_day}. ` +
     `${builtUpNote} ` +
     `Protection ${building_protection} (factor ${protection}). ` +
     `ECCas ${expected_casualties}, injured ${expected_injured}. ` +
@@ -209,7 +227,7 @@ export function computeCde(input: CdeInput): CdeResult {
 
   return {
     input,
-    pop_density_pkm2: pop_density,
+    pop_density_pkm2: round1(pop_density),
     lethal_area_m2: round1(diskAreaM2(lethal_m)),
     civilians_in_lethal_zone: round1(popLethal * protection),
     protection_factor: protection,

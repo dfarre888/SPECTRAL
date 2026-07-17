@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { cuasAssetToSpectrumBlue } from '@/lib/map/spectrum-bridge'
+import { MAX_HEATMAP_GRID_STEPS, MAX_HEATMAP_SPAN_DEG } from '@/lib/map/heatmap-layer'
 import type { HeatmapCell } from '@/lib/propagation/types'
 import { resolveJamTransmit } from '@/lib/spectrum/erp-resolve'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
@@ -36,13 +37,23 @@ export function usePropagationHeatmap(
       return
     }
 
-    const spanDeg = (jammer.asset.defeat_range_km / 111) * 0.85
+    const spanDeg = Math.min(
+      (jammer.asset.defeat_range_km / 111) * 0.85,
+      MAX_HEATMAP_SPAN_DEG,
+    )
     const bounds = {
       south: jammer.lat - spanDeg,
       north: jammer.lat + spanDeg,
       west: jammer.lon - spanDeg,
       east: jammer.lon + spanDeg,
     }
+
+    if (bounds.north <= bounds.south || bounds.east <= bounds.west) {
+      setState({ ...EMPTY, error: 'Invalid heatmap bounds' })
+      return
+    }
+
+    const gridSteps = Math.min(20, MAX_HEATMAP_GRID_STEPS)
 
     setState((s) => ({ ...s, loading: true, error: null }))
     const controller = new AbortController()
@@ -60,7 +71,7 @@ export function usePropagationHeatmap(
         erp_dbm: jam.erp_dbm,
       },
       bounds,
-      grid_steps: 20,
+      grid_steps: gridSteps,
       receiver_alt_m: receiverAltM,
       environment: {
         // Nominal propagation grid — terrain shielding is shown on the defeat dome, not as all-NLOS grey tiles.
@@ -69,7 +80,7 @@ export function usePropagationHeatmap(
       },
     }
 
-    const useAsyncJob = payload.grid_steps > 16
+    const useAsyncJob = gridSteps > 16
 
     async function pollJob(jobId: string) {
       for (let i = 0; i < 40; i++) {

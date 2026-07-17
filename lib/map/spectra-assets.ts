@@ -8,6 +8,9 @@ import type { EffectorSystem, EffectorTier } from '@/lib/spectrum/effector-types
 import type { RadarRole, RadarSystem } from '@/lib/spectrum/radar-types'
 import type { MapEffectorAsset, MapRadarAsset } from '@/lib/map/types'
 
+/** Shared tactical cap for UAS combat envelope discs (Shahed-136 @ 2500 km breaks framing). */
+export const MAX_MAP_UAS_DISC_KM = 500
+
 /** Shared tactical cap for SAM/BMD engagement domes (Arrow-3 @ 2400 km breaks framing). */
 export const MAX_MAP_EFFECTOR_DOME_KM = 500
 
@@ -95,6 +98,7 @@ export function toMapEffectorAsset(
     engagement_max_km: e.envelope.max_range_km,
     engagement_min_km: e.envelope.min_range_km,
     engagement_dome_km: Math.min(e.envelope.max_range_km, MAX_MAP_EFFECTOR_DOME_KM),
+    pk_estimate_pct: Math.round((e.pk_estimate ?? 0.75) * 100),
     alt_min_km: e.envelope.min_alt_km,
     alt_max_km: e.envelope.max_alt_km,
     cueing_radar_ids: e.cueing_radar_ids ?? [],

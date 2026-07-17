@@ -79,6 +79,9 @@ export function CollateralRiskPanel({
             <p className="text-xs" style={mono}>{weaponName ?? '—'}</p>
             {blastResult && (
               <>
+                <p className="text-[9px] store-text-muted font-mono">
+                  Impact {blastResult.input.impact_lat.toFixed(4)}°N {blastResult.input.impact_lon.toFixed(4)}°E
+                </p>
                 <div className="rounded-full px-3 py-1.5 text-center text-xs font-bold uppercase" style={{ background: RISK_STYLE[blastResult.risk_category].bg, color: RISK_STYLE[blastResult.risk_category].text, ...mono }}>
                   {blastResult.risk_category}
                 </div>

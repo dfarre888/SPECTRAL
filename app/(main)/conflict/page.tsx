@@ -5,7 +5,7 @@ export default async function ConflictIntelPage() {
   const incidents = await fetchConflictIncidents();
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-[90rem] mx-auto space-y-6">
       <div>
         <p className="text-[10px] font-mono store-text-muted uppercase tracking-wider">OSINT Layer</p>
         <h1 className="text-2xl font-semibold text-white mt-1">Conflict Incident Intel</h1>

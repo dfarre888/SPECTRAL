@@ -2,21 +2,11 @@
 
 import { useMemo } from 'react';
 import { geoMercator, geoPath } from 'd3-geo';
+import { INCIDENT_TYPE_COLOR, normalizeIncidentType } from '@/lib/conflicts/incident-style';
 import type { ConflictIncident } from '@/lib/conflicts/types';
 
 const W = 720;
 const H = 360;
-
-const TYPE_COLOR: Record<ConflictIncident['incident_type'], string> = {
-  uas_strike: '#F97316',
-  gnss_denial: '#06B6D4',
-  ew: '#A78BFA',
-  naval: '#38BDF8',
-  isr: '#4ADE80',
-  swarm: '#FB7185',
-  cruise_strike: '#EAB308',
-  other: '#94A3B8',
-};
 
 function worldPath(projection: ReturnType<typeof geoMercator>): string {
   const path = geoPath(projection);
@@ -55,7 +45,7 @@ export function ConflictMap({
               cx={x}
               cy={y}
               r={active ? 7 : 5}
-              fill={TYPE_COLOR[inc.incident_type]}
+              fill={INCIDENT_TYPE_COLOR[normalizeIncidentType(inc.incident_type)]}
               opacity={active ? 1 : 0.85}
               stroke={active ? '#fff' : 'none'}
               strokeWidth={1.5}

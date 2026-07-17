@@ -54,8 +54,15 @@ export interface SpectrumCanvasProps {
 function gnssConstellationColor(id: string): string {
   if (id === 'glonass') return '#F97316';
   if (id === 'beidou') return '#A78BFA';
+  if (id === 'navic') return '#34D399';
+  if (id === 'qzss') return '#F472B6';
+  if (id === 'sbas') return '#FBBF24';
+  if (id === 'starlink') return '#C084FC';
   return '#06B6D4';
 }
+
+const GNSS_OVERLAY_MAX_MHZ = 6000;
+const GNSS_OVERLAY_MIN_MHZ = 400;
 
 const VB_W = 960;
 const PAD_L = 96;
@@ -335,7 +342,7 @@ export function SpectrumCanvas({
         {gnssOverlay && axis === 'rf' && unit === 'hz' && constellations.length > 0 && (
           <g key="gnss-overlay">
             {constellations.flatMap((c) =>
-              (c.signal_bands ?? []).map((band) => {
+              (c.signal_bands ?? []).filter((band) => band.freq_mhz >= GNSS_OVERLAY_MIN_MHZ && band.freq_mhz <= GNSS_OVERLAY_MAX_MHZ).map((band) => {
                 const freqHz = band.freq_mhz * 1e6;
                 const x = px(freqHz);
                 const color = gnssConstellationColor(c.id);

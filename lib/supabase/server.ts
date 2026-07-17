@@ -3,10 +3,12 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies'
 import { isDemoMode } from '@/lib/demo'
-import { isOperationsEdition } from '@/lib/operations/edition'
 
 export async function createClient() {
-  if (isDemoMode() && !isOperationsEdition()) {
+  // Local demo: service-role reads/writes so all modules work without a Supabase session.
+  // Callers: app/(main)/**/page.tsx, app/api/**/route.ts, lib/operations/tenant.ts, lib/pcm/require-auth.ts.
+  // User request: "do the demo with full login and capabilities".
+  if (isDemoMode()) {
     return createServiceClient()
   }
 

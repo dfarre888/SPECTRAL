@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Download, ShieldCheck, BadgeCheck, Grid3x3, Table2, Zap } from 'lucide-react'
+import { Download, Maximize2, ShieldCheck, BadgeCheck, Grid3x3, Table2, Zap } from 'lucide-react'
 import { EditionBadge } from '@/components/operations/EditionBadge'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import {
@@ -15,6 +15,7 @@ import { AdjudicationPanel } from '@/components/defeat/AdjudicationPanel'
 import { DefeatFilterSidebar } from '@/components/defeat/DefeatFilterSidebar'
 import { DefeatHeatmap } from '@/components/defeat/DefeatHeatmap'
 import { DefeatMatrixTable } from '@/components/defeat/DefeatMatrixTable'
+import { DefeatMatrixFullscreen } from '@/components/defeat/DefeatMatrixFullscreen'
 import { SamInterceptPanel } from '@/components/defeat/SamInterceptPanel'
 import { Button } from '@/components/ui/button'
 import { exportMatrixCsv } from '@/lib/defeat/export-csv'
@@ -36,6 +37,7 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
   const [categoryPill, setCategoryPill] = useState<CategoryPill>('all')
   const [defeatType, setDefeatType] = useState<DefeatTypeFilter>('all')
   const [view, setView] = useState<MatrixView>(initialView)
+  const [fullscreen, setFullscreen] = useState(false)
   const [showSamCalc, setShowSamCalc] = useState(false)
   const [selectedCell, setSelectedCell] = useState<{
     platformId: string
@@ -77,6 +79,34 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
       defeatType,
     )
   }
+
+  const matrixContent =
+    view === 'table' ? (
+      <DefeatMatrixTable
+        platforms={filteredPlatforms}
+        systems={filteredSystems}
+        effectiveness={data.effectiveness}
+        defeatTypeFilter={defeatType}
+        onCellSelect={(platformId, systemId) =>
+          setSelectedCell({ platformId, systemId })
+        }
+        accreditedPkMap={data.accreditedPkMap}
+        computedSamPkMap={data.computedSamPkMap}
+        variant={fullscreen ? 'fullscreen' : 'default'}
+      />
+    ) : (
+      <DefeatHeatmap
+        platforms={filteredPlatforms}
+        systems={filteredSystems}
+        effectiveness={data.effectiveness}
+        defeatTypeFilter={defeatType}
+        onCellSelect={(platformId, systemId) =>
+          setSelectedCell({ platformId, systemId })
+        }
+        accreditedPkMap={data.accreditedPkMap}
+        computedSamPkMap={data.computedSamPkMap}
+      />
+    )
 
   return (
     <div className="relative pb-8">
@@ -170,38 +200,33 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
               <Button variant="outline" size="sm" onClick={handleExport}>
                 <Download className="h-4 w-4" /> Export CSV
               </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setFullscreen(true)}
+                title="Full screen matrix"
+              >
+                <Maximize2 className="h-4 w-4" /> Expand
+              </Button>
             </div>
           }
         />
 
-        <div className="store-panel rounded-2xl overflow-hidden">
-          {view === 'table' ? (
-            <DefeatMatrixTable
-              platforms={filteredPlatforms}
-              systems={filteredSystems}
-              effectiveness={data.effectiveness}
-              defeatTypeFilter={defeatType}
-              onCellSelect={(platformId, systemId) =>
-                setSelectedCell({ platformId, systemId })
-              }
-              accreditedPkMap={data.accreditedPkMap}
-              computedSamPkMap={data.computedSamPkMap}
-            />
-          ) : (
-            <DefeatHeatmap
-              platforms={filteredPlatforms}
-              systems={filteredSystems}
-              effectiveness={data.effectiveness}
-              defeatTypeFilter={defeatType}
-              onCellSelect={(platformId, systemId) =>
-                setSelectedCell({ platformId, systemId })
-              }
-              accreditedPkMap={data.accreditedPkMap}
-              computedSamPkMap={data.computedSamPkMap}
-            />
-          )}
-        </div>
+        <div className="store-panel rounded-2xl overflow-hidden">{matrixContent}</div>
       </StoreCatalogLayout>
+
+      <DefeatMatrixFullscreen
+        open={fullscreen}
+        onClose={() => setFullscreen(false)}
+        view={view}
+        onViewChange={setView}
+        platformCount={filteredPlatforms.length}
+        systemCount={filteredSystems.length}
+        onExport={handleExport}
+      >
+        {matrixContent}
+      </DefeatMatrixFullscreen>
 
       {showSamCalc && (
         <div className="fixed right-4 top-24 z-50">

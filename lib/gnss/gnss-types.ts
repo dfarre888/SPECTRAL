@@ -2,6 +2,13 @@
 
 export type GnssConstellationStatus = 'operational' | 'degraded' | 'testing';
 
+/** Distinguishes global GNSS from regional, SBAS augmentation, and LEO comms/PNT. */
+export type GnssSystemCategory =
+  | 'global_gnss'
+  | 'regional_gnss'
+  | 'augmentation'
+  | 'leo_pnt_comms';
+
 export type GnssDependencyLevel = 'primary' | 'secondary' | 'none' | 'immune';
 
 export type GnssJammingEffect = 'mission_kill' | 'degraded' | 'minimal' | 'none';
@@ -18,6 +25,7 @@ export interface GnssConstellation {
   display_name: string;
   operator: string;
   status: GnssConstellationStatus;
+  system_category: GnssSystemCategory;
   signal_bands: GnssSignalBand[];
   satellites_nominal: number | null;
   satellites_active: number | null;

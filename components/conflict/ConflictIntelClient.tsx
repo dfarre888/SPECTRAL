@@ -1,9 +1,20 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import type { ConflictIncident } from '@/lib/conflicts/types';
-import { ConflictMap } from '@/components/conflict/ConflictMap';
+const ConflictCesiumMap = dynamic(
+  () => import('@/components/conflict/ConflictCesiumMap').then((m) => m.ConflictCesiumMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[440px] rounded-xl border border-[var(--store-line)] bg-[#0A0A0F] flex items-center justify-center text-xs font-mono store-text-muted">
+        Loading globe…
+      </div>
+    ),
+  },
+);
 import { ConflictTimeline } from '@/components/conflict/ConflictTimeline';
 
 export function ConflictIntelClient({ incidents }: { incidents: ConflictIncident[] }) {
@@ -17,7 +28,7 @@ export function ConflictIntelClient({ incidents }: { incidents: ConflictIncident
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <div className="space-y-4">
-        <ConflictMap incidents={incidents} selectedId={selectedId} onSelect={setSelectedId} />
+        <ConflictCesiumMap incidents={incidents} selectedId={selectedId} onSelect={setSelectedId} />
         {selected && (
           <article className="store-panel rounded-xl p-5 border border-[var(--store-line)]">
             <p className="text-[10px] font-mono store-text-muted uppercase">{selected.conflict_name} · {selected.incident_type.replace(/_/g, ' ')}</p>

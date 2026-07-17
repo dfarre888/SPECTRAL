@@ -37,6 +37,23 @@ export interface AisBbox {
   maxLat: number
 }
 
+/** Default AIS query extent — global coverage [[-90,-180],[90,180]] */
+export const AIS_DEFAULT_BBOX: AisBbox = {
+  minLat: -90,
+  minLon: -180,
+  maxLat: 90,
+  maxLon: 180,
+}
+
+export function aisBboxSearchParams(bbox: AisBbox = AIS_DEFAULT_BBOX): URLSearchParams {
+  return new URLSearchParams({
+    minLat: String(bbox.minLat),
+    maxLat: String(bbox.maxLat),
+    minLon: String(bbox.minLon),
+    maxLon: String(bbox.maxLon),
+  })
+}
+
 // ── AIS type-code helpers ─────────────────────────────────────────────────────
 
 /** Human-readable label for an AIS vessel type code */

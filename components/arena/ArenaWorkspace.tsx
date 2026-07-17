@@ -7,7 +7,7 @@ import { WoprScenarioPanel } from '@/components/arena/WoprScenarioPanel'
 import { StorePanel } from '@/components/ui/store-surface'
 import { worldStateToCopEntities, type CopViewMode } from '@/lib/wopr/cop-entities'
 import type { TickResult, WoprScenario } from '@/lib/wopr/types'
-import type { AisVessel } from '@/lib/ais/types'
+import { aisBboxSearchParams, type AisVessel } from '@/lib/ais/types'
 import { clsx } from 'clsx'
 
 const CesiumArena = dynamic(() => import('@/components/arena/CesiumArena'), {
@@ -57,13 +57,9 @@ export function ArenaWorkspace() {
     setAisFetching(true)
     setAisError(null)
     try {
-      // Default bbox: Australian coastal waters.
+      // Default bbox: global [[-90,-180],[90,180]].
       // Future enhancement: derive bbox from current Cesium camera view.
-      const params = new URLSearchParams({
-        minLon: '110', maxLon: '155',
-        minLat: '-45', maxLat: '-10',
-      })
-      const res = await fetch(`/api/ais/vessels?${params}`)
+      const res = await fetch(`/api/ais/vessels?${aisBboxSearchParams()}`)
       const json = await res.json()
       if (json.error) {
         setAisError(json.error)

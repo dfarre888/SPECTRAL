@@ -22,9 +22,9 @@
  *
  * ── Query parameters ─────────────────────────────────────────────────────────
  *
- *   GET /api/ais/vessels?minLon=110&maxLon=155&minLat=-45&maxLat=-10
+ *   GET /api/ais/vessels?minLon=-180&maxLon=180&minLat=-90&maxLat=90
  *
- *   All four bbox params are optional; defaults cover Australian coastal waters.
+ *   All four bbox params are optional; defaults cover global waters.
  *
  * ── Response ─────────────────────────────────────────────────────────────────
  *
@@ -33,7 +33,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { normaliseMarineTraffic } from '@/lib/ais/types'
+import { AIS_DEFAULT_BBOX, normaliseMarineTraffic } from '@/lib/ais/types'
 
 // ── PLACEHOLDER: set AIS_API_KEY in .env.local ───────────────────────────────
 const AIS_API_KEY  = process.env.AIS_API_KEY  ?? ''
@@ -60,10 +60,10 @@ export async function GET(req: NextRequest) {
 
   // ── Parse bounding box from query params ──────────────────────────────────
   const { searchParams } = new URL(req.url)
-  const minLat = searchParams.get('minLat') ?? '-45'
-  const maxLat = searchParams.get('maxLat') ?? '-10'
-  const minLon = searchParams.get('minLon') ?? '110'
-  const maxLon = searchParams.get('maxLon') ?? '155'
+  const minLat = searchParams.get('minLat') ?? String(AIS_DEFAULT_BBOX.minLat)
+  const maxLat = searchParams.get('maxLat') ?? String(AIS_DEFAULT_BBOX.maxLat)
+  const minLon = searchParams.get('minLon') ?? String(AIS_DEFAULT_BBOX.minLon)
+  const maxLon = searchParams.get('maxLon') ?? String(AIS_DEFAULT_BBOX.maxLon)
 
   try {
     // ── MarineTraffic REST v8 ─────────────────────────────────────────────

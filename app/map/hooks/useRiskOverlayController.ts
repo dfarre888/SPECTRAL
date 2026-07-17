@@ -119,15 +119,6 @@ export function useRiskOverlayController({
   const riskLatRef = useRef<number | null>(null)
   const syncLockRef = useRef(Promise.resolve())
 
-  const syncCtx: RiskOverlaySyncContext = {
-    cesiumCtxRef,
-    riskOverlayRef,
-    riskOverlayGenRef,
-    riskLonRef,
-    riskLatRef,
-    riskRingShadeRef,
-  }
-
   useEffect(() => {
     riskRingShadeRef.current = riskRingShade
   }, [riskRingShade])
@@ -153,11 +144,23 @@ export function useRiskOverlayController({
 
   const syncRiskOverlay = useCallback(async () => {
     const task = syncLockRef.current.then(() =>
-      syncRiskOverlayImpl(syncCtx, riskMode, selectedWarhead, selectedJammer),
+      syncRiskOverlayImpl(
+        {
+          cesiumCtxRef,
+          riskOverlayRef,
+          riskOverlayGenRef,
+          riskLonRef,
+          riskLatRef,
+          riskRingShadeRef,
+        },
+        riskMode,
+        selectedWarhead,
+        selectedJammer,
+      ),
     )
     syncLockRef.current = task.catch(() => {})
     await task
-  }, [riskMode, selectedWarhead, selectedJammer, syncCtx])
+  }, [cesiumCtxRef, riskMode, selectedWarhead, selectedJammer])
 
   useEffect(() => {
     if (!cesiumReady) return
@@ -220,6 +223,15 @@ export function useRiskOverlayController({
     },
     [updateRiskPosition],
   )
+
+  const syncCtx: RiskOverlaySyncContext = {
+    cesiumCtxRef,
+    riskOverlayRef,
+    riskOverlayGenRef,
+    riskLonRef,
+    riskLatRef,
+    riskRingShadeRef,
+  }
 
   return {
     riskMode,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_AGL_M, planMissionPath } from '@/lib/map/mission-path-planner'
-import type { MapCuasAsset, MapUasAsset, PlacedCuas, PlacedRadar } from '@/lib/map/types'
+import { DEFAULT_AGL_M, inferDefaultMissionGoal, planMissionPath } from '@/lib/map/mission-path-planner'
+import type { MapCuasAsset, MapEffectorAsset, MapUasAsset, PlacedCuas, PlacedEffector, PlacedRadar } from '@/lib/map/types'
 
 const uasAsset: MapUasAsset = {
   id: 'shahed-136', name: 'Shahed-136', slug: 'shahed-136', category: 'loitering_munition',
@@ -59,7 +59,52 @@ function shortPdRadar(lon: number, lat: number): PlacedRadar {
   }
 }
 
+function placedEffector(lon: number, lat: number, domeKm = 10): PlacedEffector {
+  const asset: MapEffectorAsset = {
+    id: 'eff-iron-beam',
+    name: 'Iron Beam',
+    side: 'blue',
+    tier: 'c_uas',
+    tierLabel: 'C-UAS',
+    effect: 'laser',
+    engagement_max_km: domeKm,
+    engagement_min_km: 0,
+    engagement_dome_km: domeKm,
+    pk_estimate_pct: 90,
+    alt_min_km: 0,
+    alt_max_km: 5,
+    cueing_radar_ids: [],
+    linkedRadars: [],
+    image_url: null,
+  }
+  return { instanceId: 'eff-1', asset, lon, lat, terrainAMSL: 10 }
+}
+
 describe('mission-path-planner', () => {
+  it('pk route detours around effector engagement dome (Iron Beam class)', () => {
+    const startLon = 55.0
+    const startLat = 26.0
+    const goalLon = 55.04
+    const goalLat = 26.0
+    const plan = planMissionPath({
+      startLon,
+      startLat,
+      startTerrainAMSL: 10,
+      goalLon,
+      goalLat,
+      goalTerrainAMSL: 10,
+      goalKind: 'target',
+      asset: uasAsset,
+      placedCuas: [],
+      placedRadars: [],
+      placedEffectors: [placedEffector((startLon + goalLon) / 2, startLat, 2)],
+      emcon: false,
+      routeObjective: 'pk',
+    })
+    expect(plan.waypoints.length).toBeGreaterThan(2)
+    expect(plan.maxPk_pct).toBeLessThanOrEqual(90)
+  })
+
   it('pk route detours around C-UAS sphere', () => {
     const startLon = 55.0, startLat = 26.0, goalLon = 55.04, goalLat = 26.0
     const plan = planMissionPath({
@@ -130,6 +175,38 @@ describe('mission-path-planner', () => {
       goalKind: 'target', asset: uasAsset, placedCuas: [], placedRadars: [], placedEffectors: [], emcon: false,
     })
     expect(plan.totalDistance_km).toBeLessThanOrEqual(uasAsset.max_range_km + 0.01)
-    expect(plan.routeObjective).toBe('pd')
+    expect(plan.routeObjective).toBe('pk')
+    expect(plan.segmentScores?.length).toBe(plan.waypoints.length - 1)
+  })
+
+  it('inferDefaultMissionGoal points away from threat centroid', () => {
+    const goal = inferDefaultMissionGoal(55.0, 26.0, 50, [{ lon: 55.02, lat: 26.0 }])
+    expect(goal.goalLon).toBeLessThan(55.0)
+    expect(goal.goalLat).toBeCloseTo(26.0, 1)
+  })
+
+  it('start inside effector dome produces more than two waypoints', () => {
+    const startLon = 55.0
+    const startLat = 26.0
+    const goalLon = 55.04
+    const goalLat = 26.0
+    const plan = planMissionPath({
+      startLon,
+      startLat,
+      startTerrainAMSL: 10,
+      goalLon,
+      goalLat,
+      goalTerrainAMSL: 10,
+      goalKind: 'target',
+      asset: uasAsset,
+      placedCuas: [],
+      placedRadars: [],
+      placedEffectors: [placedEffector(startLon, startLat, 2)],
+      emcon: false,
+      routeObjective: 'pk',
+    })
+    expect(plan.waypoints.length).toBeGreaterThan(2)
+    const detours = plan.waypoints.filter((wp) => wp.kind === 'detour')
+    expect(detours.length).toBeGreaterThan(0)
   })
 })

@@ -14,9 +14,12 @@ import type { CesiumContext } from '@/app/map/hooks/usePlatformPlacement'
 
 interface Props {
   getCesium: () => CesiumContext | null
+  /** When embedded in a parent stack, omit the default absolute map positioning. */
+  embedded?: boolean
+  className?: string
 }
 
-export function MapNavigationWheel({ getCesium }: Props) {
+export function MapNavigationWheel({ getCesium, embedded, className }: Props) {
   const [zoomSliderValue, setZoomSliderValue] = useState(50)
   const attachedViewerRef = useRef<unknown>(null)
 
@@ -107,7 +110,10 @@ export function MapNavigationWheel({ getCesium }: Props) {
 
   return (
     <MapNavHud
-      className="absolute bottom-14 left-3 z-20 pointer-events-auto"
+      className={
+        className ??
+        (embedded ? 'pointer-events-auto' : 'absolute bottom-14 left-3 z-20 pointer-events-auto')
+      }
       onRotate={handleRotate}
       onTilt={handleTilt}
       zoomValue={zoomSliderValue}

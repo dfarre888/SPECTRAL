@@ -23,11 +23,15 @@ export function MissionPathControls({
   const mission = uas.mission
   if (!mission) return null
 
-  const objective = mission.routeObjective ?? 'pd'
+  const objective = mission.routeObjective ?? 'combined'
   const primaryMetric =
     objective === 'pd'
       ? { label: 'Max Pd', value: mission.maxPd_pct, threshold: PD_THRESHOLD_PCT, flag: mission.pdThresholdExceeded }
-      : { label: 'Max Pk', value: mission.maxPk_pct, threshold: PK_THRESHOLD_PCT, flag: mission.pkThresholdExceeded }
+      : objective === 'pk'
+        ? { label: 'Max Pk', value: mission.maxPk_pct, threshold: PK_THRESHOLD_PCT, flag: mission.pkThresholdExceeded }
+        : mission.maxPk_pct >= mission.maxPd_pct
+          ? { label: 'Max Pk', value: mission.maxPk_pct, threshold: PK_THRESHOLD_PCT, flag: mission.pkThresholdExceeded }
+          : { label: 'Max Pd', value: mission.maxPd_pct, threshold: PD_THRESHOLD_PCT, flag: mission.pdThresholdExceeded }
 
   return (
     <div className="p-2.5 rounded-xl store-panel-inner border border-[var(--store-line)] text-[11px] space-y-2">
@@ -40,7 +44,7 @@ export function MissionPathControls({
       <p className="font-mono store-text-muted">{mission.goalKind.toUpperCase()} · {mission.totalDistance_km.toFixed(1)} km</p>
 
       <div className="flex gap-1">
-        {(['pd', 'pk'] as const).map((mode) => (
+        {(['combined', 'pd', 'pk'] as const).map((mode) => (
           <button
             key={mode}
             type="button"
@@ -52,7 +56,7 @@ export function MissionPathControls({
                 : 'border-[var(--store-line)] store-text-muted hover:store-text-body',
             )}
           >
-            {mode === 'pd' ? 'Pd route' : 'Pk route'}
+            {mode === 'combined' ? 'Both' : mode === 'pd' ? 'Pd' : 'Pk'}
           </button>
         ))}
       </div>
@@ -66,9 +70,11 @@ export function MissionPathControls({
         {primaryMetric.label} {primaryMetric.value}% {primaryMetric.flag ? `(≥${primaryMetric.threshold}% flag)` : ''}
       </p>
       <p className="font-mono store-text-muted text-[10px]">
-        {objective === 'pd'
-          ? `Pk ${mission.maxPk_pct}% · exposure ${mission.pdExposure_km.toFixed(1)} km`
-          : `Pd ${mission.maxPd_pct}% · exposure ${mission.pkExposure_km.toFixed(1)} km`}
+        {objective === 'combined'
+          ? `Pk ${mission.maxPk_pct}% · Pd ${mission.maxPd_pct}% · exp ${mission.pkExposure_km.toFixed(1)}/${mission.pdExposure_km.toFixed(1)} km`
+          : objective === 'pd'
+            ? `Pk ${mission.maxPk_pct}% · exposure ${mission.pdExposure_km.toFixed(1)} km`
+            : `Pd ${mission.maxPd_pct}% · exposure ${mission.pkExposure_km.toFixed(1)} km`}
       </p>
       <p className="font-mono store-text-muted text-[10px]">{mission.pathMode} · {mission.waypoints.length} waypoints</p>
 
@@ -85,6 +91,7 @@ export function MissionPathControls({
       {mission.manualOverride && (
         <p className="text-[10px] text-[var(--store-accent)]">Manual override — auto-replan paused</p>
       )}
+      <p className="text-[10px] store-text-muted">Use toolbar <span className="text-[var(--store-accent)]">Edit flight path</span> to add/move waypoints on the map.</p>
       <button
         type="button"
         onClick={onReplan}

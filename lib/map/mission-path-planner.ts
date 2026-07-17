@@ -4,14 +4,20 @@ import {
   estimatePdAtPoint,
   PD_THRESHOLD_PCT,
   scorePathSegment,
+  type PathSegmentScore,
   type ThreatCircle,
 } from '@/lib/map/mission-path-scoring'
 import {
+  DETOUR_BUFFER_M,
+  detourRouteAroundThreats,
   findOptimalRoute,
+  segmentIntersectsAny,
   segmentIntersectsThreat,
   trimRouteToRange,
+  type GraphPoint,
   type RouteObjective,
 } from '@/lib/map/mission-path-graph'
+import { destinationPointM } from '@/lib/propagation/geo'
 import type {
   MapUasAsset,
   MissionPlan,
@@ -65,7 +71,7 @@ function cruiseAltitudeM(
   objective: RouteObjective,
 ): number {
   const ceil = ceilingAMSL(terrainAMSL, asset)
-  if (objective === 'pd') {
+  if (objective === 'pd' || objective === 'combined') {
     const napAgl = supportsLowFlight(asset)
       ? Math.min(asset.max_altitude_agl_m * 0.12, 80)
       : Math.min(asset.max_altitude_agl_m * 0.08, 120)
@@ -83,14 +89,14 @@ function assignAltitude(
   pdThreats: ThreatCircle[],
   pkThreats: ThreatCircle[],
   objective: RouteObjective,
-  isTerminal: boolean,
+  waypointKind: MissionWaypoint['kind'],
   emcon: boolean,
   placedRadars: PlacedRadar[],
 ): number {
   const ceil = ceilingAMSL(terrainAMSL, asset)
   let alt = cruiseAltitudeM(terrainAMSL, asset, objective)
 
-  if (objective === 'pd') {
+  if (objective === 'pd' || objective === 'combined') {
     for (const t of pdThreats) {
       const horiz = haversineM(t.lat, t.lon, lat, lon)
       if (horiz > t.radius_m) continue
@@ -102,19 +108,24 @@ function assignAltitude(
     }
   }
 
-  if (objective === 'pk') {
+  if (objective === 'pk' || objective === 'combined') {
     for (const t of pkThreats) {
-      if (t.kind !== 'cuas') continue
       const horiz = haversineM(t.lat, t.lon, lat, lon)
       if (horiz > t.radius_m) continue
-      const cuasAlt = t.alt_m
-      if (horiz < t.radius_m * 0.55) {
-        alt = Math.min(alt, cuasAlt + t.radius_m * 0.55 + 40)
+      const threatAlt = t.alt_m
+      if (t.kind === 'effector' && t.alt_max_m) {
+        alt = Math.max(alt, threatAlt + t.alt_max_m + 400)
+      } else if (horiz < t.radius_m * 0.55) {
+        alt = Math.min(alt, threatAlt + t.radius_m * 0.55 + 40)
       }
     }
   }
 
-  if (isTerminal) {
+  if (waypointKind === 'goal') {
+    return terrainAMSL + 2
+  }
+
+  if (waypointKind === 'terminal') {
     alt = Math.max(alt, terrainAMSL + Math.min(asset.max_altitude_agl_m * 0.35, 120))
   }
 
@@ -141,35 +152,174 @@ function haversineM(lat1: number, lon1: number, lat2: number, lon2: number): num
   return 6371000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
+function bearingDeg(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const phi1 = (lat1 * Math.PI) / 180
+  const phi2 = (lat2 * Math.PI) / 180
+  const dL = ((lon2 - lon1) * Math.PI) / 180
+  const y = Math.sin(dL) * Math.cos(phi2)
+  const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dL)
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360
+}
+
+
+/** Push start point to Pk threat boundary when co-located inside engagement dome. */
+export function egressPointIfInsidePkThreat(
+  point: GraphPoint,
+  pkThreats: ThreatCircle[],
+): GraphPoint {
+  let lon = point.lon
+  let lat = point.lat
+  for (const t of pkThreats) {
+    const dist = haversineM(t.lat, t.lon, lat, lon)
+    if (dist < t.radius_m + DETOUR_BUFFER_M) {
+      const brg = bearingDeg(t.lat, t.lon, lat, lon)
+      const egress = destinationPointM(t.lat, t.lon, t.radius_m + DETOUR_BUFFER_M, brg)
+      lon = egress.lon
+      lat = egress.lat
+    }
+  }
+  return { lon, lat }
+}
+
+/** Default mission goal when instructor skips the goal dialog or threats are placed after UAS. */
+export function inferDefaultMissionGoal(
+  startLon: number,
+  startLat: number,
+  maxRange_km: number,
+  threats: { lon: number; lat: number }[],
+): { goalLon: number; goalLat: number } {
+  const rangeM = Math.min(maxRange_km * 1000 * 0.65, 25_000)
+  if (threats.length === 0) {
+    const pt = destinationPointM(startLat, startLon, rangeM, 90)
+    return { goalLon: pt.lon, goalLat: pt.lat }
+  }
+
+  const nonColocated = threats.filter(
+    (t) => haversineM(startLat, startLon, t.lat, t.lon) >= 500,
+  )
+  let awayBearing: number
+  if (nonColocated.length === 0) {
+    awayBearing = 90
+  } else {
+    const ref = nonColocated[0]
+    const towardThreat = bearingDeg(startLat, startLon, ref.lat, ref.lon)
+    awayBearing = (towardThreat + 180) % 360
+  }
+  const pt = destinationPointM(startLat, startLon, rangeM, awayBearing)
+  return { goalLon: pt.lon, goalLat: pt.lat }
+}
+
+export function defaultRouteObjective(
+  placedCuas: PlacedCuas[],
+  placedRadars: PlacedRadar[],
+  placedEffectors: PlacedEffector[],
+): MissionRouteObjective {
+  if (placedCuas.length > 0 || placedRadars.length > 0 || placedEffectors.length > 0) {
+    return 'combined'
+  }
+  return 'pk'
+}
+
+/** Insert climb/overflight nodes when a large effector dome blocks the horizontal chord. */
+function expandRouteWithEffectorOverflight(
+  points: { lon: number; lat: number }[],
+  pkThreats: ThreatCircle[],
+): { lon: number; lat: number }[] {
+  if (points.length < 2 || pkThreats.length === 0) return points
+  const expanded: { lon: number; lat: number }[] = [points[0]]
+  for (let i = 0; i < points.length - 1; i++) {
+    const a = points[i]
+    const b = points[i + 1]
+    const blocking = pkThreats.filter(
+      (t) =>
+        t.kind === 'effector' &&
+        segmentIntersectsThreat(a.lon, a.lat, b.lon, b.lat, t),
+    )
+    for (const t of blocking) {
+      const already = expanded.some(
+        (p) => haversineM(p.lat, p.lon, t.lat, t.lon) < 300,
+      )
+      if (!already) expanded.push({ lon: t.lon, lat: t.lat })
+    }
+    expanded.push(b)
+  }
+  return expanded
+}
+
 export function planMissionPath(input: MissionPathPlannerInput): MissionPlan {
-  const objective: RouteObjective = input.routeObjective ?? 'pd'
-  const pdThreats = collectPdThreats(input.placedRadars, input.asset)
+  const objective: RouteObjective =
+    input.routeObjective ??
+    defaultRouteObjective(input.placedCuas, input.placedRadars, input.placedEffectors)
+  const pdThreats = collectPdThreats(input.placedRadars, input.asset, input.placedEffectors)
   const pkThreats = collectPkThreats(input.placedCuas, input.placedEffectors)
-  const hardThreats = objective === 'pk' ? pkThreats : pdThreats
+  const hardThreats =
+    objective === 'pk'
+      ? pkThreats
+      : objective === 'pd'
+        ? pdThreats
+        : [...pkThreats, ...pdThreats]
 
   const cruiseAlt = cruiseAltitudeM(input.startTerrainAMSL, input.asset, objective)
-  const napOfEarth = objective === 'pd' || supportsLowFlight(input.asset)
+  const napOfEarth = objective === 'pd' || objective === 'combined' || supportsLowFlight(input.asset)
   const speed = transitSpeedKmh(input.asset, napOfEarth)
 
-  const routePoints = trimRouteToRange(
-    findOptimalRoute(
-      { lon: input.startLon, lat: input.startLat },
-      { lon: input.goalLon, lat: input.goalLat },
-      objective,
-      input.asset,
-      input.placedCuas,
-      input.placedRadars,
-      input.placedEffectors,
-      input.startTerrainAMSL,
-      cruiseAlt,
-      input.overlapVolumes,
-      input.emcon,
-      input.rcsOverride
-        ? { heading_deg: input.heading_deg ?? 0, rcsOverride: input.rcsOverride }
-        : undefined,
-    ),
-    input.asset.max_range_km,
+  const scoringOptions = input.rcsOverride
+    ? { heading_deg: input.heading_deg ?? 0, rcsOverride: input.rcsOverride }
+    : undefined
+
+  const routingStart = egressPointIfInsidePkThreat(
+    { lon: input.startLon, lat: input.startLat },
+    pkThreats,
   )
+
+  let rawRoute = findOptimalRoute(
+    routingStart,
+    { lon: input.goalLon, lat: input.goalLat },
+    objective,
+    input.asset,
+    input.placedCuas,
+    input.placedRadars,
+    input.placedEffectors,
+    input.startTerrainAMSL,
+    cruiseAlt,
+    input.overlapVolumes,
+    input.emcon,
+    scoringOptions,
+  )
+
+  rawRoute = expandRouteWithEffectorOverflight(rawRoute, pkThreats)
+
+  if (
+    rawRoute.length <= 2 &&
+    segmentIntersectsAny(
+      routingStart.lon,
+      routingStart.lat,
+      input.goalLon,
+      input.goalLat,
+      hardThreats,
+    )
+  ) {
+    rawRoute = detourRouteAroundThreats(
+      routingStart,
+      { lon: input.goalLon, lat: input.goalLat },
+      hardThreats,
+    )
+    rawRoute = expandRouteWithEffectorOverflight(rawRoute, pkThreats)
+  }
+
+  const startDiffers =
+    haversineM(input.startLat, input.startLon, routingStart.lat, routingStart.lon) > 50
+  if (startDiffers) {
+    const first = rawRoute[0]
+    const dupStart =
+      first &&
+      haversineM(input.startLat, input.startLon, first.lat, first.lon) < 50
+    rawRoute = dupStart
+      ? [{ lon: input.startLon, lat: input.startLat }, ...rawRoute.slice(1)]
+      : [{ lon: input.startLon, lat: input.startLat }, ...rawRoute]
+  }
+
+  const routePoints = trimRouteToRange(rawRoute, input.asset.max_range_km)
 
   const waypoints = routePoints.map((pt, idx) => {
     const isStart = idx === 0
@@ -199,7 +349,7 @@ export function planMissionPath(input: MissionPathPlannerInput): MissionPlan {
         pdThreats,
         pkThreats,
         objective,
-        isGoal,
+        kind,
         input.emcon,
         input.placedRadars,
       ),
@@ -213,6 +363,7 @@ export function planMissionPath(input: MissionPathPlannerInput): MissionPlan {
   let maxPd_pct = 0
   let pdExposure_km = 0
   let pkExposure_km = 0
+  const segmentScores: PathSegmentScore[] = []
 
   for (let i = 1; i < waypoints.length; i++) {
     const prev = waypoints[i - 1]
@@ -223,22 +374,25 @@ export function planMissionPath(input: MissionPathPlannerInput): MissionPlan {
       prev.lat,
       cur.lon,
       cur.lat,
-      (prev.alt_m + cur.alt_m) / 2,
+      prev.alt_m,
       terrain,
       input.asset,
       input.placedCuas,
       input.placedRadars,
+      input.placedEffectors,
       input.overlapVolumes,
       input.emcon,
       input.rcsOverride
         ? { heading_deg: input.heading_deg ?? 0, rcsOverride: input.rcsOverride }
         : { heading_deg: input.heading_deg ?? 0 },
+      cur.alt_m,
     )
     totalDistance_km += score.distance_km
     maxPk_pct = Math.max(maxPk_pct, score.maxPk_pct)
     maxPd_pct = Math.max(maxPd_pct, score.maxPd_pct)
     pdExposure_km += score.pdExposure
     pkExposure_km += score.pkExposure
+    segmentScores.push(score)
   }
 
   const directBlocked = hardThreats.some((t) =>
@@ -248,7 +402,9 @@ export function planMissionPath(input: MissionPathPlannerInput): MissionPlan {
   const thresholdExceeded =
     objective === 'pd'
       ? maxPd_pct >= PD_THRESHOLD_PCT
-      : maxPk_pct >= PK_THRESHOLD_PCT
+      : objective === 'pk'
+        ? maxPk_pct >= PK_THRESHOLD_PCT
+        : maxPk_pct >= PK_THRESHOLD_PCT || maxPd_pct >= PD_THRESHOLD_PCT
 
   let pathMode: MissionPlan['pathMode'] = 'optimized'
   if (directBlocked && thresholdExceeded) {
@@ -274,8 +430,133 @@ export function planMissionPath(input: MissionPathPlannerInput): MissionPlan {
     pkThresholdExceeded: maxPk_pct >= PK_THRESHOLD_PCT,
     pdThresholdExceeded: maxPd_pct >= PD_THRESHOLD_PCT,
     pathMode,
+    segmentScores,
     updatedAt: new Date().toISOString(),
   }
+}
+
+/** Recompute segment Pk/Pd scores after manual waypoint edits (keeps geometry). */
+export function rescoreMissionPlan(
+  mission: MissionPlan,
+  asset: MapUasAsset,
+  placedCuas: PlacedCuas[],
+  placedRadars: PlacedRadar[],
+  placedEffectors: PlacedEffector[],
+  overlapVolumes?: OverlapVolume[],
+  emcon = false,
+  rcsOverride?: RcsFacets,
+): MissionPlan {
+  let totalDistance_km = 0
+  let maxPk_pct = 0
+  let maxPd_pct = 0
+  let pdExposure_km = 0
+  let pkExposure_km = 0
+  const segmentScores: PathSegmentScore[] = []
+  const waypoints = mission.waypoints
+
+  for (let i = 1; i < waypoints.length; i++) {
+    const prev = waypoints[i - 1]
+    const cur = waypoints[i]
+    const terrain = (prev.terrainAMSL + cur.terrainAMSL) / 2
+    const score = scorePathSegment(
+      prev.lon,
+      prev.lat,
+      cur.lon,
+      cur.lat,
+      prev.alt_m,
+      terrain,
+      asset,
+      placedCuas,
+      placedRadars,
+      placedEffectors,
+      overlapVolumes,
+      emcon,
+      rcsOverride ? { heading_deg: 0, rcsOverride } : { heading_deg: 0 },
+      cur.alt_m,
+    )
+    totalDistance_km += score.distance_km
+    maxPk_pct = Math.max(maxPk_pct, score.maxPk_pct)
+    maxPd_pct = Math.max(maxPd_pct, score.maxPd_pct)
+    pdExposure_km += score.pdExposure
+    pkExposure_km += score.pkExposure
+    segmentScores.push(score)
+  }
+
+  return {
+    ...mission,
+    totalDistance_km: Math.min(totalDistance_km, asset.max_range_km),
+    maxPk_pct,
+    maxPd_pct,
+    pdExposure_km,
+    pkExposure_km,
+    pkThresholdExceeded: maxPk_pct >= PK_THRESHOLD_PCT,
+    pdThresholdExceeded: maxPd_pct >= PD_THRESHOLD_PCT,
+    segmentScores,
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+export function missionPathEntityId(uasInstanceId: string): string {
+  return `map-mission-path-${uasInstanceId}`
+}
+
+export function missionSegmentEntityId(uasInstanceId: string, segmentIndex: number): string {
+  return `map-mission-seg-${uasInstanceId}-${segmentIndex}`
+}
+
+export function missionSegmentChunkEntityId(
+  uasInstanceId: string,
+  segmentIndex: number,
+  chunkIndex: number,
+): string {
+  return `map-mission-seg-${uasInstanceId}-${segmentIndex}-${chunkIndex}`
+}
+
+/** Wide invisible pick corridor for one logical segment (edit mode). */
+export function missionSegmentPickEntityId(uasInstanceId: string, segmentIndex: number): string {
+  return `map-mission-pick-${uasInstanceId}-${segmentIndex}`
+}
+
+export function parseMissionPathEntityId(entityId: string): string | null {
+  const prefix = 'map-mission-path-'
+  if (!entityId.startsWith(prefix)) return null
+  return entityId.slice(prefix.length)
+}
+
+export function parseMissionSegmentEntityId(
+  entityId: string,
+): { uasInstanceId: string; segmentIndex: number; chunkIndex?: number } | null {
+  const pickPrefix = 'map-mission-pick-'
+  if (entityId.startsWith(pickPrefix)) {
+    const rest = entityId.slice(pickPrefix.length)
+    const dash = rest.lastIndexOf('-')
+    if (dash <= 0) return null
+    const segmentIndex = Number.parseInt(rest.slice(dash + 1), 10)
+    if (!Number.isFinite(segmentIndex)) return null
+    return { uasInstanceId: rest.slice(0, dash), segmentIndex }
+  }
+
+  const prefix = 'map-mission-seg-'
+  if (!entityId.startsWith(prefix)) return null
+  const rest = entityId.slice(prefix.length)
+  const lastDash = rest.lastIndexOf('-')
+  if (lastDash <= 0) return null
+  const lastNum = Number.parseInt(rest.slice(lastDash + 1), 10)
+  if (!Number.isFinite(lastNum)) return null
+  const beforeLast = rest.slice(0, lastDash)
+  const secondLastDash = beforeLast.lastIndexOf('-')
+  if (secondLastDash <= 0) {
+    return { uasInstanceId: beforeLast, segmentIndex: lastNum }
+  }
+  const secondNum = Number.parseInt(beforeLast.slice(secondLastDash + 1), 10)
+  if (Number.isFinite(secondNum)) {
+    return {
+      uasInstanceId: beforeLast.slice(0, secondLastDash),
+      segmentIndex: secondNum,
+      chunkIndex: lastNum,
+    }
+  }
+  return { uasInstanceId: beforeLast, segmentIndex: lastNum }
 }
 
 export function missionWaypointEntityId(uasInstanceId: string, waypointId: string): string {

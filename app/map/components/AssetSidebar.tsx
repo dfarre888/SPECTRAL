@@ -48,6 +48,7 @@ import type {
   PlacedRadar,
   PlacedUas,
   PlacementMode,
+  MissionRouteObjective,
 } from '@/lib/map/types'
 import { cn } from '@/lib/utils'
 
@@ -63,10 +64,10 @@ interface AssetSidebarProps {
   onSelectCuas: (asset: MapCuasAsset) => void
   onPlaceLoiter: (uas: PlacedUas) => void
   onClearLoiter: (uasInstanceId: string) => void
-  onReplanMission?: (uasInstanceId: string) => void
+  onReplanMission?: (uasInstanceId: string, options?: { clearManualOverride?: boolean }) => void
   onClearMission?: (uasInstanceId: string) => void
   onMissionEmcon?: (uasInstanceId: string, emcon: boolean) => void
-  onMissionRouteObjective?: (uasInstanceId: string, objective: 'pd' | 'pk') => void
+  onMissionRouteObjective?: (uasInstanceId: string, objective: MissionRouteObjective) => void
   rcsOverrides?: Record<string, RcsFacets>
   onRcsChange?: (instanceId: string, facets: RcsFacets | undefined) => void
   onRemoveUas: (instanceId: string) => void

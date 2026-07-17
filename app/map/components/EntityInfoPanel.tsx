@@ -3,13 +3,17 @@
 import { X } from 'lucide-react'
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { formatCoord, formatDiscAltitude, formatHHMM } from '@/lib/map/format'
-import type { PlacedUas } from '@/lib/map/types'
+import { computeMissionFlightDetails } from '@/lib/map/mission-flight-details'
+import type { PlacedCuas, PlacedEffector, PlacedRadar, PlacedUas } from '@/lib/map/types'
 
 interface EntityInfoPanelProps {
   uas: PlacedUas
   screenX: number
   screenY: number
   onClose: () => void
+  placedCuas?: PlacedCuas[]
+  placedRadars?: PlacedRadar[]
+  placedEffectors?: PlacedEffector[]
 }
 
 export function EntityInfoPanel({
@@ -17,7 +21,11 @@ export function EntityInfoPanel({
   screenX,
   screenY,
   onClose,
+  placedCuas = [],
+  placedRadars = [],
+  placedEffectors = [],
 }: EntityInfoPanelProps) {
+  const flight = computeMissionFlightDetails(uas, placedCuas, placedRadars, placedEffectors)
   return (
     <div
       className="absolute z-20 w-72 rounded-2xl store-panel shadow-xl pointer-events-auto backdrop-blur-sm"
@@ -63,9 +71,22 @@ export function EntityInfoPanel({
             <DataRow label="Mission" value={uas.mission.goalKind.toUpperCase()} accent />
             <DataRow
               label="Route objective"
-              value={uas.mission.routeObjective === 'pk' ? 'Pk (defeat)' : 'Pd (detection)'}
+              value={
+                uas.mission.routeObjective === 'combined'
+                  ? 'Pk+Pd (combined)'
+                  : uas.mission.routeObjective === 'pk'
+                    ? 'Pk (defeat)'
+                    : 'Pd (detection)'
+              }
             />
             <DataRow label="Path distance" value={`${uas.mission.totalDistance_km.toFixed(1)} km`} />
+            {flight && (
+              <>
+                <DataRow label="Time to target" value={formatHHMM(flight.timeToTarget_min)} accent />
+                <DataRow label="Cruise alt" value={`${flight.cruiseAlt_m} m AMSL`} />
+                <DataRow label="Cruise speed" value={`${flight.avgSpeed_kmh} km/h`} />
+              </>
+            )}
             <DataRow
               label="Max Pd"
               value={`${uas.mission.maxPd_pct}%`}

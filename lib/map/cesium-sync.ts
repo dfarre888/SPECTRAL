@@ -5,7 +5,9 @@ import {
   uniformWallTerrain,
 } from '@/lib/map/envelope-geometry'
 import { formatHHMM } from '@/lib/map/format'
-import { missionWaypointEntityId } from '@/lib/map/mission-path-planner'
+import { missionSegmentChunkEntityId, missionSegmentPickEntityId, missionWaypointEntityId } from '@/lib/map/mission-path-planner'
+import { pathMetricColorHex, subdivideSegmentForDisplay } from '@/lib/map/mission-path-scoring'
+import { MAX_MAP_UAS_DISC_KM } from '@/lib/map/spectra-assets'
 import { TERRAIN_SURFACE_AGL_M, placementNeedsTerrainRefresh } from '@/lib/map/terrain'
 import { PIN_SVG, SHIELD_SVG, UAS_SILHOUETTE_SVG, windArrowSvg } from '@/lib/map/icons'
 import { app6Sidc, app6Label } from '@/lib/map/app6-symbols'
@@ -18,6 +20,7 @@ import {
 } from '@/lib/map/terrain-masking'
 import type { SelectedLaydownItem } from '@/lib/map/laydown-evaluation'
 import { isSameLaydownItem } from '@/lib/map/laydown-evaluation'
+import { haversineM } from '@/lib/propagation/geo'
 import type {
   OverlapVolume,
   PlacedCuas,
@@ -55,6 +58,7 @@ export interface CesiumSyncState {
   maskingPolygons: MaskingPolygon[]
   windByUas: Record<string, WindSample>
   nilWind: boolean
+  flightPathEditActive?: boolean
 }
 
 
@@ -72,6 +76,248 @@ function billboardScale(base: number, selected: boolean): number {
 
 function colour(Cesium: CesiumModule, hex: string, alpha: number) {
   return Cesium.Color.fromCssColorString(hex).withAlpha(alpha)
+}
+
+function readNumericProperty(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (value && typeof (value as { getValue?: () => number }).getValue === 'function') {
+    const n = (value as { getValue: () => number }).getValue()
+    return Number.isFinite(n) ? n : undefined
+  }
+  return undefined
+}
+
+function readStringProperty(value: unknown): string | undefined {
+  if (typeof value === 'string') return value
+  if (value && typeof (value as { getValue?: () => string }).getValue === 'function') {
+    const s = (value as { getValue: () => string }).getValue()
+    return typeof s === 'string' ? s : undefined
+  }
+  return undefined
+}
+
+function readPositionDegrees(
+  Cesium: CesiumModule,
+  position: unknown,
+): { lon: number; lat: number; alt: number } | undefined {
+  if (!position) return undefined
+  const getValue = (position as { getValue?: (time?: unknown) => unknown }).getValue
+  if (typeof getValue !== 'function') return undefined
+  const cartesian = getValue.call(position) as { x: number; y: number; z: number } | undefined
+  if (!cartesian) return undefined
+  const cartographic = Cesium.Cartographic.fromCartesian(cartesian)
+  return {
+    lon: Cesium.Math.toDegrees(cartographic.longitude),
+    lat: Cesium.Math.toDegrees(cartographic.latitude),
+    alt: cartographic.height,
+  }
+}
+
+function positionUnchanged(
+  Cesium: CesiumModule,
+  existing: unknown,
+  lon: number,
+  lat: number,
+  alt: number,
+  epsilon = 1e-6,
+): boolean {
+  const current = readPositionDegrees(Cesium, existing)
+  if (!current) return false
+  return (
+    Math.abs(current.lon - lon) < epsilon &&
+    Math.abs(current.lat - lat) < epsilon &&
+    Math.abs(current.alt - alt) < epsilon
+  )
+}
+
+interface RgbaComponents {
+  red: number
+  green: number
+  blue: number
+  alpha: number
+}
+
+function readRgba(value: unknown): RgbaComponents | undefined {
+  if (!value) return undefined
+  if (typeof (value as RgbaComponents).red === 'number') {
+    const c = value as RgbaComponents
+    return { red: c.red, green: c.green, blue: c.blue, alpha: c.alpha }
+  }
+  const getValue = (value as { getValue?: () => unknown }).getValue
+  if (typeof getValue === 'function') {
+    return readRgba(getValue.call(value))
+  }
+  return undefined
+}
+
+function colorsEqual(a: unknown, b: unknown): boolean {
+  if (a === b) return true
+  const ca = readRgba(a)
+  const cb = readRgba(b)
+  if (!ca || !cb) return false
+  return (
+    Math.abs(ca.red - cb.red) < 1e-6 &&
+    Math.abs(ca.green - cb.green) < 1e-6 &&
+    Math.abs(ca.blue - cb.blue) < 1e-6 &&
+    Math.abs(ca.alpha - cb.alpha) < 1e-6
+  )
+}
+
+function arraysNearEqual(a: number[], b: number[], epsilon = 0.5): boolean {
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i++) {
+    if (Math.abs(a[i] - b[i]) >= epsilon) return false
+  }
+  return true
+}
+
+function wallGraphicsUnchanged(
+  Cesium: CesiumModule,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  existing: any,
+  closedDeg: number[],
+  closedMin: number[],
+  closedMax: number[],
+  sideColor: unknown,
+  outlineColor: unknown,
+): boolean {
+  if (!existing) return false
+  const minH = existing.minimumHeights?.getValue?.() ?? existing.minimumHeights
+  const maxH = existing.maximumHeights?.getValue?.() ?? existing.maximumHeights
+  if (!Array.isArray(minH) || !Array.isArray(maxH)) return false
+  const pos = existing.positions?.getValue?.()
+  if (!pos?.length) return false
+  const first = Cesium.Cartographic.fromCartesian(pos[0])
+  const lon0 = Cesium.Math.toDegrees(first.longitude)
+  const lat0 = Cesium.Math.toDegrees(first.latitude)
+  if (Math.abs(lon0 - closedDeg[0]) > 1e-5 || Math.abs(lat0 - closedDeg[1]) > 1e-5) return false
+  return (
+    arraysNearEqual(minH, closedMin) &&
+    arraysNearEqual(maxH, closedMax) &&
+    colorsEqual(existing.material, sideColor) &&
+    colorsEqual(existing.outlineColor, outlineColor)
+  )
+}
+
+function ellipsoidGraphicsUnchanged(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  existing: any,
+  radius_m: number,
+  material: unknown,
+  outlineColor: unknown,
+): boolean {
+  if (!existing) return false
+  const radii = existing.radii?.getValue?.() ?? existing.radii
+  if (!radii || Math.abs(radii.x - radius_m) > 0.5) return false
+  return colorsEqual(existing.material, material) && colorsEqual(existing.outlineColor, outlineColor)
+}
+
+
+function ellipseGraphicsUnchanged(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  existing: any,
+  semiMajorAxis: number,
+  semiMinorAxis: number,
+  height: number,
+  material: unknown,
+): boolean {
+  if (!existing) return false
+  return (
+    readNumericProperty(existing.semiMajorAxis) === semiMajorAxis &&
+    readNumericProperty(existing.semiMinorAxis) === semiMinorAxis &&
+    readNumericProperty(existing.height) === height &&
+    colorsEqual(existing.material, material)
+  )
+}
+
+function billboardGraphicsUnchanged(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  existing: any,
+  image: string,
+  scale: number,
+  heightReference: number,
+): boolean {
+  if (!existing) return false
+  const hr =
+    typeof existing.heightReference?.getValue === 'function'
+      ? existing.heightReference.getValue()
+      : existing.heightReference
+  return (
+    readStringProperty(existing.image) === image &&
+    readNumericProperty(existing.scale) === scale &&
+    hr === heightReference
+  )
+}
+
+function pointGraphicsUnchanged(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  existing: any,
+  pixelSize: number,
+  color: unknown,
+): boolean {
+  if (!existing) return false
+  return (
+    readNumericProperty(existing.pixelSize) === pixelSize &&
+    colorsEqual(existing.color, color)
+  )
+}
+
+function readPolylinePositions(
+  Cesium: CesiumModule,
+  value: unknown,
+): Array<{ lon: number; lat: number; alt: number }> | undefined {
+  if (!value) return undefined
+  const getValue = (value as { getValue?: () => unknown }).getValue
+  const positions = typeof getValue === 'function' ? getValue.call(value) : value
+  if (!Array.isArray(positions)) return undefined
+  return positions.map((cartesian: { x: number; y: number; z: number }) => {
+    const c = Cesium.Cartographic.fromCartesian(cartesian)
+    return {
+      lon: Cesium.Math.toDegrees(c.longitude),
+      lat: Cesium.Math.toDegrees(c.latitude),
+      alt: c.height,
+    }
+  })
+}
+
+function polylinePositionsEqual(
+  a: Array<{ lon: number; lat: number; alt: number }>,
+  b: Array<{ lon: number; lat: number; alt: number }>,
+  epsilon = 1e-6,
+): boolean {
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i++) {
+    if (
+      Math.abs(a[i].lon - b[i].lon) >= epsilon ||
+      Math.abs(a[i].lat - b[i].lat) >= epsilon ||
+      Math.abs(a[i].alt - b[i].alt) >= epsilon
+    ) {
+      return false
+    }
+  }
+  return true
+}
+
+function polylineGraphicsUnchanged(
+  Cesium: CesiumModule,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  existing: any,
+  positions: Array<{ lon: number; lat: number; alt: number }>,
+  width: number,
+  material: unknown,
+  pickWidth?: number,
+): boolean {
+  if (!existing) return false
+  const existingPositions = readPolylinePositions(Cesium, existing.positions)
+  if (!existingPositions || !polylinePositionsEqual(existingPositions, positions)) return false
+  const existingPickWidth =
+    readNumericProperty(existing.pickWidth) ?? readNumericProperty(existing.width)
+  const nextPickWidth = pickWidth ?? width
+  return (
+    readNumericProperty(existing.width) === width &&
+    existingPickWidth === nextPickWidth &&
+    colorsEqual(existing.material, material)
+  )
 }
 
 function ensureEntity(
@@ -161,9 +407,11 @@ function syncRangeSphere(
   const centreAltM = sphereEpicenterOnTerrainM(terrainAMSL)
 
   const entity = ensureEntity(viewer, id, () => new Cesium.Entity({ id }))
-  entity.position = new Cesium.ConstantPositionProperty(
-    Cesium.Cartesian3.fromDegrees(lon, lat, centreAltM)
-  )
+  if (!positionUnchanged(Cesium, entity.position, lon, lat, centreAltM)) {
+    entity.position = new Cesium.ConstantPositionProperty(
+      Cesium.Cartesian3.fromDegrees(lon, lat, centreAltM),
+    )
+  }
   entity.billboard = undefined
   entity.label = undefined
   entity.polygon = undefined
@@ -171,18 +419,20 @@ function syncRangeSphere(
   entity.ellipse = undefined
   entity.wall = undefined
   // Upper hemisphere only (local +Z) — epicenter on terrain; no submerged half, no vertical walls.
-  entity.ellipsoid = new Cesium.EllipsoidGraphics({
-    radii: new Cesium.Cartesian3(radius_m, radius_m, radius_m),
-    minimumCone: 0,
-    maximumCone: Cesium.Math.PI_OVER_TWO,
-    material: fillColor,
-    outline: true,
-    outlineColor,
-    outlineWidth: style.outlineWidth ?? 2,
-    slicePartitions: 32,
-    stackPartitions: 16,
-    ...(style.shadows !== undefined ? { shadows: style.shadows } : {}),
-  })
+  if (!ellipsoidGraphicsUnchanged(entity.ellipsoid, radius_m, fillColor, outlineColor)) {
+    entity.ellipsoid = new Cesium.EllipsoidGraphics({
+      radii: new Cesium.Cartesian3(radius_m, radius_m, radius_m),
+      minimumCone: 0,
+      maximumCone: Cesium.Math.PI_OVER_TWO,
+      material: fillColor,
+      outline: true,
+      outlineColor,
+      outlineWidth: style.outlineWidth ?? 2,
+      slicePartitions: 32,
+      stackPartitions: 16,
+      ...(style.shadows !== undefined ? { shadows: style.shadows } : {}),
+    })
+  }
 }
 
 const SHIELD_GREY = '#64748B'
@@ -354,14 +604,26 @@ function syncTerrainEnvelopeWall(
   entity.polyline = undefined
   entity.ellipse = undefined
   entity.ellipsoid = undefined
-  entity.wall = new Cesium.WallGraphics({
-    positions: Cesium.Cartesian3.fromDegreesArray(closedDeg),
-    minimumHeights: closedMin,
-    maximumHeights: closedMax,
-    material: sideColor,
-    outline: true,
-    outlineColor,
-  })
+  if (
+    !wallGraphicsUnchanged(
+      Cesium,
+      entity.wall,
+      closedDeg,
+      closedMin,
+      closedMax,
+      sideColor,
+      outlineColor,
+    )
+  ) {
+    entity.wall = new Cesium.WallGraphics({
+      positions: Cesium.Cartesian3.fromDegreesArray(closedDeg),
+      minimumHeights: closedMin,
+      maximumHeights: closedMax,
+      material: sideColor,
+      outline: true,
+      outlineColor,
+    })
+  }
 }
 
 /** Build a horizontal ring polyline at fixed MSL (reliable fallback for combat discs). */
@@ -414,6 +676,9 @@ function syncRangeDisc(
 ) {
   const safeAlt = Number.isFinite(discAltitudeMSL) ? discAltitudeMSL : 0
   const safeRadius = Math.max(100, radius_m)
+  const maxDisc_m = MAX_MAP_UAS_DISC_KM * 1000
+  const displayRadius_m = Math.min(safeRadius, maxDisc_m)
+  const skipWall = safeRadius > maxDisc_m
 
   const fillId = `map-uas-disc-${instanceId}${suffix}`
   const ringId = `map-uas-disc-ring-${instanceId}${suffix}`
@@ -425,44 +690,61 @@ function syncRangeDisc(
   const outlineColor = colour(Cesium, style.outlineHex, style.outlineAlpha)
   const sideAlpha = style.sideAlpha ?? Math.min(0.45, style.fillAlpha + 0.12)
 
-  syncTerrainEnvelopeWall(
-    Cesium,
-    viewer,
-    keep,
-    wallId,
-    lon,
-    lat,
-    safeRadius,
-    safeAlt,
-    suffix === '' ? wallTerrain_m : undefined,
-    terrainAMSL,
-    {
-      fillHex: style.fillHex,
-      fillAlpha: sideAlpha,
-      outlineHex: style.outlineHex,
-      outlineAlpha: style.outlineAlpha,
-    },
-  )
+  if (!skipWall) {
+    syncTerrainEnvelopeWall(
+      Cesium,
+      viewer,
+      keep,
+      wallId,
+      lon,
+      lat,
+      displayRadius_m,
+      safeAlt,
+      suffix === '' ? wallTerrain_m : undefined,
+      terrainAMSL,
+      {
+        fillHex: style.fillHex,
+        fillAlpha: sideAlpha,
+        outlineHex: style.outlineHex,
+        outlineAlpha: style.outlineAlpha,
+      },
+    )
+  } else {
+    const staleWall = viewer.entities.getById(wallId)
+    if (staleWall) viewer.entities.remove(staleWall)
+  }
 
   const fillEntity = ensureEntity(viewer, fillId, () => new Cesium.Entity({ id: fillId }))
-  fillEntity.position = new Cesium.ConstantPositionProperty(
-    Cesium.Cartesian3.fromDegrees(lon, lat),
-  )
+  if (!positionUnchanged(Cesium, fillEntity.position, lon, lat, 0)) {
+    fillEntity.position = new Cesium.ConstantPositionProperty(
+      Cesium.Cartesian3.fromDegrees(lon, lat, 0),
+    )
+  }
   fillEntity.billboard = undefined
   fillEntity.label = undefined
   fillEntity.polygon = undefined
   fillEntity.polyline = undefined
   fillEntity.ellipsoid = undefined
   fillEntity.wall = undefined
-  fillEntity.ellipse = new Cesium.EllipseGraphics({
-    semiMajorAxis: safeRadius,
-    semiMinorAxis: safeRadius,
-    height: safeAlt,
-    heightReference: Cesium.HeightReference.NONE,
-    fill: true,
-    material: fillColor,
-    outline: false,
-  })
+  if (
+    !ellipseGraphicsUnchanged(
+      fillEntity.ellipse,
+      displayRadius_m,
+      displayRadius_m,
+      safeAlt,
+      fillColor,
+    )
+  ) {
+    fillEntity.ellipse = new Cesium.EllipseGraphics({
+      semiMajorAxis: displayRadius_m,
+      semiMinorAxis: displayRadius_m,
+      height: safeAlt,
+      heightReference: Cesium.HeightReference.NONE,
+      fill: true,
+      material: fillColor,
+      outline: false,
+    })
+  }
 
   const ringEntity = ensureEntity(viewer, ringId, () => new Cesium.Entity({ id: ringId }))
   ringEntity.position = undefined
@@ -472,11 +754,24 @@ function syncRangeDisc(
   ringEntity.ellipse = undefined
   ringEntity.ellipsoid = undefined
   ringEntity.wall = undefined
-  ringEntity.polyline = new Cesium.PolylineGraphics({
-    positions: discRingPositions(Cesium, lon, lat, safeAlt, safeRadius),
-    width: style.outlineWidth ?? 3,
-    material: outlineColor,
-  })
+  const ringPositions = discRingPositions(Cesium, lon, lat, safeAlt, displayRadius_m)
+  const existingRing = ringEntity.polyline?.positions?.getValue?.()
+  const ringChanged =
+    !existingRing ||
+    existingRing.length !== ringPositions.length ||
+    existingRing.some(
+      (p: { x: number; y: number; z: number }, i: number) =>
+        Math.abs(p.x - ringPositions[i].x) > 0.5 ||
+        Math.abs(p.y - ringPositions[i].y) > 0.5 ||
+        Math.abs(p.z - ringPositions[i].z) > 0.5,
+    )
+  if (ringChanged) {
+    ringEntity.polyline = new Cesium.PolylineGraphics({
+      positions: ringPositions,
+      width: style.outlineWidth ?? 3,
+      material: outlineColor,
+    })
+  }
 }
 
 export function syncMapEntities(
@@ -546,39 +841,65 @@ export function syncMapEntities(
       new Cesium.Entity({ id, name: uas.asset.name })
     )
 
-    entity.position = new Cesium.ConstantPositionProperty(
-      Cesium.Cartesian3.fromDegrees(uas.lon, uas.lat, 0),
-    )
+    const startAlt = uas.mission?.waypoints[0]?.alt_m ?? uas.terrainAMSL + TERRAIN_SURFACE_AGL_M
+    const hasMissionPath = Boolean(uas.mission && uas.mission.waypoints.length >= 2)
+    const heightRef = hasMissionPath
+      ? Cesium.HeightReference.NONE
+      : Cesium.HeightReference.CLAMP_TO_GROUND
+    const bbScale = billboardScale(1.2, isSelectedEntity(state, 'uas', uas.instanceId))
+
+    const targetAlt = hasMissionPath ? startAlt : 0
+    if (!positionUnchanged(Cesium, entity.position, uas.lon, uas.lat, targetAlt)) {
+      entity.position = new Cesium.ConstantPositionProperty(
+        Cesium.Cartesian3.fromDegrees(uas.lon, uas.lat, targetAlt),
+      )
+    }
     entity.cylinder = undefined
     entity.ellipsoid = undefined
     entity.polyline = undefined
-    entity.billboard = new Cesium.BillboardGraphics({
-      image: UAS_SILHOUETTE_SVG,
-      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-      scale: billboardScale(1.2, isSelectedEntity(state, 'uas', uas.instanceId)),
-      disableDepthTestDistance: Number.POSITIVE_INFINITY,
-    })
+    if (
+      !billboardGraphicsUnchanged(
+        entity.billboard,
+        UAS_SILHOUETTE_SVG,
+        bbScale,
+        heightRef,
+      )
+    ) {
+      entity.billboard = new Cesium.BillboardGraphics({
+        image: UAS_SILHOUETTE_SVG,
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        heightReference: heightRef,
+        scale: bbScale,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      })
+    }
 
-    entity.label = new Cesium.LabelGraphics({
-      text: app6Label(uas.asset.name, app6Sidc('uas', uas.asset.side === 'blue' ? 'friendly' : 'hostile')) + '\n' + `${uas.asset.name}\n${rangeLabel} · ${formatHHMM(uas.annotationTime_min)}`,
-      font: '12px JetBrains Mono',
-      fillColor: Cesium.Color.WHITE,
-      outlineColor: Cesium.Color.BLACK,
-      outlineWidth: 2,
-      style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-      pixelOffset: new Cesium.Cartesian2(0, -36),
-      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-      disableDepthTestDistance: Number.POSITIVE_INFINITY,
-    })
+    const labelText =
+      app6Label(uas.asset.name, app6Sidc('uas', uas.asset.side === 'blue' ? 'friendly' : 'hostile')) +
+      '\n' +
+      `${uas.asset.name}\n${rangeLabel} · ${formatHHMM(uas.annotationTime_min)}`
+    const existingLabelText = entity.label?.text?.getValue?.() ?? entity.label?.text
+    if (existingLabelText !== labelText || entity.label?.heightReference?.getValue?.() !== heightRef) {
+      entity.label = new Cesium.LabelGraphics({
+        text: labelText,
+        font: '12px JetBrains Mono',
+        fillColor: Cesium.Color.WHITE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        pixelOffset: new Cesium.Cartesian2(0, -36),
+        heightReference: heightRef,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      })
+    }
 
     if (uas.loiter) {
       syncLoiterGraphics(Cesium, viewer, uas, keep)
     }
 
     if (uas.mission) {
-      syncMissionPathGraphics(Cesium, viewer, uas, keep)
+      syncMissionPathGraphics(Cesium, viewer, uas, state, keep)
     }
 
     if (!state.nilWind && state.windByUas[uas.instanceId]) {
@@ -1003,48 +1324,185 @@ function syncMissionPathGraphics(
   Cesium: CesiumModule,
   viewer: CesiumViewer,
   uas: PlacedUas,
+  state: CesiumSyncState,
   keep: Set<string>,
 ) {
   if (!uas.mission) return
   const mission = uas.mission
   const base = uas.instanceId
-  const positions: number[] = []
-  for (const wp of mission.waypoints) {
-    positions.push(wp.lon, wp.lat, wp.alt_m)
+  const objective = mission.routeObjective ?? 'pd'
+  const scoringOptions = { heading_deg: 0 }
+
+  for (let i = 0; i < mission.waypoints.length - 1; i++) {
+    const prev = mission.waypoints[i]
+    const cur = mission.waypoints[i + 1]
+    const terrain = (prev.terrainAMSL + cur.terrainAMSL) / 2
+    const chunks = subdivideSegmentForDisplay(
+      prev.lon,
+      prev.lat,
+      cur.lon,
+      cur.lat,
+      prev.alt_m,
+      terrain,
+      uas.asset,
+      state.placedCuas,
+      state.placedRadars,
+      state.placedEffectors,
+      state.overlaps,
+      mission.emcon,
+      objective,
+      scoringOptions,
+      cur.alt_m,
+    )
+
+    for (let c = 0; c < chunks.length; c++) {
+      const chunk = chunks[c]
+      const segId = missionSegmentChunkEntityId(base, i, c)
+      keep.add(segId)
+      const chunkMaterial = colour(Cesium, pathMetricColorHex(chunk.metricPct), 0.95)
+      const chunkPositions = [
+        { lon: chunk.lon1, lat: chunk.lat1, alt: chunk.alt_m },
+        {
+          lon: chunk.lon2,
+          lat: chunk.lat2,
+          alt: chunk.alt2_m ?? chunk.alt_m,
+        },
+      ]
+      const pathWidth = state.flightPathEditActive ? 12 : 7
+      const pickWidth = state.flightPathEditActive ? 56 : 14
+      const segEntity = ensureEntity(viewer, segId, () => new Cesium.Entity({ id: segId, name: 'mission-segment' }))
+      segEntity.position = undefined
+      if (
+        !polylineGraphicsUnchanged(
+          Cesium,
+          segEntity.polyline,
+          chunkPositions,
+          pathWidth,
+          chunkMaterial,
+          pickWidth,
+        )
+      ) {
+        segEntity.polyline = new Cesium.PolylineGraphics({
+          positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+            chunk.lon1,
+            chunk.lat1,
+            chunk.alt_m,
+            chunk.lon2,
+            chunk.lat2,
+            chunk.alt2_m ?? chunk.alt_m,
+          ]),
+          width: pathWidth,
+          pickWidth,
+          material: chunkMaterial,
+        })
+      }
+    }
+
+    if (state.flightPathEditActive) {
+      const pickId = missionSegmentPickEntityId(base, i)
+      keep.add(pickId)
+      const pickPositions = [
+        { lon: prev.lon, lat: prev.lat, alt: prev.alt_m },
+        { lon: cur.lon, lat: cur.lat, alt: cur.alt_m },
+      ]
+      const pickMaterial = colour(Cesium, '#FFFFFF', 0.04)
+      const pickEntity = ensureEntity(viewer, pickId, () => new Cesium.Entity({ id: pickId, name: 'mission-segment-pick' }))
+      pickEntity.position = undefined
+      if (
+        !polylineGraphicsUnchanged(Cesium, pickEntity.polyline, pickPositions, 2, pickMaterial, 72)
+      ) {
+        pickEntity.polyline = new Cesium.PolylineGraphics({
+          positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+            prev.lon,
+            prev.lat,
+            prev.alt_m,
+            cur.lon,
+            cur.lat,
+            cur.alt_m,
+          ]),
+          width: 2,
+          pickWidth: 72,
+          material: pickMaterial,
+        })
+      }
+    }
   }
-  const pathId = `map-mission-path-${base}`
-  keep.add(pathId)
-  const pathEntity = ensureEntity(viewer, pathId, () => new Cesium.Entity({ id: pathId }))
-  pathEntity.polyline = new Cesium.PolylineGraphics({
-    positions: Cesium.Cartesian3.fromDegreesArrayHeights(positions),
-    width: 3,
-    material: colour(Cesium, ORANGE, 0.95),
-  })
 
   const goalId = `map-mission-goal-${base}`
   keep.add(goalId)
   const goal = ensureEntity(viewer, goalId, () => new Cesium.Entity({ id: goalId }))
-  goal.position = new Cesium.ConstantPositionProperty(
-    Cesium.Cartesian3.fromDegrees(mission.goalLon, mission.goalLat, mission.goalTerrainAMSL + 2),
-  )
-  goal.billboard = new Cesium.BillboardGraphics({
-    image: PIN_SVG,
-    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-    disableDepthTestDistance: Number.POSITIVE_INFINITY,
-  })
+  if (!positionUnchanged(Cesium, goal.position, mission.goalLon, mission.goalLat, 0)) {
+    goal.position = new Cesium.ConstantPositionProperty(
+      Cesium.Cartesian3.fromDegrees(mission.goalLon, mission.goalLat, 0),
+    )
+  }
+  if (
+    !billboardGraphicsUnchanged(
+      goal.billboard,
+      PIN_SVG,
+      1,
+      Cesium.HeightReference.CLAMP_TO_GROUND,
+    )
+  ) {
+    goal.billboard = new Cesium.BillboardGraphics({
+      image: PIN_SVG,
+      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    })
+  }
 
   for (const wp of mission.waypoints) {
+    if (wp.kind === 'start' && haversineM(uas.lat, uas.lon, wp.lat, wp.lon) < 80) continue
+    if (wp.kind === 'goal') continue
+
     const wpId = missionWaypointEntityId(base, wp.id)
     keep.add(wpId)
     const entity = ensureEntity(viewer, wpId, () => new Cesium.Entity({ id: wpId, name: wp.kind }))
-    entity.position = new Cesium.ConstantPositionProperty(Cesium.Cartesian3.fromDegrees(wp.lon, wp.lat, wp.alt_m))
-    entity.point = new Cesium.PointGraphics({
-      pixelSize: 10,
-      color: colour(Cesium, CYAN, 0.95),
-      outlineColor: Cesium.Color.BLACK,
-      outlineWidth: 2,
-      disableDepthTestDistance: Number.POSITIVE_INFINITY,
-    })
+    if (!positionUnchanged(Cesium, entity.position, wp.lon, wp.lat, wp.alt_m)) {
+      entity.position = new Cesium.ConstantPositionProperty(
+        Cesium.Cartesian3.fromDegrees(wp.lon, wp.lat, wp.alt_m),
+      )
+    }
+
+    if (wp.kind === 'detour') {
+      const detourColor = colour(Cesium, ORANGE, 0.95)
+      const detourSize = state.flightPathEditActive ? 18 : 14
+      if (!pointGraphicsUnchanged(entity.point, detourSize, detourColor)) {
+        entity.point = new Cesium.PointGraphics({
+          pixelSize: detourSize,
+          color: detourColor,
+          outlineColor: Cesium.Color.BLACK,
+          outlineWidth: 2,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        })
+      }
+      const existingDetourLabel = readStringProperty(entity.label?.text)
+      if (existingDetourLabel !== 'D') {
+        entity.label = new Cesium.LabelGraphics({
+          text: 'D',
+          font: '11px JetBrains Mono',
+          fillColor: colour(Cesium, ORANGE, 1),
+          outlineColor: Cesium.Color.BLACK,
+          outlineWidth: 2,
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          pixelOffset: new Cesium.Cartesian2(0, -18),
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        })
+      }
+    } else {
+      const transitColor = colour(Cesium, CYAN, 0.95)
+      const transitSize = state.flightPathEditActive ? 14 : 10
+      if (!pointGraphicsUnchanged(entity.point, transitSize, transitColor)) {
+        entity.point = new Cesium.PointGraphics({
+          pixelSize: transitSize,
+          color: transitColor,
+          outlineColor: Cesium.Color.BLACK,
+          outlineWidth: 2,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        })
+      }
+      entity.label = undefined
+    }
   }
 }

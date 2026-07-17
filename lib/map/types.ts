@@ -1,3 +1,4 @@
+import type { PathSegmentScore } from '@/lib/map/mission-path-scoring'
 import type { PlatformCategory, PlatformSide } from '@/lib/types'
 import type { EffectorTier, EffectType } from '@/lib/spectrum/effector-types'
 import type { RadarRole } from '@/lib/spectrum/radar-types'
@@ -62,6 +63,8 @@ export interface MapEffectorAsset {
   engagement_min_km: number
   /** Tactical globe dome radius (capped — sidebar shows engagement_max_km). */
   engagement_dome_km: number
+  /** Assessed Pk (%), from effector seed pk_estimate. */
+  pk_estimate_pct: number
   alt_min_km: number
   alt_max_km: number
   cueing_radar_ids: string[]
@@ -109,8 +112,8 @@ export interface MissionWaypoint {
   kind: 'start' | 'transit' | 'detour' | 'terminal' | 'goal'
 }
 
-/** Minimise C-UAS Pk exposure vs radar detection (Pd) exposure. */
-export type MissionRouteObjective = 'pk' | 'pd'
+/** Minimise C-UAS Pk exposure vs radar detection (Pd) exposure vs both. */
+export type MissionRouteObjective = 'pk' | 'pd' | 'combined'
 
 export interface MissionPlan {
   goalKind: 'target' | 'aoi'
@@ -134,6 +137,8 @@ export interface MissionPlan {
   /** True when max segment Pd ≥ 25%. */
   pdThresholdExceeded: boolean
   pathMode: 'hard-avoid' | 'soft-minimize' | 'optimized'
+  /** Per-leg Pk/Pd scores for path heatmap rendering. */
+  segmentScores?: PathSegmentScore[]
   updatedAt: string
 }
 

@@ -20,6 +20,7 @@ import {
   type TerrainHeightUpdate,
 } from '@/lib/map/terrain'
 import { formatCoord } from '@/lib/map/format'
+import { pickEntityIdAt, uasInstanceFromMissionEntity } from '@/lib/map/cesium-pick'
 import { parseEntityLaydownPick, type SelectedLaydownItem } from '@/lib/map/laydown-evaluation'
 import { usePlatformDrag } from '@/app/map/hooks/usePlatformDrag'
 import { usePlatformContextMenu, type PlatformContextTarget } from '@/app/map/hooks/usePlatformContextMenu'
@@ -63,6 +64,9 @@ interface CesiumMapPanelProps {
   setPlacedCuas: React.Dispatch<React.SetStateAction<PlacedCuas[]>>
   onPlatformContextMenu: (target: PlatformContextTarget | null) => void
   onWaypointContextMenu: (target: WaypointContextTarget | null) => void
+  onAddWaypointOnPath?: (uasInstanceId: string, lon: number, lat: number, segmentIndex: number) => void
+  flightPathEditActive?: boolean
+  onWaypointDragEnd?: (uasInstanceId: string, waypointId: string, lon: number, lat: number) => void | Promise<void>
 }
 
 export default function CesiumMapPanel({
@@ -92,6 +96,9 @@ export default function CesiumMapPanel({
   setPlacedCuas,
   onPlatformContextMenu,
   onWaypointContextMenu,
+  onAddWaypointOnPath,
+  flightPathEditActive = false,
+  onWaypointDragEnd,
 }: CesiumMapPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const viewerRef = useRef<CesiumViewer | null>(null)
@@ -112,11 +119,14 @@ export default function CesiumMapPanel({
   const onPlatformContextMenuRef = useRef(onPlatformContextMenu)
   const onWaypointContextMenuRef = useRef(onWaypointContextMenu)
   const onSelectPlacedItemRef = useRef(onSelectPlacedItem)
+  const onAddWaypointOnPathRef = useRef(onAddWaypointOnPath)
   const placedUasRef = useRef(placedUas)
   const placedCuasRef = useRef(placedCuas)
   const placedRadarsRef = useRef(placedRadars)
   const placedEffectorsRef = useRef(placedEffectors)
   const placementModeRef = useRef(placementMode)
+  const flightPathEditRef = useRef(flightPathEditActive)
+  flightPathEditRef.current = flightPathEditActive
   onCesiumReadyRef.current = onCesiumReady
   onGlobeClickRef.current = onGlobeClick
   onCursorMoveRef.current = onCursorMove
@@ -126,23 +136,48 @@ export default function CesiumMapPanel({
   onPlatformContextMenuRef.current = onPlatformContextMenu
   onWaypointContextMenuRef.current = onWaypointContextMenu
   onSelectPlacedItemRef.current = onSelectPlacedItem
+  onAddWaypointOnPathRef.current = onAddWaypointOnPath
   placedUasRef.current = placedUas
   placedCuasRef.current = placedCuas
   placedRadarsRef.current = placedRadars
   placedEffectorsRef.current = placedEffectors
   placementModeRef.current = placementMode
 
-  usePlatformDrag(cesiumReady, viewerRef, cesiumRef, terrainRef, placementModeRef, setPlacedUas, setPlacedCuas)
+  const nilWindRef = useRef(nilWind)
+  nilWindRef.current = nilWind
+
+  usePlatformDrag(
+    cesiumReady,
+    viewerRef,
+    cesiumRef,
+    terrainRef,
+    placementModeRef,
+    flightPathEditRef,
+    placedUasRef,
+    nilWindRef,
+    setPlacedUas,
+    setPlacedCuas,
+    onWaypointDragEnd,
+  )
 
   usePlatformContextMenu(
     cesiumReady,
     viewerRef,
     cesiumRef,
     placementModeRef,
+    flightPathEditRef,
     placedUasRef,
     placedCuasRef,
     (target) => onPlatformContextMenuRef.current(target),
     (target) => onWaypointContextMenuRef.current(target),
+    (target) => {
+      void onAddWaypointOnPathRef.current?.(
+        target.uasInstanceId,
+        target.lon,
+        target.lat,
+        target.segmentIndex,
+      )
+    },
   )
 
   const stalePlacementCount =
@@ -277,9 +312,19 @@ export default function CesiumMapPanel({
       handler.setInputAction(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (click: any) => {
-          const pickedEntity = viewer.scene.pick(click.position)
-          const entityId = pickedEntity?.id?.id ?? pickedEntity?.id
-          if (typeof entityId === 'string') {
+          const entityId = pickEntityIdAt(viewer, click.position, {
+            preferMission: flightPathEditRef.current,
+            Cesium,
+            placedUas: placedUasRef.current,
+          })
+          if (entityId) {
+            if (flightPathEditRef.current) {
+              const missionOwner = uasInstanceFromMissionEntity(entityId)
+              if (missionOwner) {
+                onSelectPlacedItemRef.current?.({ kind: 'uas', instanceId: missionOwner })
+                return
+              }
+            }
             const laydownPick = parseEntityLaydownPick(entityId)
             if (laydownPick) {
               onSelectPlacedItemRef.current?.(laydownPick)
@@ -425,6 +470,7 @@ export default function CesiumMapPanel({
       maskingPolygons,
       windByUas,
       nilWind,
+      flightPathEditActive,
     }
     syncMapEntities(Cesium, viewer, state)
 
@@ -458,6 +504,7 @@ export default function CesiumMapPanel({
     buildingFootprints,
     windByUas,
     nilWind,
+    flightPathEditActive,
     terrainEpoch,
   ])
 

@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest'
 import {
   collectPdThreats,
   estimatePdAtPoint,
+  pathMetricColorHex,
   scorePathSegment,
+  subdivideSegmentForDisplay,
 } from '@/lib/map/mission-path-scoring'
-import type { MapUasAsset, PlacedRadar } from '@/lib/map/types'
+import type { MapEffectorAsset, MapUasAsset, PlacedEffector, PlacedRadar } from '@/lib/map/types'
 
 const fpvAsset: MapUasAsset = {
   id: 'fpv-test', name: 'FPV Test', slug: 'fpv-test', category: 'FPV', categoryLabel: 'FPV',
@@ -53,10 +55,57 @@ describe('mission-path-scoring', () => {
 
   it('scorePathSegment integrates pd exposure along segment', () => {
     const score = scorePathSegment(
-      55.0, 26.0, 55.01, 26.0, 120, 50, fpvAsset, [], [giraffeRadar], undefined, false,
+      55.0, 26.0, 55.01, 26.0, 120, 50, fpvAsset, [], [giraffeRadar], [], undefined, false,
     )
     expect(score.distance_km).toBeGreaterThan(0)
     expect(score.maxPd_pct).toBeGreaterThan(0)
     expect(score.pdExposure).toBeGreaterThan(0)
+  })
+
+  it('pathMetricColorHex escalates with risk', () => {
+    expect(pathMetricColorHex(5)).toBe('#22C55E')
+    expect(pathMetricColorHex(80)).toBe('#EF4444')
+  })
+
+  it('subdivideSegmentForDisplay varies metric along segment when threat at start only', () => {
+    const effectorAsset: MapEffectorAsset = {
+      id: 'eff-iron-beam',
+      name: 'Iron Beam',
+      side: 'blue',
+      tier: 'c_uas',
+      tierLabel: 'C-UAS',
+      effect: 'laser',
+      engagement_max_km: 2,
+      engagement_min_km: 0,
+      engagement_dome_km: 2,
+      pk_estimate_pct: 90,
+      alt_min_km: 0,
+      alt_max_km: 5,
+      cueing_radar_ids: [],
+      linkedRadars: [],
+      image_url: null,
+    }
+    const effector: PlacedEffector = {
+      instanceId: 'eff-1',
+      asset: effectorAsset,
+      lon: 55.0,
+      lat: 26.0,
+      terrainAMSL: 10,
+    }
+    const loiterAsset: MapUasAsset = {
+      id: 'shahed-136', name: 'Shahed-136', slug: 'shahed-136', category: 'loitering_munition',
+      categoryLabel: 'OWA', image_url: null, max_altitude_agl_m: 4000, altitude_reference: 'AGL',
+      max_range_km: 50, max_speed_kmh: 185, endurance_min: 120, climb_rate_mpm: 300,
+    }
+    const chunks = subdivideSegmentForDisplay(
+      55.0, 26.0, 55.04, 26.0, 500, 10, loiterAsset, [], [], [effector], undefined, false, 'pk',
+      undefined, 500, 400,
+    )
+    expect(chunks.length).toBeGreaterThan(2)
+    const first = chunks[0].metricPct
+    const last = chunks[chunks.length - 1].metricPct
+    expect(first).toBeGreaterThan(last)
+    expect(first).toBeGreaterThanOrEqual(80)
+    expect(last).toBeLessThan(30)
   })
 })

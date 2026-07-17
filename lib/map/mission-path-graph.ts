@@ -1,6 +1,7 @@
 import { destinationPointM, haversineM } from '@/lib/propagation/geo'
 import type { MapUasAsset, OverlapVolume, PlacedCuas, PlacedEffector, PlacedRadar } from '@/lib/map/types'
 import {
+  collectCombinedThreats,
   collectPdThreats,
   collectPkThreats,
   type PathSegmentScore,
@@ -14,7 +15,19 @@ import {
 export const DETOUR_BUFFER_M = 150
 export const MAX_GRAPH_NODES = 64
 
-export type RouteObjective = 'pk' | 'pd'
+export type RouteObjective = 'pk' | 'pd' | 'combined'
+
+function routingHardThreats(
+  objective: RouteObjective,
+  placedCuas: PlacedCuas[],
+  placedRadars: PlacedRadar[],
+  placedEffectors: PlacedEffector[],
+  asset: MapUasAsset,
+): ThreatCircle[] {
+  if (objective === 'pk') return collectPkThreats(placedCuas, placedEffectors)
+  if (objective === 'pd') return collectPdThreats(placedRadars, asset, placedEffectors)
+  return collectCombinedThreats(placedCuas, placedRadars, placedEffectors, asset)
+}
 
 export interface GraphPoint {
   lon: number
@@ -68,7 +81,7 @@ export function segmentIntersectsThreat(
   return distPointToSegmentM(threat.lon, threat.lat, lon1, lat1, lon2, lat2) < threat.radius_m
 }
 
-function segmentIntersectsAny(
+export function segmentIntersectsAny(
   lon1: number,
   lat1: number,
   lon2: number,
@@ -136,6 +149,33 @@ function flankCandidates(
   return points
 }
 
+/** Rim samples for large engagement domes — perpendicular flanks fail when domes span the chord. */
+function threatRimWaypoints(threat: ThreatCircle, segments = 12): GraphPoint[] {
+  const offset = threat.radius_m + DETOUR_BUFFER_M
+  const points: GraphPoint[] = []
+  for (let i = 0; i < segments; i++) {
+    const brg = (360 / segments) * i
+    points.push(destinationPointM(threat.lat, threat.lon, offset, brg))
+  }
+  return points
+}
+
+function externalTangentPoints(from: GraphPoint, threat: ThreatCircle): GraphPoint[] {
+  const dist = haversineM(from.lat, from.lon, threat.lat, threat.lon)
+  const safeRadius = threat.radius_m + DETOUR_BUFFER_M
+  if (dist <= safeRadius) {
+    const brg = bearingDeg(threat.lat, threat.lon, from.lat, from.lon)
+    return [destinationPointM(threat.lat, threat.lon, safeRadius, brg)]
+  }
+  const brgCenter = bearingDeg(from.lat, from.lon, threat.lat, threat.lon)
+  const alphaDeg = (Math.asin(Math.min(1, safeRadius / dist)) * 180) / Math.PI
+  const distTangent = Math.sqrt(dist * dist - safeRadius * safeRadius)
+  return [
+    destinationPointM(from.lat, from.lon, distTangent, (brgCenter + alphaDeg + 360) % 360),
+    destinationPointM(from.lat, from.lon, distTangent, (brgCenter - alphaDeg + 360) % 360),
+  ]
+}
+
 function dedupePoints(points: GraphPoint[], epsilonM = 80): GraphPoint[] {
   const out: GraphPoint[] = []
   for (const p of points) {
@@ -157,6 +197,11 @@ function buildGraphNodes(
   const candidates: GraphPoint[] = [start, goal]
   for (const threat of relevant) {
     candidates.push(...flankCandidates(start, goal, threat))
+    candidates.push(...externalTangentPoints(start, threat))
+    candidates.push(...externalTangentPoints(goal, threat))
+    if (threat.radius_m > 800) {
+      candidates.push(...threatRimWaypoints(threat))
+    }
   }
 
   return dedupePoints(candidates).slice(0, MAX_GRAPH_NODES)
@@ -166,11 +211,44 @@ function edgeTraversable(
   a: GraphPoint,
   b: GraphPoint,
   hardThreats: ThreatCircle[],
-  objective: RouteObjective,
+  _objective: RouteObjective,
 ): boolean {
   if (segmentIntersectsAny(a.lon, a.lat, b.lon, b.lat, hardThreats)) return false
-  if (objective === 'pk' && hardThreats.length === 0) return true
   return true
+}
+
+/** When A* cannot reach the goal, pick a single-flank detour instead of a straight line through threats. */
+export function detourRouteAroundThreats(
+  start: GraphPoint,
+  goal: GraphPoint,
+  hardThreats: ThreatCircle[],
+): GraphPoint[] {
+  if (
+    hardThreats.length === 0 ||
+    !segmentIntersectsAny(start.lon, start.lat, goal.lon, goal.lat, hardThreats)
+  ) {
+    return [start, goal]
+  }
+
+  let bestPath: GraphPoint[] = [start, goal]
+  let bestLen = Infinity
+
+  for (const threat of hardThreats) {
+    if (!segmentIntersectsThreat(start.lon, start.lat, goal.lon, goal.lat, threat)) continue
+    for (const flank of flankCandidates(start, goal, threat)) {
+      if (segmentIntersectsAny(start.lon, start.lat, flank.lon, flank.lat, hardThreats)) continue
+      if (segmentIntersectsAny(flank.lon, flank.lat, goal.lon, goal.lat, hardThreats)) continue
+      const len =
+        haversineM(start.lat, start.lon, flank.lat, flank.lon) +
+        haversineM(flank.lat, flank.lon, goal.lat, goal.lon)
+      if (len < bestLen) {
+        bestLen = len
+        bestPath = [start, flank, goal]
+      }
+    }
+  }
+
+  return bestPath
 }
 
 function edgeCostKm(
@@ -180,6 +258,7 @@ function edgeCostKm(
   asset: MapUasAsset,
   placedCuas: PlacedCuas[],
   placedRadars: PlacedRadar[],
+  placedEffectors: PlacedEffector[],
   overlapVolumes: OverlapVolume[] | undefined,
   objective: RouteObjective,
   emcon: boolean,
@@ -196,22 +275,27 @@ function edgeCostKm(
     asset,
     placedCuas,
     placedRadars,
+    placedEffectors,
     overlapVolumes,
     emcon,
     scoringOptions,
   )
 
   const exposure =
-    objective === 'pd'
-      ? score.pdExposure * PD_EXPOSURE_WEIGHT
-      : score.pkExposure * PK_EXPOSURE_WEIGHT
+    objective === 'combined'
+      ? score.pkExposure * PK_EXPOSURE_WEIGHT + score.pdExposure * PD_EXPOSURE_WEIGHT
+      : objective === 'pd'
+        ? score.pdExposure * PD_EXPOSURE_WEIGHT
+        : score.pkExposure * PK_EXPOSURE_WEIGHT
 
   const penalty =
-    objective === 'pd' && score.maxPd_pct >= 50
-      ? score.distance_km * 0.35
-      : objective === 'pk' && score.maxPk_pct >= 50
-        ? score.distance_km * 0.45
-        : 0
+    objective === 'combined' && (score.maxPk_pct >= 50 || score.maxPd_pct >= 50)
+      ? score.distance_km * 0.4
+      : objective === 'pd' && score.maxPd_pct >= 50
+        ? score.distance_km * 0.35
+        : objective === 'pk' && score.maxPk_pct >= 50
+          ? score.distance_km * 0.45
+          : 0
 
   return { cost: score.distance_km + exposure + penalty, score }
 }
@@ -241,10 +325,13 @@ export function findOptimalRoute(
   emcon = false,
   scoringOptions?: PathScoringOptions,
 ): GraphPoint[] {
-  const hardThreats =
-    objective === 'pk'
-      ? collectPkThreats(placedCuas, placedEffectors)
-      : collectPdThreats(placedRadars, asset)
+  const hardThreats = routingHardThreats(
+    objective,
+    placedCuas,
+    placedRadars,
+    placedEffectors,
+    asset,
+  )
 
   const nodes = buildGraphNodes(start, goal, hardThreats)
   if (nodes.length < 2) return [start, goal]
@@ -279,6 +366,7 @@ export function findOptimalRoute(
         asset,
         placedCuas,
         placedRadars,
+        placedEffectors,
         overlapVolumes,
         objective,
         emcon,
@@ -295,7 +383,7 @@ export function findOptimalRoute(
     }
   }
 
-  return [start, goal]
+  return detourRouteAroundThreats(start, goal, hardThreats)
 }
 
 export function trimRouteToRange(

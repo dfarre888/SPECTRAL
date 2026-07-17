@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { pickEntityIdAt } from '@/lib/map/cesium-pick'
 import type { CesiumModule, CesiumViewer } from '@/lib/map/cesium-types'
-import { parseMissionWaypointEntityId } from '@/lib/map/mission-path-planner'
+import { parseMissionSegmentEntityId, parseMissionWaypointEntityId } from '@/lib/map/mission-path-planner'
 import type { WaypointContextTarget } from '@/app/map/components/WaypointContextMenu'
 import type { PlacedUas, PlacementMode } from '@/lib/map/types'
 
@@ -10,6 +11,16 @@ export interface PlatformContextTarget {
   kind: 'uas' | 'cuas'
   instanceId: string
   assetName: string
+  screenX: number
+  screenY: number
+}
+
+export interface PathContextTarget {
+  uasInstanceId: string
+  assetName: string
+  segmentIndex: number
+  lon: number
+  lat: number
   screenX: number
   screenY: number
 }
@@ -32,13 +43,17 @@ export function usePlatformContextMenu(
   viewerRef: React.RefObject<CesiumViewer | null>,
   cesiumRef: React.RefObject<CesiumModule | null>,
   placementModeRef: React.MutableRefObject<PlacementMode>,
+  flightPathEditRef: React.MutableRefObject<boolean>,
   placedUasRef: React.MutableRefObject<PlacedUas[]>,
   placedCuasRef: React.MutableRefObject<{ instanceId: string; asset: { name: string } }[]>,
   onOpenMenu: (target: PlatformContextTarget) => void,
   onOpenWaypointMenu: (target: WaypointContextTarget) => void,
+  onAddWaypointOnPath?: (target: PathContextTarget) => void,
 ) {
   const onOpenMenuRef = useRef(onOpenMenu)
   const onOpenWaypointMenuRef = useRef(onOpenWaypointMenu)
+  const onAddWaypointOnPathRef = useRef(onAddWaypointOnPath)
+  onAddWaypointOnPathRef.current = onAddWaypointOnPath
   onOpenWaypointMenuRef.current = onOpenWaypointMenu
   onOpenMenuRef.current = onOpenMenu
   const handlerRef = useRef<unknown | null>(null)
@@ -61,12 +76,15 @@ export function usePlatformContextMenu(
       (e: any) => {
         if (placementModeRef.current.active) return
 
-        const picked = viewer.scene.pick(e.position)
-        const entityId: string | undefined = picked?.id?.id
-        if (typeof entityId !== 'string') return
+        const entityId = pickEntityIdAt(viewer, e.position, {
+          preferMission: flightPathEditRef.current,
+          Cesium,
+          placedUas: placedUasRef.current,
+        })
+        if (!entityId) return
 
         const wpParsed = parseMissionWaypointEntityId(entityId)
-        if (wpParsed) {
+        if (wpParsed && flightPathEditRef.current) {
           const uas = placedUasRef.current.find((u) => u.instanceId === wpParsed.uasInstanceId)
           const wp = uas?.mission?.waypoints.find((w) => w.id === wpParsed.waypointId)
           if (!uas || !wp) return
@@ -74,10 +92,32 @@ export function usePlatformContextMenu(
             uasInstanceId: uas.instanceId,
             waypointId: wp.id,
             assetName: uas.asset.name,
+            lon: wp.lon,
+            lat: wp.lat,
             alt_m: wp.alt_m,
             speed_kmh: wp.speed_kmh,
             maxAlt_m: uas.ceilingAMSL_m,
             maxSpeed_kmh: uas.asset.max_speed_kmh,
+            screenX: e.position.x,
+            screenY: e.position.y,
+          })
+          return
+        }
+
+        const segParsed = parseMissionSegmentEntityId(entityId)
+        if (segParsed && flightPathEditRef.current) {
+          const uas = placedUasRef.current.find((u) => u.instanceId === segParsed.uasInstanceId)
+          if (!uas?.mission) return
+          const ray = viewer.camera.getPickRay(e.position)
+          const cartesian = ray ? viewer.scene.globe.pick(ray, viewer.scene) : undefined
+          if (!cartesian) return
+          const carto = Cesium.Cartographic.fromCartesian(cartesian)
+          onAddWaypointOnPathRef.current?.({
+            uasInstanceId: uas.instanceId,
+            assetName: uas.asset.name,
+            segmentIndex: segParsed.segmentIndex,
+            lon: Cesium.Math.toDegrees(carto.longitude),
+            lat: Cesium.Math.toDegrees(carto.latitude),
             screenX: e.position.x,
             screenY: e.position.y,
           })
@@ -108,5 +148,5 @@ export function usePlatformContextMenu(
       h?.destroy?.()
       handlerRef.current = null
     }
-  }, [cesiumReady, viewerRef, cesiumRef, placementModeRef, placedUasRef, placedCuasRef, onOpenWaypointMenu])
+  }, [cesiumReady, viewerRef, cesiumRef, placementModeRef, flightPathEditRef, placedUasRef, placedCuasRef, onOpenWaypointMenu])
 }

@@ -128,7 +128,7 @@ export function EwFootprintAnalyser({
         <p className="text-[10px]" style={mono}>
           50% effect radius: {footprint.effective_radius_m} m · {footprint.erp_dbm} dBm ERP
         </p>
-        <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-24 bg-black/30 rounded border border-[var(--store-line)]">
+        <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-24 store-panel-inner rounded">
           <path d={points} fill="none" stroke="#06B6D4" strokeWidth="2" />
           <text x="4" y="12" fill="#94a3b8" fontSize="8">% effect</text>
         </svg>

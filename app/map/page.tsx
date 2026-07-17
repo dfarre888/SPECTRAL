@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { getMapAssets } from '@/lib/map/queries'
 import MapIntelView from '@/app/map/MapIntelView'
+import { GlobeSkeleton } from '@/components/ui/loading-skeleton'
 
 export const metadata = {
   title: 'Map Intel — Spectral',
@@ -11,13 +12,7 @@ export default async function MapPage() {
   const assets = await getMapAssets()
 
   return (
-    <Suspense
-      fallback={
-        <div className="flex h-full items-center justify-center store-text-muted font-mono text-sm">
-          Loading Map Intel…
-        </div>
-      }
-    >
+    <Suspense fallback={<GlobeSkeleton className="h-full min-h-[320px]" />}>
       <MapIntelView initialAssets={assets} />
     </Suspense>
   )

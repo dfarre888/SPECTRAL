@@ -1,7 +1,9 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
+import { ClipboardList } from 'lucide-react';
 import { reviewCurrencyUpdate } from '@/app/(main)/currency/actions';
+import { EmptyState } from '@/components/ui/empty-state';
 import type { CurrencyUpdate, UpdateStatus } from '@/lib/currency/currency-types';
 
 const STATUS_FILTERS: Array<UpdateStatus | 'all'> = [
@@ -102,7 +104,16 @@ export function CurrencyQueueClient({
           </article>
         ))}
         {filtered.length === 0 && (
-          <p className="text-sm store-text-muted">No currency updates in this filter.</p>
+          <EmptyState
+            icon={ClipboardList}
+            title={isDs ? 'No proposals in queue' : 'No approved currency updates'}
+            description={
+              isDs
+                ? 'Tactical currency proposals from learners appear here for DS review before they inform training emphasis.'
+                : 'Approved tactical currency updates from your directing staff will appear here.'
+            }
+            primaryAction={{ href: '/pcm', label: 'Open PCM training' }}
+          />
         )}
       </div>
     </div>

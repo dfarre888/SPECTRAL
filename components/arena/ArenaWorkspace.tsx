@@ -10,13 +10,11 @@ import type { TickResult, WoprScenario } from '@/lib/wopr/types'
 import { aisBboxSearchParams, type AisVessel } from '@/lib/ais/types'
 import { clsx } from 'clsx'
 
+import { GlobeSkeleton } from '@/components/ui/loading-skeleton'
+
 const CesiumArena = dynamic(() => import('@/components/arena/CesiumArena'), {
   ssr: false,
-  loading: () => (
-    <div className="h-full min-h-[480px] store-text-muted text-sm font-mono flex items-center justify-center">
-      Loading 3D COP…
-    </div>
-  ),
+  loading: () => <GlobeSkeleton className="h-full min-h-[480px]" />,
 })
 
 const COP_MODES: { id: CopViewMode; label: string }[] = [

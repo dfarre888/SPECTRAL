@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Radio } from 'lucide-react'
+import { Radio, ShieldCheck } from 'lucide-react'
 import { MfaChallenge } from '@/components/auth/MfaChallenge'
 import { MfaEnroll } from '@/components/auth/MfaEnroll'
 import { createClient } from '@/lib/supabase/client'
@@ -19,6 +19,7 @@ export default function LoginPage() {
   const [step, setStep] = useState<AuthStep>('credentials')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const oidcHref = isOidcEnabledClient() ? getOidcLoginHref() : null
 
   async function resolveMfaStep() {
     const supabase = createClient()
@@ -71,19 +72,39 @@ export default function LoginPage() {
       <StorePanel className="w-full max-w-md p-8">
         {step === 'credentials' && (
           <>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-9 h-9 rounded-lg bg-purple/15 border border-purple/35 flex items-center justify-center">
-                <Radio className="w-4 h-4 text-purple" />
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] flex items-center justify-center">
+                <Radio className="w-5 h-5 text-[var(--store-accent)]" />
               </div>
               <div>
                 <h1 className="store-display text-xl font-bold text-white">SPECTRAL</h1>
-                <p className="text-[10px] font-mono store-text-muted">Drone Threat Intelligence</p>
+                <p className="text-[10px] font-mono store-text-muted">Drone Threat Intelligence Platform</p>
               </div>
             </div>
 
-            <p className="text-sm store-text-body mb-6">
-              {mode === 'login' ? 'Sign in to access intelligence modules' : 'Create a training account'}
+            <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--store-accent)] mb-1">
+              Enterprise access
             </p>
+            <p className="text-sm store-text-body mb-6">
+              UNCLASSIFIED training tier — authenticate for instructor-grade threat analysis modules.
+            </p>
+
+            {oidcHref ? (
+              <>
+                <a
+                  href={oidcHref}
+                  className="store-btn-primary w-full py-3 text-sm font-semibold flex items-center justify-center gap-2 mb-4"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  Sign in with organisation SSO
+                </a>
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex-1 h-px bg-[var(--store-line)]" />
+                  <span className="text-[10px] store-text-muted font-mono">LOCAL ACCOUNT</span>
+                  <div className="flex-1 h-px bg-[var(--store-line)]" />
+                </div>
+              </>
+            ) : null}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -113,27 +134,11 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="store-btn-primary w-full py-2.5 text-sm disabled:opacity-50"
+                className="w-full py-2.5 rounded-xl border border-[var(--store-line)] text-sm font-medium text-white hover:border-[var(--store-accent-border)] disabled:opacity-50"
               >
-                {loading ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}
+                {loading ? 'Please wait…' : mode === 'login' ? 'Sign in with email' : 'Create training account'}
               </button>
             </form>
-
-            {mode === 'login' && isOidcEnabledClient() && getOidcLoginHref() && (
-              <>
-                <div className="my-4 flex items-center gap-3">
-                  <div className="flex-1 h-px bg-[var(--store-line)]" />
-                  <span className="text-[10px] store-text-muted font-mono">OR</span>
-                  <div className="flex-1 h-px bg-[var(--store-line)]" />
-                </div>
-                <a
-                  href={getOidcLoginHref()!}
-                  className="block w-full text-center py-2.5 rounded-xl border border-cyan/30 text-cyan text-sm font-medium hover:bg-cyan/10 transition-colors"
-                >
-                  Sign in with organisation SSO
-                </a>
-              </>
-            )}
 
             <button
               type="button"
@@ -169,7 +174,7 @@ export default function LoginPage() {
         )}
 
         <p className="mt-8 text-center text-[9px] font-mono store-text-muted opacity-70">
-          Powered by A3DM
+          UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
         </p>
       </StorePanel>
     </div>

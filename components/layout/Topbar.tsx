@@ -1,8 +1,9 @@
 'use client'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Search, Bell, Settings, Zap } from 'lucide-react'
+import { Search, Bell, Settings, Menu } from 'lucide-react'
 import { OperationsChrome } from '@/components/operations/OperationsChrome'
+import { useMobileNav } from '@/components/layout/MobileNavContext'
 import { federatedSearch } from '@/lib/search/federated-index'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 
@@ -14,6 +15,7 @@ export function Topbar() {
   const hits = useMemo(() => federatedSearch(query), [query])
   const isOps = isOperationsEditionClient()
   const searchRef = useRef<HTMLInputElement>(null)
+  const { toggle } = useMobileNav()
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -29,6 +31,14 @@ export function Topbar() {
 
   return (
     <header className="h-12 flex-shrink-0 bg-[var(--store-surface)] border-b border-[var(--store-line)] flex items-center px-4 gap-4">
+      <button
+        type="button"
+        aria-label="Open navigation menu"
+        className="md:hidden w-8 h-8 rounded-lg flex items-center justify-center store-text-muted hover:text-white hover:bg-[var(--store-surface-2)]"
+        onClick={toggle}
+      >
+        <Menu className="w-4 h-4" />
+      </button>
       <div className="flex-1 max-w-md relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 store-text-muted" />
         <input
@@ -71,12 +81,6 @@ export function Topbar() {
           <span className="text-[10px] font-mono font-semibold text-[var(--store-accent)]">DEMO MODE</span>
         </div>
       )}
-
-      {/* AI indicator — purple for EW/AI brand, not primary CTA */}
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple/10 border border-purple/25">
-        <Zap className="w-3 h-3 text-purple" />
-        <span className="text-[10px] font-mono text-purple">AI Ready</span>
-      </div>
 
       <div className="relative">
         <button
@@ -145,8 +149,8 @@ export function Topbar() {
         )}
       </div>
 
-      <div className="w-7 h-7 rounded-full bg-purple/15 border border-purple/35 flex items-center justify-center">
-        <span className="text-[10px] font-bold text-purple">DF</span>
+      <div className="w-7 h-7 rounded-full bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] flex items-center justify-center">
+        <span className="text-[10px] font-bold text-[var(--store-accent)]">DF</span>
       </div>
     </header>
   )

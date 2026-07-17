@@ -1,0 +1,226 @@
+[
+  {
+    "slug": "home",
+    "route": "/",
+    "ok": true,
+    "errors": [
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')"
+    ],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/home-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/home-390x844.png"
+  },
+  {
+    "slug": "platforms",
+    "route": "/platforms",
+    "ok": true,
+    "errors": [
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')"
+    ],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/platforms-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/platforms-390x844.png"
+  },
+  {
+    "slug": "platform-mq9",
+    "route": "/platforms/mq-9-reaper",
+    "ok": true,
+    "errors": [
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')"
+    ],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/platform-mq9-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/platform-mq9-390x844.png"
+  },
+  {
+    "slug": "platform-mavic3",
+    "route": "/platforms/dji-mavic-3",
+    "ok": true,
+    "errors": [
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')"
+    ],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/platform-mavic3-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "spectrum",
+    "route": "/spectrum",
+    "ok": true,
+    "errors": [
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')"
+    ],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/spectrum-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/spectrum-390x844.png"
+  },
+  {
+    "slug": "map",
+    "route": "/map",
+    "ok": true,
+    "errors": [
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')"
+    ],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/map-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/map-390x844.png"
+  },
+  {
+    "slug": "gnss",
+    "route": "/gnss",
+    "ok": true,
+    "errors": [
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')"
+    ],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/gnss-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/gnss-390x844.png"
+  },
+  {
+    "slug": "defeat",
+    "route": "/defeat",
+    "ok": true,
+    "errors": [
+      "Cannot read properties of null (reading 'useContext')",
+      "Cannot read properties of null (reading 'useContext')"
+    ],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/defeat-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/defeat-390x844.png"
+  },
+  {
+    "slug": "compare",
+    "route": "/compare?a=shahed-136&b=mq-9-reaper",
+    "ok": false,
+    "errors": [
+      "Error: page.goto: net::ERR_ABORTED at http://localhost:3001/compare?a=shahed-136&b=mq-9-reaper\nCall log:\n  - navigating to \"http://localhost:3001/compare?a=shahed-136&b=mq-9-reaper\", waiting until \"networkidle\"\n"
+    ]
+  },
+  {
+    "slug": "overlay",
+    "route": "/overlay",
+    "ok": true,
+    "errors": [
+      "Cannot read properties of null (reading 'useContext')"
+    ],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/overlay-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "conflict",
+    "route": "/conflict",
+    "ok": false,
+    "errors": [
+      "Error: page.goto: net::ERR_ABORTED at http://localhost:3001/conflict\nCall log:\n  - navigating to \"http://localhost:3001/conflict\", waiting until \"networkidle\"\n"
+    ]
+  },
+  {
+    "slug": "conflicts",
+    "route": "/conflicts",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/conflicts-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/conflicts-390x844.png"
+  },
+  {
+    "slug": "conflicts-ukraine",
+    "route": "/conflicts/ukraine-naval-usv",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/conflicts-ukraine-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "arena",
+    "route": "/arena",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/arena-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/arena-390x844.png"
+  },
+  {
+    "slug": "planner",
+    "route": "/planner",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/planner-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "pcm",
+    "route": "/pcm",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/pcm-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/pcm-390x844.png"
+  },
+  {
+    "slug": "pcm-scenario",
+    "route": "/pcm/scenario",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/pcm-scenario-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "pcm-force-design",
+    "route": "/pcm/force-design",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/pcm-force-design-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "pcm-exercise",
+    "route": "/pcm/exercise/demo-exercise",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/pcm-exercise-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "pcm-aar",
+    "route": "/pcm/exercise/demo-exercise/aar",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/pcm-aar-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "currency",
+    "route": "/currency",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/currency-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "economics",
+    "route": "/economics",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/economics-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "operations-import",
+    "route": "/operations/import",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/operations-import-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "login",
+    "route": "/login",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/login-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase3/login-390x844.png"
+  }
+]

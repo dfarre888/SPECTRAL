@@ -99,7 +99,7 @@ export default function SpectrumAppClient({
   };
 
   return (
-    <div className="sx-root" style={{ minHeight: '100%' }}>
+    <div className="sx-root h-full min-h-0" style={{ minHeight: '100%' }}>
       <style dangerouslySetInnerHTML={{ __html: SPECTRUM_CSS }} />
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 1320, margin: '0 auto', padding: 24 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '188px 1fr', gap: 22 }}>

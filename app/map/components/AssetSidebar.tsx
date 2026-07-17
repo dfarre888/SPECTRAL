@@ -210,8 +210,8 @@ export function AssetSidebar({
           ← Dashboard
         </Link>
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-purple/15 border border-purple/35 flex items-center justify-center shrink-0">
-            <Map className="w-4 h-4 text-purple" />
+          <div className="w-9 h-9 rounded-xl bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] flex items-center justify-center shrink-0">
+            <Map className="w-4 h-4 text-[var(--store-accent)]" />
           </div>
           <div className="min-w-0">
             <p className="store-display font-bold text-white tracking-wide text-sm">Map Intel</p>

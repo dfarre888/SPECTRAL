@@ -16,7 +16,9 @@
     "test:moat": "vitest run lib/moat/_test_moat.test.ts",
     "test:gnss": "vitest run lib/gnss/_test_gnss-incidents.test.ts",
     "test:spectral:all": "vitest run lib/pcm/_test_phase1.test.ts lib/pcm/_test_phase2.test.ts lib/pcm/_test_phase3.test.ts lib/pcm/_test_phase4-adjudication.test.ts lib/moat/_test_moat.test.ts",
-    "test:spectral:golden": "vitest run lib/pcm/_test_golden-scenarios.test.ts"
+    "test:spectral:golden": "vitest run lib/pcm/_test_golden-scenarios.test.ts",
+    "ux:capture:phase3": "node docs/ux-audit/_capture-phase3.mjs",
+    "ux:capture:phase4": "node docs/ux-audit/_capture-phase4.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
@@ -30,6 +32,7 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "@supabase/ssr": "^0.4.0",
     "@supabase/supabase-js": "^2.43.4",
+    "@tanstack/react-virtual": "^3.14.6",
     "ajv": "^8.20.0",
     "cesium": "^1.116.0",
     "class-variance-authority": "^0.7.1",
@@ -63,6 +66,7 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.29",
+    "playwright": "^1.49.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",

@@ -1,0 +1,44 @@
+---
+description: Premium UX tokens and anti-patterns for SPECTRAL Phase 3+
+globs:
+  - "app/**/*.tsx"
+  - "components/**/*.tsx"
+  - "app/globals.css"
+alwaysApply: false
+---
+
+# SPECTRAL Premium UX (Phase 3)
+
+## Token discipline
+
+- Use `--store-*` CSS variables and utility classes (`store-text-body`, `store-panel`, `store-btn-primary`) — **never** raw `text-zinc-*`, `border-zinc-*`, or `bg-black/30` on operational surfaces.
+- Primary chrome accent: orange `#F97316` (`--store-accent`). Purple reserved for EW/AI module interiors only.
+- Panel surfaces: `rounded-xl` for module panels (`store-panel`); inner wells `rounded-lg` (`store-panel-inner`).
+
+## Data typography
+
+- All quantitative fields (km, MHz, %, coordinates, speeds, counts, timestamps): `font-mono tabular-nums`.
+- Display headings: `store-display` (Space Grotesk). Body: Inter via `store-text-body`.
+
+## Interaction
+
+- Five-state controls: default, hover, active, focus-visible (orange ring in `globals.css`), disabled.
+- Loading: skeleton-first (`PanelSkeleton`, `GlobeSkeleton`, `GridSkeleton`) — avoid spinner-only dead ends.
+- Empty routes: use `EmptyState` with primary CTA deep link.
+
+## Shared components (prefer over ad-hoc markup)
+
+| Pattern | Component |
+|---------|-----------|
+| Module panel | `OpsPanel`, `StorePanel` |
+| Spec sheet row | `SpecRow`, `SpecGrid` |
+| Confidence | `ConfidenceBadge` |
+| Empty module | `EmptyState` |
+| Globe loading | `GlobeSkeleton` |
+
+## Prohibited
+
+- `text-zinc-*`, `bg-zinc-*`, `border-zinc-*` in product UI (use store tokens)
+- `bg-black/30` panel backgrounds (use `bg-[var(--store-surface-2)]`)
+- Mixed panel radius on same tier (`rounded-lg` vs `rounded-2xl` — standardise on `rounded-xl` for panels)
+- Generic “Welcome / Get started” copy without operational KPIs

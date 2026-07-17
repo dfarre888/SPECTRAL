@@ -66,7 +66,7 @@ export default function CesiumArena({
     // Cesium workers find their static assets on startup. Using import('cesium') here
     // was wrong: it set CESIUM_BASE_URL *after* Cesium loaded (workers missed it),
     // and it routed through webpack → Terser mangles Cesium source → build failure.
-    loadCesium().then((Cesium) => {
+    loadCesium().then(async (Cesium) => {
       if (!containerRef.current) return
 
       const { Viewer, Ion, Color } = Cesium

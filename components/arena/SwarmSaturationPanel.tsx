@@ -11,120 +11,13 @@
 
 import { useMemo, useState } from 'react'
 import { computeSwarmSaturation } from '@/lib/planner/swarm-saturation'
+import {
+  SWARM_DEFEAT_GROUPS,
+  SWARM_DEFEAT_SYSTEMS,
+  getSwarmDefeatSystem,
+} from '@/lib/planner/swarm-defeat-systems'
 import { StorePanel } from '@/components/ui/store-surface'
 import { cn } from '@/lib/utils'
-
-// ---------------------------------------------------------------------------
-// Defeat system profiles — OSINT-derived training parameters
-// Magazine = engagement capacity (normalised to single-target kill attempts)
-// ---------------------------------------------------------------------------
-interface DefeatSystem {
-  id: string
-  name: string
-  magazine: number
-  pk: number
-  type: 'missile' | 'dew' | 'hpm' | 'cannon' | 'rf'
-  note: string
-}
-
-const DEFEAT_SYSTEMS: DefeatSystem[] = [
-  {
-    id: 'nasams',
-    name: 'NASAMS AMRAAM-ER',
-    magazine: 12,
-    pk: 0.80,
-    type: 'missile',
-    note: '12-cell VLS · medium range SAM',
-  },
-  {
-    id: 'gbad-cea-sm2',
-    name: 'GBAD CEA/SM-2 (ADF)',
-    magazine: 8,
-    pk: 0.78,
-    type: 'missile',
-    note: 'Taipan Strike 26 prototype · 166 km range',
-  },
-  {
-    id: 'coyote-b3',
-    name: 'Coyote Block 3',
-    magazine: 6,
-    pk: 0.72,
-    type: 'missile',
-    note: 'Swarm-specific loitering interceptor',
-  },
-  {
-    id: 'iron-beam',
-    name: 'Iron Beam DEW',
-    magazine: 30,
-    pk: 0.88,
-    type: 'dew',
-    note: 'Power-limited · ~30 engagements per sortie',
-  },
-  {
-    id: 'epirus-leonidas',
-    name: 'Epirus Leonidas HPM',
-    magazine: 999,
-    pk: 0.75,
-    type: 'hpm',
-    note: 'High-power microwave · power-budget limited',
-  },
-  {
-    id: 'phalanx',
-    name: 'Phalanx CIWS',
-    magazine: 49,
-    pk: 0.65,
-    type: 'cannon',
-    note: '~49 burst engagements (20mm · 4500 rpm)',
-  },
-  {
-    id: 'gepard',
-    name: 'Gepard 35mm',
-    magazine: 40,
-    pk: 0.55,
-    type: 'cannon',
-    note: '~40 burst engagements (35mm twin cannon)',
-  },
-  {
-    id: 'starstreak',
-    name: 'Starstreak VSHORAD',
-    magazine: 9,
-    pk: 0.75,
-    type: 'missile',
-    note: '3×3 launcher · laser-beam rider',
-  },
-  {
-    id: 'm-shorad',
-    name: 'M-SHORAD Stryker',
-    magazine: 4,
-    pk: 0.70,
-    type: 'missile',
-    note: 'Stinger + Hellfire · 4 ready rounds',
-  },
-  {
-    id: 'drone-dome',
-    name: 'Drone Dome (Rafael)',
-    magazine: 45,
-    pk: 0.70,
-    type: 'rf',
-    note: 'RF + laser · 1 km effective range',
-  },
-  {
-    id: 'stinger-manpads',
-    name: 'Stinger MANPADS',
-    magazine: 2,
-    pk: 0.68,
-    type: 'missile',
-    note: '2-tube single team · 4.5 km range',
-  },
-  {
-    id: 'dronegun-mk4',
-    name: 'DroneGun Mk4 (RF)',
-    magazine: 60,
-    pk: 0.60,
-    type: 'rf',
-    note: 'Battery ≈ 60 engagements (RF jamming)',
-  },
-]
 
 const TYPE_TAG: Record<string, { label: string; colour: string }> = {
   missile: { label: 'KINETIC', colour: 'text-cyan-400' },
@@ -147,12 +40,12 @@ const BAR_W    = BAR_SLOT - 1                          // bar width with 1px gap
 // Component
 // ---------------------------------------------------------------------------
 export function SwarmSaturationPanel() {
-  const [systemId, setSystemId]         = useState(DEFEAT_SYSTEMS[0].id)
+  const [systemId, setSystemId]         = useState('skynex')
   const [inbound, setInbound]           = useState(12)
   const [salvo, setSalvo]               = useState(1)
   const [pkPct, setPkPct]               = useState<number | null>(null) // null = use system default
 
-  const sys = DEFEAT_SYSTEMS.find(s => s.id === systemId) ?? DEFEAT_SYSTEMS[0]
+  const sys = getSwarmDefeatSystem(systemId)
   const effectivePk = pkPct !== null ? pkPct / 100 : sys.pk
 
   // Rebuild on any input change
@@ -210,11 +103,23 @@ export function SwarmSaturationPanel() {
             setPkPct(null) // reset override when changing system
           }}
         >
-          {DEFEAT_SYSTEMS.map(s => (
-            <option key={s.id} value={s.id}>{s.name}</option>
+          {SWARM_DEFEAT_GROUPS.map((group) => (
+            <optgroup key={group} label={group}>
+              {SWARM_DEFEAT_SYSTEMS.filter((s) => s.group === group).map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </optgroup>
           ))}
         </select>
         <p className="text-[9px] font-mono store-text-muted mt-0.5 leading-relaxed">
+          <span
+            className={cn(
+              'mr-1.5 font-semibold uppercase',
+              sys.side === 'red' ? 'text-red-400' : 'text-cyan-400',
+            )}
+          >
+            {sys.side}
+          </span>
           <span className={cn('mr-1.5 font-semibold', TYPE_TAG[sys.type]?.colour)}>
             {TYPE_TAG[sys.type]?.label}
           </span>

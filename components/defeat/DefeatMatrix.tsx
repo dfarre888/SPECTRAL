@@ -43,6 +43,8 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
     platformId: string
     systemId: string
   } | null>(null)
+  const [focusRow, setFocusRow] = useState(0)
+  const [focusCol, setFocusCol] = useState(0)
 
   const filteredPlatforms = useMemo(
     () =>
@@ -93,6 +95,12 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
         accreditedPkMap={data.accreditedPkMap}
         computedSamPkMap={data.computedSamPkMap}
         variant={fullscreen ? 'fullscreen' : 'default'}
+        focusRow={focusRow}
+        focusCol={focusCol}
+        onFocusChange={(row, col) => {
+          setFocusRow(row)
+          setFocusCol(col)
+        }}
       />
     ) : (
       <DefeatHeatmap
@@ -111,15 +119,10 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
   return (
     <div className="relative pb-8">
       <StoreHero
+        variant="compact"
         eyebrow="Counter-UAS"
-        title={
-          <>
-            Defeat Matrix,
-            <br />
-            Platform × Effector Grid
-          </>
-        }
-        subtitle="OSINT adjudication of platform vulnerability against RF, kinetic, DEW, and net defeat systems — click any cell for full rationale."
+        title="Defeat Matrix — Platform × Effector"
+        subtitle="OSINT adjudication of platform vulnerability against RF, kinetic, DEW, and net defeat — click any cell for rationale."
         trustChip={
           <>
             <span
@@ -206,6 +209,7 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
                 size="sm"
                 onClick={() => setFullscreen(true)}
                 title="Full screen matrix"
+                aria-label="Expand defeat matrix to full screen"
               >
                 <Maximize2 className="h-4 w-4" /> Expand
               </Button>
@@ -213,7 +217,13 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
           }
         />
 
-        <div className="store-panel rounded-2xl overflow-hidden">{matrixContent}</div>
+        <div
+          className="store-panel rounded-2xl overflow-hidden"
+          role="region"
+          aria-label={`Defeat matrix — ${filteredPlatforms.length} platforms by ${filteredSystems.length} effectors`}
+        >
+          {matrixContent}
+        </div>
       </StoreCatalogLayout>
 
       <DefeatMatrixFullscreen

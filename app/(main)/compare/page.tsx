@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { GitCompare } from 'lucide-react'
+import { redirect } from 'next/navigation'
 import { HubPageShell } from '@/components/hub/HubPageShell'
+import { EmptyState } from '@/components/ui/empty-state'
 import { StorePanel } from '@/components/ui/store-surface'
 import { Badge } from '@/components/ui/badge'
 import { CompareEngagement } from '@/components/compare/CompareEngagement'
@@ -8,30 +10,37 @@ import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { getPlatformsByIds } from '@/lib/platforms/queries'
 
 interface ComparePageProps {
-  searchParams: { ids?: string }
+  searchParams: { ids?: string; a?: string; b?: string }
 }
 
+const DEFAULT_COMPARE_PAIR = ['shahed-136', 'mq-9-reaper'] as const
+
 export default async function ComparePage({ searchParams }: ComparePageProps) {
-  const ids = searchParams.ids?.split(',').filter(Boolean) ?? []
-  const platforms = ids.length > 0 ? await getPlatformsByIds(ids) : []
+  const fromPair = [searchParams.a, searchParams.b].filter(Boolean) as string[]
+  const ids =
+    searchParams.ids?.split(',').filter(Boolean) ??
+    (fromPair.length > 0 ? fromPair : [])
+
+  if (ids.length === 0) {
+    redirect(`/compare?ids=${DEFAULT_COMPARE_PAIR.join(',')}`)
+  }
+
+  const platforms = await getPlatformsByIds(ids)
 
   return (
     <HubPageShell
       eyebrow="Engagement Analysis"
-      title="1v1 Overlay"
-      subtitle="Head-to-head platform comparison"
+      title="Platform Compare"
+      subtitle="Head-to-head OSINT dossier comparison — Shahed vs MALE ISR default; override with ?ids= or ?a=&b=."
     >
       {platforms.length === 0 ? (
-        <StorePanel className="p-12 flex flex-col items-center justify-center text-center">
-          <GitCompare className="h-10 w-10 store-text-muted mb-4" />
-          <p className="text-white font-medium">No platforms selected</p>
-          <p className="store-text-body text-sm mt-1 font-mono mb-4">
-            Add platforms from the Platform Library using the Compare button.
-          </p>
-          <Link href="/platforms" className="text-[var(--store-accent)] text-sm hover:opacity-80">
-            Go to Platform Library →
-          </Link>
-        </StorePanel>
+        <EmptyState
+          icon={GitCompare}
+          title="No platforms selected"
+          description="Open Platform Library and add up to two platforms with the Compare tray at the bottom of the grid."
+          primaryAction={{ href: '/platforms', label: 'Open Platform Library' }}
+          secondaryAction={{ href: '/overlay', label: 'SAM engagement analysis →' }}
+        />
       ) : (
         <div className="space-y-4">
           <p className="text-xs font-mono store-text-muted">

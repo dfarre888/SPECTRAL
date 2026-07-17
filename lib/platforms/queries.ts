@@ -1,5 +1,6 @@
 import 'server-only'
 import { createClient } from '@/lib/supabase/server'
+import { getSeedPlatformById } from '@/lib/platforms/seed-fallback'
 import type { DefeatEffectiveness, Platform } from '@/lib/types'
 
 export async function getPlatformCount(): Promise<number> {
@@ -37,7 +38,7 @@ export async function getPlatformById(id: string): Promise<Platform | null> {
     .maybeSingle()
 
   if (error) throw new Error(error.message)
-  if (!data) return null
+  if (!data) return getSeedPlatformById(id)
   return {
     ...(data as Platform),
     gnss_independent: data.gnss_independent ?? false,

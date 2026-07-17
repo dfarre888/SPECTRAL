@@ -38,7 +38,7 @@ export function GnssIntelClient({ constellations, dependencies, incidents }: Gns
             className={`text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-md ${
               tab === t.id
                 ? 'bg-orange-500/15 text-orange-400 border border-orange-500/40'
-                : 'text-zinc-500 hover:text-zinc-300'
+                : 'store-text-muted hover:text-[var(--store-ink-soft)]'
             }`}
           >
             {t.label}

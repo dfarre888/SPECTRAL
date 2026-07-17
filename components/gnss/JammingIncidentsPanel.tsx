@@ -10,7 +10,7 @@ interface JammingIncidentsPanelProps {
 
 const TYPE_BADGE: Record<string, string> = {
   broadband: 'bg-orange-500/20 text-orange-400',
-  meaconing: 'bg-zinc-500/20 text-zinc-300',
+  meaconing: 'bg-[var(--store-surface-2)] store-text-body',
   spoofing: 'bg-red-500/20 text-red-400',
   selective: 'bg-cyan-500/20 text-cyan-400',
 }
@@ -103,7 +103,7 @@ export function JammingIncidentsPanel({ incidents }: JammingIncidentsPanelProps)
               }`}
             >
               <p className="text-sm font-medium text-white">{inc.incident_name}</p>
-              <p className="text-[10px] font-mono text-zinc-500 mt-1">
+              <p className="text-[10px] font-mono store-text-muted mt-1">
                 {new Date(inc.detected_at).toISOString().slice(0, 10)}
               </p>
               <div className="flex flex-wrap gap-1 mt-2">
@@ -112,7 +112,7 @@ export function JammingIncidentsPanel({ incidents }: JammingIncidentsPanelProps)
                 </span>
                 <span
                   className={`text-[9px] uppercase px-1.5 py-0.5 rounded ${
-                    inc.confirmed ? 'text-orange-400 bg-orange-500/10' : 'text-zinc-500 bg-zinc-800'
+                    inc.confirmed ? 'text-orange-400 bg-orange-500/10' : 'store-text-muted bg-[var(--store-surface-2)]'
                   }`}
                 >
                   {inc.confirmed ? 'confirmed' : 'unconfirmed'}
@@ -133,7 +133,7 @@ export function JammingIncidentsPanel({ incidents }: JammingIncidentsPanelProps)
         </div>
         {selected ? (
           <div className="rounded-xl border border-white/10 bg-[#0A0A0F] p-4 text-xs space-y-2">
-            <p className="text-zinc-400 leading-relaxed">{selected.source_ref}</p>
+            <p className="store-text-body leading-relaxed">{selected.source_ref}</p>
             {selected.platform_impacts.length > 0 ? (
               <ul className="font-mono text-[10px] text-cyan-400 space-y-1">
                 {selected.platform_impacts.map((p) => (
@@ -143,7 +143,7 @@ export function JammingIncidentsPanel({ incidents }: JammingIncidentsPanelProps)
                 ))}
               </ul>
             ) : (
-              <p className="text-zinc-600 font-mono text-[10px]">No platform impacts recorded</p>
+              <p className="store-text-muted font-mono text-[10px]">No platform impacts recorded</p>
             )}
           </div>
         ) : null}

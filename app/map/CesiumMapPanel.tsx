@@ -146,6 +146,10 @@ export default function CesiumMapPanel({
   const nilWindRef = useRef(nilWind)
   nilWindRef.current = nilWind
 
+  useEffect(() => {
+    if (terrainEpoch > 0) onTerrainEpochChangeRef.current?.(terrainEpoch)
+  }, [terrainEpoch])
+
   usePlatformDrag(
     cesiumReady,
     viewerRef,
@@ -279,11 +283,7 @@ export default function CesiumMapPanel({
         if (queued === 0) {
           if (terrainSettleTimer.current) clearTimeout(terrainSettleTimer.current)
           terrainSettleTimer.current = setTimeout(() => {
-            setTerrainEpoch((n) => {
-              const next = n + 1
-              onTerrainEpochChangeRef.current?.(next)
-              return next
-            })
+            setTerrainEpoch((n) => n + 1)
             if (!viewer.isDestroyed?.()) viewer.scene.requestRender()
           }, 600)
         }

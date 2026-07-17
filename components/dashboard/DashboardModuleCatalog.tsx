@@ -13,23 +13,27 @@ import {
   StoreFilterSidebar,
 } from '@/components/catalog/StoreFilterSidebar'
 import { StartHereWizard } from '@/components/dashboard/StartHereWizard'
+import type { ModuleCatalogStats } from '@/lib/dashboard/module-stats'
 import { StorePanel } from '@/components/ui/store-surface'
 
 /** Caller: DashboardHomeTabs moduleCatalog tab via app/(main)/page.tsx */
 
-const MODULES = [
-  { href: '/platforms', icon: 'database' as const, kicker: 'ORBAT', label: 'Platform Library', count: '25', unit: 'platforms', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'World military UAS database with OSINT dossiers' },
-  { href: '/spectrum', icon: 'radio' as const, kicker: 'EW', label: 'Spectrum View', count: '6', unit: 'GHz span', accent: 'text-purple bg-purple/10 border-purple/25', desc: 'RF spectrum visualiser and SPECTRA kill-chain' },
-  { href: '/gnss', icon: 'satellite' as const, kicker: 'NAVWAR', label: 'GNSS Intelligence', count: '12', unit: 'jammers', accent: 'text-cyan bg-cyan/10 border-cyan/25', desc: 'Constellations, denial systems, defeat methods' },
-  { href: '/defeat', icon: 'shield' as const, kicker: 'C-UAS', label: 'Defeat Matrix', count: '15', unit: 'systems', accent: 'text-[var(--store-success)] bg-[rgba(74,222,128,0.10)] border-[rgba(74,222,128,0.20)]', desc: 'Platform × countermeasure effectiveness grid' },
-  { href: '/conflicts', icon: 'globe' as const, kicker: 'CASE STUDY', label: 'Conflict Intel', count: '7', unit: 'incidents', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Named engagements and operational lessons' },
-  { href: '/arena', icon: 'swords' as const, kicker: 'WARGAME', label: 'Red/Blue Arena', count: '20+', unit: 'injects', accent: 'text-red bg-red/10 border-red/25', desc: 'Scenario engine and exercise briefs' },
-  { href: '/planner', icon: 'map' as const, kicker: 'PLANNER', label: 'SPECTRAL Planner', count: '2', unit: 'vignettes', accent: 'text-cyan bg-cyan/10 border-cyan/25', desc: 'Battlespace plans, IADS stacks, engagement economics, publish to WOPR/PCM' },
-  { href: '/map', icon: 'map' as const, kicker: 'COP', label: 'Map Intel', count: 'Live', unit: 'laydown', accent: 'text-cyan bg-cyan/10 border-cyan/25', desc: 'Cesium laydown, mission paths, and force evaluation' },
-  { href: '/pcm', icon: 'crosshair' as const, kicker: 'PCM', label: 'PCM Training', count: 'AI', unit: 'scenarios', accent: 'text-purple bg-purple/10 border-purple/25', desc: 'Learner-driven exercises, globe runs, and force design' },
-  { href: '/overlay', icon: 'target' as const, kicker: 'SAM', label: 'SAM Engagement', count: 'Pk', unit: 'envelope', accent: 'text-red bg-red/10 border-red/25', desc: 'SAM intercept geometry, range rings, and salvo Pk' },
-  { href: '/compare', icon: 'git-compare' as const, kicker: 'ANALYSIS', label: '1v1 Overlay', count: '∞', unit: 'matchups', accent: 'text-amber bg-amber/10 border-amber/25', desc: 'Library platform dossier side-by-side comparison' },
-]
+function buildModules(stats: ModuleCatalogStats) {
+  const platformLabel = stats.platformCount > 0 ? String(stats.platformCount) : '—'
+  return [
+    { href: '/defeat', icon: 'shield' as const, kicker: 'C-UAS', label: 'Defeat Matrix', count: String(stats.defeatSystemCount), unit: 'systems', accent: 'text-[var(--store-success)] bg-[rgba(74,222,128,0.10)] border-[rgba(74,222,128,0.20)]', desc: 'Platform × countermeasure effectiveness grid', priority: 1 },
+    { href: '/gnss', icon: 'satellite' as const, kicker: 'NAVWAR', label: 'GNSS Intelligence', count: String(stats.gnssJammerCount), unit: 'jammers', accent: 'text-cyan bg-cyan/10 border-cyan/25', desc: 'Constellations, denial systems, defeat methods', priority: 2 },
+    { href: '/conflicts', icon: 'globe' as const, kicker: 'CASE STUDY', label: 'Conflict Intel', count: String(stats.conflictCaseCount), unit: 'studies', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Named engagements and operational lessons', priority: 3 },
+    { href: '/map', icon: 'map' as const, kicker: 'COP', label: 'Map Intel', count: 'Live', unit: 'laydown', accent: 'text-cyan bg-cyan/10 border-cyan/25', desc: 'Cesium laydown, mission paths, and force evaluation', priority: 4 },
+    { href: '/arena', icon: 'swords' as const, kicker: 'WARGAME', label: 'Red/Blue Arena', count: '20+', unit: 'injects', accent: 'text-red bg-red/10 border-red/25', desc: 'Scenario engine and exercise briefs', priority: 5 },
+    { href: '/platforms', icon: 'database' as const, kicker: 'ORBAT', label: 'Platform Library', count: platformLabel, unit: 'platforms', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'World military UAS database with OSINT dossiers', priority: 6 },
+    { href: '/spectrum', icon: 'radio' as const, kicker: 'EW', label: 'Spectrum View', count: '6', unit: 'GHz span', accent: 'text-cyan bg-cyan/10 border-cyan/25', desc: 'RF spectrum visualiser and SPECTRA kill-chain', priority: 7 },
+    { href: '/overlay', icon: 'target' as const, kicker: 'SAM', label: 'SAM Engagement', count: 'Pk', unit: 'envelope', accent: 'text-red bg-red/10 border-red/25', desc: 'SAM intercept geometry, range rings, and salvo Pk', priority: 8 },
+    { href: '/planner', icon: 'map' as const, kicker: 'PLANNER', label: 'SPECTRAL Planner', count: String(stats.plannerVignetteCount), unit: 'vignettes', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Battlespace plans, IADS stacks, engagement economics', priority: 9 },
+    { href: '/pcm', icon: 'crosshair' as const, kicker: 'PCM', label: 'PCM Training', count: 'Live', unit: 'exercises', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Learner-driven exercises, globe runs, and force design', priority: 10 },
+    { href: '/compare', icon: 'git-compare' as const, kicker: 'ANALYSIS', label: 'Platform Compare', count: '2', unit: 'min pick', accent: 'text-amber bg-amber/10 border-amber/25', desc: 'Library platform dossier side-by-side comparison', priority: 11 },
+  ] as const
+}
 
 const RECENT_INCIDENTS = [
   { id: 'ukraine-shahed-swarm', label: 'Ukraine — Shahed-136 swarm campaign', status: 'ongoing', type: 'strike' },
@@ -38,20 +42,27 @@ const RECENT_INCIDENTS = [
   { id: 'houthi-red-sea', label: 'Yemen — Houthi Red Sea drone campaign', status: 'ongoing', type: 'swarm' },
 ]
 
-const STATS = [
-  { label: 'UAS Platforms', value: '25', sub: 'tracked', icon: Database, trend: '+4 this month' },
-  { label: 'Defeat Systems', value: '15', sub: 'catalogued', icon: Shield, trend: '3 conflict-validated' },
-  { label: 'GNSS Jammers', value: '12', sub: 'tier 1–3', icon: Satellite, trend: '5 COTS tier added' },
-  { label: 'Conflict Incidents', value: '7', sub: 'case studies', icon: Globe, trend: '2 active this week' },
+const STATS = (stats: ModuleCatalogStats) => [
+  { label: 'UAS Platforms', value: stats.platformCount > 0 ? String(stats.platformCount) : '—', sub: 'tracked', icon: Database, trend: 'live catalog' },
+  { label: 'Defeat Systems', value: String(stats.defeatSystemCount), sub: 'catalogued', icon: Shield, trend: 'Blue + Red IADS' },
+  { label: 'GNSS Jammers', value: String(stats.gnssJammerCount), sub: 'tier 1–3', icon: Satellite, trend: 'OSINT baseline' },
+  { label: 'Conflict Studies', value: String(stats.conflictCaseCount), sub: 'case studies', icon: Globe, trend: 'named engagements' },
 ]
 
-export function DashboardModuleCatalog() {
+interface DashboardModuleCatalogProps {
+  stats: ModuleCatalogStats
+}
+
+export function DashboardModuleCatalog({ stats }: DashboardModuleCatalogProps) {
+  const modules = buildModules(stats)
+  const sidebarStats = STATS(stats)
+
   return (
     <StoreCatalogLayout
       sidebar={
         <StoreFilterSidebar>
           <StoreFilterSection label="Status">
-            {STATS.map(({ label, value, sub, icon: Icon, trend }) => (
+            {sidebarStats.map(({ label, value, sub, icon: Icon, trend }) => (
               <StorePanel key={label} className="p-3 mb-2 last:mb-0">
                 <div className="flex items-start justify-between mb-2">
                   <Icon className="w-4 h-4 text-[var(--store-accent)]" />
@@ -60,7 +71,7 @@ export function DashboardModuleCatalog() {
                     {trend}
                   </span>
                 </div>
-                <p className="text-xl font-bold text-white font-mono">{value}</p>
+                <p className="text-xl font-bold text-white font-mono tabular-nums">{value}</p>
                 <p className="text-[11px] store-text-body">{label}</p>
                 <p className="text-[10px] store-text-muted font-mono">{sub}</p>
               </StorePanel>
@@ -91,13 +102,13 @@ export function DashboardModuleCatalog() {
     >
       <StartHereWizard />
 
-      <StoreCatalogHeader title="Intelligence Modules" meta="10 modules · select to open" />
+      <StoreCatalogHeader title="Intelligence Modules" meta={`${modules.length} modules · threat-priority order · Jul 2026`} />
 
       <div
         className="grid gap-4 mb-8"
         style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}
       >
-        {MODULES.map((mod, index) => (
+        {modules.map((mod, index) => (
           <ModuleCard
             key={mod.href}
             href={mod.href}

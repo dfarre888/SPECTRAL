@@ -19,20 +19,23 @@ export default function ConflictsPage() {
       eyebrow="Case Studies"
       title="Conflict Intel"
       subtitle="Named engagements and operational lessons — OSINT case studies"
+      headerAction={
+        <p className="text-[10px] font-mono store-text-muted">Date of information: Jul 2026</p>
+      }
     >
       <div className="flex gap-2 mb-4">
-        <button type="button" onClick={() => setTab('cases')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'cases' ? 'border-cyan text-cyan' : 'border-zinc-700 text-zinc-400')}>Case studies</button>
-        <button type="button" onClick={() => setTab('digest')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'digest' ? 'border-cyan text-cyan' : 'border-zinc-700 text-zinc-400')}>OSINT digest</button>
+        <button type="button" onClick={() => setTab('cases')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'cases' ? 'border-[var(--store-accent)] text-[var(--store-accent)]' : 'border-[var(--store-line)] store-text-muted')}>Case studies</button>
+        <button type="button" onClick={() => setTab('digest')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'digest' ? 'border-[var(--store-accent)] text-[var(--store-accent)]' : 'border-[var(--store-line)] store-text-muted')}>OSINT digest</button>
       </div>
       {tab === 'digest' ? (
         <div className="space-y-3">
           {CONFLICT_DIGEST.map((d) => (
             <StorePanel key={d.id} className="p-4">
-              <p className="text-[10px] font-mono text-zinc-500">{d.sourceDate} · {d.confidence}</p>
+              <p className="text-[10px] font-mono store-text-muted">{d.sourceDate} · {d.confidence}</p>
               <h3 className="text-sm font-semibold text-white mt-1">{d.title}</h3>
-              <p className="text-xs text-zinc-400 mt-2"><strong>Employment:</strong> {d.employmentPattern}</p>
-              <p className="text-xs text-zinc-400 mt-1"><strong>Countermeasure:</strong> {d.countermeasure}</p>
-              <p className="text-[10px] font-mono text-orange mt-2">THREAT: {d.threatLevel}</p>
+              <p className="text-xs store-text-body mt-2"><strong>Employment:</strong> {d.employmentPattern}</p>
+              <p className="text-xs store-text-body mt-1"><strong>Countermeasure:</strong> {d.countermeasure}</p>
+              <p className="text-[10px] font-mono text-[var(--store-accent)] mt-2">THREAT: {d.threatLevel}</p>
             </StorePanel>
           ))}
         </div>

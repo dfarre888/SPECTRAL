@@ -104,3 +104,32 @@ export function normaliseMarineTraffic(raw: Record<string, any>): AisVessel {
     imo:       raw.IMO      != null ? String(raw.IMO)       : undefined,
   }
 }
+/** Normalise an AISStream.io WebSocket message into AisVessel */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function normaliseAisStreamMessage(raw: Record<string, any>): AisVessel | null {
+  if (raw.error) return null
+  const meta = raw.MetaData ?? raw.Metadata ?? {}
+  const msgType = String(raw.MessageType ?? '')
+  const body =
+    raw.Message?.[msgType] ??
+    raw.Message?.PositionReport ??
+    raw.Message?.StandardClassBPositionReport ??
+    raw.Message?.ExtendedClassBPositionReport
+
+  const mmsi = String(meta.MMSI ?? meta.Mmsi ?? body?.UserID ?? '')
+  const lat = Number(meta.latitude ?? meta.Latitude ?? body?.Latitude ?? NaN)
+  const lon = Number(meta.longitude ?? meta.Longitude ?? body?.Longitude ?? NaN)
+  if (!mmsi || !Number.isFinite(lat) || !Number.isFinite(lon)) return null
+
+  return {
+    mmsi,
+    name: String(meta.ShipName ?? body?.Name ?? '').trim(),
+    lat,
+    lon,
+    sog: Number(body?.Sog ?? 0),
+    cog: Number(body?.Cog ?? body?.TrueHeading ?? 0),
+    type: Number(body?.Type ?? meta.ShipType ?? 0),
+    timestamp: String(meta.time_utc ?? meta.TimeUtc ?? ''),
+  }
+}
+

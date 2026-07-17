@@ -95,7 +95,7 @@ export function CollateralRiskPanel({
                     <p className="text-2xl text-orange-300" style={mono}>{blastResult.expected_injured}</p>
                   </div>
                 </div>
-                <div className="rounded border border-[var(--store-line)] bg-black/30 px-2 py-1.5 space-y-0.5">
+                <div className="rounded border border-[var(--store-line)] store-panel-inner px-2 py-1.5 space-y-0.5">
                   <p className="store-text-muted text-[10px]">Pop. in hazard disk</p>
                   <p className="text-sm text-white" style={mono}>{blastResult.population_in_hazard_disk}</p>
                   <p className="text-[9px] store-text-muted">

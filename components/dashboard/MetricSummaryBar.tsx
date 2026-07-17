@@ -7,8 +7,9 @@ import { StorePanel } from '@/components/ui/store-surface'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import { AlertTriangle, ClipboardCheck, Plane, Radio } from 'lucide-react'
 
-const ICONS = [Plane, Radio, ClipboardCheck, AlertTriangle] as const
-const KEYS = ['activeRpa', 'activeMissions', 'pendingApprovals', 'criticalAlerts'] as const
+/** Threat-priority order — critical alerts first for commander scan pattern. */
+const KEYS = ['criticalAlerts', 'activeRpa', 'activeMissions', 'pendingApprovals'] as const
+const ICONS = [AlertTriangle, Plane, Radio, ClipboardCheck] as const
 
 function metricHref(key: (typeof KEYS)[number]): string {
   switch (key) {

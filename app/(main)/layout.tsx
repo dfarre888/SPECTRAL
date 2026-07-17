@@ -1,5 +1,4 @@
-import { Sidebar } from '@/components/layout/Sidebar'
-import { Topbar } from '@/components/layout/Topbar'
+import { MainShell } from '@/components/layout/MainShell'
 import { fetchProposedCurrencyCount } from '@/lib/currency/currency-queries'
 import { getPlatformCount } from '@/lib/platforms/queries'
 
@@ -18,12 +17,8 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div className="flex h-[calc(100vh-20px)] hub-page-canvas">
-      <Sidebar proposedCurrencyCount={proposedCurrencyCount} platformCount={platformCount} />
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <Topbar />
-        <main className="flex-1 overflow-auto p-6 md:p-8">{children}</main>
-      </div>
-    </div>
+    <MainShell proposedCurrencyCount={proposedCurrencyCount} platformCount={platformCount}>
+      {children}
+    </MainShell>
   )
 }

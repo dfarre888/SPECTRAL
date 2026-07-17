@@ -31,7 +31,7 @@ function facetField(
         min="0"
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="font-mono text-[11px] bg-black/30 border border-[var(--store-line)] rounded px-1.5 py-0.5 text-white"
+        className="font-mono text-[11px] store-panel-inner rounded px-1.5 py-0.5 text-white"
       />
     </label>
   )

@@ -1,9 +1,29 @@
-import { FullBleedShell } from '@/components/layout/FullBleedShell'
+import { MainShell } from '@/components/layout/MainShell'
+import { fetchProposedCurrencyCount } from '@/lib/currency/currency-queries'
+import { getPlatformCount } from '@/lib/platforms/queries'
 
-export default function MapLayout({ children }: { children: React.ReactNode }) {
+export default async function MapLayout({ children }: { children: React.ReactNode }) {
+  let proposedCurrencyCount = 0
+  let platformCount = 0
+  try {
+    proposedCurrencyCount = await fetchProposedCurrencyCount()
+  } catch {
+    proposedCurrencyCount = 0
+  }
+  try {
+    platformCount = await getPlatformCount()
+  } catch {
+    platformCount = 0
+  }
+
   return (
-    <FullBleedShell title="Map Intel">
+    <MainShell
+      proposedCurrencyCount={proposedCurrencyCount}
+      platformCount={platformCount}
+      fullBleed
+      moduleLabel="MAP INTEL"
+    >
       {children}
-    </FullBleedShell>
+    </MainShell>
   )
 }

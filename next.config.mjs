@@ -10,6 +10,9 @@ const cesiumWorkers = path.resolve(__dirname, 'node_modules/cesium/Build/Cesium/
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ['ws'],
+  },
   // Standalone output: produces .next/standalone/ — required for Docker/ECS/EKS deployment.
   // In standalone mode Next.js bundles only the minimum server code; ship public/ and
   // .next/static/ separately (see Dockerfile).

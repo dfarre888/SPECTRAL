@@ -55,7 +55,7 @@ function Section({
         <Icon className={cn('w-3 h-3 shrink-0', warn ? 'text-[var(--store-accent)]' : 'text-cyan')} />
         <p className="text-[9px] uppercase tracking-wide store-text-muted">{title}</p>
       </div>
-      <div className="text-[10px] leading-snug text-zinc-200/90">{children}</div>
+      <div className="text-[10px] leading-snug store-text-body">{children}</div>
     </div>
   )
 }
@@ -98,7 +98,7 @@ export function EncounterAssessmentPanel({
 
   return (
     <div className="shrink-0 rounded-xl store-panel border border-[var(--store-line)] shadow-xl w-full overflow-hidden">
-      <div className="px-3 py-2 border-b border-[var(--store-line)] bg-black/30">
+      <div className="px-3 py-2 border-b border-[var(--store-line)] bg-[var(--store-surface-2)]">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
             <Crosshair className="w-3.5 h-3.5 text-cyan shrink-0" />
@@ -191,7 +191,7 @@ export function EncounterAssessmentPanel({
                     <p className="text-xl text-orange-300" style={mono}>{cde.expected_injured}</p>
                   </div>
                 </div>
-                <div className="rounded border border-[var(--store-line)] bg-black/30 px-2 py-1.5 space-y-0.5">
+                <div className="rounded border border-[var(--store-line)] store-panel-inner px-2 py-1.5 space-y-0.5">
                   <p className="store-text-muted text-[9px]">Pop. in hazard disk</p>
                   <p className="text-sm text-white" style={mono}>{cde.population_in_hazard_disk}</p>
                   <p className="text-[9px] store-text-muted">

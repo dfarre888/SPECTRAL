@@ -54,6 +54,7 @@ import { resolveAssetPlacement } from '@/lib/map/counter-system-registry'
 import { envelopeDiscAltitudeM } from '@/lib/map/range-declaration'
 import type { TerrainHeightUpdate } from '@/lib/map/terrain'
 import { cn } from '@/lib/utils'
+import { GlobeSkeleton } from '@/components/ui/loading-skeleton'
 import type { MapAssetsPayload, CursorPosition, PlacementMode, PlacedCuas, PlacedEffector, PlacedRadar, PlacedUas, MapCuasAsset, MapEffectorAsset, MapRadarAsset, MapUasAsset } from '@/lib/map/types'
 import type { RcsFacets } from '@/lib/spectral/detectionPhysicsConstants'
 
@@ -75,11 +76,7 @@ import { getWarheadsForPlatform } from '@/lib/risk/warhead-db'
 
 const CesiumMapPanel = dynamic(() => import('./CesiumMapPanel'), {
   ssr: false,
-  loading: () => (
-    <div className="flex-1 flex items-center justify-center store-text-muted font-mono text-sm">
-      Initialising Cesium globe…
-    </div>
-  ),
+  loading: () => <GlobeSkeleton className="flex-1 min-h-[320px]" />,
 })
 
 const MapBottomBar = dynamic(
@@ -94,7 +91,7 @@ function mapToolbarBtn(active: boolean, accent: 'orange' | 'cyan'): string {
       ? `${base} bg-[#F97316] border-[#F97316] text-[#0A0A0F]`
       : `${base} bg-[#06B6D4] border-[#06B6D4] text-[#0A0A0F]`
   }
-  return `${base} bg-[#111118] border-[#3f3f46] text-zinc-100 hover:bg-[#1c1c24] hover:border-zinc-500`
+  return `${base} bg-[var(--store-surface-2)] border-[var(--store-line)] text-white hover:bg-[var(--store-surface)] hover:border-[var(--store-accent-border)]`
 }
 
 interface MapIntelViewProps {
@@ -926,10 +923,10 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           }}
         />
         {showIadsPanel && (
-          <div className="absolute bottom-16 left-3 z-20 w-72 max-h-64 overflow-y-auto rounded-xl border border-zinc-700 bg-[#0A0A0F]/95 shadow-lg">
-            <div className="flex justify-between items-center px-2 py-1 border-b border-zinc-800">
+          <div className="absolute bottom-16 left-3 z-20 w-72 max-h-64 overflow-y-auto rounded-xl border border-[var(--store-line)] bg-[var(--store-bg)]/95 shadow-lg">
+            <div className="flex justify-between items-center px-2 py-1 border-b border-[var(--store-line)]">
               <span className="text-[10px] font-mono text-cyan">IADS stacks</span>
-              <button type="button" className="text-zinc-500 text-xs" onClick={() => setShowIadsPanel(false)}>✕</button>
+              <button type="button" className="store-text-muted text-xs" onClick={() => setShowIadsPanel(false)}>✕</button>
             </div>
             <IadsStackPanel
               assets={assets}
@@ -1000,12 +997,12 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             </button>
 
             {riskMode === 'blast' && (
-              <select className="text-[10px] rounded-lg bg-[#111118] border border-[#3f3f46] shadow-md px-2 py-1.5 font-mono text-zinc-100 max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
+              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] shadow-md px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
                 {WARHEAD_DB.map((w) => (<option key={w.weapon_id} value={w.weapon_id}>{w.weapon_name}</option>))}
               </select>
             )}
             {riskMode === 'jamming' && (
-              <select className="text-[10px] rounded-lg bg-[#111118] border border-[#3f3f46] shadow-md px-2 py-1.5 font-mono text-zinc-100 max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
+              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] shadow-md px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
                 {JAMMER_DB.map((j) => (<option key={j.jammer_id} value={j.jammer_id}>{j.jammer_name}</option>))}
               </select>
             )}

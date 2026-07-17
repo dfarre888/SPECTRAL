@@ -12,11 +12,11 @@ const DEMO_ROWS = [
 export function EngagementEconomicsPanel() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      <div className="rounded-xl border border-[var(--store-line)] bg-black/30 p-4">
+      <div className="rounded-xl border border-[var(--store-line)] store-panel-inner p-4">
         <h3 className="text-sm font-semibold text-white mb-3">Exchange ratio table</h3>
         <ExchangeRatioTable rows={DEMO_ROWS} />
       </div>
-      <div className="rounded-xl border border-[var(--store-line)] bg-black/30 p-4">
+      <div className="rounded-xl border border-[var(--store-line)] store-panel-inner p-4">
         <h3 className="text-sm font-semibold text-white mb-3">Salvo simulator</h3>
         <SalvoSimulator />
       </div>

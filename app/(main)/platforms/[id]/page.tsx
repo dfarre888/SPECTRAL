@@ -28,6 +28,11 @@ export default async function PlatformDetailPage({ params }: PlatformDetailPageP
 
   return (
     <div className="max-w-7xl mx-auto pb-12">
+      <nav className="sticky top-0 z-20 -mx-4 px-4 py-2 mb-4 border-b border-[var(--store-line)] bg-[var(--store-bg)]/95 backdrop-blur-sm flex flex-wrap gap-2">
+        <a href="#specs" className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)]">Specifications</a>
+        <a href="#countermeasures" className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)]">Countermeasures</a>
+        <a href="#sam" className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)]">SAM defeat</a>
+      </nav>
       <div className="mb-6">
         <Link
           href="/platforms"
@@ -57,11 +62,13 @@ export default async function PlatformDetailPage({ params }: PlatformDetailPageP
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <PlatformSpecSheet platform={platform} />
-        <CountermeasuresPanel countermeasures={countermeasures} />
+        <div id="specs"><PlatformSpecSheet platform={platform} /></div>
+        <div id="countermeasures"><CountermeasuresPanel countermeasures={countermeasures} /></div>
       </div>
 
-      <SamDefeatPanel platformId={platform.id} />
+      <div id="sam" className="mt-6">
+        <SamDefeatPanel platformId={platform.id} />
+      </div>
     </div>
   )
 }

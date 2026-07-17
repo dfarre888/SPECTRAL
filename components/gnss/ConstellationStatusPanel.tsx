@@ -13,7 +13,7 @@ const CATEGORY_LABEL: Record<GnssSystemCategory, string> = {
 const STATUS_STYLES: Record<string, string> = {
   operational: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
   degraded: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
-  testing: 'bg-zinc-500/15 text-zinc-400 border-zinc-500/30',
+  testing: 'bg-[var(--store-surface-2)] store-text-muted border-[var(--store-line)]',
 }
 
 const OPERATOR_FLAG: Record<string, string> = {
@@ -53,7 +53,7 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
           <div className="flex items-start justify-between gap-2">
             <div>
               <h3 className="text-sm font-semibold text-white">{c.display_name}</h3>
-              <p className="text-xs text-zinc-500 mt-0.5">
+              <p className="text-xs store-text-muted mt-0.5">
                 {OPERATOR_FLAG[c.operator] ?? '🌐'} {c.operator}
               </p>
             </div>
@@ -68,7 +68,7 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
               >
                 {c.status}
               </span>
-              <span className="text-[9px] uppercase tracking-wider text-zinc-500">
+              <span className="text-[9px] uppercase tracking-wider store-text-muted">
                 {CATEGORY_LABEL[c.system_category]}
               </span>
             </div>
@@ -78,7 +78,7 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
           </p>
           <table className="w-full text-xs">
             <thead>
-              <tr className="text-zinc-500 uppercase tracking-wider">
+              <tr className="store-text-muted uppercase tracking-wider">
                 <th className="text-left py-1">Band</th>
                 <th className="text-right py-1">MHz</th>
               </tr>
@@ -87,7 +87,7 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
               {c.signal_bands.map((b) => {
                 const inJamZone = jammed.has(c.id)
                 return (
-                  <tr key={`${c.id}-${b.band}`} className={inJamZone ? 'text-orange-400' : 'text-zinc-300'}>
+                  <tr key={`${c.id}-${b.band}`} className={inJamZone ? 'text-orange-400' : 'store-text-body'}>
                     <td className="py-0.5">{b.band}</td>
                     <td className="py-0.5 text-right font-mono">{formatSignalFreqMhz(b.freq_mhz)}</td>
                   </tr>
@@ -95,7 +95,7 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
               })}
             </tbody>
           </table>
-          {c.notes ? <p className="text-[10px] text-zinc-500 leading-relaxed">{c.notes}</p> : null}
+          {c.notes ? <p className="text-[10px] store-text-muted leading-relaxed">{c.notes}</p> : null}
         </div>
       ))}
     </div>

@@ -1,0 +1,12 @@
+[
+  {
+    "slug": "home",
+    "route": "/",
+    "errors": []
+  },
+  {
+    "slug": "map",
+    "route": "/map",
+    "errors": []
+  }
+]

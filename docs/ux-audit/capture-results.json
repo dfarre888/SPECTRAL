@@ -1,0 +1,669 @@
+[
+  {
+    "slug": "home",
+    "url": "http://localhost:3001/",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/home-1440x900.png",
+    "mobileScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/home-390x844.png",
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Overview Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View SPECT"
+  },
+  {
+    "slug": "platforms",
+    "url": "http://localhost:3001/platforms",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/platforms-1440x900.png",
+    "mobileScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/platforms-390x844.png",
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Overview Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View SPECT"
+  },
+  {
+    "slug": "platform-mq9",
+    "url": "http://localhost:3001/platforms/mq-9-reaper",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/platform-mq9-1440x900.png",
+    "mobileScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/platform-mq9-390x844.png",
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Overview Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View SPECT"
+  },
+  {
+    "slug": "platform-mavic3",
+    "url": "http://localhost:3001/platforms/dji-mavic-3",
+    "status": 200,
+    "title": "404: This page could not be found.",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/platform-mavic3-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Overview Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View SPECT"
+  },
+  {
+    "slug": "spectrum",
+    "url": "http://localhost:3001/spectrum",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/spectrum-1440x900.png",
+    "mobileScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/spectrum-390x844.png",
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRA ← SPECTRAL ◈ Overview ⊞ Threat Library ⟁ Spectrum ◎ Radar ⌖ Effectors ⊕ Engagement ◷ Evolution INVENTORY 119 platforms 63 radars · 38 effectors C"
+  },
+  {
+    "slug": "map",
+    "url": "http://localhost:3001/map",
+    "status": 0,
+    "error": "page.goto: Timeout 45000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3001/map\", waiting until \"networkidle\"\n",
+    "consoleErrors": [
+      "Warning: Cannot update a component (`%s`) while rendering a different component (`%s`). To locate the bad setState() call inside `%s`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render%s MapIntelView CesiumMapPanel CesiumMapPanel \n    at CesiumMapPanel (webpack-inter",
+      "Warning: Cannot update a component (`%s`) while rendering a different component (`%s`). To locate the bad setState() call inside `%s`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render%s HotReload Topbar Topbar \n    at Topbar (webpack-internal:///(app-pages-browser)/",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "The above error occurred in the <NotFoundErrorBoundary> component:\n\n    at Topbar (webpack-internal:///(app-pages-browser)/./components/layout/Topbar.tsx:25:78)\n    at div\n    at div\n    at MainLayout (Server)\n    at InnerLayoutRouter (webpack-internal:///(app-pages-browser)/./node_modules/next/dist",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "The above error occurred in the <NotFoundErrorBoundary> component:\n\n    at Topbar (webpack-internal:///(app-pages-browser)/./components/layout/Topbar.tsx:25:78)\n    at div\n    at div\n    at MainLayout (Server)\n    at InnerLayoutRouter (webpack-internal:///(app-pages-browser)/./node_modules/next/dist",
+      "Failed to fetch RSC payload for http://localhost:3001/pcm/scenario. Falling back to browser navigation. TypeError: Failed to fetch\n    at fetchServerResponse (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/router-reducer/fetch-server-response.js:58:27)\n    at fast",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "PAGEERROR: Cannot read properties of null (reading 'useContext')",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    ],
+    "failedRequests": [
+      {
+        "url": "http://ecn.t3.tiles.virtualearth.net/tiles/a310133.jpeg?n=z&g=15580",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/arena?_rsc=1x5vm",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/scenarios/a9ad679b-d329-47d8-a1b4-c7d14bd3bb6d/stream",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/arena?_rsc=1x5vm",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/session/classification",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/scenarios",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/session/classification",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/session/classification",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/templates",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/session/classification",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/templates",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/scenarios",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/_next/static/Cesium/Assets/Textures/moonSmall.jpg",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/_next/static/Cesium/Assets/Images/bing_maps_credit.png",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/arena?_rsc=1x5vm",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/arena?_rsc=1x5vm",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/arena?_rsc=1x5vm",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/scenarios/a9ad679b-d329-47d8-a1b4-c7d14bd3bb6d/stream",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/planner?_rsc=t4biq",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/pcm/scenario?_rsc=y28v6",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/pcm/force-design",
+        "status": 500
+      },
+      {
+        "url": "http://localhost:3001/pcm/scenario?_rsc=y28v6",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/pcm/force-design",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/spectral/aar?exercise_id=demo-exercise",
+        "status": 403
+      },
+      {
+        "url": "http://localhost:3001/api/spectral/aar?exercise_id=demo-exercise",
+        "status": 403
+      },
+      {
+        "url": "http://localhost:3001/pcm/exercise/demo-exercise/aar?_rsc=1u4sx",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/currency?_rsc=11bsi",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/operations/import?_rsc=tbttk",
+        "failure": "net::ERR_ABORTED"
+      }
+    ]
+  },
+  {
+    "slug": "gnss",
+    "url": "http://localhost:3001/gnss",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/gnss-1440x900.png",
+    "mobileScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/gnss-390x844.png",
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 1,
+    "failedRequests": [
+      {
+        "url": "http://ecn.t3.tiles.virtualearth.net/tiles/a310133.jpeg?n=z&g=15580",
+        "failure": "net::ERR_ABORTED"
+      }
+    ],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Overview Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View SPECT"
+  },
+  {
+    "slug": "defeat",
+    "url": "http://localhost:3001/defeat",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/defeat-1440x900.png",
+    "mobileScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/defeat-390x844.png",
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Overview Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View SPECT"
+  },
+  {
+    "slug": "compare",
+    "url": "http://localhost:3001/compare",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/compare-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Overview Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View SPECT"
+  },
+  {
+    "slug": "overlay",
+    "url": "http://localhost:3001/overlay",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/overlay-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Overview Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View SPECT"
+  },
+  {
+    "slug": "conflict",
+    "url": "http://localhost:3001/conflict",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/conflict-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Overview Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View SPECT"
+  },
+  {
+    "slug": "conflicts",
+    "url": "http://localhost:3001/conflicts",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/conflicts-1440x900.png",
+    "mobileScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/conflicts-390x844.png",
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Overview Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View SPECT"
+  },
+  {
+    "slug": "conflicts-ukraine",
+    "url": "http://localhost:3001/conflicts/ukraine-naval-usv",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/conflicts-ukraine-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Overview Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View SPECT"
+  },
+  {
+    "slug": "arena",
+    "url": "http://localhost:3001/arena",
+    "status": 0,
+    "error": "page.goto: Timeout 45000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3001/arena\", waiting until \"networkidle\"\n",
+    "consoleErrors": [
+      "Warning: Cannot update a component (`%s`) while rendering a different component (`%s`). To locate the bad setState() call inside `%s`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render%s HotReload Topbar Topbar \n    at Topbar (webpack-internal:///(app-pages-browser)/",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "The above error occurred in the <NotFoundErrorBoundary> component:\n\n    at Topbar (webpack-internal:///(app-pages-browser)/./components/layout/Topbar.tsx:25:78)\n    at div\n    at div\n    at MainLayout (Server)\n    at InnerLayoutRouter (webpack-internal:///(app-pages-browser)/./node_modules/next/dist",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "PAGEERROR: Zap is not defined",
+      "The above error occurred in the <NotFoundErrorBoundary> component:\n\n    at Topbar (webpack-internal:///(app-pages-browser)/./components/layout/Topbar.tsx:25:78)\n    at div\n    at div\n    at MainLayout (Server)\n    at InnerLayoutRouter (webpack-internal:///(app-pages-browser)/./node_modules/next/dist",
+      "Failed to fetch RSC payload for http://localhost:3001/pcm/scenario. Falling back to browser navigation. TypeError: Failed to fetch\n    at fetchServerResponse (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/router-reducer/fetch-server-response.js:58:27)\n    at fast",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "PAGEERROR: Cannot read properties of null (reading 'useContext')",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    ],
+    "failedRequests": [
+      {
+        "url": "http://localhost:3001/arena?_rsc=1x5vm",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/scenarios/a9ad679b-d329-47d8-a1b4-c7d14bd3bb6d/stream",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/arena?_rsc=1x5vm",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/session/classification",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/scenarios",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/session/classification",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/session/classification",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/templates",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/session/classification",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/templates",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/scenarios",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/_next/static/Cesium/Assets/Textures/moonSmall.jpg",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/_next/static/Cesium/Assets/Images/bing_maps_credit.png",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/arena?_rsc=1x5vm",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/arena?_rsc=1x5vm",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/arena?_rsc=1x5vm",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/v1/wopr/scenarios/a9ad679b-d329-47d8-a1b4-c7d14bd3bb6d/stream",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/planner?_rsc=t4biq",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/pcm/scenario?_rsc=y28v6",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/pcm/force-design",
+        "status": 500
+      },
+      {
+        "url": "http://localhost:3001/pcm/scenario?_rsc=y28v6",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/pcm/force-design",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/api/spectral/aar?exercise_id=demo-exercise",
+        "status": 403
+      },
+      {
+        "url": "http://localhost:3001/api/spectral/aar?exercise_id=demo-exercise",
+        "status": 403
+      },
+      {
+        "url": "http://localhost:3001/pcm/exercise/demo-exercise/aar?_rsc=1u4sx",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/currency?_rsc=11bsi",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/operations/import?_rsc=tbttk",
+        "failure": "net::ERR_ABORTED"
+      }
+    ]
+  },
+  {
+    "slug": "planner",
+    "url": "http://localhost:3001/planner",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/planner-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 1,
+    "failedRequests": [
+      {
+        "url": "http://localhost:3001/api/v1/wopr/scenarios/a9ad679b-d329-47d8-a1b4-c7d14bd3bb6d/stream",
+        "failure": "net::ERR_ABORTED"
+      }
+    ],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Command center Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View"
+  },
+  {
+    "slug": "pcm",
+    "url": "http://localhost:3001/pcm",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/pcm-1440x900.png",
+    "mobileScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/pcm-390x844.png",
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 1,
+    "failedRequests": [
+      {
+        "url": "http://localhost:3001/planner?_rsc=t4biq",
+        "failure": "net::ERR_ABORTED"
+      }
+    ],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Command center Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View"
+  },
+  {
+    "slug": "pcm-scenario",
+    "url": "http://localhost:3001/pcm/scenario",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/pcm-scenario-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Command center Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View"
+  },
+  {
+    "slug": "pcm-force-design",
+    "url": "http://localhost:3001/pcm/force-design",
+    "status": 500,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/pcm-force-design-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 3,
+    "consoleErrors": [
+      "Failed to fetch RSC payload for http://localhost:3001/pcm/scenario. Falling back to browser navigation. TypeError: Failed to fetch\n    at fetchServerResponse (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/router-reducer/fetch-server-response.js:58:27)\n    at fast",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "PAGEERROR: Cannot read properties of null (reading 'useContext')"
+    ],
+    "failedRequestCount": 4,
+    "failedRequests": [
+      {
+        "url": "http://localhost:3001/pcm/scenario?_rsc=y28v6",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/pcm/force-design",
+        "status": 500
+      },
+      {
+        "url": "http://localhost:3001/pcm/scenario?_rsc=y28v6",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "url": "http://localhost:3001/pcm/force-design",
+        "failure": "net::ERR_ABORTED"
+      }
+    ],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Command center Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View"
+  },
+  {
+    "slug": "pcm-exercise",
+    "url": "http://localhost:3001/pcm/exercise/demo-exercise",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/pcm-exercise-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Command center Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View"
+  },
+  {
+    "slug": "pcm-aar",
+    "url": "http://localhost:3001/pcm/exercise/demo-exercise/aar",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/pcm-aar-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 2,
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    ],
+    "failedRequestCount": 3,
+    "failedRequests": [
+      {
+        "url": "http://localhost:3001/api/spectral/aar?exercise_id=demo-exercise",
+        "status": 403
+      },
+      {
+        "url": "http://localhost:3001/api/spectral/aar?exercise_id=demo-exercise",
+        "status": 403
+      },
+      {
+        "url": "http://localhost:3001/pcm/exercise/demo-exercise/aar?_rsc=1u4sx",
+        "failure": "net::ERR_ABORTED"
+      }
+    ],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Command center Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View"
+  },
+  {
+    "slug": "currency",
+    "url": "http://localhost:3001/currency",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/currency-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 1,
+    "failedRequests": [
+      {
+        "url": "http://localhost:3001/currency?_rsc=11bsi",
+        "failure": "net::ERR_ABORTED"
+      }
+    ],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Command center Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View"
+  },
+  {
+    "slug": "economics",
+    "url": "http://localhost:3001/economics",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/economics-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Command center Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View"
+  },
+  {
+    "slug": "operations-import",
+    "url": "http://localhost:3001/operations/import",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/operations-import-1440x900.png",
+    "mobileScreenshot": null,
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 1,
+    "failedRequests": [
+      {
+        "url": "http://localhost:3001/operations/import?_rsc=tbttk",
+        "failure": "net::ERR_ABORTED"
+      }
+    ],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Command center Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View"
+  },
+  {
+    "slug": "login",
+    "url": "http://localhost:3001/login",
+    "status": 200,
+    "title": "Spectral — Drone Threat Intelligence",
+    "hasClassificationBanner": true,
+    "desktopScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/login-1440x900.png",
+    "mobileScreenshot": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/screenshots/login-390x844.png",
+    "consoleErrorCount": 0,
+    "consoleErrors": [],
+    "failedRequestCount": 0,
+    "failedRequests": [],
+    "bodyPreview": "UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY SPECTRAL Drone Threat Intel Dashboard Command center Platform Library 164 platforms Map Intel Terrain & envelopes Data Import Tenant ingest Spectrum View"
+  }
+]

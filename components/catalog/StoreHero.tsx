@@ -13,6 +13,8 @@ interface StoreHeroProps {
   subtitle: ReactNode
   trustChip?: ReactNode
   trustItems?: StoreTrustItem[]
+  /** Compact ops header — Command Center above the fold */
+  variant?: 'default' | 'compact'
   className?: string
 }
 
@@ -23,34 +25,59 @@ export function StoreHero({
   subtitle,
   trustChip,
   trustItems,
+  variant = 'default',
   className,
 }: StoreHeroProps) {
+  const compact = variant === 'compact'
+
   return (
-    <section className={cn('relative z-10 pb-6', className)}>
-      <span className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full mb-4 border border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]">
-        <Sparkles size={12} />
+    <section className={cn('relative z-10', compact ? 'pb-3' : 'pb-6', className)}>
+      <span
+        className={cn(
+          'inline-flex items-center gap-2 font-semibold rounded-full border border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]',
+          compact ? 'text-[10px] px-2.5 py-1 mb-2' : 'text-xs px-3 py-1.5 mb-4',
+        )}
+      >
+        {!compact ? <Sparkles size={12} /> : null}
         {eyebrow}
       </span>
       <h1
-        className="store-display font-bold tracking-tight leading-none text-white text-balance"
+        className="store-display font-bold tracking-tight leading-tight text-white text-balance"
         style={{
-          fontSize: 'clamp(28px, 3.6vw, 44px)',
+          fontSize: compact ? 'clamp(20px, 2.4vw, 28px)' : 'clamp(28px, 3.6vw, 44px)',
           letterSpacing: '-0.03em',
         }}
       >
         {title}
       </h1>
-      <p className="mt-3 max-w-2xl text-sm sm:text-base store-text-body">{subtitle}</p>
+      <p
+        className={cn(
+          'max-w-2xl store-text-body',
+          compact ? 'mt-1.5 text-xs sm:text-sm' : 'mt-3 text-sm sm:text-base',
+        )}
+      >
+        {subtitle}
+      </p>
       {trustChip ? (
-        <div className="mt-4 inline-flex items-center gap-2.5 text-xs px-3.5 py-2.5 rounded-xl store-panel-inner store-text-body">
+        <div
+          className={cn(
+            'inline-flex items-center gap-2.5 text-xs rounded-xl store-panel-inner store-text-body',
+            compact ? 'mt-2 px-3 py-1.5' : 'mt-4 px-3.5 py-2.5',
+          )}
+        >
           {trustChip}
         </div>
       ) : null}
       {trustItems && trustItems.length > 0 ? (
-        <div className="mt-5 flex flex-wrap gap-4 text-xs store-text-muted">
+        <div
+          className={cn(
+            'flex flex-wrap gap-x-4 gap-y-1 text-[10px] store-text-muted',
+            compact ? 'mt-2' : 'mt-5 text-xs',
+          )}
+        >
           {trustItems.map(({ icon: Icon, label }) => (
             <span key={label} className="inline-flex items-center gap-1.5">
-              <Icon size={14} className="text-[var(--store-accent)]" />
+              <Icon size={compact ? 12 : 14} className="text-[var(--store-accent)]" />
               {label}
             </span>
           ))}

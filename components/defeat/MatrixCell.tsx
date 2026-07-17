@@ -27,6 +27,11 @@ interface MatrixCellProps {
   onSelect: (platformId: string, systemId: string) => void
   accreditedPkMap?: Record<string, AccreditedDefeatPkRow>
   computedSamPkMap?: Record<string, number>
+  focused?: boolean
+  isFocused?: boolean
+  tabIndex?: number
+  cellRef?: (el: HTMLButtonElement | null) => void
+  onFocus?: () => void
 }
 
 export function MatrixCell({
@@ -37,7 +42,13 @@ export function MatrixCell({
   onSelect,
   accreditedPkMap,
   computedSamPkMap,
+  focused = false,
+  isFocused = false,
+  tabIndex = -1,
+  cellRef,
+  onFocus,
 }: MatrixCellProps) {
+  const isActive = focused || isFocused
   const session = readLaydownSession()
   const laydownPair = findSessionPair(session, platform.id, system.id)
   const computedSamPk = computedSamPkMap?.[`${platform.id}:${system.id}`]
@@ -48,10 +59,16 @@ export function MatrixCell({
   return (
     <td className="border border-[var(--store-line)] p-0 min-w-[88px]">
       <button
+        ref={cellRef}
         type="button"
+        tabIndex={tabIndex}
+        onFocus={onFocus}
+        aria-selected={isActive}
         onClick={() => onSelect(platform.id, system.id)}
+        aria-label={`${platform.name} vs ${system.name}`}
         className={cn(
-          'w-full h-full min-h-[52px] flex items-center justify-center transition-all cursor-pointer hover:ring-1 hover:ring-orange/50',
+          'w-full h-full min-h-[52px] flex items-center justify-center transition-all cursor-pointer hover:ring-1 hover:ring-orange/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-accent)]',
+          isActive && 'ring-2 ring-[var(--store-accent)] z-10 relative',
           value.kind === 'immune' && 'border-2 border-red bg-red/5',
           value.kind === 'pct' && value.colour !== 'none' && value.colour !== 'immune' && COLOUR_CLASSES[value.colour],
           value.kind === 'empty' && 'store-text-muted bg-[var(--store-surface-2)]/50'

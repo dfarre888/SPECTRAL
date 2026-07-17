@@ -5,6 +5,7 @@ import { EditionBadge } from '@/components/operations/EditionBadge'
 import { AdjudicationSourceBanner } from '@/components/operations/AdjudicationSourceBanner'
 import { StorePanel } from '@/components/ui/store-surface'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
+import { TRAINING_WOPR_SCENARIOS } from '@/lib/wopr/training-scenarios'
 import type { SensorTrack, TickResult, WoprScenario } from '@/lib/wopr/types'
 import { clsx } from 'clsx'
 import { Play, Plus, Radio, Swords } from 'lucide-react'
@@ -59,12 +60,14 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
       const res = await fetch('/api/v1/wopr/scenarios')
       if (res.status === 403) {
         setApiStatus('fallback')
-        setError('WOPR API forbidden — Operations edition and tenant membership required.')
+        setScenarios(TRAINING_WOPR_SCENARIOS)
+        setError(null)
         return
       }
       if (!res.ok) {
         setApiStatus('fallback')
-        setError(`Failed to load scenarios (${res.status}).`)
+        setScenarios(TRAINING_WOPR_SCENARIOS)
+        setError(`Live WOPR unavailable (${res.status}) — OSINT training vignettes loaded.`)
         return
       }
       const json = await res.json()
@@ -73,13 +76,21 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
       setApiStatus('ok')
     } catch {
       setApiStatus('fallback')
-      setError('Network error loading WOPR scenarios.')
+      setScenarios(TRAINING_WOPR_SCENARIOS)
+      setError('Network error — OSINT training vignettes loaded.')
     }
   }, [operations])
 
   useEffect(() => {
     refresh()
   }, [refresh])
+
+  useEffect(() => {
+    if (!operations && TRAINING_WOPR_SCENARIOS.length > 0 && !selectedId) {
+      setScenarios(TRAINING_WOPR_SCENARIOS)
+      selectScenario(TRAINING_WOPR_SCENARIOS[0].id, TRAINING_WOPR_SCENARIOS)
+    }
+  }, [operations, selectedId, selectScenario])
 
   useEffect(() => {
     if (!operations) return
@@ -196,18 +207,33 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
 
   if (!operations) {
     return (
-      <StorePanel className="p-8 space-y-4">
+      <StorePanel className="p-4 space-y-4">
         <div className="flex items-center gap-3">
           <Swords className="w-5 h-5 text-[var(--store-accent)]" />
           <EditionBadge />
         </div>
-        <p className="store-text-body text-sm max-w-lg">
-          Red/Blue Arena (WOPR) requires Spectral Operations edition. Training tier provides static
-          scenario templates only — no live SSE COP or fog-of-war tick engine.
+        <p className="store-text-body text-xs max-w-lg">
+          Training tier — OSINT vignettes with static ORBAT. Enable Operations edition for live SSE COP and fog-of-war tick engine.
         </p>
-        <p className="text-[10px] font-mono store-text-muted">
-          Set NEXT_PUBLIC_SPECTRAL_EDITION=operations to enable WOPR client.
-        </p>
+        <ul className="space-y-1 max-h-48 overflow-y-auto">
+          {TRAINING_WOPR_SCENARIOS.map((s) => (
+            <li key={s.id}>
+              <button
+                type="button"
+                onClick={() => selectScenario(s.id, TRAINING_WOPR_SCENARIOS)}
+                className={clsx(
+                  'w-full text-left rounded-xl px-3 py-2 text-xs border transition-colors',
+                  selectedId === s.id
+                    ? 'nav-item-active'
+                    : 'store-panel-inner store-text-body hover:border-[var(--store-accent-border)]',
+                )}
+              >
+                <p className="font-semibold text-white truncate">{s.name}</p>
+                <p className="font-mono text-[10px] store-text-muted mt-0.5">{s.classification}</p>
+              </button>
+            </li>
+          ))}
+        </ul>
       </StorePanel>
     )
   }

@@ -74,7 +74,7 @@ export function PlatformLibrary({ platforms, countries, sovereignPlatforms = [] 
                 boxShadow: '0 0 8px var(--store-success)',
               }}
             />
-            Intel update 2026-06-07 — {platforms.length} platforms catalogued from OSINT
+            Intel update Jul 2026 — {platforms.length} platforms catalogued from OSINT
           </>
         }
         trustItems={[

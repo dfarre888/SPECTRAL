@@ -1,5 +1,7 @@
 'use client'
 
+import { useCallback, useEffect, useRef } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { MatrixCell } from '@/components/defeat/MatrixCell'
 import type { DefeatTypeFilter } from '@/lib/defeat/defeat-types'
@@ -19,6 +21,9 @@ interface DefeatMatrixTableProps {
   accreditedPkMap?: Record<string, AccreditedDefeatPkRow>
   computedSamPkMap?: Record<string, number>
   variant?: 'default' | 'fullscreen'
+  focusRow?: number
+  focusCol?: number
+  onFocusChange?: (row: number, col: number) => void
 }
 
 function findRow(
@@ -31,6 +36,8 @@ function findRow(
   )
 }
 
+const ROW_HEIGHT = 72
+
 export function DefeatMatrixTable({
   platforms,
   systems,
@@ -40,12 +47,69 @@ export function DefeatMatrixTable({
   accreditedPkMap,
   computedSamPkMap,
   variant = 'default',
+  focusRow = 0,
+  focusCol = 0,
+  onFocusChange,
 }: DefeatMatrixTableProps) {
   const platformColMin = variant === 'fullscreen' ? 'min-w-[220px]' : 'min-w-[180px]'
   const systemColMin = variant === 'fullscreen' ? 'min-w-[120px]' : 'min-w-[100px]'
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const cellRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
+
+  const rowVirtualizer = useVirtualizer({
+    count: platforms.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 8,
+  })
+
+  const clampFocus = useCallback(
+    (row: number, col: number) => ({
+      row: Math.max(0, Math.min(platforms.length - 1, row)),
+      col: Math.max(0, Math.min(systems.length - 1, col)),
+    }),
+    [platforms.length, systems.length],
+  )
+
+  const moveFocus = useCallback(
+    (row: number, col: number) => {
+      if (platforms.length === 0 || systems.length === 0) return
+      const next = clampFocus(row, col)
+      onFocusChange?.(next.row, next.col)
+      rowVirtualizer.scrollToIndex(next.row, { align: 'auto' })
+      const platform = platforms[next.row]
+      const system = systems[next.col]
+      if (platform && system) {
+        onCellSelect(platform.id, system.id)
+      }
+    },
+    [clampFocus, onFocusChange, onCellSelect, platforms, rowVirtualizer, systems],
+  )
+
+  useEffect(() => {
+    const key = `${focusRow}:${focusCol}`
+    cellRefs.current.get(key)?.focus({ preventScroll: true })
+  }, [focusRow, focusCol])
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (platforms.length === 0 || systems.length === 0) return
+    const deltas: Record<string, [number, number]> = {
+      ArrowUp: [-1, 0],
+      ArrowDown: [1, 0],
+      ArrowLeft: [0, -1],
+      ArrowRight: [0, 1],
+      Home: [0, -focusCol],
+      End: [0, systems.length - 1 - focusCol],
+    }
+    const delta = deltas[e.key]
+    if (!delta) return
+    e.preventDefault()
+    moveFocus(focusRow + delta[0], focusCol + delta[1])
+  }
+
   if (platforms.length === 0 || systems.length === 0) {
     return (
-      <div className="store-panel rounded-2xl p-12 text-center">
+      <div className="store-panel rounded-xl p-12 text-center">
         <p className="store-text-body text-sm">
           No data matches current filters.
         </p>
@@ -53,17 +117,28 @@ export function DefeatMatrixTable({
     )
   }
 
+  const virtualRows = rowVirtualizer.getVirtualItems()
+
   return (
-    <div className="w-full overflow-x-auto store-panel rounded-2xl">
-      <table className="w-max min-w-full border-collapse">
-        <thead>
-          <tr>
-            <th className={`sticky left-0 z-30 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 text-left ${platformColMin}`}>
-              <span className="text-xs store-text-muted uppercase tracking-wider font-semibold">
-                Platform
-              </span>
-            </th>
-            {systems.map((system) => (
+    <div className="w-full store-panel rounded-xl overflow-hidden">
+      <div
+        ref={scrollRef}
+        className="overflow-auto max-h-[min(70vh,720px)]"
+        role="grid"
+        aria-label="Defeat matrix platform by effector grid"
+        aria-rowcount={platforms.length}
+        aria-colcount={systems.length + 1}
+        onKeyDown={handleKeyDown}
+      >
+        <table className="w-max min-w-full border-collapse">
+          <thead>
+            <tr>
+              <th className={`sticky left-0 top-0 z-30 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 text-left ${platformColMin}`}>
+                <span className="text-xs store-text-muted uppercase tracking-wider font-semibold">
+                  Platform
+                </span>
+              </th>
+              {systems.map((system) => (
                 <th
                   key={system.id}
                   className={`sticky top-0 z-20 bg-[var(--store-surface)] border border-[var(--store-line)] px-3 py-3 text-center ${systemColMin}`}
@@ -83,44 +158,70 @@ export function DefeatMatrixTable({
                     </span>
                   </div>
                 </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {platforms.map((platform) => (
-            <tr key={platform.id}>
-              <td className="sticky left-0 z-10 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <PlatformThumbnail id={platform.id} name={platform.name} size="sm" />
-                  <p className="font-semibold text-white text-sm leading-tight">
-                    {platform.name}
-                  </p>
-                </div>
-                <p className="text-xs font-mono store-text-muted mt-0.5">
-                  {platform.country_of_origin ?? '—'}
-                </p>
-              </td>
-              {systems.map((system) => (
-                <MatrixCell
-                  key={`${platform.id}-${system.id}`}
-                  platform={platform}
-                  system={system}
-                  row={findRow(effectiveness, platform.id, system.id)}
-                  defeatTypeFilter={defeatTypeFilter}
-                  onSelect={onCellSelect}
-                    accreditedPkMap={accreditedPkMap}
-                    computedSamPkMap={computedSamPkMap}
-                />
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    {accreditedPkMap && Object.keys(accreditedPkMap).length > 0 && (
-      <p className="mt-3 px-2 text-[11px] font-mono store-text-muted">
-        <span className="text-[#F97316]">A</span> Training-contract analogue · blank OSINT estimate
-      </p>
-    )}
+          </thead>
+          <tbody style={{ height: rowVirtualizer.getTotalSize(), position: 'relative' }}>
+            {virtualRows.map((virtualRow) => {
+              const platform = platforms[virtualRow.index]
+              return (
+                <tr
+                  key={platform.id}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <td className={`sticky left-0 z-10 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 ${platformColMin}`}>
+                    <div className="flex items-center gap-2">
+                      <PlatformThumbnail id={platform.id} name={platform.name} size="sm" />
+                      <p className="font-semibold text-white text-sm leading-tight">
+                        {platform.name}
+                      </p>
+                    </div>
+                    <p className="text-xs font-mono store-text-muted mt-0.5">
+                      {platform.country_of_origin ?? '—'}
+                    </p>
+                  </td>
+                  {systems.map((system, colIndex) => (
+                    <MatrixCell
+                      key={`${platform.id}-${system.id}`}
+                      platform={platform}
+                      system={system}
+                      row={findRow(effectiveness, platform.id, system.id)}
+                      defeatTypeFilter={defeatTypeFilter}
+                      onSelect={onCellSelect}
+                      accreditedPkMap={accreditedPkMap}
+                      computedSamPkMap={computedSamPkMap}
+                      isFocused={virtualRow.index === focusRow && colIndex === focusCol}
+                      tabIndex={virtualRow.index === focusRow && colIndex === focusCol ? 0 : -1}
+                      cellRef={(el) => {
+                        const key = `${virtualRow.index}:${colIndex}`
+                        if (el) cellRefs.current.set(key, el)
+                        else cellRefs.current.delete(key)
+                      }}
+                      onFocus={() => onFocusChange?.(virtualRow.index, colIndex)}
+                    />
+                  ))}
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+      {accreditedPkMap && Object.keys(accreditedPkMap).length > 0 ? (
+        <p className="mt-3 px-4 pb-3 text-[11px] font-mono store-text-muted">
+          <span className="text-[var(--store-accent)]">A</span> Accredited Pk — Operations tier only. Arrow keys navigate cells; Enter opens adjudication panel.
+        </p>
+      ) : (
+        <p className="mt-3 px-4 pb-3 text-[11px] font-mono store-text-muted">
+          Arrow keys navigate matrix cells; Enter opens adjudication panel.
+        </p>
+      )}
     </div>
   )
 }

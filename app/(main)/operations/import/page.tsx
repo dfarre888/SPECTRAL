@@ -157,6 +157,9 @@ export default function OperationsImportPage() {
       eyebrow="Operations"
       title="Customer Import"
       subtitle="Tenant-scoped platform, Pd/Pk defeat matrix, and document ingestion with human approval"
+      headerAction={
+        <p className="text-[10px] font-mono store-text-muted">Date of information: Jul 2026</p>
+      }
     >
       <div className="grid gap-6 max-w-3xl">
         <div className="flex items-center gap-3">
@@ -263,7 +266,7 @@ export default function OperationsImportPage() {
         <StorePanel inner className="p-5 space-y-4">
           <form onSubmit={queueDocument} className="space-y-3">
             <div className="flex items-center gap-2 text-sm text-white font-medium">
-              <FileUp className="w-4 h-4 text-purple" />
+              <FileUp className="w-4 h-4 text-[var(--store-accent)]" />
               Queue document import
             </div>
             <Input

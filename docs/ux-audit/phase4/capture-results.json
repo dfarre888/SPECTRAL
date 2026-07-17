@@ -1,0 +1,194 @@
+[
+  {
+    "slug": "home",
+    "route": "/",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/home-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/home-390x844.png"
+  },
+  {
+    "slug": "platforms",
+    "route": "/platforms",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/platforms-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/platforms-390x844.png"
+  },
+  {
+    "slug": "platform-mq9",
+    "route": "/platforms/mq-9-reaper",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/platform-mq9-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/platform-mq9-390x844.png"
+  },
+  {
+    "slug": "platform-mavic3",
+    "route": "/platforms/dji-mavic-3",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/platform-mavic3-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "spectrum",
+    "route": "/spectrum",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/spectrum-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/spectrum-390x844.png"
+  },
+  {
+    "slug": "map",
+    "route": "/map",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/map-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/map-390x844.png"
+  },
+  {
+    "slug": "gnss",
+    "route": "/gnss",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/gnss-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/gnss-390x844.png"
+  },
+  {
+    "slug": "defeat",
+    "route": "/defeat",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/defeat-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/defeat-390x844.png"
+  },
+  {
+    "slug": "compare",
+    "route": "/compare?ids=shahed-136,mq-9-reaper",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/compare-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "overlay",
+    "route": "/overlay",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/overlay-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "conflict",
+    "route": "/conflict",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/conflict-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "conflicts",
+    "route": "/conflicts",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/conflicts-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/conflicts-390x844.png"
+  },
+  {
+    "slug": "conflicts-ukraine",
+    "route": "/conflicts/ukraine-naval-usv",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/conflicts-ukraine-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "arena",
+    "route": "/arena",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/arena-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/arena-390x844.png"
+  },
+  {
+    "slug": "planner",
+    "route": "/planner",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/planner-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "pcm",
+    "route": "/pcm",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/pcm-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/pcm-390x844.png"
+  },
+  {
+    "slug": "pcm-scenario",
+    "route": "/pcm/scenario",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/pcm-scenario-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "pcm-force-design",
+    "route": "/pcm/force-design",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/pcm-force-design-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "pcm-exercise",
+    "route": "/pcm/exercise/demo-exercise",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/pcm-exercise-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "pcm-aar",
+    "route": "/pcm/exercise/demo-exercise/aar",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/pcm-aar-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "currency",
+    "route": "/currency",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/currency-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "economics",
+    "route": "/economics",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/economics-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "operations-import",
+    "route": "/operations/import",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/operations-import-1440x900.png",
+    "mobilePath": null
+  },
+  {
+    "slug": "login",
+    "route": "/login",
+    "ok": true,
+    "errors": [],
+    "desktopPath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/login-1440x900.png",
+    "mobilePath": "/Users/davidfarrell/Library/CloudStorage/OneDrive-Personal/SPECTRAL/docs/ux-audit/phase4/login-390x844.png"
+  }
+]

@@ -70,7 +70,7 @@ export function ModuleCard({
         ease: [0.22, 1, 0.36, 1],
       }}
       whileHover={{ y: -4 }}
-      className="store-panel rounded-2xl overflow-hidden flex flex-col cursor-pointer"
+      className="store-panel rounded-xl overflow-hidden flex flex-col cursor-pointer"
       onClick={() => router.push(href)}
       onKeyDown={(e) => {
         if (e.key === 'Enter') router.push(href)
@@ -106,7 +106,7 @@ export function ModuleCard({
           </Link>
         </h3>
         <p className="text-[13px] leading-relaxed line-clamp-2 store-text-body">{blurb}</p>
-        <p className="font-mono text-sm mt-auto pt-2">
+        <p className="font-mono text-sm mt-auto pt-2 tabular-nums">
           <span className="text-[var(--store-accent)] font-bold">{count}</span>{' '}
           <span className="store-text-muted text-xs">{unit}</span>
         </p>

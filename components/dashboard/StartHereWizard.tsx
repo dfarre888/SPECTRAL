@@ -24,8 +24,8 @@ const TASKS: {
   { href: '/platforms', label: 'Compare two platforms', subtitle: 'Pick 2, use Compare tray', icon: GitCompare, accent: 'text-amber' },
   { href: '/overlay', label: 'SAM vs UAS Pk', subtitle: 'Intercept rings + salvo Pk', icon: Target, accent: 'text-red' },
   { href: '/arena', label: 'Live wargame (Arena)', subtitle: 'WOPR · FoW · advance tick', icon: Swords, accent: 'text-[var(--store-accent)]' },
-  { href: '/spectrum', label: 'EW spectrum', subtitle: '400 MHz–6 GHz visualiser', icon: Radio, accent: 'text-purple' },
-  { href: '/pcm/scenario', label: 'PCM scenario + exercise', subtitle: 'AI scenario · globe run', icon: Crosshair, accent: 'text-purple' },
+  { href: '/spectrum', label: 'EW spectrum', subtitle: '400 MHz–6 GHz visualiser', icon: Radio, accent: 'text-cyan' },
+  { href: '/pcm/scenario', label: 'PCM scenario builder', subtitle: 'Generate exercise from blind spots', icon: Crosshair, accent: 'text-[var(--store-accent)]' },
   { href: '/defeat', label: 'Defeat matrix', subtitle: 'Platform × countermeasure', icon: Shield, accent: 'text-[var(--store-success)]' },
   { href: '/gnss', label: 'GNSS threats', subtitle: 'Jamming · spoofing · defeat', icon: Satellite, accent: 'text-cyan' },
 ]

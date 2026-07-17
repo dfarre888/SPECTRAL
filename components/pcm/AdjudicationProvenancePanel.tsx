@@ -20,7 +20,7 @@ function PkSourceBadge({ source }: { source?: 'accredited' | 'osint' }) {
     );
   }
   return (
-    <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold tracking-wider bg-zinc-700/40 text-zinc-500 border border-zinc-600/40">
+    <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold tracking-wider bg-[var(--store-surface-2)] store-text-muted border border-[var(--store-line)]">
       OSINT EST
     </span>
   );
@@ -87,7 +87,7 @@ export function AdjudicationProvenancePanel({
             <p className="text-xs font-mono text-red px-2">{pair.immuneReason}</p>
           )}
           {showAccreditedLegend && (
-            <p className="text-[11px] text-zinc-500 italic font-mono mt-2 px-2">
+            <p className="text-[11px] store-text-muted italic font-mono mt-2 px-2">
               Pk figures marked ACCREDITED are training-contract analogues, not MoD-verified.
             </p>
           )}

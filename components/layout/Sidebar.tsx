@@ -8,20 +8,21 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
+import { useMobileNav } from '@/components/layout/MobileNavContext'
 
 const BASE_NAV = [
-  { href: '/',          icon: LayoutDashboard, label: 'Dashboard',         sub: 'Overview' },
+  { href: '/',          icon: LayoutDashboard, label: 'Dashboard',         sub: 'Command center' },
   { href: '/platforms', icon: Database,         label: 'Platform Library', sub: 'platforms' },
   { href: '/map',       icon: Map,              label: 'Map Intel',        sub: 'Terrain & envelopes' },
   { href: '/spectrum',  icon: Radio,            label: 'Spectrum View',    sub: 'SPECTRA / EW intel' },
   { href: '/gnss',      icon: Satellite,        label: 'GNSS Intelligence',sub: 'Constellations & jammers' },
   { href: '/defeat',    icon: Shield,           label: 'Defeat Matrix',    sub: 'Countermeasures' },
-  { href: '/conflict',  icon: Activity,         label: 'Conflict Incidents', sub: 'Timeline & map' },
   { href: '/conflicts', icon: Globe,            label: 'Conflict Intel',   sub: 'Case studies' },
+  { href: '/conflict',  icon: Activity,         label: 'Incident Timeline', sub: 'Live incident feed' },
   { href: '/pcm',       icon: Crosshair,        label: 'PCM Training',     sub: 'Adaptive wargaming' },
   { href: '/arena',     icon: Swords,           label: 'Red/Blue Arena',   sub: 'WOPR scenario engine' },
-  { href: '/compare',   icon: GitCompare,       label: '1v1 Overlay',      sub: 'Platform compare (needs 2 from library)' },
-  { href: '/overlay',   icon: Target,           label: 'SAM Engagement',   sub: 'SAM vs UAS Pk + rings' },
+  { href: '/compare',   icon: GitCompare,       label: 'Platform Compare', sub: 'Side-by-side dossiers' },
+  { href: '/overlay',   icon: Target,           label: 'SAM Engagement',   sub: 'Pk envelope & salvo' },
 ] as const
 
 const OPERATIONS_NAV = {
@@ -45,6 +46,7 @@ interface SidebarProps {
 
 export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: SidebarProps) {
   const pathname = usePathname()
+  const { open, close } = useMobileNav()
   const nav = isOperationsEditionClient()
     ? [...BASE_NAV.slice(0, 3), OPERATIONS_NAV, ...BASE_NAV.slice(3)]
     : BASE_NAV
@@ -67,6 +69,7 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
       <Link
         key={href}
         href={href}
+        onClick={() => close()}
         className={cn(
           'flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl mb-0.5 group transition-all border',
           active
@@ -95,11 +98,26 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
   }
 
   return (
-    <aside className="w-72 xl:w-80 flex-shrink-0 store-panel border-r border-[var(--store-line)] border-t-0 border-b-0 border-l-0 rounded-none flex flex-col bg-[var(--store-surface)]">
+    <>
+      {open ? (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          className="fixed inset-0 z-40 bg-black/60 md:hidden"
+          onClick={close}
+        />
+      ) : null}
+      <aside
+        className={cn(
+          'w-72 xl:w-80 flex-shrink-0 store-panel border-r border-[var(--store-line)] border-t-0 border-b-0 border-l-0 rounded-none flex flex-col bg-[var(--store-surface)] z-50',
+          'fixed md:static inset-y-0 left-0 transition-transform duration-200 md:translate-x-0',
+          open ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+        )}
+      >
       <div className="px-5 py-4 border-b border-[var(--store-line)]">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-purple/15 border border-purple/35 flex items-center justify-center">
-            <Radio className="w-4 h-4 text-purple" />
+          <div className="w-8 h-8 rounded-lg bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] flex items-center justify-center">
+            <Radio className="w-4 h-4 text-[var(--store-accent)]" />
           </div>
           <div>
             <p className="store-display font-bold text-white tracking-widest text-sm uppercase">Spectral</p>
@@ -136,10 +154,8 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
         <p className="text-[10px] font-mono store-text-muted text-center">
           SPECTRAL v0.1.0 — UNCLASSIFIED
         </p>
-        <p className="text-[9px] font-mono store-text-muted text-center opacity-70">
-          Powered by A3DM
-        </p>
       </div>
     </aside>
+    </>
   )
 }

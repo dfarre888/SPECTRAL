@@ -124,6 +124,12 @@ body {
   color: var(--store-ink-soft);
 }
 
+/* Focus — orange ring on zinc canvas */
+:focus-visible {
+  outline: 2px solid var(--store-accent);
+  outline-offset: 2px;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--surf1); }

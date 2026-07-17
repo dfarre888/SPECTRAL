@@ -6,6 +6,7 @@ import { worldStateEngine } from '@/lib/pcm/worldStateEngine';
 import { requireSpectralAuth } from '@/lib/pcm/require-auth';
 import { authorizeDsRoute, resolveSessionDsPlayerId } from '@/lib/moat/ds-route-auth';
 import { isDemoMode } from '@/lib/demo';
+import { getTrainingAarDocument } from '@/lib/pcm/training-fixtures';
 
 export const dynamic = 'force-dynamic'
 
@@ -37,7 +38,18 @@ export async function GET(req: NextRequest) {
     .maybeSingle();
 
   const playerId = targetPlayerId ?? player?.id;
-  if (!playerId) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!playerId) {
+    const doc = getTrainingAarDocument(exerciseId);
+    return NextResponse.json({
+      exercise_id: exerciseId,
+      player_id: 'training-fixture',
+      aar_document: doc,
+      overall_grade: doc.overall_grade,
+      accreditation_eligible: doc.accreditation_eligible,
+      training: true,
+      demo: isDemoMode(),
+    });
+  }
 
   const { data } = await supabase
     .from('spectral_aar_documents')
@@ -45,7 +57,18 @@ export async function GET(req: NextRequest) {
     .eq('exercise_id', exerciseId)
     .eq('player_id', playerId)
     .maybeSingle();
-  if (!data) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  if (!data) {
+    const doc = getTrainingAarDocument(exerciseId);
+    return NextResponse.json({
+      exercise_id: exerciseId,
+      player_id: playerId,
+      aar_document: doc,
+      overall_grade: doc.overall_grade,
+      accreditation_eligible: doc.accreditation_eligible,
+      training: true,
+      demo: isDemoMode(),
+    });
+  }
   return NextResponse.json(data);
 }
 

@@ -4,7 +4,8 @@ import CopyWebpackPlugin from 'copy-webpack-plugin'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const cesiumSource = 'node_modules/cesium/Build/Cesium'
-const cesiumBaseUrl = '_next/static/Cesium'
+// public/static/Cesium — stable in Next dev (avoids Uri stack overflow on workers)
+const cesiumBaseUrl = 'static/Cesium'
 
 const cesiumWorkers = path.resolve(__dirname, 'node_modules/cesium/Build/Cesium/Workers')
 
@@ -76,7 +77,8 @@ const nextConfig = {
   },
 
   env: {
-    NEXT_PUBLIC_CESIUM_BASE_URL: `/${cesiumBaseUrl}`,
+    // Trailing slash required for Cesium Resource/worker URL derivation
+    NEXT_PUBLIC_CESIUM_BASE_URL: `/${cesiumBaseUrl}/`,
   },
 }
 

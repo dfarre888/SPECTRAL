@@ -230,9 +230,16 @@ export default function CesiumMapPanel({
 
       Cesium.Ion.defaultAccessToken = process.env.NEXT_PUBLIC_CESIUM_ION_TOKEN ?? ''
 
-      const terrainProvider = await Cesium.createWorldTerrainAsync({
-        requestVertexNormals: true,
-      })
+      // Callers: /map MapIntelView → CesiumMapPanel. Terrain optional for globe UI.
+      let terrainProvider
+      try {
+        terrainProvider = await Cesium.createWorldTerrainAsync({
+          requestVertexNormals: true,
+        })
+      } catch (err) {
+        console.warn('[CesiumMapPanel] World terrain unavailable, using ellipsoid', err)
+        terrainProvider = new Cesium.EllipsoidTerrainProvider()
+      }
 
       if (destroyed || !container.isConnected) {
         abortInit()

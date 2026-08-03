@@ -5,9 +5,18 @@ let loadPromise: Promise<CesiumModule> | null = null
 /**
  * Load Cesium via script tag — avoids webpack parsing Cesium.js (import.meta).
  * Cesium.js is served from NEXT_PUBLIC_CESIUM_BASE_URL:
- *   - Dev/build default: /_next/static/Cesium (webpack CopyWebpackPlugin)
- *   - Helm / air-gap:     /static/Cesium (copy-cesium-public.mjs → public/)
+ *   - Local / Helm: /static/Cesium/ (public/ via copy-cesium-public.mjs)
+ *   - Fallback:     /_next/static/Cesium/ (webpack CopyWebpackPlugin)
+ *
+ * Trailing slash is mandatory — without it Uri/Resource derivation can recurse
+ * until "Maximum call stack size exceeded" during terrain tile requests.
  */
+function resolveCesiumBaseUrl(): string {
+  const raw =
+    process.env.NEXT_PUBLIC_CESIUM_BASE_URL?.trim() || '/static/Cesium'
+  return raw.endsWith('/') ? raw : `${raw}/`
+}
+
 export function loadCesium(): Promise<CesiumModule> {
   if (typeof window === 'undefined') {
     return Promise.reject(new Error('Cesium cannot load during SSR'))
@@ -17,11 +26,10 @@ export function loadCesium(): Promise<CesiumModule> {
   if (w.Cesium) return Promise.resolve(w.Cesium)
 
   if (!loadPromise) {
-    w.CESIUM_BASE_URL =
-      process.env.NEXT_PUBLIC_CESIUM_BASE_URL ?? '/_next/static/Cesium'
+    w.CESIUM_BASE_URL = resolveCesiumBaseUrl()
 
     loadPromise = new Promise((resolve, reject) => {
-      const src = `${w.CESIUM_BASE_URL}/Cesium.js`
+      const src = `${w.CESIUM_BASE_URL}Cesium.js`
       const existing = document.querySelector<HTMLScriptElement>(
         'script[data-spectral-cesium]'
       )

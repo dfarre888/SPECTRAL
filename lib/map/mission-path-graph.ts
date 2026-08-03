@@ -217,7 +217,59 @@ function edgeTraversable(
   return true
 }
 
-/** When A* cannot reach the goal, pick a single-flank detour instead of a straight line through threats. */
+function pathLengthM(path: GraphPoint[]): number {
+  let len = 0
+  for (let i = 1; i < path.length; i++) {
+    len += haversineM(path[i - 1].lat, path[i - 1].lon, path[i].lat, path[i].lon)
+  }
+  return len
+}
+
+function pathClearOfThreats(path: GraphPoint[], hardThreats: ThreatCircle[]): boolean {
+  for (let i = 1; i < path.length; i++) {
+    if (
+      segmentIntersectsAny(
+        path[i - 1].lon,
+        path[i - 1].lat,
+        path[i].lon,
+        path[i].lat,
+        hardThreats,
+      )
+    ) {
+      return false
+    }
+  }
+  return true
+}
+
+/** Rim / tangent / flank samples used for hard-avoid detours. */
+function bypassCandidates(
+  start: GraphPoint,
+  goal: GraphPoint,
+  threat: ThreatCircle,
+): GraphPoint[] {
+  const base = threat.radius_m + DETOUR_BUFFER_M
+  const ring: GraphPoint[] = []
+  for (const scale of [1, 1.2, 1.45, 1.8]) {
+    const offset = base * scale
+    for (let i = 0; i < 16; i++) {
+      ring.push(destinationPointM(threat.lat, threat.lon, offset, (360 / 16) * i))
+    }
+  }
+  return dedupePoints([
+    ...flankCandidates(start, goal, threat),
+    ...externalTangentPoints(start, threat),
+    ...externalTangentPoints(goal, threat),
+    ...threatRimWaypoints(threat, 16),
+    ...ring,
+  ])
+}
+
+/**
+ * Lateral hard-avoid detour. Callers: findOptimalRoute fallback, planMissionPath
+ * expandRouteWithEffectorOverflight. ThreatCircle: { lon, lat, radius_m, kind }.
+ * User: "replan around threat isnt planning around the threat"
+ */
 export function detourRouteAroundThreats(
   start: GraphPoint,
   goal: GraphPoint,
@@ -230,25 +282,63 @@ export function detourRouteAroundThreats(
     return [start, goal]
   }
 
-  let bestPath: GraphPoint[] = [start, goal]
-  let bestLen = Infinity
+  let bestClear: GraphPoint[] | null = null
+  let bestClearLen = Infinity
 
-  for (const threat of hardThreats) {
-    if (!segmentIntersectsThreat(start.lon, start.lat, goal.lon, goal.lat, threat)) continue
-    for (const flank of flankCandidates(start, goal, threat)) {
-      if (segmentIntersectsAny(start.lon, start.lat, flank.lon, flank.lat, hardThreats)) continue
-      if (segmentIntersectsAny(flank.lon, flank.lat, goal.lon, goal.lat, hardThreats)) continue
-      const len =
-        haversineM(start.lat, start.lon, flank.lat, flank.lon) +
-        haversineM(flank.lat, flank.lon, goal.lat, goal.lon)
-      if (len < bestLen) {
-        bestLen = len
-        bestPath = [start, flank, goal]
+  const blocking = hardThreats.filter((t) =>
+    segmentIntersectsThreat(start.lon, start.lat, goal.lon, goal.lat, t),
+  )
+
+  for (const threat of blocking.length > 0 ? blocking : hardThreats) {
+    const cands = bypassCandidates(start, goal, threat)
+
+    for (const flank of cands) {
+      const path = [start, flank, goal]
+      if (!pathClearOfThreats(path, hardThreats)) continue
+      const len = pathLengthM(path)
+      if (len < bestClearLen) {
+        bestClearLen = len
+        bestClear = path
+      }
+    }
+
+    // Two-hop for large / overlapping domes where one flank still clips.
+    const limit = Math.min(cands.length, 18)
+    for (let i = 0; i < limit; i++) {
+      for (let j = 0; j < limit; j++) {
+        if (i === j) continue
+        const path = [start, cands[i], cands[j], goal]
+        if (!pathClearOfThreats(path, hardThreats)) continue
+        const len = pathLengthM(path)
+        if (len < bestClearLen) {
+          bestClearLen = len
+          bestClear = path
+        }
       }
     }
   }
 
-  return bestPath
+  if (bestClear) return bestClear
+
+  // Wider rings rather than flying the chord through the dome.
+  for (const threat of blocking) {
+    for (const scale of [2.2, 2.8, 3.5]) {
+      const offset = threat.radius_m * scale + DETOUR_BUFFER_M
+      for (const side of [1, -1] as const) {
+        const brg = bearingDeg(start.lat, start.lon, goal.lat, goal.lon)
+        const flank = destinationPointM(
+          threat.lat,
+          threat.lon,
+          offset,
+          (brg + 90 * side + 360) % 360,
+        )
+        const path = [start, flank, goal]
+        if (pathClearOfThreats(path, hardThreats)) return path
+      }
+    }
+  }
+
+  return [start, goal]
 }
 
 function edgeCostKm(

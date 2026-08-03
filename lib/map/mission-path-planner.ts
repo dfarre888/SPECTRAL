@@ -220,7 +220,11 @@ export function defaultRouteObjective(
   return 'pk'
 }
 
-/** Insert climb/overflight nodes when a large effector dome blocks the horizontal chord. */
+/**
+ * If a planned segment still clips a Pk envelope, splice in a lateral detour.
+ * Callers: planMissionPath only. Previously inserted effector centre (through-dome).
+ * User: "replan around threat isnt planning around the threat"
+ */
 function expandRouteWithEffectorOverflight(
   points: { lon: number; lat: number }[],
   pkThreats: ThreatCircle[],
@@ -230,18 +234,17 @@ function expandRouteWithEffectorOverflight(
   for (let i = 0; i < points.length - 1; i++) {
     const a = points[i]
     const b = points[i + 1]
-    const blocking = pkThreats.filter(
-      (t) =>
-        t.kind === 'effector' &&
-        segmentIntersectsThreat(a.lon, a.lat, b.lon, b.lat, t),
-    )
-    for (const t of blocking) {
-      const already = expanded.some(
-        (p) => haversineM(p.lat, p.lon, t.lat, t.lon) < 300,
-      )
-      if (!already) expanded.push({ lon: t.lon, lat: t.lat })
+    if (!segmentIntersectsAny(a.lon, a.lat, b.lon, b.lat, pkThreats)) {
+      expanded.push(b)
+      continue
     }
-    expanded.push(b)
+    const bypass = detourRouteAroundThreats(a, b, pkThreats)
+    for (let k = 1; k < bypass.length; k++) {
+      const p = bypass[k]
+      const prev = expanded[expanded.length - 1]
+      if (haversineM(prev.lat, prev.lon, p.lat, p.lon) < 40) continue
+      expanded.push(p)
+    }
   }
   return expanded
 }

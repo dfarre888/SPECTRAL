@@ -209,4 +209,40 @@ describe('mission-path-planner', () => {
     const detours = plan.waypoints.filter((wp) => wp.kind === 'detour')
     expect(detours.length).toBeGreaterThan(0)
   })
+
+  // Vitest only — covers planMissionPath / detourRouteAroundThreats regression.
+  // User: "replan around threat isnt planning around the threat"
+  it('replan around large effector does not route through dome centre', () => {
+    const startLon = 55.0
+    const startLat = 26.0
+    const goalLon = 55.18
+    const goalLat = 26.0
+    const midLon = (startLon + goalLon) / 2
+    const domeKm = 6
+    const plan = planMissionPath({
+      startLon,
+      startLat,
+      startTerrainAMSL: 10,
+      goalLon,
+      goalLat,
+      goalTerrainAMSL: 10,
+      goalKind: 'target',
+      asset: uasAsset,
+      placedCuas: [],
+      placedRadars: [],
+      placedEffectors: [placedEffector(midLon, startLat, domeKm)],
+      emcon: false,
+      routeObjective: 'pk',
+    })
+    expect(plan.waypoints.length).toBeGreaterThan(2)
+    for (const wp of plan.waypoints) {
+      const dM = Math.hypot(
+        (wp.lon - midLon) * 111_000 * Math.cos((startLat * Math.PI) / 180),
+        (wp.lat - startLat) * 111_000,
+      )
+      expect(dM).toBeGreaterThan(domeKm * 1000 * 0.35)
+    }
+    const offset = plan.waypoints.some((wp) => Math.abs(wp.lat - startLat) > 0.01)
+    expect(offset).toBe(true)
+  })
 })

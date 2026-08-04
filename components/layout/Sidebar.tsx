@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import {
   Database, Radio, Satellite, Shield, Globe,
   Swords, GitCompare, LayoutDashboard, ChevronRight, Map, FileUp,
-  Activity, Coins, Crosshair, Target,
+  Activity, Coins, Crosshair, Target, ClipboardList,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
@@ -14,6 +14,7 @@ const BASE_NAV = [
   { href: '/',          icon: LayoutDashboard, label: 'Dashboard',         sub: 'Command center' },
   { href: '/platforms', icon: Database,         label: 'Platform Library', sub: 'platforms' },
   { href: '/map',       icon: Map,              label: 'Map Intel',        sub: 'Terrain & envelopes' },
+  { href: '/planner',   icon: ClipboardList,    label: 'SPECTRAL Planner', sub: 'Saved battlespace plans' },
   { href: '/spectrum',  icon: Radio,            label: 'Spectrum View',    sub: 'SPECTRA / EW intel' },
   { href: '/gnss',      icon: Satellite,        label: 'GNSS Intelligence',sub: 'Constellations & jammers' },
   { href: '/defeat',    icon: Shield,           label: 'Defeat Matrix',    sub: 'Countermeasures' },

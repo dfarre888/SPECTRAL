@@ -66,6 +66,8 @@ export interface BedrockTextParams {
   maxTokens?: number
   /** Temperature 0–1 (default 0.3 for analytic tasks) */
   temperature?: number
+  /** Override model ID (e.g. IEP Haiku / Sonnet escalation) */
+  modelId?: string
 }
 
 /**
@@ -78,13 +80,27 @@ export async function callBedrock({
   userContent,
   maxTokens = 2048,
   temperature = 0.3,
+  modelId,
 }: BedrockTextParams): Promise<string> {
+  return callBedrockWithModel({ system, userContent, maxTokens, temperature, modelId })
+}
+
+/**
+ * Send a single user-turn message with an explicit model ID override.
+ */
+export async function callBedrockWithModel({
+  system,
+  userContent,
+  maxTokens = 2048,
+  temperature = 0.3,
+  modelId = BEDROCK_MODEL_ID,
+}: BedrockTextParams & { modelId?: string }): Promise<string> {
   const messages: BedrockMessage[] = [
     { role: 'user', content: [{ text: userContent }] },
   ]
 
   const cmd = new ConverseCommand({
-    modelId: BEDROCK_MODEL_ID,
+    modelId,
     system: [{ text: system }],
     messages,
     inferenceConfig: {

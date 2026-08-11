@@ -16,7 +16,7 @@
     "test:moat": "vitest run lib/moat/_test_moat.test.ts",
     "test:gnss": "vitest run lib/gnss/_test_gnss-incidents.test.ts",
     "test:spectral:all": "vitest run lib/pcm/_test_phase1.test.ts lib/pcm/_test_phase2.test.ts lib/pcm/_test_phase3.test.ts lib/pcm/_test_phase4-adjudication.test.ts lib/moat/_test_moat.test.ts",
-    "test:spectral:golden": "vitest run lib/pcm/_test_golden-scenarios.test.ts",
+    "test:iep": "vitest run lib/iep/_test_iep.test.ts",
     "ux:capture:phase3": "node docs/ux-audit/_capture-phase3.mjs",
     "ux:capture:phase4": "node docs/ux-audit/_capture-phase4.mjs"
   },
@@ -40,6 +40,7 @@
     "copy-webpack-plugin": "^12.0.2",
     "d3": "^7.9.0",
     "date-fns": "^3.6.0",
+    "docx": "^9.7.1",
     "framer-motion": "^11.2.10",
     "lucide-react": "^0.383.0",
     "mapbox-gl": "^3.4.0",

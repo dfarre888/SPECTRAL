@@ -106,7 +106,7 @@ resources:
 #     --from-literal=SUPABASE_SERVICE_ROLE_KEY='eyJ...' \
 #     --from-literal=AWS_ACCESS_KEY_ID='AKIA...' \
 #     --from-literal=AWS_SECRET_ACCESS_KEY='...' \
-#     --from-literal=NEXT_PUBLIC_SUPABASE_URL='https://...' \
-#     --from-literal=NEXT_PUBLIC_SUPABASE_ANON_KEY='eyJ...' \
+#     --from-literal=NEXT_PUBLIC_SUPABASE_URL='https://nxnukrnkbxiqberymqzq.supabase.co' \
+#     --from-literal=NEXT_PUBLIC_SUPABASE_ANON_KEY='<Sydney anon key>' \
 #     --from-literal=NEXT_PUBLIC_CESIUM_ION_TOKEN='...'
 # ─────────────────────────────────────────────────────────────────────────────

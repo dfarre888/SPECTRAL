@@ -43,7 +43,7 @@ export default async function ForceNationPage({ params }: PageProps) {
       </p>
       {force.catalog_count === 0 ? (
         <p className="text-sm store-text-body">
-          No BMI catalog rows on this database. Apply the Mumbai-parity migration and reload Sydney.
+          No BMI catalog rows on this database. Confirm .env.local points at Sydney (nxnukrnkbxiqberymqzq) and reload.
         </p>
       ) : (
         <CountryOrbatClient force={force} compareDefault={compareDefault} />

@@ -6,6 +6,7 @@ import {
   capsNavalCiws,
   capsRfJammer,
 } from '@/data/capability-templates'
+import { getA3dmDrone, isA3dmPlatformId } from '@/lib/a3dm/catalog'
 import { resolveCapabilities } from '@/lib/spectrum/fallback'
 import type { MapCuasAsset } from '@/lib/map/types'
 import type { Platform, SpectrumCapability } from '@/lib/spectrum/types'
@@ -39,12 +40,18 @@ function humanizeCotsId(id: string): string {
  * Bands are Estimated ISM/GNSS family defaults (same class as Mavic 3), not a curated signature.
  */
 function synthesizeCotsSpectrumUas(id: string): Platform {
+  const a3dm = getA3dmDrone(id)
+  const name = a3dm
+    ? a3dm.sub_category && a3dm.sub_category !== 'Standard'
+      ? `${a3dm.manufacturer} ${a3dm.name} (${a3dm.sub_category})`
+      : `${a3dm.manufacturer} ${a3dm.name}`
+    : humanizeCotsId(id)
   const stub: Platform = {
     id,
-    name: humanizeCotsId(id),
+    name,
     side: 'red',
     group: 1,
-    origin: 'COTS (estimated family)',
+    origin: a3dm?.manufacturer ? `${a3dm.manufacturer} (A3DM COTS)` : 'COTS (estimated family)',
     category: 'COTS',
     role: 'ISR / adapted munition carrier',
     confidence: 'estimated',
@@ -54,9 +61,9 @@ function synthesizeCotsSpectrumUas(id: string): Platform {
     video_mhz: 5800,
     control_link_freq: '2.4 / 5.8 GHz ISM (estimated COTS family)',
     defeat_note:
-      'Estimated Group 1 COTS — RF jam 2.4/5.8 GHz C2 + video; GNSS spoof forces land or RTH. Same class as Mavic 3 family.',
+      'Estimated Group 1–2 COTS — RF jam 2.4/5.8 GHz C2 + video; GNSS spoof forces land or RTH. Same class as Mavic 3 family.',
     intel_note:
-      'Not in the military seed dossier. Spectrum bands are Estimated ISM/GNSS family defaults for training — not a curated signature.',
+      'A3DM / COTS sheet airframe with no military seed dossier. Spectrum bands are Estimated ISM/GNSS family defaults for training — not a curated per-airframe signature. Finish Pk is the catalog training default, not accredited Pk.',
     capabilities: [],
   }
   return {
@@ -80,7 +87,12 @@ export function resolveSpectrumUas(id: string): Platform | null {
     return platform
   }
 
-  if (isCotsMapId(id) || isCotsMapId(normalized)) {
+  if (
+    isA3dmPlatformId(id) ||
+    isA3dmPlatformId(normalized) ||
+    isCotsMapId(id) ||
+    isCotsMapId(normalized)
+  ) {
     return synthesizeCotsSpectrumUas(id)
   }
   return null

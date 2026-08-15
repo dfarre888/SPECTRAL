@@ -232,6 +232,43 @@ describe('laydown-evaluation', () => {
     }
   })
 
+  it('A3DM sheet IDs outside the DJI prefix still get an Estimated finish profile', () => {
+    const trinity = resolveSpectrumUas('quantum-trinity-f90-mapping')
+    const volanti = resolveSpectrumUas('carbonix-volanti-mapping-vtol')
+    expect(trinity?.confidence).toBe('estimated')
+    expect(volanti?.confidence).toBe('estimated')
+    expect(trinity?.group).toBe(1)
+    expect(trinity?.capabilities?.length).toBeGreaterThan(0)
+
+    const uas: PlacedUas = {
+      ...placedFpv(),
+      instanceId: 'uas-trinity',
+      asset: {
+        id: 'quantum-trinity-f90-mapping',
+        name: 'Quantum Systems Trinity F90+',
+        slug: 'quantum-trinity-f90-mapping',
+        category: 'cots',
+        categoryLabel: 'COTS',
+        catalog_tier: 'cots',
+        image_url: null,
+        max_altitude_agl_m: 5500,
+        altitude_reference: 'AGL',
+        max_range_km: 5,
+        max_speed_kmh: 43.2,
+        endurance_min: 90,
+        climb_rate_mpm: 300,
+        rangeEstimated: true,
+      },
+    }
+    const evalResult = evaluateUas(uas, baseState({ catalogUas: [uas.asset] }))
+    const canShoot = evalResult.sections.find((s) => s.title === 'Can shoot down')!
+    const canDetect = evalResult.sections.find((s) => s.title === 'Radars — can detect')!
+    expect(canDetect.items.length).toBeGreaterThan(0)
+    expect(canShoot.items.length).toBeGreaterThan(0)
+    expect(canShoot.items.some((i) => i.pct != null && i.pct > 0)).toBe(true)
+    expect(commanderScoreboard(evalResult).verdict).toBe('can_finish')
+  })
+
   it('COTS Mavic 4 Pro gets an estimated Group 1 spectrum profile', () => {
     const profile = resolveSpectrumUas('dji-mavic-4-pro')
     expect(profile).not.toBeNull()

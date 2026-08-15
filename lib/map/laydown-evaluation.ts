@@ -5,6 +5,7 @@ import { BLUE_EFFECTORS } from '@/data/seed-effectors-blue'
 import { RED_EFFECTORS } from '@/data/seed-effectors-red'
 import { analyzeLaydown } from '@/lib/map/laydown-analysis'
 import { buildOverlapVolume, uasToCuasDistance3dM } from '@/lib/map/overlap'
+import { formatCatalogDisplayName } from '@/lib/map/catalog-display-name'
 import { resolveSpectrumUas } from '@/lib/map/spectrum-bridge'
 import { computeDetectionPct } from '@/lib/map/threat-assessment'
 import type {
@@ -276,8 +277,10 @@ function buildEffectorsByRadarId(): Map<string, EffectorSystem[]> {
 const EFFECTORS_BY_RADAR_ID = buildEffectorsByRadarId()
 
 function effectorKillChainLabel(effector: EffectorSystem): string {
-  const parent = effector.associated_system ? ` · ${effector.associated_system}` : ''
-  return `${effector.name}${parent}`
+  return formatCatalogDisplayName({
+    name: effector.name,
+    parentSystem: effector.associated_system,
+  })
 }
 
 export function catalogRadars(): RadarSystem[] {
@@ -464,7 +467,11 @@ function radarRow(
   return {
     kind: 'radar',
     assetId: radar.id,
-    name: radar.name,
+    name: formatCatalogDisplayName({
+      name: radar.name,
+      natoName: radar.nato_name,
+      parentSystem: radar.associated_system,
+    }),
     placed,
     parentSystem: radar.associated_system ?? undefined,
     natoName: radar.nato_name ?? undefined,
@@ -557,14 +564,23 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
       canShoot.push({
         kind: 'effector',
         assetId: effector.id,
-        name: effector.name,
+        name: formatCatalogDisplayName({
+          name: effector.name,
+          parentSystem: effector.associated_system,
+        }),
         pct: shot.pct,
         placed: placed.effector.has(effector.id),
         parentSystem: effector.associated_system ?? undefined,
         linkedRadars: (effector.cueing_radar_ids ?? [])
           .map((id) => RADAR_BY_ID.get(id))
           .filter((r): r is RadarSystem => r != null)
-          .map((r) => (r.nato_name ? `${r.name} (${r.nato_name})` : r.name)),
+          .map((r) =>
+            formatCatalogDisplayName({
+              name: r.name,
+              natoName: r.nato_name,
+              parentSystem: r.associated_system,
+            }),
+          ),
         reason: shot.reason,
       })
     }
@@ -578,10 +594,7 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
   for (const radar of ALL_RADARS) {
     if (canDetectIds.has(radar.id)) continue
     complement.push({
-      kind: 'radar',
-      assetId: radar.id,
-      name: radar.name,
-      placed: placed.radar.has(radar.id),
+      ...radarRow(radar, tc, 0, placed.radar.has(radar.id)),
       reason: 'Neither detects nor engages this threat (radar layer)',
     })
   }
@@ -600,8 +613,12 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
     complement.push({
       kind: 'effector',
       assetId: effector.id,
-      name: effector.name,
+      name: formatCatalogDisplayName({
+        name: effector.name,
+        parentSystem: effector.associated_system,
+      }),
       placed: placed.effector.has(effector.id),
+      parentSystem: effector.associated_system ?? undefined,
       reason: 'Cannot engage threat class or outside envelope',
     })
   }

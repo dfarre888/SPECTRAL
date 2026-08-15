@@ -17,6 +17,7 @@ import { RADAR_BAND_INFO, RADAR_SPECTRUM_BANDS } from '@/lib/spectrum/radar-band
 import { useRadars } from './radar-data';
 import { getAxisConfig, makeLogScale } from '@/lib/spectrum/scale';
 import { GlassCard } from '@/components/ui/primitives';
+import { formatCatalogDisplayName } from '@/lib/map/catalog-display-name';
 
 const VB_W = 960;
 const PAD_L = 70;
@@ -204,7 +205,7 @@ export function RadarSpectrum({ onSelect, selectedIds = [] }: { onSelect?: (r: R
               return (
                 <>
                   <rect x={bx} y={by} width={240} height={70} rx={9} fill="rgba(8,10,12,0.97)" stroke="var(--sx-glass-line-hi)" />
-                  <text x={bx + 12} y={by + 18} fontFamily="var(--sx-ui)" fontSize="11" fontWeight="700" fill="var(--sx-ink)">{hover.name}{hover.nato_name ? ` · ${hover.nato_name}` : ''}</text>
+                  <text x={bx + 12} y={by + 18} fontFamily="var(--sx-ui)" fontSize="11" fontWeight="700" fill="var(--sx-ink)">{formatCatalogDisplayName({ name: hover.name, natoName: hover.nato_name, parentSystem: hover.associated_system })}</text>
                   <text x={bx + 12} y={by + 33} fontFamily="var(--sx-mono)" fontSize="9" fill={hover.side === 'blue' ? 'var(--sx-blue)' : 'var(--sx-red)'}>{hover.bands.join('/')}-band · {hover.mobility.replace('_', '-')} · ~{hover.instrumented_range_km ?? '?'} km</text>
                   <text x={bx + 12} y={by + 47} fontFamily="var(--sx-ui)" fontSize="9" fill="var(--sx-ink-dim)">Sees: {hover.can_detect.slice(0, 4).join(', ')}</text>
                   <text x={bx + 12} y={by + 60} fontFamily="var(--sx-ui)" fontSize="9" fill="var(--sx-ink-faint)">Blind to: {hover.cannot_detect.join(', ') || '—'}{hover.can_detect.includes('stealth') ? ' · counter-stealth' : ''}</text>

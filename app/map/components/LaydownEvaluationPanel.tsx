@@ -10,6 +10,7 @@ import type {
   LaydownEvaluation,
   SelectedLaydownItem,
 } from '@/lib/map/laydown-evaluation'
+import { formatCatalogDisplayName } from '@/lib/map/catalog-display-name'
 import {
   commanderScoreboard,
   groupEvaluatedByIadsStack,
@@ -79,8 +80,11 @@ function EvalRow({
   /** When true, parent system is shown on the stack header — omit per-row duplicate. */
   compactStack?: boolean
 }) {
-  const displayName =
-    item.kind === 'radar' && item.natoName ? `${item.name} · ${item.natoName}` : item.name
+  const displayName = formatCatalogDisplayName({
+    name: item.name,
+    natoName: item.natoName,
+    parentSystem: compactStack ? null : item.parentSystem,
+  })
 
   const selected =
     item.instanceId != null &&

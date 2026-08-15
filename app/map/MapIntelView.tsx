@@ -50,6 +50,7 @@ import {
   type EvaluatedItem,
   type SelectedLaydownItem,
 } from '@/lib/map/laydown-evaluation'
+import { formatEffectorDisplayName, formatRadarDisplayName } from '@/lib/map/catalog-display-name'
 import { getSpectraMapAssets, toMapEffectorAsset, toMapRadarAsset } from '@/lib/map/spectra-assets'
 import { buildThreatAssessments } from '@/lib/map/threat-assessment'
 import { resolveAssetPlacement } from '@/lib/map/counter-system-registry'
@@ -528,10 +529,14 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           return placedUas.find((u) => u.instanceId === item.instanceId)?.asset.name ?? item.instanceId
         case 'cuas':
           return placedCuas.find((c) => c.instanceId === item.instanceId)?.asset.name ?? item.instanceId
-        case 'radar':
-          return placedRadars.find((r) => r.instanceId === item.instanceId)?.asset.name ?? item.instanceId
-        case 'effector':
-          return placedEffectors.find((e) => e.instanceId === item.instanceId)?.asset.name ?? item.instanceId
+        case 'radar': {
+          const radar = placedRadars.find((r) => r.instanceId === item.instanceId)
+          return radar ? formatRadarDisplayName(radar.asset) : item.instanceId
+        }
+        case 'effector': {
+          const effector = placedEffectors.find((e) => e.instanceId === item.instanceId)
+          return effector ? formatEffectorDisplayName(effector.asset) : item.instanceId
+        }
       }
     }
     return listPlacedLaydownItems(laydownState).map((item) => ({
@@ -1033,9 +1038,9 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
               : placementMode.kind === 'loiter'
               ? 'Place Loiter — click globe for loiter point · Esc to cancel'
               : placementMode.kind === 'radar'
-                ? `Placing radar ${placementMode.asset.name} · click terrain · Esc to cancel`
+                ? `Placing radar ${formatRadarDisplayName(placementMode.asset)} · click terrain · Esc to cancel`
                 : placementMode.kind === 'effector'
-                  ? `Placing ${placementMode.asset.tierLabel} ${placementMode.asset.name} · click terrain · Esc to cancel`
+                  ? `Placing ${placementMode.asset.tierLabel} ${formatEffectorDisplayName(placementMode.asset)} · click terrain · Esc to cancel`
                   : placementMode.kind === 'uas'
                     ? `Placing ${placementMode.asset.name} · click terrain · Esc to cancel`
                     : `Placing ${placementMode.asset.name} · click terrain · Esc to cancel`}

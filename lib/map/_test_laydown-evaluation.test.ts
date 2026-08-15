@@ -323,6 +323,19 @@ describe('laydown-evaluation', () => {
     expect(rows.every((r) => r.detect > 0 && r.defeat > 0)).toBe(true)
   })
 
+  it('evaluateUas names radars with spoken name first and designator second', () => {
+    const evalResult = evaluateUas(placedFpv(), baseState())
+    const cannotDetect = evalResult.sections.find((s) => s.title === 'Radars — cannot detect')!
+    const complement = evalResult.sections.find((s) => s.title === 'Cannot detect or shoot')!
+    const bigBird = cannotDetect.items.find((i) => i.assetId === 'radar-91n6e-big-bird')
+    const tombstone = complement.items.find((i) => i.assetId === 'radar-64n6-tombstone')
+    const s500 = complement.items.find((i) => i.assetId === 'radar-s500-91n6a')
+    expect(bigBird?.name).toBe('Big Bird (91N6E)')
+    expect(tombstone?.name).toBe('Tombstone (64N6E)')
+    expect(s500?.name).toBe('S-500 Prometheus (91N6A(M))')
+    expect(tombstone?.parentSystem).toBeTruthy()
+  })
+
   it('evaluateUas items include kind on every row', () => {
     const evalResult = evaluateUas(placedShahed(), baseState())
     for (const section of evalResult.sections) {

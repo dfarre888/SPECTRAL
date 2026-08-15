@@ -32,6 +32,7 @@ import {
   type MapForceFilter,
   uasForceSides,
 } from '@/lib/map/force-filter'
+import { formatEffectorDisplayName, formatRadarDisplayName } from '@/lib/map/catalog-display-name'
 import { isCotsCatalog, isCotsDji } from '@/lib/map/cots-defaults'
 import { filterMapAssets, type MapAssetSearchHit } from '@/lib/map/map-asset-search'
 import { operationalEnvelopeRadiusKm } from '@/lib/map/range-declaration'
@@ -437,7 +438,7 @@ export function AssetSidebar({
                   key={asset.id}
                   id={asset.id}
                   kicker={asset.roleLabel}
-                  name={asset.name}
+                  name={formatRadarDisplayName(asset)}
                   sub={formatRadarSubline(asset)}
                   active={placingRadarId === asset.id}
                   highlighted={highlightedIds.includes(asset.id)}
@@ -464,7 +465,7 @@ export function AssetSidebar({
                   key={asset.id}
                   id={asset.id}
                   kicker={asset.tierLabel}
-                  name={asset.name}
+                  name={formatEffectorDisplayName(asset)}
                   sub={formatEffectorSubline(asset)}
                   active={placingEffectorId === asset.id}
                   highlighted={highlightedIds.includes(asset.id)}
@@ -606,13 +607,13 @@ export function AssetSidebar({
                 >
                 <StorePanel inner className="relative p-3 pl-9">
                   <RemoveButton
-                    label={`Remove ${r.asset.name}`}
+                    label={`Remove ${formatRadarDisplayName(r.asset)}`}
                     onClick={() => onRemoveRadar(r.instanceId)}
                   />
                   <div className="flex items-start gap-3">
-                    <PlatformThumbnail id={r.asset.id} name={r.asset.name} size="md" variant="cuas" />
+                    <PlatformThumbnail id={r.asset.id} name={formatRadarDisplayName(r.asset)} size="md" variant="cuas" />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-white truncate">{r.asset.name}</p>
+                      <p className="text-[13px] font-semibold text-white truncate">{formatRadarDisplayName(r.asset)}</p>
                       <p className="text-[11px] store-text-muted font-mono mt-0.5">
                         {r.lat.toFixed(4)}°, {r.lon.toFixed(4)}°
                       </p>
@@ -638,13 +639,13 @@ export function AssetSidebar({
                 >
                 <StorePanel inner className="relative p-3 pl-9">
                   <RemoveButton
-                    label={`Remove ${e.asset.name}`}
+                    label={`Remove ${formatEffectorDisplayName(e.asset)}`}
                     onClick={() => onRemoveEffector(e.instanceId)}
                   />
                   <div className="flex items-start gap-3">
-                    <PlatformThumbnail id={e.asset.id} name={e.asset.name} size="md" variant="cuas" />
+                    <PlatformThumbnail id={e.asset.id} name={formatEffectorDisplayName(e.asset)} size="md" variant="cuas" />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-white truncate">{e.asset.name}</p>
+                      <p className="text-[13px] font-semibold text-white truncate">{formatEffectorDisplayName(e.asset)}</p>
                       <p className="text-[11px] store-text-muted font-mono mt-0.5">
                         {e.lat.toFixed(4)}°, {e.lon.toFixed(4)}°
                       </p>
@@ -879,7 +880,7 @@ function MapSearchResultCard({
         <MapAssetPickCard
           id={asset.id}
           kicker={asset.roleLabel}
-          name={asset.name}
+          name={formatRadarDisplayName(asset)}
           sub={formatRadarSubline(asset)}
           active={placingRadarId === asset.id}
           highlighted={highlightedIds.includes(asset.id)}
@@ -895,7 +896,7 @@ function MapSearchResultCard({
         <MapAssetPickCard
           id={asset.id}
           kicker={asset.tierLabel}
-          name={asset.name}
+          name={formatEffectorDisplayName(asset)}
           sub={formatEffectorSubline(asset)}
           active={placingEffectorId === asset.id}
           highlighted={highlightedIds.includes(asset.id)}
@@ -997,15 +998,14 @@ function formatUasSubline(asset: MapUasAsset): string {
 function formatRadarSubline(asset: MapRadarAsset): string {
   const sector =
     asset.sector_deg >= 360 ? '360°' : `${asset.sector_deg.toFixed(0)}° sector`
-  const nato = asset.nato_name ? ` · ${asset.nato_name}` : ''
-  return `${asset.detection_range_km.toFixed(0)} km · ${asset.bandsLabel} · ${sector}${nato}`
+  return `${asset.detection_range_km.toFixed(0)} km · ${asset.bandsLabel} · ${sector}`
 }
 
 function formatEffectorSubline(asset: MapEffectorAsset): string {
   const alt = `${asset.alt_min_km.toFixed(0)}–${asset.alt_max_km.toFixed(0)} km alt`
   const cue =
     asset.linkedRadars.length > 0
-      ? ` · cue: ${asset.linkedRadars.map((r) => r.name).join(' + ')}`
+      ? ` · cue: ${asset.linkedRadars.map((r) => formatRadarDisplayName(r)).join(' + ')}`
       : ''
   return `${asset.engagement_max_km.toFixed(0)} km engage · ${alt}${cue}`
 }

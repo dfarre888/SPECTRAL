@@ -56,6 +56,7 @@ import { envelopeDiscAltitudeM } from '@/lib/map/range-declaration'
 import type { TerrainHeightUpdate } from '@/lib/map/terrain'
 import { cn } from '@/lib/utils'
 import { GlobeSkeleton } from '@/components/ui/loading-skeleton'
+import { ensureCotsMapAssets } from '@/lib/map/ensure-cots-assets'
 import type { MapAssetsPayload, CursorPosition, PlacementMode, PlacedCuas, PlacedEffector, PlacedRadar, PlacedUas, MapCuasAsset, MapEffectorAsset, MapRadarAsset, MapUasAsset } from '@/lib/map/types'
 import type { RcsFacets } from '@/lib/spectral/detectionPhysicsConstants'
 
@@ -101,7 +102,7 @@ interface MapIntelViewProps {
 
 export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const searchParams = useSearchParams()
-  const [assets] = useState(initialAssets)
+  const [assets] = useState(() => ensureCotsMapAssets(initialAssets))
   const [placedUas, setPlacedUas] = useState<PlacedUas[]>([])
   const [rcsOverrides, setRcsOverrides] = useState<Record<string, RcsFacets>>({})
   const [placedCuas, setPlacedCuas] = useState<PlacedCuas[]>([])

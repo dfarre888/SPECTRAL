@@ -48,7 +48,8 @@ export async function getPlatformCount(): Promise<number> {
     .select('*', { count: 'exact', head: true })
 
   if (error) throw new Error(error.message)
-  return count ?? 0
+  const merged = mergePlatformCatalog([])
+  return Math.max(count ?? 0, merged.length)
 }
 
 export async function getAllPlatforms(): Promise<Platform[]> {

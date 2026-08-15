@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import {
   Crosshair,
+  Flag,
   GitCompare,
   Globe,
   Map,
@@ -20,6 +21,7 @@ const TASKS: {
   icon: LucideIcon
   accent: string
 }[] = [
+  { href: '/force', label: 'Country force / ORBAT', subtitle: 'Air land sea · AUS vs CHN', icon: Flag, accent: 'text-[var(--store-accent)]' },
   { href: '/map', label: 'Laydown on map', subtitle: 'Cesium COP · mission paths', icon: Map, accent: 'text-cyan' },
   { href: '/platforms', label: 'Compare two platforms', subtitle: 'Pick 2, use Compare tray', icon: GitCompare, accent: 'text-amber' },
   { href: '/overlay', label: 'SAM vs UAS Pk', subtitle: 'Intercept rings + salvo Pk', icon: Target, accent: 'text-red' },

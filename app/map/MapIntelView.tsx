@@ -37,6 +37,7 @@ import toast from 'react-hot-toast'
 import { IadsStackPanel } from '@/app/map/components/IadsStackPanel'
 import { getVignette, vignetteToLaydown } from '@/lib/planner/vignettes'
 import { hydrateLaydown } from '@/lib/planner/battlespace-plan'
+import { readForcePackage, clearForcePackage } from '@/lib/force/package-session'
 import { haversineM } from '@/lib/propagation/geo'
 import {
   buildLaydownEvaluation,
@@ -113,6 +114,11 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const [stagingBanner, setStagingBanner] = useState<{
     stagedCount: number
     matchedCount: number
+  } | null>(null)
+  const [forceBanner, setForceBanner] = useState<{
+    theatre: string
+    placed: number
+    unmatched: number
   } | null>(null)
   const [highlightedIds, setHighlightedIds] = useState<string[]>([])
   const [terrainEpoch, setTerrainEpoch] = useState(0)
@@ -758,6 +764,38 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     planner.setPlanName(v.name)
   }, [searchParams, assets])
 
+  const forceHandledRef = useRef(false)
+  useEffect(() => {
+    if (forceHandledRef.current) return
+    if (searchParams.get('from') !== 'force') return
+    const theatreId = searchParams.get('forceTheatre')
+    if (!theatreId) return
+    forceHandledRef.current = true
+    const stored = readForcePackage()
+    const ids = stored?.selectedIds ?? []
+    const q = new URLSearchParams({ theatre: theatreId, ids: ids.join(',') })
+    void fetch(`/api/force/package?${q.toString()}`)
+      .then((r) => r.json())
+      .then((json: { laydown?: Parameters<typeof hydrateLaydown>[0]; theatre?: { name: string }; placed?: number; unmatched?: unknown[] }) => {
+        if (!json.laydown) return
+        const hydrated = hydrateLaydown(json.laydown, assets)
+        setPlacedUas(hydrated.placedUas)
+        setPlacedCuas(hydrated.placedCuas)
+        setPlacedRadars(hydrated.placedRadars)
+        setPlacedEffectors(hydrated.placedEffectors)
+        planner.setPlanName(json.theatre?.name ?? 'Force package')
+        setForceBanner({
+          theatre: json.theatre?.name ?? theatreId,
+          placed: json.placed ?? 0,
+          unmatched: json.unmatched?.length ?? 0,
+        })
+        clearForcePackage()
+      })
+      .catch(() => {
+        forceHandledRef.current = false
+      })
+  }, [searchParams, assets])
+
   useEffect(() => {
     const planId = searchParams.get('planId') ?? searchParams.get('plan')
     if (planId) void planner.loadPlan(planId)
@@ -951,6 +989,25 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
               onClick={dismissStagingBanner}
               className="store-text-muted hover:text-[var(--store-accent)] shrink-0"
               aria-label="Dismiss staging banner"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+        {forceBanner && (
+          <div className="absolute top-14 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl store-panel border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3 shadow-lg">
+            <span>
+              Force package — {forceBanner.theatre}: {forceBanner.placed} envelopes placed
+              {forceBanner.unmatched > 0
+                ? ` · ${forceBanner.unmatched} ORBAT types have no map model (Estimated, listed only)`
+                : ''}
+              . Continue in Arena / PCM for the work-up, not a campaign auto-play.
+            </span>
+            <button
+              type="button"
+              onClick={() => setForceBanner(null)}
+              className="store-text-muted hover:text-[var(--store-accent)] shrink-0"
+              aria-label="Dismiss force package banner"
             >
               ✕
             </button>

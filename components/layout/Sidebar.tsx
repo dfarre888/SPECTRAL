@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import {
   Database, Radio, Satellite, Shield, Globe,
   Swords, GitCompare, LayoutDashboard, ChevronRight, Map, FileUp,
-  Activity, Coins, Crosshair, Target,
+  Activity, Coins, Crosshair, Target, Flag,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
@@ -13,6 +13,7 @@ import { useMobileNav } from '@/components/layout/MobileNavContext'
 const BASE_NAV = [
   { href: '/',          icon: LayoutDashboard, label: 'Dashboard',         sub: 'Command center' },
   { href: '/platforms', icon: Database,         label: 'Platform Library', sub: 'platforms' },
+  { href: '/force',     icon: Flag,             label: 'Force / ORBAT',    sub: 'Air land sea nations' },
   { href: '/map',       icon: Map,              label: 'Map Intel',        sub: 'Terrain & envelopes' },
   { href: '/spectrum',  icon: Radio,            label: 'Spectrum View',    sub: 'SPECTRA / EW intel' },
   { href: '/gnss',      icon: Satellite,        label: 'GNSS Intelligence',sub: 'Constellations & jammers' },

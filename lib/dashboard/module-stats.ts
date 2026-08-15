@@ -24,7 +24,7 @@ export async function fetchModuleCatalogStats() {
     /** GNSS jammers + constellations in seed — stable training baseline */
     gnssJammerCount: 12,
     conflictCaseCount: CONFLICT_CASE_STUDIES.length,
-    plannerVignetteCount: 2,
+    plannerVignetteCount: 5,
   }
 }
 

@@ -1,11 +1,22 @@
 import { CATEGORY_LABELS } from '@/lib/platforms/constants'
 import { resolvePlatformImagePath } from '@/lib/platforms/image-resolve'
+import { resolveMapRangeKm, resolveMapSpeedKmh } from '@/lib/map/cots-defaults'
 import type { AntiDroneSystem, Platform } from '@/lib/types'
 import type { MapCuasAsset, MapUasAsset } from '@/lib/map/types'
 
 const DEFAULT_CLIMB_MPM = 500
 
 export function toMapUasAsset(platform: Platform): MapUasAsset {
+  const identity = {
+    id: platform.id,
+    name: platform.name,
+    manufacturer: platform.manufacturer,
+    category: platform.category,
+    catalog_tier: platform.catalog_tier,
+  }
+  const range = resolveMapRangeKm(platform.range_km, identity)
+  const speed = resolveMapSpeedKmh(platform.max_speed_kmh, identity)
+
   return {
     id: platform.id,
     name: platform.name,
@@ -13,11 +24,13 @@ export function toMapUasAsset(platform: Platform): MapUasAsset {
     category: platform.category,
     categoryLabel: CATEGORY_LABELS[platform.category] ?? platform.category,
     side: platform.side ?? null,
+    manufacturer: platform.manufacturer ?? null,
+    rangeEstimated: range.estimated,
     image_url: resolvePlatformImagePath(platform.id),
     max_altitude_agl_m: platform.service_ceiling_m ?? 500,
     altitude_reference: 'AGL',
-    max_range_km: platform.range_km ?? 10,
-    max_speed_kmh: platform.max_speed_kmh ?? 100,
+    max_range_km: range.km,
+    max_speed_kmh: speed.kmh,
     endurance_min: Math.round((platform.endurance_hrs ?? 1) * 60),
     climb_rate_mpm: DEFAULT_CLIMB_MPM,
   }

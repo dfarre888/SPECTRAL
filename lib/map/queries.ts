@@ -2,6 +2,7 @@ import 'server-only'
 import { allA3dmPlatforms } from '@/lib/a3dm/to-platform'
 import { createClient } from '@/lib/supabase/server'
 import { toMapCuasAsset, toMapUasAsset } from '@/lib/map/asset-mappers'
+import { mergeMapUasCatalog } from '@/lib/map/merge-uas-catalog'
 import { OFFLINE_DEFEAT_SYSTEMS } from '@/lib/pcm/defeat-matrix-offline-data'
 import { getSpectraMapAssets } from '@/lib/map/spectra-assets'
 import type { MapAssetsPayload } from '@/lib/map/types'
@@ -16,9 +17,7 @@ export async function getMapAssets(): Promise<MapAssetsPayload> {
       supabase.from('anti_drone_systems').select('*').order('name'),
     ])
     if (platformsRes.error || systemsRes.error) throw new Error(platformsRes.error?.message ?? systemsRes.error?.message)
-    const dbUas = (platformsRes.data as Platform[]) ?? []
-    const seen = new Set(dbUas.map((p) => p.id))
-    const merged = [...dbUas, ...allA3dmPlatforms().filter((p) => !seen.has(p.id))]
+    const merged = mergeMapUasCatalog((platformsRes.data as Platform[]) ?? [])
     return {
       uas: merged.map(toMapUasAsset),
       cuas: (systemsRes.data as AntiDroneSystem[]).map(toMapCuasAsset),
@@ -27,7 +26,7 @@ export async function getMapAssets(): Promise<MapAssetsPayload> {
     }
   } catch {
     return {
-      uas: allA3dmPlatforms().map(toMapUasAsset),
+      uas: mergeMapUasCatalog([]).map(toMapUasAsset),
       cuas: OFFLINE_DEFEAT_SYSTEMS.map(toMapCuasAsset),
       radars: spectra.radars,
       effectors: spectra.effectors,

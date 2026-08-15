@@ -15,6 +15,9 @@ export interface MapUasAsset {
   categoryLabel: string
   /** Red threat, blue friendly, or both (neutral). Omitted in tests defaults via uasForceSides. */
   side?: PlatformSide | null
+  manufacturer?: string | null
+  /** True when max_range_km is the COTS 5 km training default, not a published spec. */
+  rangeEstimated?: boolean
   image_url: string | null
   max_altitude_agl_m: number
   /** Whether max_altitude_agl_m is AGL (above launch terrain) or absolute AMSL. */

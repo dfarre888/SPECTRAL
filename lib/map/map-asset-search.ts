@@ -41,7 +41,7 @@ export function matchesMapAssetSearch(haystack: string, query: string): boolean 
 }
 
 function uasHaystack(asset: MapUasAsset): string {
-  return [asset.id, asset.slug, asset.name, asset.category, asset.categoryLabel].join(' ')
+  return [asset.id, asset.slug, asset.name, asset.manufacturer, asset.category, asset.categoryLabel].join(' ')
 }
 
 function cuasHaystack(asset: MapCuasAsset): string {

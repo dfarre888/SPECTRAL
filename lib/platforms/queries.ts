@@ -19,6 +19,11 @@ function enrichFromA3dm(existing: Platform, a3dm: Platform): Platform {
     catalog_tier: existing.catalog_tier ?? a3dm.catalog_tier,
     retired: a3dm.retired ?? existing.retired,
     mtow_kg: existing.mtow_kg ?? a3dm.mtow_kg,
+    range_km: existing.range_km ?? a3dm.range_km,
+    max_speed_kmh: existing.max_speed_kmh ?? a3dm.max_speed_kmh,
+    endurance_hrs: existing.endurance_hrs ?? a3dm.endurance_hrs,
+    service_ceiling_m: existing.service_ceiling_m ?? a3dm.service_ceiling_m,
+    manufacturer: existing.manufacturer || a3dm.manufacturer,
     sensor_suite: existing.sensor_suite?.length ? existing.sensor_suite : a3dm.sensor_suite,
     sources: [...new Set([...(existing.sources ?? []), ...(a3dm.sources ?? [])])],
   }

@@ -32,6 +32,7 @@ import {
   type MapForceFilter,
   uasForceSides,
 } from '@/lib/map/force-filter'
+import { isCotsDji } from '@/lib/map/cots-defaults'
 import { filterMapAssets, type MapAssetSearchHit } from '@/lib/map/map-asset-search'
 import { operationalEnvelopeRadiusKm } from '@/lib/map/range-declaration'
 import type { SelectedLaydownItem } from '@/lib/map/laydown-evaluation'
@@ -122,6 +123,7 @@ export function AssetSidebar({
   onOpenSpectralAnalysis,
 }: AssetSidebarProps) {
   const operations = isOperationsEditionClient()
+  const [cotsDjiOpen, setCotsDjiOpen] = useState(true)
   const [uasOpen, setUasOpen] = useState(false)
   const [cuasOpen, setCuasOpen] = useState(false)
   const [radarsOpen, setRadarsOpen] = useState(false)
@@ -157,6 +159,13 @@ export function AssetSidebar({
   const visibleHits = useMemo(
     () => filterMapAssetHits(filtered.hits, forceFilter),
     [filtered.hits, forceFilter],
+  )
+  const cotsDji = useMemo(
+    () =>
+      visibleUas
+        .filter((asset) => isCotsDji(asset))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [visibleUas],
   )
 
   const placingUasId =
@@ -299,6 +308,33 @@ export function AssetSidebar({
               </div>
             )}
           </StoreFilterSection>
+        )}
+
+        {(!searchActive || cotsDji.length > 0) && cotsDji.length > 0 && (
+          <CollapsibleSection
+            open={cotsDjiOpen}
+            onToggle={() => setCotsDjiOpen(!cotsDjiOpen)}
+            label="COTS DJI"
+            count={cotsDji.length}
+            icon={<Plane size={14} className="text-[var(--store-accent)]" />}
+          >
+            <div className="space-y-2 max-h-64 overflow-y-auto pr-0.5">
+              {cotsDji.map((asset) => (
+                <MapAssetPickCard
+                  key={`cots-dji-${asset.id}`}
+                  id={asset.id}
+                  kicker="COTS DJI"
+                  name={asset.name}
+                  sub={formatUasSubline(asset)}
+                  active={placingUasId === asset.id}
+                  highlighted={highlightedIds.includes(asset.id)}
+                  onClick={() => onSelectUas(asset)}
+                  accent="threat"
+                  thumbnailVariant="uas"
+                />
+              ))}
+            </div>
+          </CollapsibleSection>
         )}
 
         {(!searchActive || visibleUas.length > 0) && (
@@ -912,7 +948,9 @@ function formatUasSubline(asset: MapUasAsset): string {
   const rangeStr =
     ferry > opKm + 0.05
       ? `${opKm.toFixed(1)} km ops · ${ferry.toFixed(0)} km ferry`
-      : `${opKm.toFixed(1)} km envelope`
+      : asset.rangeEstimated
+        ? `${opKm.toFixed(1)} km envelope (estimated)`
+        : `${opKm.toFixed(1)} km envelope`
   const altRef = asset.altitude_reference === 'AMSL' ? 'AMSL' : 'AGL'
   return `${rangeStr} · ${asset.max_altitude_agl_m} m ${altRef}`
 }

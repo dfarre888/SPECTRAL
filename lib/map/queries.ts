@@ -1,28 +1,37 @@
 import 'server-only'
+import { allA3dmPlatforms } from '@/lib/a3dm/to-platform'
 import { createClient } from '@/lib/supabase/server'
 import { toMapCuasAsset, toMapUasAsset } from '@/lib/map/asset-mappers'
+import { OFFLINE_DEFEAT_SYSTEMS } from '@/lib/pcm/defeat-matrix-offline-data'
 import { getSpectraMapAssets } from '@/lib/map/spectra-assets'
 import type { MapAssetsPayload } from '@/lib/map/types'
 import type { AntiDroneSystem, DefeatEffectiveness, Platform } from '@/lib/types'
 
 export async function getMapAssets(): Promise<MapAssetsPayload> {
-  const supabase = await createClient()
-
-  const [platformsRes, systemsRes] = await Promise.all([
-    supabase.from('platforms').select('*').order('name'),
-    supabase.from('anti_drone_systems').select('*').order('name'),
-  ])
-
-  if (platformsRes.error) throw new Error(platformsRes.error.message)
-  if (systemsRes.error) throw new Error(systemsRes.error.message)
-
   const spectra = getSpectraMapAssets()
-
-  return {
-    uas: (platformsRes.data as Platform[]).map(toMapUasAsset),
-    cuas: (systemsRes.data as AntiDroneSystem[]).map(toMapCuasAsset),
-    radars: spectra.radars,
-    effectors: spectra.effectors,
+  try {
+    const supabase = await createClient()
+    const [platformsRes, systemsRes] = await Promise.all([
+      supabase.from('platforms').select('*').order('name'),
+      supabase.from('anti_drone_systems').select('*').order('name'),
+    ])
+    if (platformsRes.error || systemsRes.error) throw new Error(platformsRes.error?.message ?? systemsRes.error?.message)
+    const dbUas = (platformsRes.data as Platform[]) ?? []
+    const seen = new Set(dbUas.map((p) => p.id))
+    const merged = [...dbUas, ...allA3dmPlatforms().filter((p) => !seen.has(p.id))]
+    return {
+      uas: merged.map(toMapUasAsset),
+      cuas: (systemsRes.data as AntiDroneSystem[]).map(toMapCuasAsset),
+      radars: spectra.radars,
+      effectors: spectra.effectors,
+    }
+  } catch {
+    return {
+      uas: allA3dmPlatforms().map(toMapUasAsset),
+      cuas: OFFLINE_DEFEAT_SYSTEMS.map(toMapCuasAsset),
+      radars: spectra.radars,
+      effectors: spectra.effectors,
+    }
   }
 }
 

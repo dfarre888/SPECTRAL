@@ -29,6 +29,7 @@ export const CATEGORY_SHORT: Partial<Record<PlatformCategory, string>> = {
   // Maritime autonomous + EW
   AUV: 'AUV',
   strategic_ew: 'STRAT EW',
+  cots: 'COTS',
 }
 
 export const CATEGORY_LABELS: Record<PlatformCategory, string> = {
@@ -59,6 +60,7 @@ export const CATEGORY_LABELS: Record<PlatformCategory, string> = {
   // Maritime autonomous + EW
   AUV: 'Autonomous Undersea Vehicle (AUV)',
   strategic_ew: 'Strategic EW Complex',
+  cots: 'COTS / Commercial RPAS',
 }
 
 export type CategoryPill =
@@ -70,6 +72,7 @@ export type CategoryPill =
   | 'cuas_shortcut'
   | 'sovereign'
   | 'missiles'
+  | 'cots'
 
 export const CATEGORY_PILLS: { id: CategoryPill; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -80,10 +83,12 @@ export const CATEGORY_PILLS: { id: CategoryPill; label: string }[] = [
   { id: 'gnss_shortcut', label: 'GNSS Jammer' },
   { id: 'cuas_shortcut', label: 'C-UAS' },
   { id: 'sovereign', label: 'Sovereign Programmes' },
+  { id: 'cots', label: 'COTS' },
 ]
 
 export function matchesCategoryPill(category: PlatformCategory, pill: CategoryPill): boolean {
   if (pill === 'sovereign') return false
+  if (pill === 'cots') return category === 'cots'
   if (pill === 'all') return true
   if (pill === 'male_hale') return category === 'MALE' || category === 'HALE'
   if (pill === 'fpv') return category === 'FPV'

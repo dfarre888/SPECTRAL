@@ -5,6 +5,7 @@ import {
   type DefeatTypeFilter,
 } from '@/lib/defeat/defeat-types'
 import type { LaydownSessionPair } from '@/lib/map/laydown-session'
+import { resolveCotsDefeatPct } from '@/lib/a3dm/cots-defeat'
 import type {
   AntiDroneSystem,
   DefeatEffectiveness,
@@ -97,6 +98,8 @@ export function resolveCellValue(
     if (kineticView && computedSamPk != null) {
       return { kind: 'pct', value: computedSamPk, colour: getCellColour(computedSamPk) }
     }
+    const cots = resolveCotsDefeatPct(platform, system, defeatTypeFilter)
+    if (cots != null) return { kind: 'pct', value: cots, colour: getCellColour(cots) }
     return { kind: 'empty' }
   }
 
@@ -105,6 +108,8 @@ export function resolveCellValue(
     if (kineticView && computedSamPk != null) {
       return { kind: 'pct', value: computedSamPk, colour: getCellColour(computedSamPk) }
     }
+    const cots = resolveCotsDefeatPct(platform, system, defeatTypeFilter)
+    if (cots != null) return { kind: 'pct', value: cots, colour: getCellColour(cots) }
     return { kind: 'empty' }
   }
 

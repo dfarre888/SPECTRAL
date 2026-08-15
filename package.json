@@ -18,7 +18,9 @@
     "test:spectral:all": "vitest run lib/pcm/_test_phase1.test.ts lib/pcm/_test_phase2.test.ts lib/pcm/_test_phase3.test.ts lib/pcm/_test_phase4-adjudication.test.ts lib/moat/_test_moat.test.ts",
     "test:spectral:golden": "vitest run lib/pcm/_test_golden-scenarios.test.ts",
     "ux:capture:phase3": "node docs/ux-audit/_capture-phase3.mjs",
-    "ux:capture:phase4": "node docs/ux-audit/_capture-phase4.mjs"
+    "ux:capture:phase4": "node docs/ux-audit/_capture-phase4.mjs",
+    "import:a3dm": "python3 scripts/import-a3dm-rpas.py",
+    "test:a3dm": "vitest run lib/a3dm/_test_a3dm-catalog.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",

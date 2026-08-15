@@ -1,7 +1,40 @@
 import 'server-only'
+import { allA3dmPlatforms, a3dmDroneToPlatform } from '@/lib/a3dm/to-platform'
+import { getA3dmDrone } from '@/lib/a3dm/catalog'
+import { isCotsPlatform, synthesizeCotsCountermeasures } from '@/lib/a3dm/cots-defeat'
 import { createClient } from '@/lib/supabase/server'
 import { getSeedPlatformById } from '@/lib/platforms/seed-fallback'
+import { PLATFORMS } from '@/data/seed-platforms'
+import { seedPlatformToRecord } from '@/lib/platforms/seed-fallback'
 import type { DefeatEffectiveness, Platform } from '@/lib/types'
+
+function enrichFromA3dm(existing: Platform, a3dm: Platform): Platform {
+  return {
+    ...existing,
+    a3dm_drone_id: a3dm.a3dm_drone_id ?? existing.a3dm_drone_id,
+    dry_weight_kg: a3dm.dry_weight_kg ?? existing.dry_weight_kg,
+    max_payload_kg: a3dm.max_payload_kg ?? existing.max_payload_kg,
+    a3dm_category: a3dm.a3dm_category ?? existing.a3dm_category,
+    sub_category: a3dm.sub_category ?? existing.sub_category,
+    catalog_tier: existing.catalog_tier ?? a3dm.catalog_tier,
+    retired: a3dm.retired ?? existing.retired,
+    mtow_kg: existing.mtow_kg ?? a3dm.mtow_kg,
+    sensor_suite: existing.sensor_suite?.length ? existing.sensor_suite : a3dm.sensor_suite,
+    sources: [...new Set([...(existing.sources ?? []), ...(a3dm.sources ?? [])])],
+  }
+}
+
+function mergePlatformCatalog(dbRows: Platform[]): Platform[] {
+  const byId = new Map(dbRows.map((p) => [p.id, p]))
+  for (const seed of PLATFORMS) {
+    if (!byId.has(seed.id)) byId.set(seed.id, seedPlatformToRecord(seed))
+  }
+  for (const a3dm of allA3dmPlatforms()) {
+    const existing = byId.get(a3dm.id)
+    byId.set(a3dm.id, existing ? enrichFromA3dm(existing, a3dm) : a3dm)
+  }
+  return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name))
+}
 
 export async function getPlatformCount(): Promise<number> {
   const supabase = await createClient()
@@ -14,42 +47,55 @@ export async function getPlatformCount(): Promise<number> {
 }
 
 export async function getAllPlatforms(): Promise<Platform[]> {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('platforms')
-    .select('*')
-    .order('name')
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('platforms')
+      .select('*')
+      .order('name')
 
-  if (error) throw new Error(error.message)
-  return ((data ?? []) as Platform[]).map((p) => ({
-    ...p,
-    gnss_independent: p.gnss_independent ?? false,
-    ai_autonomous: p.ai_autonomous ?? false,
-    swarm_capable: p.swarm_capable ?? false,
-  }))
+    if (error) throw new Error(error.message)
+    const rows = ((data ?? []) as Platform[]).map((p) => ({
+      ...p,
+      gnss_independent: p.gnss_independent ?? false,
+      ai_autonomous: p.ai_autonomous ?? false,
+      swarm_capable: p.swarm_capable ?? false,
+    }))
+    return mergePlatformCatalog(rows)
+  } catch {
+    return mergePlatformCatalog([])
+  }
 }
 
 export async function getPlatformById(id: string): Promise<Platform | null> {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('platforms')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle()
+  const a3dmDrone = getA3dmDrone(id)
+  const a3dm = a3dmDrone ? a3dmDroneToPlatform(a3dmDrone) : null
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('platforms')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle()
 
-  if (error) throw new Error(error.message)
-  if (!data) return getSeedPlatformById(id)
-  return {
-    ...(data as Platform),
-    gnss_independent: data.gnss_independent ?? false,
-    ai_autonomous: data.ai_autonomous ?? false,
-    swarm_capable: data.swarm_capable ?? false,
+    if (error) throw new Error(error.message)
+    if (!data) return getSeedPlatformById(id) ?? a3dm
+    const row = {
+      ...(data as Platform),
+      gnss_independent: data.gnss_independent ?? false,
+      ai_autonomous: data.ai_autonomous ?? false,
+      swarm_capable: data.swarm_capable ?? false,
+    }
+    return a3dm ? enrichFromA3dm(row, a3dm) : row
+  } catch {
+    return getSeedPlatformById(id) ?? a3dm
   }
 }
 
 export async function getPlatformCountermeasures(
   id: string
 ): Promise<DefeatEffectiveness[]> {
+  try {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('defeat_effectiveness')
@@ -57,7 +103,12 @@ export async function getPlatformCountermeasures(
     .eq('platform_id', id)
     .order('kinetic_pct', { ascending: false, nullsFirst: false })
 
-  if (error) throw new Error(error.message)
+  if (error || !data?.length) {
+    const platform = await getPlatformById(id)
+    if (platform && isCotsPlatform(platform)) return synthesizeCotsCountermeasures(id)
+    if (error) throw new Error(error.message)
+    return []
+  }
   return (data ?? []).map((row) => ({
     ...row,
     is_immune: row.is_immune ?? false,
@@ -67,38 +118,24 @@ export async function getPlatformCountermeasures(
     recommended_response: row.recommended_response ?? null,
     swarm_engagement_pct: row.swarm_engagement_pct ?? null,
   })) as DefeatEffectiveness[]
+  } catch {
+    const platform = await getPlatformById(id)
+    if (platform && isCotsPlatform(platform)) return synthesizeCotsCountermeasures(id)
+    return []
+  }
 }
 
 export async function getDistinctCountries(): Promise<string[]> {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('platforms')
-    .select('country_of_origin')
-    .not('country_of_origin', 'is', null)
-    .order('country_of_origin')
-
-  if (error) throw new Error(error.message)
-
+  const platforms = await getAllPlatforms()
   const countries = new Set<string>()
-  for (const row of data ?? []) {
-    if (row.country_of_origin) countries.add(row.country_of_origin)
+  for (const p of platforms) {
+    if (p.country_of_origin) countries.add(p.country_of_origin)
   }
   return Array.from(countries).sort()
 }
 
 export async function getPlatformsByIds(ids: string[]): Promise<Platform[]> {
   if (ids.length === 0) return []
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('platforms')
-    .select('*')
-    .in('id', ids)
-
-  if (error) throw new Error(error.message)
-  return ((data ?? []) as Platform[]).map((p) => ({
-    ...p,
-    gnss_independent: p.gnss_independent ?? false,
-    ai_autonomous: p.ai_autonomous ?? false,
-    swarm_capable: p.swarm_capable ?? false,
-  }))
+  const wanted = new Set(ids)
+  return (await getAllPlatforms()).filter((p) => wanted.has(p.id))
 }

@@ -41,7 +41,17 @@ export function matchesMapAssetSearch(haystack: string, query: string): boolean 
 }
 
 function uasHaystack(asset: MapUasAsset): string {
-  return [asset.id, asset.slug, asset.name, asset.manufacturer, asset.category, asset.categoryLabel].join(' ')
+  const payloadText = (asset.payloads ?? []).flatMap((p) => [p.id, p.name, p.type]).join(' ')
+  return [
+    asset.id,
+    asset.slug,
+    asset.name,
+    asset.manufacturer,
+    asset.category,
+    asset.categoryLabel,
+    asset.catalog_tier,
+    payloadText,
+  ].join(' ')
 }
 
 function cuasHaystack(asset: MapCuasAsset): string {

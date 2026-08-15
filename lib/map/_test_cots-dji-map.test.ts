@@ -136,4 +136,21 @@ describe('COTS DJI map defaults', () => {
     expect(hits.uas.length).toBe(assets.uas.length)
     expect(hits.total).toBeGreaterThan(0)
   })
+
+  it('places the full A3DM sheet and finds payloads', () => {
+    const merged = mergeMapUasCatalog([])
+    expect(merged.length).toBe(314)
+    const assets = {
+      uas: merged.map(toMapUasAsset),
+      cuas: [],
+      radars: [],
+      effectors: [],
+    }
+    expect(filterMapAssets(assets, 'autel').uas.length).toBeGreaterThan(0)
+    expect(filterMapAssets(assets, 'skydio').uas.length).toBeGreaterThan(0)
+    const h20t = filterMapAssets(assets, 'h20t')
+    expect(h20t.uas.some((u) => u.id === 'dji-matrice-300-rtk')).toBe(true)
+    const m300 = assets.uas.find((u) => u.id === 'dji-matrice-300-rtk')
+    expect((m300?.payloads?.length ?? 0)).toBeGreaterThan(0)
+  })
 })

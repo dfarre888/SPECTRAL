@@ -46,6 +46,7 @@ import {
   catalogRadars,
   isSameLaydownItem,
   listPlacedLaydownItems,
+  uasCommanderCompare,
   type EvaluatedItem,
   type SelectedLaydownItem,
 } from '@/lib/map/laydown-evaluation'
@@ -513,6 +514,11 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const laydownEvaluation = useMemo(
     () => buildLaydownEvaluation(selectedLaydownItem, laydownState),
     [selectedLaydownItem, laydownState],
+  )
+
+  const uasCompareRows = useMemo(
+    () => (placedUas.length > 1 ? uasCommanderCompare(laydownState) : []),
+    [placedUas.length, laydownState],
   )
 
   const placedLaydownChips = useMemo(() => {
@@ -1201,6 +1207,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             onSelectItem={handleSelectPlacedItem}
             onEvalItemClick={handleEvaluationItemClick}
             adjudicationSource={adjudication.source}
+            compareRows={uasCompareRows}
           />
 
           {pendingMissionUas && (

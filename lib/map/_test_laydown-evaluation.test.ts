@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { buildOverlapVolume } from '@/lib/map/overlap'
 import {
   buildLaydownEvaluation,
+  commanderScoreboard,
   evaluateCuas,
   evaluateEffector,
   evaluateRadar,
@@ -12,9 +13,11 @@ import {
   listPlacedLaydownItems,
   mapUasToTargetClass,
   parseEntityLaydownPick,
+  uasCommanderCompare,
   type LaydownState,
   type SelectedLaydownItem,
 } from '@/lib/map/laydown-evaluation'
+import { resolveSpectrumUas } from '@/lib/map/spectrum-bridge'
 import { getSpectraMapAssets } from '@/lib/map/spectra-assets'
 import type { MapCuasAsset, MapUasAsset, PlacedCuas, PlacedEffector, PlacedRadar, PlacedUas } from '@/lib/map/types'
 
@@ -227,6 +230,97 @@ describe('laydown-evaluation', () => {
     if (standalone) {
       expect(standalone.items.every((i) => !i.parentSystem?.trim())).toBe(true)
     }
+  })
+
+  it('COTS Mavic 4 Pro gets an estimated Group 1 spectrum profile', () => {
+    const profile = resolveSpectrumUas('dji-mavic-4-pro')
+    expect(profile).not.toBeNull()
+    expect(profile?.group).toBe(1)
+    expect(profile?.confidence).toBe('estimated')
+    expect(profile?.capabilities?.length).toBeGreaterThan(0)
+    expect(profile?.capabilities?.some((c) => c.fn === 'control' || c.fn === 'video')).toBe(true)
+  })
+
+  it('seeded Mavic 3 keeps the curated dossier, not the COTS stand-in', () => {
+    const profile = resolveSpectrumUas('dji-mavic-3')
+    expect(profile?.confidence).toBe('curated')
+    expect(profile?.name).toBe('DJI Mavic 3')
+  })
+
+  it('evaluateUas finishes COTS Mavic 4 Pro — can shoot is no longer empty', () => {
+    const uas: PlacedUas = {
+      ...placedFpv(),
+      instanceId: 'uas-mavic-4',
+      asset: {
+        id: 'dji-mavic-4-pro',
+        name: 'DJI Mavic 4 Pro',
+        slug: 'dji-mavic-4-pro',
+        category: 'cots',
+        categoryLabel: 'COTS',
+        image_url: null,
+        max_altitude_agl_m: 6000,
+        altitude_reference: 'AGL',
+        max_range_km: 5,
+        max_speed_kmh: 43.2,
+        endurance_min: 30,
+        climb_rate_mpm: 300,
+        rangeEstimated: true,
+      },
+    }
+    const evalResult = evaluateUas(uas, baseState({ catalogUas: [uas.asset] }))
+    const canShoot = evalResult.sections.find((s) => s.title === 'Can shoot down')!
+    const canDetect = evalResult.sections.find((s) => s.title === 'Radars — can detect')!
+    expect(canDetect.items.length).toBeGreaterThan(0)
+    expect(canShoot.items.length).toBeGreaterThan(0)
+    expect(canShoot.items.some((i) => i.assetId === cuasAsset.id)).toBe(true)
+
+    const board = commanderScoreboard(evalResult)
+    expect(board.verdict).toBe('can_finish')
+    expect(board.defeat).toBe(canShoot.items.length)
+    expect(board.detect).toBe(canDetect.items.length)
+    expect(board.bestDefeat).not.toBeNull()
+  })
+
+  it('uasCommanderCompare puts Detect / Defeat side by side for two airframes', () => {
+    const mavic3: PlacedUas = {
+      ...placedFpv(),
+      instanceId: 'uas-mavic-3',
+      asset: {
+        id: 'dji-mavic-3',
+        name: 'DJI Mavic 3',
+        slug: 'dji-mavic-3',
+        category: 'cots',
+        categoryLabel: 'COTS',
+        image_url: null,
+        max_altitude_agl_m: 6000,
+        altitude_reference: 'AGL',
+        max_range_km: 15,
+        max_speed_kmh: 75,
+        endurance_min: 46,
+        climb_rate_mpm: 300,
+      },
+    }
+    const mavic4: PlacedUas = {
+      ...mavic3,
+      instanceId: 'uas-mavic-4',
+      asset: {
+        ...mavic3.asset,
+        id: 'dji-mavic-4-pro',
+        name: 'DJI Mavic 4 Pro',
+        slug: 'dji-mavic-4-pro',
+        max_range_km: 5,
+        rangeEstimated: true,
+      },
+    }
+    const rows = uasCommanderCompare(
+      baseState({
+        placedUas: [mavic3, mavic4],
+        catalogUas: [mavic3.asset, mavic4.asset],
+      }),
+    )
+    expect(rows).toHaveLength(2)
+    expect(rows.every((r) => r.verdict === 'can_finish')).toBe(true)
+    expect(rows.every((r) => r.detect > 0 && r.defeat > 0)).toBe(true)
   })
 
   it('evaluateUas items include kind on every row', () => {

@@ -23,6 +23,7 @@
     "test:a3dm": "vitest run lib/a3dm/_test_a3dm-catalog.test.ts",
     "test:force": "vitest run lib/force/_test_force.test.ts",
     "test:cots-map": "vitest run lib/map/_test_cots-dji-map.test.ts",
+    "test:laydown": "vitest run lib/map/_test_laydown-evaluation.test.ts",
     "upsert:cots-dji": "python3 scripts/upsert-cots-dji-platforms.py",
     "upsert:a3dm-map": "python3 scripts/upsert-a3dm-cots-map.py",
     "use:sydney": "python3 scripts/use-sydney-supabase.py"

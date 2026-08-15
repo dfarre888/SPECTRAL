@@ -135,6 +135,118 @@ export interface LaydownEvaluation {
   sections: EvaluationSection[]
 }
 
+export interface CommanderScoreboard {
+  detect: number
+  defeat: number
+  detectBlind: number
+  noShot: number
+  bestDefeat: { name: string; pct: number } | null
+  verdict: 'can_finish' | 'detect_only' | 'blind'
+  verdictLine: string
+  detectSection?: EvaluationSection
+  defeatSection?: EvaluationSection
+  detectBlindSection?: EvaluationSection
+  noShotSection?: EvaluationSection
+}
+
+export interface CommanderCompareRow {
+  instanceId: string
+  name: string
+  detect: number
+  defeat: number
+  verdict: CommanderScoreboard['verdict']
+  bestDefeat: CommanderScoreboard['bestDefeat']
+}
+
+export function sectionByTitle(evaluation: LaydownEvaluation, title: string): EvaluationSection | undefined {
+  return evaluation.sections.find((s) => s.title === title)
+}
+
+function firstSection(evaluation: LaydownEvaluation, titles: string[]): EvaluationSection | undefined {
+  for (const title of titles) {
+    const hit = sectionByTitle(evaluation, title)
+    if (hit) return hit
+  }
+  return undefined
+}
+
+/** Resolve detect / defeat / gap sections across UAS, radar, C-UAS, and effector evaluations. */
+export function scoreboardSections(evaluation: LaydownEvaluation) {
+  return {
+    detect: firstSection(evaluation, ['Radars — can detect', 'Can detect']),
+    detectBlind: firstSection(evaluation, ['Radars — cannot detect', 'Cannot detect']),
+    defeat: firstSection(evaluation, ['Can shoot down']),
+    noShot: firstSection(evaluation, ['Cannot detect or shoot', 'Cannot shoot down']),
+  }
+}
+
+/** Commander roll-up — counts only, not the 200-row catalog dump. */
+export function commanderScoreboard(evaluation: LaydownEvaluation): CommanderScoreboard {
+  const { detect: detectSection, detectBlind: detectBlindSection, defeat: defeatSection, noShot: noShotSection } =
+    scoreboardSections(evaluation)
+  const detect = detectSection?.items.length ?? 0
+  const detectBlind = detectBlindSection?.items.length ?? 0
+  const defeatItems = defeatSection?.items ?? []
+  const defeat = defeatItems.length
+  const noShot = noShotSection?.items.length ?? 0
+  const ranked = [...defeatItems].sort((a, b) => (b.pct ?? 0) - (a.pct ?? 0))
+  const top = ranked[0]
+  const bestDefeat = top && top.pct != null ? { name: top.name, pct: top.pct } : null
+
+  const hasDetectAxis = detectSection != null
+  const hasDefeatAxis = defeatSection != null
+
+  let verdict: CommanderScoreboard['verdict'] = 'blind'
+  let verdictLine = hasDetectAxis
+    ? 'No catalog sensor sees this airframe.'
+    : 'No catalog effector has a finish path.'
+  if (hasDetectAxis && hasDefeatAxis && detect > 0 && defeat > 0) {
+    verdict = 'can_finish'
+    verdictLine = bestDefeat
+      ? `Find and finish available. Best catalog Pk: ${bestDefeat.name} ${bestDefeat.pct}%.`
+      : 'Find and finish available in the catalog.'
+  } else if (hasDetectAxis && detect > 0 && (!hasDefeatAxis || defeat === 0)) {
+    verdict = 'detect_only'
+    verdictLine = hasDefeatAxis
+      ? 'Sensors can find it. No catalog effector has a finish path.'
+      : 'Sensors can find catalog threats in this class.'
+  } else if (!hasDetectAxis && defeat > 0) {
+    verdict = 'can_finish'
+    verdictLine = bestDefeat
+      ? `Finish path available. Best catalog Pk: ${bestDefeat.name} ${bestDefeat.pct}%.`
+      : 'Finish path available in the catalog.'
+  }
+
+  return {
+    detect,
+    defeat,
+    detectBlind,
+    noShot,
+    bestDefeat,
+    verdict,
+    verdictLine,
+    detectSection,
+    defeatSection,
+    detectBlindSection,
+    noShotSection,
+  }
+}
+
+/** Side-by-side Detect / Defeat for every UAS on the map. */
+export function uasCommanderCompare(state: LaydownState): CommanderCompareRow[] {
+  return state.placedUas.map((uas) => {
+    const board = commanderScoreboard(evaluateUas(uas, state))
+    return {
+      instanceId: uas.instanceId,
+      name: uas.asset.name,
+      detect: board.detect,
+      defeat: board.defeat,
+      verdict: board.verdict,
+      bestDefeat: board.bestDefeat,
+    }
+  })
+}
+
 export interface LaydownState {
   placedUas: PlacedUas[]
   placedCuas: PlacedCuas[]

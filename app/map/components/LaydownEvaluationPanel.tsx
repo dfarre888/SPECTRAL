@@ -1,15 +1,20 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { StorePanel } from '@/components/ui/store-surface'
 import type {
+  CommanderCompareRow,
   EvaluatedItem,
   EvaluationSection,
   LaydownEvaluation,
   SelectedLaydownItem,
 } from '@/lib/map/laydown-evaluation'
-import { groupEvaluatedByIadsStack, isSameLaydownItem } from '@/lib/map/laydown-evaluation'
+import {
+  commanderScoreboard,
+  groupEvaluatedByIadsStack,
+  isSameLaydownItem,
+} from '@/lib/map/laydown-evaluation'
 import { cn } from '@/lib/utils'
 import { ChevronDown, Crosshair, Radar, Shield, Target } from 'lucide-react'
 
@@ -26,6 +31,18 @@ interface LaydownEvaluationPanelProps {
   onSelectItem: (item: SelectedLaydownItem) => void
   onEvalItemClick: (item: EvaluatedItem) => void
   adjudicationSource?: string
+  /** Detect / Defeat roll-up for every UAS on the map (shown when 2+). */
+  compareRows?: CommanderCompareRow[]
+}
+
+type ScoreboardTab = 'detect' | 'defeat' | 'gaps'
+
+const PREVIEW_LIMIT = 8
+
+const VERDICT_LABEL: Record<'can_finish' | 'detect_only' | 'blind', string> = {
+  can_finish: 'Find and finish',
+  detect_only: 'Detect only',
+  blind: 'Blind',
 }
 
 const KIND_LABEL: Record<SelectedLaydownItem['kind'], string> = {
@@ -262,6 +279,81 @@ function SectionItemList({
   )
 }
 
+function ScoreTile({
+  label,
+  value,
+  hint,
+  active,
+  tone,
+  onClick,
+}: {
+  label: string
+  value: number
+  hint: string
+  active: boolean
+  tone: 'can' | 'cannot' | 'neutral'
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex-1 min-w-0 rounded-lg border px-2 py-2 text-left transition-colors',
+        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--store-accent-border)]',
+        active
+          ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
+          : 'border-[var(--store-line)] hover:bg-[var(--store-surface-2)]',
+      )}
+    >
+      <p className="text-[9px] font-semibold uppercase tracking-wider store-text-muted">{label}</p>
+      <p
+        className={cn(
+          'text-lg font-mono leading-none mt-1',
+          tone === 'can' ? 'text-green-400' : tone === 'cannot' ? 'store-text-muted' : 'text-white',
+        )}
+      >
+        {value}
+      </p>
+      <p className="text-[9px] store-text-muted mt-1 leading-tight">{hint}</p>
+    </button>
+  )
+}
+
+function PreviewList({
+  section,
+  selectedItem,
+  onItemClick,
+  expanded,
+  onToggle,
+}: {
+  section: EvaluationSection
+  selectedItem: SelectedLaydownItem | null
+  onItemClick: (item: EvaluatedItem) => void
+  expanded: boolean
+  onToggle: () => void
+}) {
+  const preview: EvaluationSection = expanded
+    ? section
+    : { ...section, items: section.items.slice(0, PREVIEW_LIMIT) }
+  const hidden = Math.max(0, section.items.length - PREVIEW_LIMIT)
+
+  return (
+    <div>
+      <SectionItemList section={preview} selectedItem={selectedItem} onItemClick={onItemClick} />
+      {hidden > 0 && (
+        <button
+          type="button"
+          onClick={onToggle}
+          className="mt-2 w-full text-[10px] font-mono store-text-muted hover:text-white border border-[var(--store-line)] rounded-lg py-1.5"
+        >
+          {expanded ? 'Show decision set only' : `Show remaining ${hidden} systems`}
+        </button>
+      )}
+    </div>
+  )
+}
+
 export function LaydownEvaluationPanel({
   evaluation,
   placedItems,
@@ -269,20 +361,46 @@ export function LaydownEvaluationPanel({
   onSelectItem,
   onEvalItemClick,
   adjudicationSource,
+  compareRows = [],
 }: LaydownEvaluationPanelProps) {
-  if (!evaluation) return null
+  const board = useMemo(() => (evaluation ? commanderScoreboard(evaluation) : null), [evaluation])
+  const [tab, setTab] = useState<ScoreboardTab>('defeat')
+  const [expanded, setExpanded] = useState(false)
+
+  useEffect(() => {
+    if (!board) return
+    if (board.verdict === 'can_finish' && board.defeatSection) setTab('defeat')
+    else if (board.detectSection) setTab('detect')
+    else if (board.defeatSection) setTab('defeat')
+    else setTab('gaps')
+    setExpanded(false)
+  }, [evaluation?.subject.instanceId, board?.verdict, board?.detectSection, board?.defeatSection])
+
+  if (!evaluation || !board) return null
 
   const Icon = kindIcon(evaluation.subject.kind)
+  const gapCount = board.detectBlind + board.noShot
+  const activeSection =
+    tab === 'detect'
+      ? board.detectSection
+      : tab === 'defeat'
+        ? board.defeatSection
+        : null
+  const gapSections = [board.detectBlindSection, board.noShotSection].filter(
+    (section): section is EvaluationSection => section != null,
+  )
 
   return (
-    <StorePanel className="absolute top-14 right-3 z-20 w-[min(100%,22rem)] max-h-[calc(100%-4rem)] overflow-y-auto p-3 shadow-xl pointer-events-auto border-[var(--store-accent-border)]">
+    <StorePanel className="absolute top-14 right-3 z-20 w-[min(100%,24rem)] max-h-[calc(100%-4rem)] overflow-y-auto p-3 shadow-xl pointer-events-auto border-[var(--store-accent-border)]">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--store-accent)] flex items-center gap-1.5">
             <Icon className="w-3.5 h-3.5" />
             Laydown evaluation
           </p>
-          <p className="text-[9px] store-text-muted mt-0.5">OSINT catalog · virtual geometry at selected item</p>
+          <p className="text-[9px] store-text-muted mt-0.5">
+            Commander scoreboard · OSINT catalog · virtual geometry
+          </p>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
           <Badge variant="outline" className="text-[9px] font-mono">
@@ -320,24 +438,167 @@ export function LaydownEvaluationPanel({
         </div>
       )}
 
-      <p className="text-xs font-medium text-white mb-3 leading-snug">{evaluation.subject.name}</p>
+      <p className="text-xs font-medium text-white mb-2 leading-snug">{evaluation.subject.name}</p>
 
-      <div className="space-y-4">
-        {evaluation.sections.map((section) => (
-          <div key={section.title}>
-            <p
-              className={cn(
-                'text-[10px] font-semibold uppercase tracking-wider mb-2',
-                section.tone === 'can' ? 'text-green-400' : 'store-text-muted',
-              )}
-            >
-              {section.title}
-              <span className="ml-1.5 font-mono font-normal normal-case">({section.items.length})</span>
-            </p>
-            <SectionItemList section={section} selectedItem={selectedItem} onItemClick={onEvalItemClick} />
-          </div>
-        ))}
+      <div
+        className={cn(
+          'rounded-lg border px-2.5 py-2 mb-3',
+          board.verdict === 'can_finish'
+            ? 'border-green-500/40 bg-green-950/30'
+            : board.verdict === 'detect_only'
+              ? 'border-amber-400/40 bg-amber-950/20'
+              : 'border-[var(--store-line)] bg-[var(--store-surface-1)]',
+        )}
+      >
+        <p
+          className={cn(
+            'text-[10px] font-semibold uppercase tracking-wider',
+            board.verdict === 'can_finish'
+              ? 'text-green-400'
+              : board.verdict === 'detect_only'
+                ? 'text-amber-300'
+                : 'store-text-muted',
+          )}
+        >
+          {VERDICT_LABEL[board.verdict]}
+        </p>
+        <p className="text-[11px] text-white mt-1 leading-snug">{board.verdictLine}</p>
+        <p className="text-[9px] store-text-muted mt-1">
+          Pk figures are OSINT / training estimates — not accredited Pk.
+        </p>
       </div>
+
+      <div className="flex gap-1.5 mb-3">
+        {board.detectSection && (
+          <ScoreTile
+            label="Detect"
+            value={board.detect}
+            hint="Can find"
+            active={tab === 'detect'}
+            tone={board.detect > 0 ? 'can' : 'cannot'}
+            onClick={() => {
+              setTab('detect')
+              setExpanded(false)
+            }}
+          />
+        )}
+        {board.defeatSection && (
+          <ScoreTile
+            label="Defeat"
+            value={board.defeat}
+            hint="Can finish"
+            active={tab === 'defeat'}
+            tone={board.defeat > 0 ? 'can' : 'cannot'}
+            onClick={() => {
+              setTab('defeat')
+              setExpanded(false)
+            }}
+          />
+        )}
+        {gapSections.length > 0 && (
+          <ScoreTile
+            label="Gaps"
+            value={gapCount}
+            hint="No shot"
+            active={tab === 'gaps'}
+            tone="cannot"
+            onClick={() => {
+              setTab('gaps')
+              setExpanded(false)
+            }}
+          />
+        )}
+      </div>
+
+      {compareRows.length > 1 && (
+        <div className="mb-3 rounded-lg border border-[var(--store-line)] overflow-hidden">
+          <p className="px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-wider store-text-muted">
+            Airframe compare
+          </p>
+          <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-2 px-2.5 pb-1 text-[9px] font-mono store-text-muted">
+            <span />
+            <span>Detect</span>
+            <span>Defeat</span>
+            <span>Call</span>
+          </div>
+          {compareRows.map((row) => {
+            const active = selectedItem?.kind === 'uas' && selectedItem.instanceId === row.instanceId
+            return (
+              <button
+                key={row.instanceId}
+                type="button"
+                onClick={() => onSelectItem({ kind: 'uas', instanceId: row.instanceId })}
+                className={cn(
+                  'w-full grid grid-cols-[1fr_auto_auto_auto] gap-x-2 px-2.5 py-1.5 text-left text-[10px] font-mono border-t border-[var(--store-line)]',
+                  active
+                    ? 'bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
+                    : 'hover:bg-[var(--store-surface-2)] text-white',
+                )}
+              >
+                <span className="truncate">{row.name}</span>
+                <span className={row.detect > 0 ? 'text-green-400' : 'store-text-muted'}>{row.detect}</span>
+                <span className={row.defeat > 0 ? 'text-green-400' : 'store-text-muted'}>{row.defeat}</span>
+                <span
+                  className={
+                    row.verdict === 'can_finish'
+                      ? 'text-green-400'
+                      : row.verdict === 'detect_only'
+                        ? 'text-amber-300'
+                        : 'store-text-muted'
+                  }
+                >
+                  {row.verdict === 'can_finish' ? 'Finish' : row.verdict === 'detect_only' ? 'Find' : 'Blind'}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {tab !== 'gaps' && activeSection && (
+        <div>
+          <p
+            className={cn(
+              'text-[10px] font-semibold uppercase tracking-wider mb-2',
+              activeSection.tone === 'can' ? 'text-green-400' : 'store-text-muted',
+            )}
+          >
+            {tab === 'detect' ? 'Can detect' : 'Can shoot down'}
+            <span className="ml-1.5 font-mono font-normal normal-case">({activeSection.items.length})</span>
+          </p>
+          <PreviewList
+            section={activeSection}
+            selectedItem={selectedItem}
+            onItemClick={onEvalItemClick}
+            expanded={expanded}
+            onToggle={() => setExpanded((v) => !v)}
+          />
+        </div>
+      )}
+
+      {tab === 'gaps' && (
+        <div className="space-y-3">
+          <p className="text-[10px] store-text-muted leading-snug">
+            Catalog leftovers — systems that neither find nor finish this airframe. Do not use this list to make the
+            call.
+          </p>
+          {gapSections.map((section) => (
+            <div key={section.title}>
+              <p className="text-[10px] font-semibold uppercase tracking-wider mb-2 store-text-muted">
+                {section.title}
+                <span className="ml-1.5 font-mono font-normal normal-case">({section.items.length})</span>
+              </p>
+              <PreviewList
+                section={section}
+                selectedItem={selectedItem}
+                onItemClick={onEvalItemClick}
+                expanded={expanded}
+                onToggle={() => setExpanded((v) => !v)}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </StorePanel>
   )
 }

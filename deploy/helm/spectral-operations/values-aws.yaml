@@ -44,7 +44,7 @@ ingress:
     alb.ingress.kubernetes.io/ssl-redirect: "443"
 
 # ── Database ──────────────────────────────────────────────────────────────────
-# AWS: Use Supabase cloud (wzsoajpvcoesgsmuwuwm, ap-southeast-2) — disable in-cluster postgres.
+# AWS: Use Supabase cloud (nxnukrnkbxiqberymqzq, ap-southeast-2 / Sydney) — disable in-cluster postgres.
 # For fully sovereign: provision RDS PostgreSQL 16 in ap-southeast-2 + self-hosted Supabase,
 # or use Amazon Aurora PostgreSQL-Compatible.
 postgres:
@@ -96,7 +96,7 @@ resources:
 #   SUPABASE_SERVICE_ROLE_KEY → from Supabase Dashboard → Settings → API
 #   AWS_ACCESS_KEY_ID         → IAM user for Bedrock (or use IRSA pod identity)
 #   AWS_SECRET_ACCESS_KEY     → as above
-#   NEXT_PUBLIC_SUPABASE_URL  → https://wzsoajpvcoesgsmuwuwm.supabase.co
+#   NEXT_PUBLIC_SUPABASE_URL  → https://nxnukrnkbxiqberymqzq.supabase.co
 #   NEXT_PUBLIC_SUPABASE_ANON_KEY → from Supabase Dashboard
 #   NEXT_PUBLIC_CESIUM_ION_TOKEN  → from ion.cesium.com
 #

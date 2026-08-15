@@ -21,6 +21,7 @@ const PILL_ICONS: Partial<Record<CategoryPill, React.ReactNode>> = {
   owa: <Crosshair size={13} />,
   gnss_shortcut: <Satellite size={13} />,
   cuas_shortcut: <Shield size={13} />,
+  cots: <Plane size={13} />,
 }
 
 interface PlatformFilterSidebarProps {

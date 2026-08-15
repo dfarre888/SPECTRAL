@@ -1,0 +1,18 @@
+{
+  "source": "A3DM_RPAS_Database.xlsx",
+  "manufacturers": 125,
+  "drones": 314,
+  "payloads": 258,
+  "compatibility": 250,
+  "skip_spectrum_types": [
+    "Beacon",
+    "Dropper",
+    "Flight Termination",
+    "Gripper",
+    "Parachute Recovery",
+    "Speaker",
+    "Spotlight",
+    "Strobe",
+    "Tethering"
+  ]
+}

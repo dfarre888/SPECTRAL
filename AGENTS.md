@@ -29,20 +29,17 @@ environment up in this order:
    - `supabase start` — pulls/starts containers and applies all
      `supabase/migrations/*.sql` (152 platforms, C-UAS systems, GNSS, conflicts, etc.).
    - API: `http://127.0.0.1:54321` · Studio: `http://127.0.0.1:54323` · DB: `:54322`.
-3. **Non-obvious gotcha — grant table privileges.** On hosted Supabase the
-   `public` schema has platform-managed default privileges; the local stack does
-   **not**, so every table created by the migrations ends up with no grants and
-   the app fails with `permission denied for table platforms` (even in demo mode,
-   which reads via the service role). After `supabase start`, run once against the
-   local DB (`docker exec -i supabase_db_SPECTRAL psql -U postgres -d postgres`):
-   ```sql
-   GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
-   GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
-   GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
-   GRANT ALL ON ALL ROUTINES IN SCHEMA public TO anon, authenticated, service_role;
-   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated, service_role;
-   ```
-   (`no privileges were granted for "gtrgm_*"` warnings from `pg_trgm` are harmless.)
+   - After the DB is created, `supabase/seed.sql` runs automatically (config
+     `[db.seed] sql_paths = ["./seed.sql"]`). No manual grant step is needed.
+
+**Non-obvious gotcha (already handled by `supabase/seed.sql`):** on hosted Supabase
+the `public` schema has platform-managed default privileges; the local stack does
+**not**, so migration-created tables would otherwise have no grants and the app
+would fail with `permission denied for table platforms` (even in demo mode, which
+reads via the service role). `supabase/seed.sql` restores the
+`anon`/`authenticated`/`service_role` grants after migrations — do not delete it. If
+you ever add tables via `psql` outside a migration/reset, re-run that file or the
+grants in it.
 
 ### Environment file
 

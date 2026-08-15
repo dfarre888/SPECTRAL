@@ -14,7 +14,7 @@ Next.js 14 SaaS. ITAR-compliant. OSINT-only. Defence-adjacent.
 - IDE: [Cursor / other] on [protected network name, e.g. "DSTG Secure Workstation" or "ITAR-segregated dev machine"]
 - Network: [internet-egress blocked / air-gapped / PROTECTED network]
 - Accredited resolver active: SPECTRAL_ACCREDITED_RESOLVER=true
-- Supabase project: [your project ref, e.g. "xyzabc"] — region ap-southeast-2
+- Supabase project: nxnukrnkbxiqberymqzq — region ap-southeast-2 (Sydney). Mumbai (wzsoajpvcoesgsmuwuwm) is retired.
 - Admin access: service role key available server-side
 
 ## Tables — Where Data Lives

@@ -1,0 +1,2252 @@
+[
+  {
+    "id": "CMP-0001",
+    "a3dm_drone_id": "DRN-0037",
+    "platform_id": "dji-inspire-1",
+    "payload_id": "PLD-0001",
+    "drone_model": "DJI Inspire 1",
+    "payload_name": "DJI Zenmuse X3",
+    "notes": "Original X3 bundled"
+  },
+  {
+    "id": "CMP-0002",
+    "a3dm_drone_id": "DRN-0037",
+    "platform_id": "dji-inspire-1",
+    "payload_id": "PLD-0007",
+    "drone_model": "DJI Inspire 1",
+    "payload_name": "DJI Zenmuse XT",
+    "notes": "Mountable XT thermal"
+  },
+  {
+    "id": "CMP-0003",
+    "a3dm_drone_id": "DRN-0038",
+    "platform_id": "dji-inspire-1-pro",
+    "payload_id": "PLD-0002",
+    "drone_model": "DJI Inspire 1 Pro",
+    "payload_name": "DJI Zenmuse X5",
+    "notes": "X5 4/3 CMOS"
+  },
+  {
+    "id": "CMP-0004",
+    "a3dm_drone_id": "DRN-0038",
+    "platform_id": "dji-inspire-1-pro",
+    "payload_id": "PLD-0007",
+    "drone_model": "DJI Inspire 1 Pro",
+    "payload_name": "DJI Zenmuse XT",
+    "notes": null
+  },
+  {
+    "id": "CMP-0005",
+    "a3dm_drone_id": "DRN-0039",
+    "platform_id": "dji-inspire-1-raw",
+    "payload_id": "PLD-0003",
+    "drone_model": "DJI Inspire 1 RAW",
+    "payload_name": "DJI Zenmuse X5R",
+    "notes": "X5R CinemaDNG"
+  },
+  {
+    "id": "CMP-0006",
+    "a3dm_drone_id": "DRN-0040",
+    "platform_id": "dji-inspire-2",
+    "payload_id": "PLD-0002",
+    "drone_model": "DJI Inspire 2",
+    "payload_name": "DJI Zenmuse X5",
+    "notes": null
+  },
+  {
+    "id": "CMP-0007",
+    "a3dm_drone_id": "DRN-0040",
+    "platform_id": "dji-inspire-2",
+    "payload_id": "PLD-0004",
+    "drone_model": "DJI Inspire 2",
+    "payload_name": "DJI Zenmuse X5S",
+    "notes": "X5S 5.2K ProRes"
+  },
+  {
+    "id": "CMP-0008",
+    "a3dm_drone_id": "DRN-0040",
+    "platform_id": "dji-inspire-2",
+    "payload_id": "PLD-0005",
+    "drone_model": "DJI Inspire 2",
+    "payload_name": "DJI Zenmuse X7",
+    "notes": "X7 Super 35"
+  },
+  {
+    "id": "CMP-0009",
+    "a3dm_drone_id": "DRN-0043",
+    "platform_id": "dji-matrice-200-v1",
+    "payload_id": "PLD-0002",
+    "drone_model": "DJI Matrice 200 V1",
+    "payload_name": "DJI Zenmuse X5",
+    "notes": null
+  },
+  {
+    "id": "CMP-0010",
+    "a3dm_drone_id": "DRN-0043",
+    "platform_id": "dji-matrice-200-v1",
+    "payload_id": "PLD-0004",
+    "drone_model": "DJI Matrice 200 V1",
+    "payload_name": "DJI Zenmuse X5S",
+    "notes": null
+  },
+  {
+    "id": "CMP-0011",
+    "a3dm_drone_id": "DRN-0043",
+    "platform_id": "dji-matrice-200-v1",
+    "payload_id": "PLD-0006",
+    "drone_model": "DJI Matrice 200 V1",
+    "payload_name": "DJI Zenmuse Z30",
+    "notes": "Z30 zoom"
+  },
+  {
+    "id": "CMP-0012",
+    "a3dm_drone_id": "DRN-0043",
+    "platform_id": "dji-matrice-200-v1",
+    "payload_id": "PLD-0007",
+    "drone_model": "DJI Matrice 200 V1",
+    "payload_name": "DJI Zenmuse XT",
+    "notes": "XT thermal"
+  },
+  {
+    "id": "CMP-0013",
+    "a3dm_drone_id": "DRN-0043",
+    "platform_id": "dji-matrice-200-v1",
+    "payload_id": "PLD-0008",
+    "drone_model": "DJI Matrice 200 V1",
+    "payload_name": "DJI Zenmuse XT2",
+    "notes": "XT2 dual"
+  },
+  {
+    "id": "CMP-0014",
+    "a3dm_drone_id": "DRN-0044",
+    "platform_id": "dji-matrice-210-v1",
+    "payload_id": "PLD-0002",
+    "drone_model": "DJI Matrice 210 V1",
+    "payload_name": "DJI Zenmuse X5",
+    "notes": null
+  },
+  {
+    "id": "CMP-0015",
+    "a3dm_drone_id": "DRN-0044",
+    "platform_id": "dji-matrice-210-v1",
+    "payload_id": "PLD-0006",
+    "drone_model": "DJI Matrice 210 V1",
+    "payload_name": "DJI Zenmuse Z30",
+    "notes": null
+  },
+  {
+    "id": "CMP-0016",
+    "a3dm_drone_id": "DRN-0044",
+    "platform_id": "dji-matrice-210-v1",
+    "payload_id": "PLD-0008",
+    "drone_model": "DJI Matrice 210 V1",
+    "payload_name": "DJI Zenmuse XT2",
+    "notes": null
+  },
+  {
+    "id": "CMP-0017",
+    "a3dm_drone_id": "DRN-0046",
+    "platform_id": "dji-matrice-200-v2",
+    "payload_id": "PLD-0008",
+    "drone_model": "DJI Matrice 200 V2",
+    "payload_name": "DJI Zenmuse XT2",
+    "notes": "XT2 dual"
+  },
+  {
+    "id": "CMP-0018",
+    "a3dm_drone_id": "DRN-0046",
+    "platform_id": "dji-matrice-200-v2",
+    "payload_id": "PLD-0009",
+    "drone_model": "DJI Matrice 200 V2",
+    "payload_name": "DJI Zenmuse XT S",
+    "notes": "XT S radiometric"
+  },
+  {
+    "id": "CMP-0019",
+    "a3dm_drone_id": "DRN-0047",
+    "platform_id": "dji-matrice-210-v2",
+    "payload_id": "PLD-0008",
+    "drone_model": "DJI Matrice 210 V2",
+    "payload_name": "DJI Zenmuse XT2",
+    "notes": null
+  },
+  {
+    "id": "CMP-0020",
+    "a3dm_drone_id": "DRN-0048",
+    "platform_id": "dji-matrice-210-rtk-v2",
+    "payload_id": "PLD-0008",
+    "drone_model": "DJI Matrice 210 RTK V2",
+    "payload_name": "DJI Zenmuse XT2",
+    "notes": null
+  },
+  {
+    "id": "CMP-0021",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0010",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "DJI Zenmuse H20",
+    "notes": "H20"
+  },
+  {
+    "id": "CMP-0022",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0011",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "DJI Zenmuse H20T",
+    "notes": "H20T"
+  },
+  {
+    "id": "CMP-0023",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0012",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "DJI Zenmuse H20N",
+    "notes": "H20N"
+  },
+  {
+    "id": "CMP-0024",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0015",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "DJI Zenmuse L1",
+    "notes": "L1 LiDAR"
+  },
+  {
+    "id": "CMP-0025",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0016",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "DJI Zenmuse L2",
+    "notes": "L2 (with RC Plus)"
+  },
+  {
+    "id": "CMP-0026",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0017",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "DJI Zenmuse P1",
+    "notes": "P1 mapping"
+  },
+  {
+    "id": "CMP-0027",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0013",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "DJI Zenmuse H30",
+    "notes": "H30 (with RC Plus)"
+  },
+  {
+    "id": "CMP-0028",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0014",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "DJI Zenmuse H30T",
+    "notes": "H30T (with RC Plus)"
+  },
+  {
+    "id": "CMP-0029",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0010",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "DJI Zenmuse H20",
+    "notes": null
+  },
+  {
+    "id": "CMP-0030",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0011",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "DJI Zenmuse H20T",
+    "notes": null
+  },
+  {
+    "id": "CMP-0031",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0012",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "DJI Zenmuse H20N",
+    "notes": null
+  },
+  {
+    "id": "CMP-0032",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0013",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "DJI Zenmuse H30",
+    "notes": "H30"
+  },
+  {
+    "id": "CMP-0033",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0014",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "DJI Zenmuse H30T",
+    "notes": "H30T"
+  },
+  {
+    "id": "CMP-0034",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0015",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "DJI Zenmuse L1",
+    "notes": "L1"
+  },
+  {
+    "id": "CMP-0035",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0016",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "DJI Zenmuse L2",
+    "notes": "L2"
+  },
+  {
+    "id": "CMP-0036",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0017",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "DJI Zenmuse P1",
+    "notes": "P1"
+  },
+  {
+    "id": "CMP-0037",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0013",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "DJI Zenmuse H30",
+    "notes": null
+  },
+  {
+    "id": "CMP-0038",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0014",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "DJI Zenmuse H30T",
+    "notes": null
+  },
+  {
+    "id": "CMP-0039",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0016",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "DJI Zenmuse L2",
+    "notes": null
+  },
+  {
+    "id": "CMP-0040",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0017",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "DJI Zenmuse P1",
+    "notes": null
+  },
+  {
+    "id": "CMP-0041",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0018",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "DJI Zenmuse L3",
+    "notes": "L3 LiDAR"
+  },
+  {
+    "id": "CMP-0042",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0033",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "MicaSense RedEdge-MX",
+    "notes": "RedEdge-MX"
+  },
+  {
+    "id": "CMP-0043",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0034",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "MicaSense RedEdge-MX Dual",
+    "notes": "RedEdge-MX Dual"
+  },
+  {
+    "id": "CMP-0044",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0035",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "MicaSense RedEdge-P",
+    "notes": "RedEdge-P"
+  },
+  {
+    "id": "CMP-0045",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0036",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "MicaSense Altum",
+    "notes": "Altum"
+  },
+  {
+    "id": "CMP-0046",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0037",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "MicaSense Altum-PT",
+    "notes": "Altum-PT"
+  },
+  {
+    "id": "CMP-0047",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0033",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "MicaSense RedEdge-MX",
+    "notes": null
+  },
+  {
+    "id": "CMP-0048",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0034",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "MicaSense RedEdge-MX Dual",
+    "notes": null
+  },
+  {
+    "id": "CMP-0049",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0035",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "MicaSense RedEdge-P",
+    "notes": null
+  },
+  {
+    "id": "CMP-0050",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0036",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "MicaSense Altum",
+    "notes": null
+  },
+  {
+    "id": "CMP-0051",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0037",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "MicaSense Altum-PT",
+    "notes": null
+  },
+  {
+    "id": "CMP-0052",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0038",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Sentera 6X Multispectral",
+    "notes": "6X Multispectral"
+  },
+  {
+    "id": "CMP-0053",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0040",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Sentera 65R",
+    "notes": "65R"
+  },
+  {
+    "id": "CMP-0054",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0041",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Sentera AGX710 Double 4K",
+    "notes": "AGX710"
+  },
+  {
+    "id": "CMP-0055",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0038",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Sentera 6X Multispectral",
+    "notes": null
+  },
+  {
+    "id": "CMP-0056",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0040",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Sentera 65R",
+    "notes": null
+  },
+  {
+    "id": "CMP-0057",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0044",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "YellowScan Mapper+",
+    "notes": "Mapper+"
+  },
+  {
+    "id": "CMP-0058",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0046",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "YellowScan Surveyor Ultra",
+    "notes": "Surveyor Ultra"
+  },
+  {
+    "id": "CMP-0059",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0050",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "YellowScan Explorer",
+    "notes": "Explorer"
+  },
+  {
+    "id": "CMP-0060",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0044",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "YellowScan Mapper+",
+    "notes": null
+  },
+  {
+    "id": "CMP-0061",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0046",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "YellowScan Surveyor Ultra",
+    "notes": null
+  },
+  {
+    "id": "CMP-0062",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0050",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "YellowScan Explorer",
+    "notes": null
+  },
+  {
+    "id": "CMP-0063",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0053",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Phoenix LiDAR Systems AlphaAir",
+    "notes": "AlphaAir"
+  },
+  {
+    "id": "CMP-0064",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0055",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Phoenix LiDAR Systems miniRANGER-3 LITE",
+    "notes": "miniRANGER-3"
+  },
+  {
+    "id": "CMP-0065",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0057",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Emesent Hovermap ST",
+    "notes": "Hovermap ST"
+  },
+  {
+    "id": "CMP-0066",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0058",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Emesent Hovermap ST-X",
+    "notes": "Hovermap ST-X"
+  },
+  {
+    "id": "CMP-0067",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0059",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Emesent Hovermap ST-100",
+    "notes": "Hovermap ST-100"
+  },
+  {
+    "id": "CMP-0068",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0062",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Riegl VUX-120",
+    "notes": "VUX-120"
+  },
+  {
+    "id": "CMP-0069",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0064",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Riegl miniVUX-1UAV",
+    "notes": "miniVUX-1UAV"
+  },
+  {
+    "id": "CMP-0070",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0065",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Riegl miniVUX-2UAV",
+    "notes": "miniVUX-2UAV"
+  },
+  {
+    "id": "CMP-0071",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0062",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Riegl VUX-120",
+    "notes": null
+  },
+  {
+    "id": "CMP-0072",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0065",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Riegl miniVUX-2UAV",
+    "notes": null
+  },
+  {
+    "id": "CMP-0073",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0075",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "GeoCue True View 410",
+    "notes": "TrueView 410"
+  },
+  {
+    "id": "CMP-0074",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0076",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "GeoCue True View 515",
+    "notes": "TrueView 515"
+  },
+  {
+    "id": "CMP-0075",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0075",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "GeoCue True View 410",
+    "notes": null
+  },
+  {
+    "id": "CMP-0076",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0076",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "GeoCue True View 515",
+    "notes": null
+  },
+  {
+    "id": "CMP-0077",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0082",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Phase One P3 Payload",
+    "notes": "P3 Payload"
+  },
+  {
+    "id": "CMP-0078",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0083",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Phase One P5 Payload",
+    "notes": "P5 Payload"
+  },
+  {
+    "id": "CMP-0079",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0082",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Phase One P3 Payload",
+    "notes": null
+  },
+  {
+    "id": "CMP-0080",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0083",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Phase One P5 Payload",
+    "notes": null
+  },
+  {
+    "id": "CMP-0081",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0089",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Share UAV PSDK 102S V3",
+    "notes": "PSDK 102S V3"
+  },
+  {
+    "id": "CMP-0082",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0090",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Share UAV 303S Pro V2",
+    "notes": "303S Pro V2"
+  },
+  {
+    "id": "CMP-0083",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0089",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Share UAV PSDK 102S V3",
+    "notes": null
+  },
+  {
+    "id": "CMP-0084",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0090",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Share UAV 303S Pro V2",
+    "notes": null
+  },
+  {
+    "id": "CMP-0085",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0094",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Workswell WIRIS Pro",
+    "notes": "WIRIS Pro"
+  },
+  {
+    "id": "CMP-0086",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0096",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Workswell WIRIS Agro R",
+    "notes": "WIRIS Agro R"
+  },
+  {
+    "id": "CMP-0087",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0094",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Workswell WIRIS Pro",
+    "notes": null
+  },
+  {
+    "id": "CMP-0088",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0103",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Sierra-Olympia Ventus OGI",
+    "notes": "Ventus OGI"
+  },
+  {
+    "id": "CMP-0089",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0104",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Sierra-Olympia Vayu HD",
+    "notes": "Vayu HD"
+  },
+  {
+    "id": "CMP-0090",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0107",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Cubert ULTRIS X20",
+    "notes": "ULTRIS X20"
+  },
+  {
+    "id": "CMP-0091",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0108",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Cubert ULTRIS X20 Plus",
+    "notes": "ULTRIS X20 Plus"
+  },
+  {
+    "id": "CMP-0092",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0113",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "SeekOps SeekIR",
+    "notes": "SeekIR"
+  },
+  {
+    "id": "CMP-0093",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0114",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Pergam Laser Falcon",
+    "notes": "Pergam Laser Falcon"
+  },
+  {
+    "id": "CMP-0094",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0116",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Sniffer4D V2",
+    "notes": "Sniffer4D V2"
+  },
+  {
+    "id": "CMP-0095",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0119",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Geometrics MagArrow II",
+    "notes": "MagArrow II"
+  },
+  {
+    "id": "CMP-0096",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0120",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Sensys MagDrone R3",
+    "notes": "MagDrone R3"
+  },
+  {
+    "id": "CMP-0097",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0121",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Sensys MagDrone R4",
+    "notes": "MagDrone R4"
+  },
+  {
+    "id": "CMP-0098",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0208",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "DJI Zenmuse V1 Loudspeaker",
+    "notes": "Zenmuse V1 Loudspeaker"
+  },
+  {
+    "id": "CMP-0099",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0209",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "CZI MP130 V2 Loudspeaker",
+    "notes": "CZI MP130 V2"
+  },
+  {
+    "id": "CMP-0100",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0214",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "CZI GL60 Plus",
+    "notes": "CZI GL60 Plus spotlight"
+  },
+  {
+    "id": "CMP-0101",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0208",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "DJI Zenmuse V1 Loudspeaker",
+    "notes": null
+  },
+  {
+    "id": "CMP-0102",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0209",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "CZI MP130 V2 Loudspeaker",
+    "notes": null
+  },
+  {
+    "id": "CMP-0103",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0214",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "CZI GL60 Plus",
+    "notes": null
+  },
+  {
+    "id": "CMP-0104",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0221",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "CZI TH4 V2 Throwing Hook",
+    "notes": "CZI TH4 V2"
+  },
+  {
+    "id": "CMP-0105",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0224",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Drone Sky Hook M300 Release",
+    "notes": "Drone Sky Hook M300"
+  },
+  {
+    "id": "CMP-0106",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0221",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "CZI TH4 V2 Throwing Hook",
+    "notes": null
+  },
+  {
+    "id": "CMP-0107",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0155",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "ParaZero SafeAir M-300 Pro",
+    "notes": "ParaZero SafeAir M-300 Pro"
+  },
+  {
+    "id": "CMP-0108",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0162",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "AVSS PRS-M300",
+    "notes": "AVSS PRS-M300"
+  },
+  {
+    "id": "CMP-0109",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0168",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Indemnis Nexus M300",
+    "notes": "Indemnis Nexus M300"
+  },
+  {
+    "id": "CMP-0110",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0172",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Drone Rescue Systems DRS-M300/M350",
+    "notes": "DRS-M300"
+  },
+  {
+    "id": "CMP-0111",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0179",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Mars Parachutes M300 Kit",
+    "notes": "Mars M300 Kit"
+  },
+  {
+    "id": "CMP-0112",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0155",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "ParaZero SafeAir M-300 Pro",
+    "notes": null
+  },
+  {
+    "id": "CMP-0113",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0162",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "AVSS PRS-M300",
+    "notes": null
+  },
+  {
+    "id": "CMP-0114",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0172",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Drone Rescue Systems DRS-M300/M350",
+    "notes": null
+  },
+  {
+    "id": "CMP-0115",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0180",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Mars Parachutes M350 Kit",
+    "notes": "Mars M350 Kit"
+  },
+  {
+    "id": "CMP-0116",
+    "a3dm_drone_id": "DRN-0051",
+    "platform_id": "dji-matrice-30-m30",
+    "payload_id": "PLD-0154",
+    "drone_model": "DJI Matrice 30",
+    "payload_name": "ParaZero SafeAir M-30",
+    "notes": "ParaZero SafeAir M-30"
+  },
+  {
+    "id": "CMP-0117",
+    "a3dm_drone_id": "DRN-0051",
+    "platform_id": "dji-matrice-30-m30",
+    "payload_id": "PLD-0161",
+    "drone_model": "DJI Matrice 30",
+    "payload_name": "AVSS PRS-M30",
+    "notes": "AVSS PRS-M30"
+  },
+  {
+    "id": "CMP-0118",
+    "a3dm_drone_id": "DRN-0051",
+    "platform_id": "dji-matrice-30-m30",
+    "payload_id": "PLD-0181",
+    "drone_model": "DJI Matrice 30",
+    "payload_name": "Mars Parachutes M30 Kit",
+    "notes": "Mars M30 Kit"
+  },
+  {
+    "id": "CMP-0119",
+    "a3dm_drone_id": "DRN-0051",
+    "platform_id": "dji-matrice-30-m30",
+    "payload_id": "PLD-0210",
+    "drone_model": "DJI Matrice 30",
+    "payload_name": "CZI LP12 Speaker+Spotlight",
+    "notes": "CZI LP12 Speaker+Spotlight"
+  },
+  {
+    "id": "CMP-0120",
+    "a3dm_drone_id": "DRN-0051",
+    "platform_id": "dji-matrice-30-m30",
+    "payload_id": "PLD-0211",
+    "drone_model": "DJI Matrice 30",
+    "payload_name": "JZ Drones M30 Quick Search Kit",
+    "notes": "JZ M30 Quick Search Kit"
+  },
+  {
+    "id": "CMP-0121",
+    "a3dm_drone_id": "DRN-0051",
+    "platform_id": "dji-matrice-30-m30",
+    "payload_id": "PLD-0222",
+    "drone_model": "DJI Matrice 30",
+    "payload_name": "CZI FT30-P Payload Drop",
+    "notes": "CZI FT30-P dropper"
+  },
+  {
+    "id": "CMP-0122",
+    "a3dm_drone_id": "DRN-0051",
+    "platform_id": "dji-matrice-30-m30",
+    "payload_id": "PLD-0232",
+    "drone_model": "DJI Matrice 30",
+    "payload_name": "Volarious V-Line Pro (M30)",
+    "notes": "Volarious V-Line Pro M30"
+  },
+  {
+    "id": "CMP-0123",
+    "a3dm_drone_id": "DRN-0052",
+    "platform_id": "dji-matrice-30t-m30t",
+    "payload_id": "PLD-0154",
+    "drone_model": "DJI Matrice 30T",
+    "payload_name": "ParaZero SafeAir M-30",
+    "notes": null
+  },
+  {
+    "id": "CMP-0124",
+    "a3dm_drone_id": "DRN-0052",
+    "platform_id": "dji-matrice-30t-m30t",
+    "payload_id": "PLD-0161",
+    "drone_model": "DJI Matrice 30T",
+    "payload_name": "AVSS PRS-M30",
+    "notes": null
+  },
+  {
+    "id": "CMP-0125",
+    "a3dm_drone_id": "DRN-0034",
+    "platform_id": "dji-mavic-3-enterprise-3e",
+    "payload_id": "PLD-0020",
+    "drone_model": "DJI Mavic 3 Enterprise",
+    "payload_name": "DJI Mavic 3E RTK Module",
+    "notes": "M3E RTK Module"
+  },
+  {
+    "id": "CMP-0126",
+    "a3dm_drone_id": "DRN-0034",
+    "platform_id": "dji-mavic-3-enterprise-3e",
+    "payload_id": "PLD-0153",
+    "drone_model": "DJI Mavic 3 Enterprise",
+    "payload_name": "ParaZero SafeAir Mavic 3",
+    "notes": "ParaZero SafeAir Mavic 3"
+  },
+  {
+    "id": "CMP-0127",
+    "a3dm_drone_id": "DRN-0034",
+    "platform_id": "dji-mavic-3-enterprise-3e",
+    "payload_id": "PLD-0160",
+    "drone_model": "DJI Mavic 3 Enterprise",
+    "payload_name": "AVSS PRS-M3E",
+    "notes": "AVSS PRS-M3E"
+  },
+  {
+    "id": "CMP-0128",
+    "a3dm_drone_id": "DRN-0034",
+    "platform_id": "dji-mavic-3-enterprise-3e",
+    "payload_id": "PLD-0207",
+    "drone_model": "DJI Mavic 3 Enterprise",
+    "payload_name": "DJI Mavic 3E Speaker",
+    "notes": "M3E Speaker"
+  },
+  {
+    "id": "CMP-0129",
+    "a3dm_drone_id": "DRN-0034",
+    "platform_id": "dji-mavic-3-enterprise-3e",
+    "payload_id": "PLD-0212",
+    "drone_model": "DJI Mavic 3 Enterprise",
+    "payload_name": "JZ Drones U3 Speaker+Spotlight",
+    "notes": "JZ U3 Speaker+Spotlight"
+  },
+  {
+    "id": "CMP-0130",
+    "a3dm_drone_id": "DRN-0034",
+    "platform_id": "dji-mavic-3-enterprise-3e",
+    "payload_id": "PLD-0213",
+    "drone_model": "DJI Mavic 3 Enterprise",
+    "payload_name": "JZ Drones T30 Spotlight",
+    "notes": "JZ T30 Spotlight"
+  },
+  {
+    "id": "CMP-0131",
+    "a3dm_drone_id": "DRN-0034",
+    "platform_id": "dji-mavic-3-enterprise-3e",
+    "payload_id": "PLD-0219",
+    "drone_model": "DJI Mavic 3 Enterprise",
+    "payload_name": "DJI M3E Generic Dropper",
+    "notes": "M3E Generic Dropper"
+  },
+  {
+    "id": "CMP-0132",
+    "a3dm_drone_id": "DRN-0034",
+    "platform_id": "dji-mavic-3-enterprise-3e",
+    "payload_id": "PLD-0220",
+    "drone_model": "DJI Mavic 3 Enterprise",
+    "payload_name": "DJI M3E 1kg Dropper",
+    "notes": "M3E 1kg Dropper"
+  },
+  {
+    "id": "CMP-0133",
+    "a3dm_drone_id": "DRN-0035",
+    "platform_id": "dji-mavic-3-enterprise-thermal-3t",
+    "payload_id": "PLD-0020",
+    "drone_model": "DJI Mavic 3 Enterprise Thermal",
+    "payload_name": "DJI Mavic 3E RTK Module",
+    "notes": null
+  },
+  {
+    "id": "CMP-0134",
+    "a3dm_drone_id": "DRN-0035",
+    "platform_id": "dji-mavic-3-enterprise-thermal-3t",
+    "payload_id": "PLD-0153",
+    "drone_model": "DJI Mavic 3 Enterprise Thermal",
+    "payload_name": "ParaZero SafeAir Mavic 3",
+    "notes": null
+  },
+  {
+    "id": "CMP-0135",
+    "a3dm_drone_id": "DRN-0035",
+    "platform_id": "dji-mavic-3-enterprise-thermal-3t",
+    "payload_id": "PLD-0160",
+    "drone_model": "DJI Mavic 3 Enterprise Thermal",
+    "payload_name": "AVSS PRS-M3E",
+    "notes": null
+  },
+  {
+    "id": "CMP-0136",
+    "a3dm_drone_id": "DRN-0053",
+    "platform_id": "dji-matrice-3d-m3d",
+    "payload_id": "PLD-0163",
+    "drone_model": "DJI Matrice 3D",
+    "payload_name": "AVSS PRS-M3D",
+    "notes": "AVSS PRS-M3D"
+  },
+  {
+    "id": "CMP-0137",
+    "a3dm_drone_id": "DRN-0054",
+    "platform_id": "dji-matrice-3td-m3td",
+    "payload_id": "PLD-0163",
+    "drone_model": "DJI Matrice 3TD",
+    "payload_name": "AVSS PRS-M3D",
+    "notes": null
+  },
+  {
+    "id": "CMP-0138",
+    "a3dm_drone_id": "DRN-0057",
+    "platform_id": "dji-matrice-4d-m4d",
+    "payload_id": "PLD-0164",
+    "drone_model": "DJI Matrice 4D",
+    "payload_name": "AVSS PRS-M4D",
+    "notes": "AVSS PRS-M4D"
+  },
+  {
+    "id": "CMP-0139",
+    "a3dm_drone_id": "DRN-0058",
+    "platform_id": "dji-matrice-4td-m4td",
+    "payload_id": "PLD-0164",
+    "drone_model": "DJI Matrice 4TD",
+    "payload_name": "AVSS PRS-M4D",
+    "notes": null
+  },
+  {
+    "id": "CMP-0140",
+    "a3dm_drone_id": "DRN-0005",
+    "platform_id": "dji-mavic-2-pro",
+    "payload_id": "PLD-0152",
+    "drone_model": "DJI Mavic 2 Pro",
+    "payload_name": "ParaZero SafeAir Mavic 2",
+    "notes": "ParaZero SafeAir Mavic 2"
+  },
+  {
+    "id": "CMP-0141",
+    "a3dm_drone_id": "DRN-0006",
+    "platform_id": "dji-mavic-2-zoom",
+    "payload_id": "PLD-0152",
+    "drone_model": "DJI Mavic 2 Zoom",
+    "payload_name": "ParaZero SafeAir Mavic 2",
+    "notes": null
+  },
+  {
+    "id": "CMP-0142",
+    "a3dm_drone_id": "DRN-0005",
+    "platform_id": "dji-mavic-2-pro",
+    "payload_id": "PLD-0169",
+    "drone_model": "DJI Mavic 2 Pro",
+    "payload_name": "Indemnis Nexus Mini Mavic 2",
+    "notes": "Indemnis Nexus Mini"
+  },
+  {
+    "id": "CMP-0143",
+    "a3dm_drone_id": "DRN-0024",
+    "platform_id": "dji-phantom-4",
+    "payload_id": "PLD-0151",
+    "drone_model": "DJI Phantom 4",
+    "payload_name": "ParaZero SafeAir Phantom",
+    "notes": "ParaZero SafeAir Phantom"
+  },
+  {
+    "id": "CMP-0144",
+    "a3dm_drone_id": "DRN-0026",
+    "platform_id": "dji-phantom-4-pro",
+    "payload_id": "PLD-0151",
+    "drone_model": "DJI Phantom 4 Pro",
+    "payload_name": "ParaZero SafeAir Phantom",
+    "notes": null
+  },
+  {
+    "id": "CMP-0145",
+    "a3dm_drone_id": "DRN-0040",
+    "platform_id": "dji-inspire-2",
+    "payload_id": "PLD-0167",
+    "drone_model": "DJI Inspire 2",
+    "payload_name": "Indemnis Nexus Inspire 2",
+    "notes": "Indemnis Nexus original cert"
+  },
+  {
+    "id": "CMP-0146",
+    "a3dm_drone_id": "DRN-0098",
+    "platform_id": "skydio-x10",
+    "payload_id": "PLD-0024",
+    "drone_model": "Skydio X10",
+    "payload_name": "Skydio VT300-Z Zoom",
+    "notes": "VT300-Z zoom"
+  },
+  {
+    "id": "CMP-0147",
+    "a3dm_drone_id": "DRN-0098",
+    "platform_id": "skydio-x10",
+    "payload_id": "PLD-0025",
+    "drone_model": "Skydio X10",
+    "payload_name": "Skydio VT300-L Thermal",
+    "notes": "VT300-L thermal"
+  },
+  {
+    "id": "CMP-0148",
+    "a3dm_drone_id": "DRN-0098",
+    "platform_id": "skydio-x10",
+    "payload_id": "PLD-0026",
+    "drone_model": "Skydio X10",
+    "payload_name": "Skydio NightSense",
+    "notes": "NightSense"
+  },
+  {
+    "id": "CMP-0149",
+    "a3dm_drone_id": "DRN-0098",
+    "platform_id": "skydio-x10",
+    "payload_id": "PLD-0165",
+    "drone_model": "Skydio X10",
+    "payload_name": "AVSS PRS-Skydio X10",
+    "notes": "AVSS PRS-Skydio X10"
+  },
+  {
+    "id": "CMP-0150",
+    "a3dm_drone_id": "DRN-0099",
+    "platform_id": "skydio-x10d",
+    "payload_id": "PLD-0024",
+    "drone_model": "Skydio X10D",
+    "payload_name": "Skydio VT300-Z Zoom",
+    "notes": null
+  },
+  {
+    "id": "CMP-0151",
+    "a3dm_drone_id": "DRN-0099",
+    "platform_id": "skydio-x10d",
+    "payload_id": "PLD-0025",
+    "drone_model": "Skydio X10D",
+    "payload_name": "Skydio VT300-L Thermal",
+    "notes": null
+  },
+  {
+    "id": "CMP-0152",
+    "a3dm_drone_id": "DRN-0099",
+    "platform_id": "skydio-x10d",
+    "payload_id": "PLD-0165",
+    "drone_model": "Skydio X10D",
+    "payload_name": "AVSS PRS-Skydio X10",
+    "notes": null
+  },
+  {
+    "id": "CMP-0153",
+    "a3dm_drone_id": "DRN-0084",
+    "platform_id": "autel-evo-max-4t",
+    "payload_id": "PLD-0021",
+    "drone_model": "Autel Robotics EVO Max 4T",
+    "payload_name": "Autel Robotics L35T Alpha gimbal",
+    "notes": "L35T Alpha gimbal (integrated)"
+  },
+  {
+    "id": "CMP-0154",
+    "a3dm_drone_id": "DRN-0087",
+    "platform_id": "autel-dragonfish-lite",
+    "payload_id": "PLD-0022",
+    "drone_model": "Autel Robotics Dragonfish Lite",
+    "payload_name": "Autel Robotics Dragonfish Z30 Pro",
+    "notes": "Dragonfish Z30 Pro"
+  },
+  {
+    "id": "CMP-0155",
+    "a3dm_drone_id": "DRN-0088",
+    "platform_id": "autel-dragonfish-standard",
+    "payload_id": "PLD-0023",
+    "drone_model": "Autel Robotics Dragonfish Standard",
+    "payload_name": "Autel Robotics Dragonfish A40T",
+    "notes": "Dragonfish A40T"
+  },
+  {
+    "id": "CMP-0156",
+    "a3dm_drone_id": "DRN-0089",
+    "platform_id": "autel-dragonfish-pro",
+    "payload_id": "PLD-0023",
+    "drone_model": "Autel Robotics Dragonfish Pro",
+    "payload_name": "Autel Robotics Dragonfish A40T",
+    "notes": null
+  },
+  {
+    "id": "CMP-0157",
+    "a3dm_drone_id": "DRN-0123",
+    "platform_id": "wingtraone-gen-ii-rtk-ppk",
+    "payload_id": "PLD-0123",
+    "drone_model": "Wingtra WingtraOne GEN II",
+    "payload_name": "Wingtra Sony RX1R II Kit",
+    "notes": "Sony RX1R II Kit"
+  },
+  {
+    "id": "CMP-0158",
+    "a3dm_drone_id": "DRN-0123",
+    "platform_id": "wingtraone-gen-ii-rtk-ppk",
+    "payload_id": "PLD-0124",
+    "drone_model": "Wingtra WingtraOne GEN II",
+    "payload_name": "Wingtra Sony a6100 Oblique",
+    "notes": "Sony a6100 Oblique"
+  },
+  {
+    "id": "CMP-0159",
+    "a3dm_drone_id": "DRN-0123",
+    "platform_id": "wingtraone-gen-ii-rtk-ppk",
+    "payload_id": "PLD-0125",
+    "drone_model": "Wingtra WingtraOne GEN II",
+    "payload_name": "Wingtra MAP61",
+    "notes": "MAP61"
+  },
+  {
+    "id": "CMP-0160",
+    "a3dm_drone_id": "DRN-0123",
+    "platform_id": "wingtraone-gen-ii-rtk-ppk",
+    "payload_id": "PLD-0033",
+    "drone_model": "Wingtra WingtraOne GEN II",
+    "payload_name": "MicaSense RedEdge-MX",
+    "notes": "MicaSense RedEdge-MX"
+  },
+  {
+    "id": "CMP-0161",
+    "a3dm_drone_id": "DRN-0123",
+    "platform_id": "wingtraone-gen-ii-rtk-ppk",
+    "payload_id": "PLD-0036",
+    "drone_model": "Wingtra WingtraOne GEN II",
+    "payload_name": "MicaSense Altum",
+    "notes": "MicaSense Altum"
+  },
+  {
+    "id": "CMP-0162",
+    "a3dm_drone_id": "DRN-0124",
+    "platform_id": "sensefly-ebee-x-mapping",
+    "payload_id": "PLD-0126",
+    "drone_model": "senseFly (AgEagle) eBee X",
+    "payload_name": "senseFly (AgEagle) S.O.D.A.",
+    "notes": "S.O.D.A."
+  },
+  {
+    "id": "CMP-0163",
+    "a3dm_drone_id": "DRN-0124",
+    "platform_id": "sensefly-ebee-x-mapping",
+    "payload_id": "PLD-0127",
+    "drone_model": "senseFly (AgEagle) eBee X",
+    "payload_name": "senseFly (AgEagle) S.O.D.A. 3D",
+    "notes": "S.O.D.A. 3D"
+  },
+  {
+    "id": "CMP-0164",
+    "a3dm_drone_id": "DRN-0124",
+    "platform_id": "sensefly-ebee-x-mapping",
+    "payload_id": "PLD-0128",
+    "drone_model": "senseFly (AgEagle) eBee X",
+    "payload_name": "senseFly (AgEagle) Aeria X",
+    "notes": "Aeria X"
+  },
+  {
+    "id": "CMP-0165",
+    "a3dm_drone_id": "DRN-0124",
+    "platform_id": "sensefly-ebee-x-mapping",
+    "payload_id": "PLD-0130",
+    "drone_model": "senseFly (AgEagle) eBee X",
+    "payload_name": "senseFly (AgEagle) Duet T",
+    "notes": "Duet T"
+  },
+  {
+    "id": "CMP-0166",
+    "a3dm_drone_id": "DRN-0124",
+    "platform_id": "sensefly-ebee-x-mapping",
+    "payload_id": "PLD-0131",
+    "drone_model": "senseFly (AgEagle) eBee X",
+    "payload_name": "senseFly (AgEagle) Duet M",
+    "notes": "Duet M"
+  },
+  {
+    "id": "CMP-0167",
+    "a3dm_drone_id": "DRN-0124",
+    "platform_id": "sensefly-ebee-x-mapping",
+    "payload_id": "PLD-0028",
+    "drone_model": "senseFly (AgEagle) eBee X",
+    "payload_name": "Parrot Sequoia+",
+    "notes": "Parrot Sequoia+"
+  },
+  {
+    "id": "CMP-0168",
+    "a3dm_drone_id": "DRN-0129",
+    "platform_id": "sensefly-ebee-ag-agriculture",
+    "payload_id": "PLD-0028",
+    "drone_model": "senseFly (AgEagle) eBee Ag",
+    "payload_name": "Parrot Sequoia+",
+    "notes": null
+  },
+  {
+    "id": "CMP-0169",
+    "a3dm_drone_id": "DRN-0129",
+    "platform_id": "sensefly-ebee-ag-agriculture",
+    "payload_id": "PLD-0126",
+    "drone_model": "senseFly (AgEagle) eBee Ag",
+    "payload_name": "senseFly (AgEagle) S.O.D.A.",
+    "notes": null
+  },
+  {
+    "id": "CMP-0170",
+    "a3dm_drone_id": "DRN-0132",
+    "platform_id": "quantum-trinity-f90-mapping",
+    "payload_id": "PLD-0132",
+    "drone_model": "Quantum Systems Trinity F90+",
+    "payload_name": "Quantum Systems Sony UMC-R10C",
+    "notes": "Sony UMC-R10C"
+  },
+  {
+    "id": "CMP-0171",
+    "a3dm_drone_id": "DRN-0133",
+    "platform_id": "quantum-trinity-pro-mapping-lidar",
+    "payload_id": "PLD-0133",
+    "drone_model": "Quantum Systems Trinity Pro",
+    "payload_name": "Quantum Systems MicaSense RedEdge-P",
+    "notes": "MicaSense RedEdge-P"
+  },
+  {
+    "id": "CMP-0172",
+    "a3dm_drone_id": "DRN-0133",
+    "platform_id": "quantum-trinity-pro-mapping-lidar",
+    "payload_id": "PLD-0134",
+    "drone_model": "Quantum Systems Trinity Pro",
+    "payload_name": "Quantum Systems Qube 240 LiDAR",
+    "notes": "Qube 240 LiDAR"
+  },
+  {
+    "id": "CMP-0173",
+    "a3dm_drone_id": "DRN-0133",
+    "platform_id": "quantum-trinity-pro-mapping-lidar",
+    "payload_id": "PLD-0080",
+    "drone_model": "Quantum Systems Trinity Pro",
+    "payload_name": "Phase One iXM-100",
+    "notes": "Phase One iXM-100"
+  },
+  {
+    "id": "CMP-0174",
+    "a3dm_drone_id": "DRN-0143",
+    "platform_id": "jouav-cw-15-mapping-surveying",
+    "payload_id": "PLD-0135",
+    "drone_model": "JOUAV CW-15",
+    "payload_name": "JOUAV MG-150E",
+    "notes": "MG-150E"
+  },
+  {
+    "id": "CMP-0175",
+    "a3dm_drone_id": "DRN-0143",
+    "platform_id": "jouav-cw-15-mapping-surveying",
+    "payload_id": "PLD-0136",
+    "drone_model": "JOUAV CW-15",
+    "payload_name": "JOUAV JoLiDAR-1500",
+    "notes": "JoLiDAR-1500"
+  },
+  {
+    "id": "CMP-0176",
+    "a3dm_drone_id": "DRN-0144",
+    "platform_id": "jouav-cw-25-surveying",
+    "payload_id": "PLD-0135",
+    "drone_model": "JOUAV CW-25",
+    "payload_name": "JOUAV MG-150E",
+    "notes": null
+  },
+  {
+    "id": "CMP-0177",
+    "a3dm_drone_id": "DRN-0144",
+    "platform_id": "jouav-cw-25-surveying",
+    "payload_id": "PLD-0137",
+    "drone_model": "JOUAV CW-25",
+    "payload_name": "JOUAV JoLiDAR-LR22",
+    "notes": "JoLiDAR-LR22"
+  },
+  {
+    "id": "CMP-0178",
+    "a3dm_drone_id": "DRN-0172",
+    "platform_id": "freefly-alta-x-industrial",
+    "payload_id": "PLD-0084",
+    "drone_model": "Freefly Systems Alta X",
+    "payload_name": "Sony Alpha 7R IV",
+    "notes": "Sony A7R IV"
+  },
+  {
+    "id": "CMP-0179",
+    "a3dm_drone_id": "DRN-0172",
+    "platform_id": "freefly-alta-x-industrial",
+    "payload_id": "PLD-0046",
+    "drone_model": "Freefly Systems Alta X",
+    "payload_name": "YellowScan Surveyor Ultra",
+    "notes": "YellowScan Surveyor Ultra"
+  },
+  {
+    "id": "CMP-0180",
+    "a3dm_drone_id": "DRN-0172",
+    "platform_id": "freefly-alta-x-industrial",
+    "payload_id": "PLD-0049",
+    "drone_model": "Freefly Systems Alta X",
+    "payload_name": "YellowScan Voyager",
+    "notes": "YellowScan Voyager"
+  },
+  {
+    "id": "CMP-0181",
+    "a3dm_drone_id": "DRN-0172",
+    "platform_id": "freefly-alta-x-industrial",
+    "payload_id": "PLD-0061",
+    "drone_model": "Freefly Systems Alta X",
+    "payload_name": "Riegl VUX-1UAV",
+    "notes": "Riegl VUX-1UAV"
+  },
+  {
+    "id": "CMP-0182",
+    "a3dm_drone_id": "DRN-0172",
+    "platform_id": "freefly-alta-x-industrial",
+    "payload_id": "PLD-0103",
+    "drone_model": "Freefly Systems Alta X",
+    "payload_name": "Sierra-Olympia Ventus OGI",
+    "notes": "Sierra-Olympia Ventus OGI"
+  },
+  {
+    "id": "CMP-0183",
+    "a3dm_drone_id": "DRN-0172",
+    "platform_id": "freefly-alta-x-industrial",
+    "payload_id": "PLD-0150",
+    "drone_model": "Freefly Systems Alta X",
+    "payload_name": "Drone Amplified IGNIS II",
+    "notes": "Drone Amplified IGNIS II"
+  },
+  {
+    "id": "CMP-0184",
+    "a3dm_drone_id": "DRN-0172",
+    "platform_id": "freefly-alta-x-industrial",
+    "payload_id": "PLD-0158",
+    "drone_model": "Freefly Systems Alta X",
+    "payload_name": "ParaZero SafeAir Alta X",
+    "notes": "ParaZero SafeAir Alta X"
+  },
+  {
+    "id": "CMP-0185",
+    "a3dm_drone_id": "DRN-0172",
+    "platform_id": "freefly-alta-x-industrial",
+    "payload_id": "PLD-0166",
+    "drone_model": "Freefly Systems Alta X",
+    "payload_name": "AVSS PRS-Alta X",
+    "notes": "AVSS PRS-Alta X"
+  },
+  {
+    "id": "CMP-0186",
+    "a3dm_drone_id": "DRN-0172",
+    "platform_id": "freefly-alta-x-industrial",
+    "payload_id": "PLD-0173",
+    "drone_model": "Freefly Systems Alta X",
+    "payload_name": "Drone Rescue Systems DRS-AltaX",
+    "notes": "DRS-AltaX"
+  },
+  {
+    "id": "CMP-0187",
+    "a3dm_drone_id": "DRN-0174",
+    "platform_id": "freefly-astro-mapping-inspection",
+    "payload_id": "PLD-0084",
+    "drone_model": "Freefly Systems Astro",
+    "payload_name": "Sony Alpha 7R IV",
+    "notes": "Sony A7R IV"
+  },
+  {
+    "id": "CMP-0188",
+    "a3dm_drone_id": "DRN-0174",
+    "platform_id": "freefly-astro-mapping-inspection",
+    "payload_id": "PLD-0080",
+    "drone_model": "Freefly Systems Astro",
+    "payload_name": "Phase One iXM-100",
+    "notes": "Phase One iXM-100"
+  },
+  {
+    "id": "CMP-0189",
+    "a3dm_drone_id": "DRN-0174",
+    "platform_id": "freefly-astro-mapping-inspection",
+    "payload_id": "PLD-0057",
+    "drone_model": "Freefly Systems Astro",
+    "payload_name": "Emesent Hovermap ST",
+    "notes": "Hovermap ST"
+  },
+  {
+    "id": "CMP-0190",
+    "a3dm_drone_id": "DRN-0177",
+    "platform_id": "inspired-flight-if1200-heavy-lift",
+    "payload_id": "PLD-0084",
+    "drone_model": "Inspired Flight IF1200",
+    "payload_name": "Sony Alpha 7R IV",
+    "notes": null
+  },
+  {
+    "id": "CMP-0191",
+    "a3dm_drone_id": "DRN-0177",
+    "platform_id": "inspired-flight-if1200-heavy-lift",
+    "payload_id": "PLD-0044",
+    "drone_model": "Inspired Flight IF1200",
+    "payload_name": "YellowScan Mapper+",
+    "notes": "YellowScan Mapper+"
+  },
+  {
+    "id": "CMP-0192",
+    "a3dm_drone_id": "DRN-0179",
+    "platform_id": "watts-innovations-prism-sky-heavy-lift",
+    "payload_id": "PLD-0234",
+    "drone_model": "Watts Innovations Prism Sky",
+    "payload_name": "Sony Alpha 7R IV (Auterion)",
+    "notes": "Sony A7R IV Auterion-integrated"
+  },
+  {
+    "id": "CMP-0193",
+    "a3dm_drone_id": "DRN-0208",
+    "platform_id": "insitu-scaneagle-isr",
+    "payload_id": "PLD-0144",
+    "drone_model": "Insitu (Boeing) ScanEagle",
+    "payload_name": "Insitu (Boeing) ViDAR Optical Search",
+    "notes": "ViDAR"
+  },
+  {
+    "id": "CMP-0194",
+    "a3dm_drone_id": "DRN-0210",
+    "platform_id": "insitu-integrator-isr",
+    "payload_id": "PLD-0144",
+    "drone_model": "Insitu (Boeing) Integrator",
+    "payload_name": "Insitu (Boeing) ViDAR Optical Search",
+    "notes": null
+  },
+  {
+    "id": "CMP-0195",
+    "a3dm_drone_id": "DRN-0210",
+    "platform_id": "insitu-integrator-isr",
+    "payload_id": "PLD-0145",
+    "drone_model": "Insitu (Boeing) Integrator",
+    "payload_name": "Insitu (Boeing) NanoSAR-D",
+    "notes": "NanoSAR-D"
+  },
+  {
+    "id": "CMP-0196",
+    "a3dm_drone_id": "DRN-0211",
+    "platform_id": "general-atomics-mq-9b-skyguardian-male",
+    "payload_id": "PLD-0146",
+    "drone_model": "General Atomics MQ-9B SkyGuardian",
+    "payload_name": "General Atomics MTS-B EO/IR",
+    "notes": "MTS-B EO/IR"
+  },
+  {
+    "id": "CMP-0197",
+    "a3dm_drone_id": "DRN-0211",
+    "platform_id": "general-atomics-mq-9b-skyguardian-male",
+    "payload_id": "PLD-0147",
+    "drone_model": "General Atomics MQ-9B SkyGuardian",
+    "payload_name": "General Atomics Lynx SAR",
+    "notes": "Lynx SAR"
+  },
+  {
+    "id": "CMP-0198",
+    "a3dm_drone_id": "DRN-0159",
+    "platform_id": "aerovironment-puma-3-ae-isr",
+    "payload_id": "PLD-0148",
+    "drone_model": "AeroVironment Puma 3 AE",
+    "payload_name": "AeroVironment Mantis i23",
+    "notes": "Mantis i23"
+  },
+  {
+    "id": "CMP-0199",
+    "a3dm_drone_id": "DRN-0159",
+    "platform_id": "aerovironment-puma-3-ae-isr",
+    "payload_id": "PLD-0149",
+    "drone_model": "AeroVironment Puma 3 AE",
+    "payload_name": "AeroVironment Mantis i45",
+    "notes": "Mantis i45"
+  },
+  {
+    "id": "CMP-0200",
+    "a3dm_drone_id": "DRN-0213",
+    "platform_id": "aeronautics-orbiter-2-mini-isr",
+    "payload_id": "PLD-0142",
+    "drone_model": "Aeronautics Orbiter 2",
+    "payload_name": "Aeronautics T-STAMP-D",
+    "notes": "T-STAMP-D"
+  },
+  {
+    "id": "CMP-0201",
+    "a3dm_drone_id": "DRN-0214",
+    "platform_id": "aeronautics-orbiter-3-tactical-isr",
+    "payload_id": "PLD-0142",
+    "drone_model": "Aeronautics Orbiter 3",
+    "payload_name": "Aeronautics T-STAMP-D",
+    "notes": null
+  },
+  {
+    "id": "CMP-0202",
+    "a3dm_drone_id": "DRN-0213",
+    "platform_id": "aeronautics-orbiter-2-mini-isr",
+    "payload_id": "PLD-0143",
+    "drone_model": "Aeronautics Orbiter 2",
+    "payload_name": "Aeronautics Micro POP",
+    "notes": "Micro POP"
+  },
+  {
+    "id": "CMP-0203",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0236",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "DJI Zenmuse V1",
+    "notes": "Zenmuse V1 (M400 firmware Jan 2026)"
+  },
+  {
+    "id": "CMP-0204",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0242",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "Phase One P3 Kit for M400",
+    "notes": "Phase One P3 Kit for M400"
+  },
+  {
+    "id": "CMP-0205",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0248",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "AIRINS MetScan V1",
+    "notes": "AIRINS MetScan V1 methane"
+  },
+  {
+    "id": "CMP-0206",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0247",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "Sniffer4D Nano2+",
+    "notes": "Sniffer4D Nano2+"
+  },
+  {
+    "id": "CMP-0207",
+    "a3dm_drone_id": "DRN-0055",
+    "platform_id": "dji-matrice-4e-m4e",
+    "payload_id": "PLD-0251",
+    "drone_model": "DJI Matrice 4E",
+    "payload_name": "ParaZero SafeAir M4",
+    "notes": "ParaZero SafeAir M4"
+  },
+  {
+    "id": "CMP-0208",
+    "a3dm_drone_id": "DRN-0055",
+    "platform_id": "dji-matrice-4e-m4e",
+    "payload_id": "PLD-0252",
+    "drone_model": "DJI Matrice 4E",
+    "payload_name": "AVSS PRS-M4S",
+    "notes": "AVSS PRS-M4S"
+  },
+  {
+    "id": "CMP-0209",
+    "a3dm_drone_id": "DRN-0055",
+    "platform_id": "dji-matrice-4e-m4e",
+    "payload_id": "PLD-0253",
+    "drone_model": "DJI Matrice 4E",
+    "payload_name": "AVSS PRS-M4SUS",
+    "notes": "AVSS PRS-M4SUS"
+  },
+  {
+    "id": "CMP-0210",
+    "a3dm_drone_id": "DRN-0055",
+    "platform_id": "dji-matrice-4e-m4e",
+    "payload_id": "PLD-0257",
+    "drone_model": "DJI Matrice 4E",
+    "payload_name": "Volarious V-Line Pro (M4 kit)",
+    "notes": "Volarious V-Line Pro M4"
+  },
+  {
+    "id": "CMP-0211",
+    "a3dm_drone_id": "DRN-0056",
+    "platform_id": "dji-matrice-4t-m4t",
+    "payload_id": "PLD-0251",
+    "drone_model": "DJI Matrice 4T",
+    "payload_name": "ParaZero SafeAir M4",
+    "notes": null
+  },
+  {
+    "id": "CMP-0212",
+    "a3dm_drone_id": "DRN-0056",
+    "platform_id": "dji-matrice-4t-m4t",
+    "payload_id": "PLD-0252",
+    "drone_model": "DJI Matrice 4T",
+    "payload_name": "AVSS PRS-M4S",
+    "notes": null
+  },
+  {
+    "id": "CMP-0213",
+    "a3dm_drone_id": "DRN-0056",
+    "platform_id": "dji-matrice-4t-m4t",
+    "payload_id": "PLD-0253",
+    "drone_model": "DJI Matrice 4T",
+    "payload_name": "AVSS PRS-M4SUS",
+    "notes": null
+  },
+  {
+    "id": "CMP-0214",
+    "a3dm_drone_id": "DRN-0056",
+    "platform_id": "dji-matrice-4t-m4t",
+    "payload_id": "PLD-0257",
+    "drone_model": "DJI Matrice 4T",
+    "payload_name": "Volarious V-Line Pro (M4 kit)",
+    "notes": null
+  },
+  {
+    "id": "CMP-0215",
+    "a3dm_drone_id": "DRN-0057",
+    "platform_id": "dji-matrice-4d-m4d",
+    "payload_id": "PLD-0258",
+    "drone_model": "DJI Matrice 4D",
+    "payload_name": "DJI Dock 3",
+    "notes": "DJI Dock 3 vehicle mount"
+  },
+  {
+    "id": "CMP-0216",
+    "a3dm_drone_id": "DRN-0058",
+    "platform_id": "dji-matrice-4td-m4td",
+    "payload_id": "PLD-0258",
+    "drone_model": "DJI Matrice 4TD",
+    "payload_name": "DJI Dock 3",
+    "notes": null
+  },
+  {
+    "id": "CMP-0217",
+    "a3dm_drone_id": "DRN-0057",
+    "platform_id": "dji-matrice-4d-m4d",
+    "payload_id": "PLD-0247",
+    "drone_model": "DJI Matrice 4D",
+    "payload_name": "Sniffer4D Nano2+",
+    "notes": "Sniffer4D Nano2+"
+  },
+  {
+    "id": "CMP-0218",
+    "a3dm_drone_id": "DRN-0058",
+    "platform_id": "dji-matrice-4td-m4td",
+    "payload_id": "PLD-0247",
+    "drone_model": "DJI Matrice 4TD",
+    "payload_name": "Sniffer4D Nano2+",
+    "notes": null
+  },
+  {
+    "id": "CMP-0219",
+    "a3dm_drone_id": "DRN-0304",
+    "platform_id": "freefly-alta-x-gen-2",
+    "payload_id": "PLD-0084",
+    "drone_model": "Freefly Systems Alta X Gen 2",
+    "payload_name": "Sony Alpha 7R IV",
+    "notes": "Sony A7R IV"
+  },
+  {
+    "id": "CMP-0220",
+    "a3dm_drone_id": "DRN-0304",
+    "platform_id": "freefly-alta-x-gen-2",
+    "payload_id": "PLD-0046",
+    "drone_model": "Freefly Systems Alta X Gen 2",
+    "payload_name": "YellowScan Surveyor Ultra",
+    "notes": "YellowScan Surveyor Ultra"
+  },
+  {
+    "id": "CMP-0221",
+    "a3dm_drone_id": "DRN-0304",
+    "platform_id": "freefly-alta-x-gen-2",
+    "payload_id": "PLD-0049",
+    "drone_model": "Freefly Systems Alta X Gen 2",
+    "payload_name": "YellowScan Voyager",
+    "notes": "YellowScan Voyager"
+  },
+  {
+    "id": "CMP-0222",
+    "a3dm_drone_id": "DRN-0304",
+    "platform_id": "freefly-alta-x-gen-2",
+    "payload_id": "PLD-0061",
+    "drone_model": "Freefly Systems Alta X Gen 2",
+    "payload_name": "Riegl VUX-1UAV",
+    "notes": "Riegl VUX-1UAV"
+  },
+  {
+    "id": "CMP-0223",
+    "a3dm_drone_id": "DRN-0304",
+    "platform_id": "freefly-alta-x-gen-2",
+    "payload_id": "PLD-0103",
+    "drone_model": "Freefly Systems Alta X Gen 2",
+    "payload_name": "Sierra-Olympia Ventus OGI",
+    "notes": "Sierra-Olympia Ventus OGI"
+  },
+  {
+    "id": "CMP-0224",
+    "a3dm_drone_id": "DRN-0304",
+    "platform_id": "freefly-alta-x-gen-2",
+    "payload_id": "PLD-0150",
+    "drone_model": "Freefly Systems Alta X Gen 2",
+    "payload_name": "Drone Amplified IGNIS II",
+    "notes": "Drone Amplified IGNIS II"
+  },
+  {
+    "id": "CMP-0225",
+    "a3dm_drone_id": "DRN-0299",
+    "platform_id": "skydio-x10-gen-2",
+    "payload_id": "PLD-0024",
+    "drone_model": "Skydio X10 Gen 2",
+    "payload_name": "Skydio VT300-Z Zoom",
+    "notes": "VT300-Z zoom"
+  },
+  {
+    "id": "CMP-0226",
+    "a3dm_drone_id": "DRN-0299",
+    "platform_id": "skydio-x10-gen-2",
+    "payload_id": "PLD-0025",
+    "drone_model": "Skydio X10 Gen 2",
+    "payload_name": "Skydio VT300-L Thermal",
+    "notes": "VT300-L thermal"
+  },
+  {
+    "id": "CMP-0227",
+    "a3dm_drone_id": "DRN-0299",
+    "platform_id": "skydio-x10-gen-2",
+    "payload_id": "PLD-0026",
+    "drone_model": "Skydio X10 Gen 2",
+    "payload_name": "Skydio NightSense",
+    "notes": "NightSense"
+  },
+  {
+    "id": "CMP-0228",
+    "a3dm_drone_id": "DRN-0299",
+    "platform_id": "skydio-x10-gen-2",
+    "payload_id": "PLD-0165",
+    "drone_model": "Skydio X10 Gen 2",
+    "payload_name": "AVSS PRS-Skydio X10",
+    "notes": "AVSS PRS-Skydio X10"
+  },
+  {
+    "id": "CMP-0229",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0237",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "MicaSense RedEdge-P Green",
+    "notes": "RedEdge-P Green on M300"
+  },
+  {
+    "id": "CMP-0230",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0237",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "MicaSense RedEdge-P Green",
+    "notes": "RedEdge-P Green on M350"
+  },
+  {
+    "id": "CMP-0231",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0237",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "MicaSense RedEdge-P Green",
+    "notes": "RedEdge-P Green on M400"
+  },
+  {
+    "id": "CMP-0232",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0238",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "Sentera 6X Thermal Pro",
+    "notes": "6X Thermal Pro on M300"
+  },
+  {
+    "id": "CMP-0233",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0238",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "Sentera 6X Thermal Pro",
+    "notes": "6X Thermal Pro on M350"
+  },
+  {
+    "id": "CMP-0234",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0238",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "Sentera 6X Thermal Pro",
+    "notes": "6X Thermal Pro on M400"
+  },
+  {
+    "id": "CMP-0235",
+    "a3dm_drone_id": "DRN-0174",
+    "platform_id": "freefly-astro-mapping-inspection",
+    "payload_id": "PLD-0238",
+    "drone_model": "Freefly Systems Astro",
+    "payload_name": "Sentera 6X Thermal Pro",
+    "notes": "6X Thermal Pro on Astro"
+  },
+  {
+    "id": "CMP-0236",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0243",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "FLIR / Teledyne Boson+ Radiometric",
+    "notes": "Boson+ integrator use"
+  },
+  {
+    "id": "CMP-0237",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0244",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "FLIR / Teledyne Hadron 640R+",
+    "notes": "Hadron 640R+ integrator use"
+  },
+  {
+    "id": "CMP-0238",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0245",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "GeoCue TrueView 1 (TV1)",
+    "notes": "TrueView 1"
+  },
+  {
+    "id": "CMP-0239",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0245",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "GeoCue TrueView 1 (TV1)",
+    "notes": null
+  },
+  {
+    "id": "CMP-0240",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0245",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "GeoCue TrueView 1 (TV1)",
+    "notes": null
+  },
+  {
+    "id": "CMP-0241",
+    "a3dm_drone_id": "DRN-0049",
+    "platform_id": "dji-matrice-300-rtk",
+    "payload_id": "PLD-0246",
+    "drone_model": "DJI Matrice 300 RTK",
+    "payload_name": "GeoCue TrueView 1 Lite",
+    "notes": "TrueView 1 Lite"
+  },
+  {
+    "id": "CMP-0242",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0246",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "GeoCue TrueView 1 Lite",
+    "notes": null
+  },
+  {
+    "id": "CMP-0243",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0246",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "GeoCue TrueView 1 Lite",
+    "notes": null
+  },
+  {
+    "id": "CMP-0244",
+    "a3dm_drone_id": "DRN-0050",
+    "platform_id": "dji-matrice-350-rtk",
+    "payload_id": "PLD-0239",
+    "drone_model": "DJI Matrice 350 RTK",
+    "payload_name": "YellowScan Venturer",
+    "notes": "Venturer on M350"
+  },
+  {
+    "id": "CMP-0245",
+    "a3dm_drone_id": "DRN-0304",
+    "platform_id": "freefly-alta-x-gen-2",
+    "payload_id": "PLD-0239",
+    "drone_model": "Freefly Systems Alta X Gen 2",
+    "payload_name": "YellowScan Venturer",
+    "notes": "Venturer on Alta X Gen 2"
+  },
+  {
+    "id": "CMP-0246",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0240",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "Phase One iXM-RS250",
+    "notes": "iXM-RS250 on M400 (via P3 gimbal)"
+  },
+  {
+    "id": "CMP-0247",
+    "a3dm_drone_id": "DRN-0304",
+    "platform_id": "freefly-alta-x-gen-2",
+    "payload_id": "PLD-0240",
+    "drone_model": "Freefly Systems Alta X Gen 2",
+    "payload_name": "Phase One iXM-RS250",
+    "notes": "iXM-RS250 on Alta X Gen 2"
+  },
+  {
+    "id": "CMP-0248",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0241",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "Phase One iXM-FS130",
+    "notes": "iXM-FS130 on M400"
+  },
+  {
+    "id": "CMP-0249",
+    "a3dm_drone_id": "DRN-0059",
+    "platform_id": "dji-matrice-400-m400",
+    "payload_id": "PLD-0249",
+    "drone_model": "DJI Matrice 400",
+    "payload_name": "Velodyne/Ouster OS Rev8 (family)",
+    "notes": "OS Rev8 via integrator payload"
+  },
+  {
+    "id": "CMP-0250",
+    "a3dm_drone_id": "DRN-0304",
+    "platform_id": "freefly-alta-x-gen-2",
+    "payload_id": "PLD-0250",
+    "drone_model": "Freefly Systems Alta X Gen 2",
+    "payload_name": "Riegl VUX-160-23 (RiLOC-F)",
+    "notes": "VUX-160-23 on Alta X Gen 2 heavy-lift"
+  }
+]

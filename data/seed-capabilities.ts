@@ -6,6 +6,7 @@
  */
 
 import { CATALOGUE_EXPANSION_CAPABILITIES } from '@/data/catalogue-expansion-caps';
+import { resolveA3dmCapabilities } from '@/lib/a3dm/capability-resolver';
 import type { SpectrumCapability } from '@/lib/spectrum/types';
 
 // helpers ---------------------------------------------------------------
@@ -384,5 +385,7 @@ export const CAPABILITIES: SpectrumCapability[] = [
 
 /** Attach capabilities to platforms (used when seeding the in-memory store). */
 export function capabilitiesFor(platformId: string): SpectrumCapability[] {
-  return CAPABILITIES.filter((c) => c.platform_id === platformId);
+  const curated = CAPABILITIES.filter((c) => c.platform_id === platformId);
+  if (curated.length > 0) return curated;
+  return resolveA3dmCapabilities(platformId);
 }

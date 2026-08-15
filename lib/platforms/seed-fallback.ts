@@ -8,7 +8,8 @@ function inferCategory(seed: SeedPlatform): PlatformCategory {
   const c = (seed.category ?? '').toLowerCase()
   if (c.includes('male')) return 'MALE'
   if (c.includes('hale')) return 'HALE'
-  if (c.includes('fpv') || c.includes('cots') || c.includes('quad')) return 'FPV'
+  if (c === 'cots' || c.includes('cots')) return 'cots'
+  if (c.includes('fpv') || c.includes('quad')) return 'FPV'
   if (c.includes('loiter')) return 'loitering_munition'
   if (c.includes('naval') || c.includes('usv')) return 'naval'
   if (c.includes('vtol')) return 'VTOL'

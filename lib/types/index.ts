@@ -18,6 +18,7 @@ export type PlatformCategory =
   | 'AUV'                      // Autonomous Undersea Vehicle (e.g. Ghost Shark XLUAV)
   // Electronic warfare platforms
   | 'strategic_ew'             // Strategic EW complex (e.g. Murmansk-BN, Krasukha-2)
+  | 'cots'                     // Commercial off-the-shelf RPAS (A3DM shared catalog)
 
 export type DataConfidence = 'high' | 'medium' | 'estimated' | 'classified'
 
@@ -150,6 +151,14 @@ export interface Platform {
   side: PlatformSide | null
   /** DoD UAS Group (1–5) — null for Blue effectors */
   uas_group: UASGroup
+  /** A3DM shared catalog key (DRN-####). */
+  a3dm_drone_id?: string | null
+  dry_weight_kg?: number | null
+  max_payload_kg?: number | null
+  a3dm_category?: string | null
+  sub_category?: string | null
+  catalog_tier?: 'cots' | 'military' | null
+  retired?: boolean
 }
 
 // ─── GNSS ─────────────────────────────────────────────────────────────────────

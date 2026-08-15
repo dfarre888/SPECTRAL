@@ -39,8 +39,8 @@ export function PlatformLibrary({ platforms, countries, sovereignPlatforms = [] 
     const q = search.trim().toLowerCase()
     return platforms.filter((p) => {
       if (!matchesCategoryPill(p.category, categoryPill)) return false
-      if (employment === 'blue' && p.side !== 'blue') return false
-      if (employment === 'red' && p.side !== 'red') return false
+      if (employment === 'blue' && p.side !== 'blue' && p.catalog_tier !== 'cots' && p.side !== 'neutral') return false
+      if (employment === 'red' && p.side !== 'red' && p.catalog_tier !== 'cots' && p.side !== 'neutral') return false
       if (employment === 'combat_proven' && !(p.conflict_deployments?.length)) return false
       if (country !== 'all' && p.country_of_origin !== country) return false
       if (!q) return true
@@ -48,7 +48,11 @@ export function PlatformLibrary({ platforms, countries, sovereignPlatforms = [] 
         p.name.toLowerCase().includes(q) ||
         (p.manufacturer?.toLowerCase().includes(q) ?? false) ||
         (p.nato_reporting_name?.toLowerCase().includes(q) ?? false) ||
-        (p.country_of_origin?.toLowerCase().includes(q) ?? false)
+        (p.country_of_origin?.toLowerCase().includes(q) ?? false) ||
+        (p.a3dm_drone_id?.toLowerCase().includes(q) ?? false) ||
+        (p.a3dm_category?.toLowerCase().includes(q) ?? false) ||
+        (p.sub_category?.toLowerCase().includes(q) ?? false) ||
+        p.id.toLowerCase().includes(q)
       )
     })
   }, [platforms, categoryPill, country, search, employment])

@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { CompareButton } from '@/components/platforms/CompareButton'
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { CountermeasuresPanel } from '@/components/platforms/CountermeasuresPanel'
+import { PayloadCompatPanel } from '@/components/platforms/PayloadCompatPanel'
 import { PlatformSpecSheet } from '@/components/platforms/PlatformSpecSheet'
 import { SamDefeatPanel } from '@/components/platforms/SamDefeatPanel'
 import { CATEGORY_LABELS } from '@/lib/platforms/constants'
@@ -31,6 +32,7 @@ export default async function PlatformDetailPage({ params }: PlatformDetailPageP
       <nav className="sticky top-0 z-20 -mx-4 px-4 py-2 mb-4 border-b border-[var(--store-line)] bg-[var(--store-bg)]/95 backdrop-blur-sm flex flex-wrap gap-2">
         <a href="#specs" className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)]">Specifications</a>
         <a href="#countermeasures" className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)]">Countermeasures</a>
+        <a href="#payloads" className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)]">Payloads</a>
         <a href="#sam" className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)]">SAM defeat</a>
       </nav>
       <div className="mb-6">
@@ -63,7 +65,10 @@ export default async function PlatformDetailPage({ params }: PlatformDetailPageP
 
       <div className="grid lg:grid-cols-2 gap-6">
         <div id="specs"><PlatformSpecSheet platform={platform} /></div>
-        <div id="countermeasures"><CountermeasuresPanel countermeasures={countermeasures} /></div>
+        <div className="space-y-6">
+          <div id="countermeasures"><CountermeasuresPanel countermeasures={countermeasures} /></div>
+          <PayloadCompatPanel platform={platform} />
+        </div>
       </div>
 
       <div id="sam" className="mt-6">

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import {
   Crosshair,
   Database,
+  Flag,
   GitCompare,
   Globe,
   Map,
@@ -29,6 +30,7 @@ const MODULE_ICONS = {
   map: Map,
   crosshair: Crosshair,
   target: Target,
+  flag: Flag,
 } as const satisfies Record<string, LucideIcon>
 
 export type ModuleIconName = keyof typeof MODULE_ICONS

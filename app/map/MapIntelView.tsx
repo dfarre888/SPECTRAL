@@ -32,6 +32,7 @@ import { writeLaydownSession } from '@/lib/map/laydown-session'
 import { writeDashboardSelectedAssetId } from '@/lib/dashboard/laydown-bridge'
 import { useBattlespacePlan } from '@/app/map/hooks/useBattlespacePlan'
 import { PlannerToolbar } from '@/components/planner/PlannerToolbar'
+import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { PlanLoadDialog } from '@/components/planner/PlanLoadDialog'
 import toast from 'react-hot-toast'
 import { IadsStackPanel } from '@/app/map/components/IadsStackPanel'
@@ -929,39 +930,72 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
       />
 
       <div className="relative flex-1 flex flex-col min-w-0">
-        <PlannerToolbar
-          planName={planner.planName}
-          planId={planner.planId}
-          saving={planner.saving}
-          lastSaved={planner.lastSaved}
-          error={planner.error}
-          onSave={() => void planner.savePlan()}
-          onNew={() => {
-            const hasLaydown =
-              placedUas.length + placedCuas.length + placedRadars.length + placedEffectors.length > 0
-            if (hasLaydown && !window.confirm('Start a new plan? This clears all placed assets.')) return
-            planner.newPlan()
-          }}
-          onLoadClick={() => setLoadPlanOpen(true)}
-          onPublishWopr={() => {
-            void planner
-              .publishWopr()
-              .then((id) => {
-                if (id) window.location.href = `/arena?scenario=${id}`
-                else toast.error('WOPR publish failed — save the plan and try again.')
-              })
-              .catch((e) => toast.error(e instanceof Error ? e.message : 'WOPR publish failed'))
-          }}
-          onPublishPcm={() => {
-            void planner
-              .publishPcm()
-              .then((id) => {
-                if (id) window.location.href = `/pcm/exercise/${id}`
-                else toast.error('PCM publish failed — save the plan and try again.')
-              })
-              .catch((e) => toast.error(e instanceof Error ? e.message : 'PCM publish failed'))
-          }}
-        />
+        <div className="shrink-0 border-b border-[var(--store-line)] bg-[var(--store-surface)]">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <PlannerToolbar
+              planName={planner.planName}
+              planId={planner.planId}
+              saving={planner.saving}
+              lastSaved={planner.lastSaved}
+              error={planner.error}
+              onSave={() => void planner.savePlan()}
+              onNew={() => {
+                const hasLaydown =
+                  placedUas.length + placedCuas.length + placedRadars.length + placedEffectors.length > 0
+                if (hasLaydown && !window.confirm('Start a new plan? This clears all placed assets.')) return
+                planner.newPlan()
+              }}
+              onLoadClick={() => setLoadPlanOpen(true)}
+              onPublishWopr={() => {
+                void planner
+                  .publishWopr()
+                  .then((id) => {
+                    if (id) window.location.href = `/arena?scenario=${id}`
+                    else toast.error('WOPR publish failed — save the plan and try again.')
+                  })
+                  .catch((e) => toast.error(e instanceof Error ? e.message : 'WOPR publish failed'))
+              }}
+              onPublishPcm={() => {
+                void planner
+                  .publishPcm()
+                  .then((id) => {
+                    if (id) window.location.href = `/pcm/exercise/${id}`
+                    else toast.error('PCM publish failed — save the plan and try again.')
+                  })
+                  .catch((e) => toast.error(e instanceof Error ? e.message : 'PCM publish failed'))
+              }}
+            />
+            <div className="px-2 py-1">
+              <ThemeToggle labeled />
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5 px-2 pb-1.5">
+            <button type="button" onClick={activateBlastRisk} className={mapToolbarBtn(riskMode === 'blast', 'orange')}>Blast</button>
+            <button type="button" onClick={activateJammingRisk} className={mapToolbarBtn(riskMode === 'jamming', 'cyan')}>EW Jam</button>
+            <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'cuas-siting' ? 'none' : 'cuas-siting')) }} className={mapToolbarBtn(mapTool === 'cuas-siting', 'cyan')}>C-UAS Siting</button>
+            <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'ew-deconflict' ? 'none' : 'ew-deconflict')) }} className={mapToolbarBtn(mapTool === 'ew-deconflict', 'cyan')}>EW Deconflict</button>
+            <button type="button" onClick={() => setShowIadsPanel((v) => !v)} className={mapToolbarBtn(showIadsPanel, 'cyan')}>IADS</button>
+            <button
+              type="button"
+              disabled={placedUas.length === 0}
+              onClick={toggleFlightPathEdit}
+              className={mapToolbarBtn(flightPathEditActive, 'orange')}
+              title={placedUas.length === 0 ? 'Place a UAS first' : 'Edit flight paths'}
+            >
+              Edit flight path
+            </button>
+            {riskMode === 'blast' && (
+              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
+                {WARHEAD_DB.map((w) => (<option key={w.weapon_id} value={w.weapon_id}>{w.weapon_name}</option>))}
+              </select>
+            )}
+            {riskMode === 'jamming' && (
+              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
+                {JAMMER_DB.map((j) => (<option key={j.jammer_id} value={j.jammer_id}>{j.jammer_name}</option>))}
+              </select>
+            )}
+          </div>
+        </div>
         <PlanLoadDialog
           open={loadPlanOpen}
           onClose={() => setLoadPlanOpen(false)}
@@ -972,6 +1006,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             })
           }}
         />
+        <div className="relative flex-1 min-h-0">
         {showIadsPanel && (
           <div className="map-material-float absolute bottom-16 left-3 z-20 w-72 max-h-64 overflow-y-auto rounded-xl">
             <div className="flex justify-between items-center px-2 py-1 border-b border-[var(--store-line)]">
@@ -1046,36 +1081,6 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
                     : `Placing ${placementMode.asset.name} · click terrain · Esc to cancel`}
           </div>
         )}
-
-        <div className="relative flex-1 min-h-0">
-
-          <div className="absolute top-14 left-3 z-20 flex flex-wrap items-center gap-1.5 max-w-[min(100%-8rem,32rem)] justify-start pointer-events-auto">
-            <button type="button" onClick={activateBlastRisk} className={mapToolbarBtn(riskMode === 'blast', 'orange')}>Blast</button>
-            <button type="button" onClick={activateJammingRisk} className={mapToolbarBtn(riskMode === 'jamming', 'cyan')}>EW Jam</button>
-            <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'cuas-siting' ? 'none' : 'cuas-siting')) }} className={mapToolbarBtn(mapTool === 'cuas-siting', 'cyan')}>C-UAS Siting</button>
-            <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'ew-deconflict' ? 'none' : 'ew-deconflict')) }} className={mapToolbarBtn(mapTool === 'ew-deconflict', 'cyan')}>EW Deconflict</button>
-            <button type="button" onClick={() => setShowIadsPanel((v) => !v)} className={mapToolbarBtn(showIadsPanel, 'cyan')}>IADS</button>
-            <button
-              type="button"
-              disabled={placedUas.length === 0}
-              onClick={toggleFlightPathEdit}
-              className={mapToolbarBtn(flightPathEditActive, 'orange')}
-              title={placedUas.length === 0 ? 'Place a UAS first' : 'Edit flight paths'}
-            >
-              Edit flight path
-            </button>
-
-            {riskMode === 'blast' && (
-              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] shadow-md px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
-                {WARHEAD_DB.map((w) => (<option key={w.weapon_id} value={w.weapon_id}>{w.weapon_name}</option>))}
-              </select>
-            )}
-            {riskMode === 'jamming' && (
-              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] shadow-md px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
-                {JAMMER_DB.map((j) => (<option key={j.jammer_id} value={j.jammer_id}>{j.jammer_name}</option>))}
-              </select>
-            )}
-          </div>
 
           <CesiumMapPanel
             placedUas={placedUas}

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { StorePanel } from '@/components/ui/store-surface'
 import type {
   CommanderCompareRow,
   EvaluatedItem,
@@ -18,7 +17,7 @@ import {
   isSameLaydownItem,
 } from '@/lib/map/laydown-evaluation'
 import { cn } from '@/lib/utils'
-import { ChevronDown, Crosshair, Radar, Shield, Target } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 
 interface PlacedItemChip {
   kind: SelectedLaydownItem['kind']
@@ -53,19 +52,6 @@ const KIND_LABEL: Record<SelectedLaydownItem['kind'], string> = {
   cuas: 'C-UAS',
   radar: 'Radar',
   effector: 'Effector',
-}
-
-function kindIcon(kind: SelectedLaydownItem['kind']) {
-  switch (kind) {
-    case 'uas':
-      return Target
-    case 'cuas':
-      return Shield
-    case 'radar':
-      return Radar
-    default:
-      return Crosshair
-  }
 }
 
 function EvalRow({
@@ -312,7 +298,7 @@ function SectionItemList({
   )
 }
 
-function ScoreTile({
+function ScoreMetric({
   label,
   value,
   hint,
@@ -331,18 +317,21 @@ function ScoreTile({
     <button
       type="button"
       onClick={onClick}
-      className={cn(
-        'map-press flex-1 min-w-0 rounded-lg border px-2 py-2 text-left',
-        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--store-accent-border)]',
-        active
-          ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
-          : 'border-[var(--store-line)] hover:bg-[var(--store-surface-2)]',
-      )}
+      title={hint}
+      aria-pressed={active}
+      className="map-press map-spec-metric focus-visible:outline-none"
     >
-      <p className="text-[9px] font-semibold uppercase tracking-wider store-text-muted">{label}</p>
       <p
         className={cn(
-          'text-lg font-mono leading-none mt-1',
+          'text-[10px] font-medium tracking-[0.08em] uppercase',
+          active ? 'text-[var(--store-ink)]' : 'store-text-muted',
+        )}
+      >
+        {label}
+      </p>
+      <p
+        className={cn(
+          'map-spec-value',
           tone === 'can'
             ? 'text-green-400'
             : tone === 'deny'
@@ -354,7 +343,6 @@ function ScoreTile({
       >
         {value}
       </p>
-      <p className="text-[9px] store-text-muted mt-1 leading-tight">{hint}</p>
     </button>
   )
 }
@@ -417,7 +405,6 @@ export function LaydownEvaluationPanel({
 
   if (!evaluation || !board) return null
 
-  const Icon = kindIcon(evaluation.subject.kind)
   const gapCount = board.detectBlind + board.noShot
   const activeSection =
     tab === 'detect'
@@ -432,21 +419,17 @@ export function LaydownEvaluationPanel({
   )
 
   return (
-    <StorePanel className="map-material-float absolute top-14 right-3 z-20 w-[min(100%,26rem)] max-h-[calc(100%-4rem)] overflow-y-auto p-3 pointer-events-auto border-[var(--store-accent-border)]">
-      <div className="flex items-start justify-between gap-2 mb-3">
+    <div className="map-material-float absolute top-8 right-4 z-20 w-[min(100%,22rem)] max-h-[calc(100%-5rem)] overflow-y-auto px-5 py-5 pointer-events-auto">
+      <div className="flex items-start justify-between gap-3 mb-5">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--store-accent)] flex items-center gap-1.5">
-            <Icon className="w-3.5 h-3.5" />
-            Laydown evaluation
+          <p className="text-[15px] font-semibold tracking-tight text-white leading-none">
+            {evaluation.subject.name}
           </p>
-          <p className="text-[9px] store-text-muted mt-0.5">
-            Commander scoreboard · OSINT catalog · virtual geometry
+          <p className="text-[11px] store-text-muted mt-1.5">
+            {KIND_LABEL[evaluation.subject.kind]} · OSINT catalog
           </p>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
-          <Badge variant="outline" className="text-[9px] font-mono">
-            {KIND_LABEL[evaluation.subject.kind]}
-          </Badge>
           {adjudicationSource && adjudicationSource !== 'client' && (
             <Badge variant="assessed" className="text-[9px]">
               {adjudicationSource}
@@ -456,7 +439,7 @@ export function LaydownEvaluationPanel({
       </div>
 
       {placedItems.length > 1 && (
-        <div className="flex flex-wrap gap-1 mb-3">
+        <div className="flex flex-wrap gap-x-3 gap-y-1 mb-5">
           {placedItems.map((chip) => {
             const item: SelectedLaydownItem = { kind: chip.kind, instanceId: chip.instanceId }
             const active = isSameLaydownItem(selectedItem, item)
@@ -465,12 +448,8 @@ export function LaydownEvaluationPanel({
                 key={`${chip.kind}-${chip.instanceId}`}
                 type="button"
                 onClick={() => onSelectItem(item)}
-                className={cn(
-                  'map-press px-2 py-0.5 rounded-lg text-[10px] font-mono border truncate max-w-full',
-                  active
-                    ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
-                    : 'border-[var(--store-line)] store-text-muted hover:text-white',
-                )}
+                aria-pressed={active}
+                className="map-press map-chip truncate max-w-full"
               >
                 {chip.name}
               </button>
@@ -479,47 +458,30 @@ export function LaydownEvaluationPanel({
         </div>
       )}
 
-      <p className="text-xs font-medium text-white mb-2 leading-snug">{evaluation.subject.name}</p>
-
-      <div
+      <p
         className={cn(
-          'rounded-lg border px-2.5 py-2 mb-3',
+          'text-[13px] font-medium leading-snug',
           board.verdict === 'can_finish'
-            ? 'border-green-500/40 bg-green-950/30'
+            ? 'text-green-400'
             : board.verdict === 'deny_only' || board.verdict === 'detect_only'
-              ? 'border-amber-400/40 bg-amber-950/20'
-              : 'border-[var(--store-line)] bg-[var(--store-surface-2)]',
+              ? 'text-amber-300'
+              : 'store-text-muted',
         )}
       >
-        <p
-          className={cn(
-            'text-[10px] font-semibold uppercase tracking-wider',
-            board.verdict === 'can_finish'
-              ? 'text-green-400'
-              : board.verdict === 'deny_only' || board.verdict === 'detect_only'
-                ? 'text-amber-300'
-                : 'store-text-muted',
-          )}
-        >
-          {VERDICT_LABEL[board.verdict]}
-        </p>
-        <p className="text-[11px] text-white mt-1 leading-snug">{board.verdictLine}</p>
-        <p className="text-[9px] store-text-muted mt-1">
-          P(kill) = airframe down. P(link) = pilot denied, airframe recoverable. OSINT / training estimates — not
-          accredited Pk.
-        </p>
-      </div>
+        {VERDICT_LABEL[board.verdict]}
+      </p>
+      <p className="text-[12px] store-text-body mt-1.5 leading-relaxed">{board.verdictLine}</p>
+      <p className="text-[11px] store-text-muted mt-2 leading-relaxed">
+        P(kill) = airframe down. P(link) = pilot denied, airframe recoverable. Training estimates, not accredited Pk.
+      </p>
 
       {board.williamtownLine && (
-        <div className="rounded-lg border border-amber-400/40 bg-amber-950/25 px-2.5 py-2 mb-3">
-          <p className="text-[9px] font-semibold uppercase tracking-wider text-amber-300">Williamtown lesson</p>
-          <p className="text-[11px] text-white mt-1 leading-snug">{board.williamtownLine}</p>
-        </div>
+        <p className="text-[12px] text-amber-300 mt-3 leading-relaxed">{board.williamtownLine}</p>
       )}
 
-      <div className="grid grid-cols-2 gap-1.5 mb-3">
+      <div className="map-spec mt-6 mb-5">
         {board.detectSection && (
-          <ScoreTile
+          <ScoreMetric
             label="Detect"
             value={board.detect}
             hint="Can find"
@@ -532,7 +494,7 @@ export function LaydownEvaluationPanel({
           />
         )}
         {(board.defeatSection || board.denySection) && (
-          <ScoreTile
+          <ScoreMetric
             label="Deny"
             value={board.deny}
             hint="Link only · stays up"
@@ -545,7 +507,7 @@ export function LaydownEvaluationPanel({
           />
         )}
         {(board.defeatSection || board.destroySection) && (
-          <ScoreTile
+          <ScoreMetric
             label="Destroy"
             value={board.destroy}
             hint="Airframe down"
@@ -558,7 +520,7 @@ export function LaydownEvaluationPanel({
           />
         )}
         {gapSections.length > 0 && (
-          <ScoreTile
+          <ScoreMetric
             label="Gaps"
             value={gapCount}
             hint="No find / no finish"
@@ -573,11 +535,11 @@ export function LaydownEvaluationPanel({
       </div>
 
       {compareRows.length > 1 && (
-        <div className="mb-3 rounded-lg border border-[var(--store-line)] overflow-hidden">
-          <p className="px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-wider store-text-muted">
+        <div className="mb-5">
+          <p className="text-[10px] font-medium tracking-[0.08em] uppercase store-text-muted mb-2">
             Airframe compare
           </p>
-          <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-2.5 pb-1 text-[9px] font-mono store-text-muted">
+          <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-3 pb-1 text-[10px] store-text-muted">
             <span />
             <span>Find</span>
             <span>Deny</span>
@@ -592,10 +554,8 @@ export function LaydownEvaluationPanel({
                 type="button"
                 onClick={() => onSelectItem({ kind: 'uas', instanceId: row.instanceId })}
                 className={cn(
-                  'w-full grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-2.5 py-1.5 text-left text-[10px] font-mono border-t border-[var(--store-line)]',
-                  active
-                    ? 'bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
-                    : 'hover:bg-[var(--store-surface-2)] text-white',
+                  'w-full grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-3 py-2 text-left text-[12px] font-mono border-t border-[var(--store-line)]',
+                  active ? 'text-[var(--store-accent)]' : 'text-white',
                 )}
               >
                 <span className="truncate">{row.name}</span>
@@ -683,6 +643,6 @@ export function LaydownEvaluationPanel({
           ))}
         </div>
       )}
-    </StorePanel>
+    </div>
   )
 }

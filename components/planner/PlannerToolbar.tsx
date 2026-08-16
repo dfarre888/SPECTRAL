@@ -17,24 +17,24 @@ interface PlannerToolbarProps {
 }
 
 export function PlannerToolbar(props: PlannerToolbarProps) {
-  const btn = 'map-press px-2 py-1 rounded border text-[10px] font-mono font-semibold';
+  const link = 'map-press map-chip px-0 py-1 text-[11px] font-medium';
   return (
-    <div className="flex flex-wrap items-center gap-1.5 px-2 py-1.5 min-h-8">
-      <span className="text-[10px] font-mono text-cyan truncate max-w-[140px]" title={props.planName}>
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 min-h-8">
+      <span className="text-[12px] text-[var(--store-ink)] truncate max-w-[160px]" title={props.planName}>
         {props.planId ? props.planName : 'Unsaved laydown'}
       </span>
-      <button type="button" className={cn(btn, 'border-[var(--store-line)] hover:border-cyan store-text-body')} onClick={props.onSave} disabled={props.saving}>
-        {props.saving ? 'Saving…' : 'Save'}
+      <button type="button" className={cn(link, 'store-text-muted hover:text-[var(--store-ink)]')} onClick={props.onSave} disabled={props.saving}>
+        {props.saving ? 'Saving' : 'Save'}
       </button>
-      <button type="button" className={cn(btn, 'border-[var(--store-line)] hover:border-cyan store-text-body')} onClick={props.onNew}>New</button>
-      <button type="button" className={cn(btn, 'border-[var(--store-line)] hover:border-cyan store-text-body')} onClick={props.onLoadClick}>Load</button>
-      <button type="button" className={cn(btn, 'border-orange-500/50 text-orange hover:bg-orange/10')} onClick={props.onPublishWopr}>WOPR</button>
-      <button type="button" className={cn(btn, 'border-purple-500/50 text-purple hover:bg-purple/10')} onClick={props.onPublishPcm}>PCM</button>
-      <Link href="/planner" className={cn(btn, 'border-cyan/40 text-cyan')}>Library</Link>
+      <button type="button" className={cn(link, 'store-text-muted hover:text-[var(--store-ink)]')} onClick={props.onNew}>New</button>
+      <button type="button" className={cn(link, 'store-text-muted hover:text-[var(--store-ink)]')} onClick={props.onLoadClick}>Load</button>
+      <button type="button" className={cn(link, 'text-[var(--store-accent)]')} onClick={props.onPublishWopr}>WOPR</button>
+      <button type="button" className={cn(link, 'text-[var(--store-accent)]')} onClick={props.onPublishPcm}>PCM</button>
+      <Link href="/planner" className={cn(link, 'store-text-muted hover:text-[var(--store-ink)]')}>Library</Link>
       {props.lastSaved && (
-        <span className="text-[9px] font-mono store-text-muted">saved {props.lastSaved.toLocaleTimeString()}</span>
+        <span className="text-[10px] store-text-muted">saved {props.lastSaved.toLocaleTimeString()}</span>
       )}
-      {props.error && <span className="text-[9px] font-mono text-red">{props.error}</span>}
+      {props.error && <span className="text-[10px] text-red">{props.error}</span>}
     </div>
   );
 }

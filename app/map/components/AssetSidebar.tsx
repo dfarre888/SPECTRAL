@@ -6,7 +6,6 @@ import {
   ChevronDown,
   ChevronRight,
   Crosshair,
-  Map,
   Radio,
   Search,
   Shield,
@@ -22,7 +21,7 @@ import { EditionBadge } from '@/components/operations/EditionBadge'
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import { StoreFilterSection } from '@/components/catalog/StoreFilterSidebar'
-import { StoreEyebrow, StorePanel } from '@/components/ui/store-surface'
+import { StorePanel } from '@/components/ui/store-surface'
 import {
   applyForceFilter,
   matchesForceFilter,
@@ -215,60 +214,50 @@ export function AssetSidebar({
         'map-material border-r border-[var(--store-line)] border-t-0 border-b-0 border-l-0 rounded-none',
       )}
     >
-      {/* Header — matches main Sidebar / store catalog */}
-      <div className="px-5 py-4 border-b border-[var(--store-line)]">
-        <Link
-          href="/"
-          className="text-[11px] store-text-muted hover:text-[var(--store-accent)] transition-colors mb-3 inline-block"
-        >
-          ← Dashboard
-        </Link>
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] flex items-center justify-center shrink-0">
-            <Map className="w-4 h-4 text-[var(--store-accent)]" />
-          </div>
-          <div className="min-w-0">
-            <p className="store-display font-bold text-white tracking-wide text-sm">Map Intel</p>
-            <p className="text-[10px] store-text-muted">Terrain laydown & envelopes</p>
-          </div>
-        </div>
-        <div className="mt-3 flex items-center justify-between gap-2">
-          <StoreEyebrow icon={<Crosshair size={12} />}>Place assets on globe</StoreEyebrow>
+      <div className="px-6 pt-6 pb-5 border-b border-[var(--store-line)]">
+        <div className="flex items-center justify-between gap-3">
+          <Link
+            href="/"
+            className="text-[11px] store-text-muted hover:text-[var(--store-ink)] transition-colors"
+          >
+            Dashboard
+          </Link>
           <EditionBadge />
         </div>
-        <div className="mt-3 grid grid-cols-3 gap-2">
+        <h1 className="mt-5 text-[17px] font-semibold tracking-tight text-white leading-none">Map Intel</h1>
+        <p className="mt-2 text-[12px] store-text-muted leading-relaxed">
+          Place assets. Read Detect, Deny, Destroy.
+        </p>
+        <div className="mt-5 flex items-center gap-4">
           <ForceFilterButton
-            label="RED"
+            label="Red"
             active={forceFilter === 'red'}
-            activeClassName="bg-red-600 text-white border-red-600 theme-keep-white"
             onClick={() => setForceFilter('red')}
           />
           <ForceFilterButton
-            label="BLUE"
+            label="Blue"
             active={forceFilter === 'blue'}
-            activeClassName="bg-blue-600 text-white border-blue-600 theme-keep-white"
             onClick={() => setForceFilter('blue')}
           />
           <ForceFilterButton
-            label="BOTH"
+            label="Both"
             active={forceFilter === 'both'}
-            activeClassName="bg-orange text-[#0a0a0a] border-orange"
             onClick={() => setForceFilter('both')}
           />
         </div>
       </div>
 
-      <div className="px-5 py-3 border-b border-[var(--store-line)]">
+      <div className="px-6 py-4 border-b border-[var(--store-line)]">
         <div className="relative">
           <Search
             size={14}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 store-text-muted"
+            className="absolute left-0 top-1/2 -translate-y-1/2 store-text-muted"
           />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search platforms, NATO name…"
-            className="w-full text-[13px] pl-9 pr-9 py-2.5 rounded-xl text-white store-panel-inner focus:outline-none focus:border-[var(--store-accent-border)]"
+            placeholder="Search platforms, NATO name"
+            className="w-full text-[13px] pl-6 pr-7 py-2 bg-transparent border-0 border-b border-[var(--store-line)] text-white focus:outline-none focus:border-[var(--store-ink)]"
           />
           {search && (
             <button
@@ -283,7 +272,7 @@ export function AssetSidebar({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-7">
         {searchActive && (
           <StoreFilterSection label="Search results">
             <p className="text-[11px] font-mono store-text-muted mb-2">
@@ -756,24 +745,18 @@ export function AssetSidebar({
 function ForceFilterButton({
   label,
   active,
-  activeClassName,
   onClick,
 }: {
   label: string
   active: boolean
-  activeClassName: string
   onClick: () => void
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={cn(
-        'map-press rounded-xl border px-2 py-2 text-[10px] font-semibold tracking-widest uppercase',
-        active
-          ? activeClassName
-          : 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-muted hover:text-white',
-      )}
+      aria-pressed={active}
+      className="map-press map-chip text-[12px] tracking-[0.04em]"
     >
       {label}
     </button>

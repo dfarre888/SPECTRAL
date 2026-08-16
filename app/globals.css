@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 /* Cesium widget overrides */
 @import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
@@ -49,35 +49,35 @@
   color-scheme: dark;
 }
 
-/* Daylight briefing-room paper. Default remains dark ops floor. */
+/* Optical paper. Opaque. No frost. Default remains dark ops floor. */
 [data-theme="light"] {
   color-scheme: light;
-  --bg: #f4f4f5;
+  --bg: #f5f5f7;
   --surf1: #ffffff;
-  --surf2: #f4f4f5;
-  --border: rgba(9, 9, 11, 0.12);
-  --t-primary: rgba(9, 9, 11, 0.92);
-  --t-secondary: rgba(9, 9, 11, 0.68);
-  --t-muted: rgba(9, 9, 11, 0.45);
+  --surf2: #f5f5f7;
+  --border: rgba(29, 29, 31, 0.12);
+  --t-primary: #1d1d1f;
+  --t-secondary: #6e6e73;
+  --t-muted: #86868b;
 
-  --store-bg:             #f4f4f5;
+  --store-bg:             #f5f5f7;
   --store-surface:        #ffffff;
-  --store-surface-2:      #f4f4f5;
-  --store-line:           rgba(9, 9, 11, 0.10);
-  --store-ink:            rgba(9, 9, 11, 0.92);
-  --store-ink-soft:       rgba(9, 9, 11, 0.68);
-  --store-ink-mute:       rgba(9, 9, 11, 0.45);
+  --store-surface-2:      #f5f5f7;
+  --store-line:           rgba(29, 29, 31, 0.10);
+  --store-ink:            #1d1d1f;
+  --store-ink-soft:       #424245;
+  --store-ink-mute:       #6e6e73;
   --store-accent:         #ea580c;
-  --store-accent-glow:    rgba(234, 88, 12, 0.10);
-  --store-accent-border:  rgba(234, 88, 12, 0.40);
-  --store-success:        #16a34a;
-  --store-material:       rgba(255, 255, 255, 0.82);
-  --store-material-float: rgba(255, 255, 255, 0.72);
-  --store-shadow:         0 12px 40px rgba(9, 9, 11, 0.14);
+  --store-accent-glow:    rgba(234, 88, 12, 0.08);
+  --store-accent-border:  rgba(234, 88, 12, 0.45);
+  --store-success:        #15803d;
+  --store-material:       #ffffff;
+  --store-material-float: #ffffff;
+  --store-shadow:         none;
   --store-status-ok:      #15803d;
   --store-status-warn:    #b45309;
-  --store-status-ok-bg:   rgba(22, 163, 74, 0.10);
-  --store-status-warn-bg: rgba(217, 119, 6, 0.10);
+  --store-status-ok-bg:   rgba(22, 163, 74, 0.08);
+  --store-status-warn-bg: rgba(180, 83, 9, 0.08);
 }
 
 [data-theme="light"] .hub-page-canvas {
@@ -117,7 +117,32 @@
   color: #fff !important;
 }
 
-/* Map Intel — frosted briefing chrome over a night globe */
+/* Map Intel — Instrument chrome. Opaque paper. Type does the work. */
+.map-intel {
+  --map-radius: 2px;
+  font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  background: #050507;
+}
+
+[data-theme="light"] .map-intel {
+  background: #f5f5f7;
+}
+
+.map-intel .store-display {
+  font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+}
+
+.map-intel .rounded-lg,
+.map-intel .rounded-xl,
+.map-intel .rounded-2xl {
+  border-radius: var(--map-radius);
+}
+
+.map-intel .shadow-md,
+.map-intel .shadow-lg {
+  box-shadow: none;
+}
+
 .map-material {
   background: var(--store-material);
   border: 1px solid var(--store-line);
@@ -126,21 +151,70 @@
 .map-material-float {
   background: var(--store-material-float);
   border: 1px solid var(--store-line);
-  box-shadow: var(--store-shadow);
+  box-shadow: none;
 }
 
-[data-theme="light"] .map-material {
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-}
-
+[data-theme="light"] .map-material,
 [data-theme="light"] .map-material-float {
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-color: rgba(255, 255, 255, 0.55);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
-    var(--store-shadow);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.map-intel .map-strip {
+  background: var(--store-surface);
+  border-bottom: 1px solid var(--store-line);
+}
+
+.map-intel .map-spec {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--store-line);
+}
+
+.map-intel .map-spec-metric {
+  flex: 1;
+  min-width: 0;
+  padding: 0 10px 12px 0;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+}
+
+.map-intel .map-spec-metric[aria-pressed="true"] {
+  border-bottom-color: var(--store-accent);
+}
+
+.map-intel .map-spec-metric .map-spec-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-top: 6px;
+}
+
+.map-intel .map-chip {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  padding: 2px 0;
+  font-size: 11px;
+  color: var(--store-ink-mute);
+}
+
+.map-intel .map-chip[aria-pressed="true"] {
+  color: var(--store-ink);
+  border-bottom-color: var(--store-accent);
+}
+
+.map-intel aside .store-panel-inner {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--store-line);
+  border-radius: 0;
 }
 
 /* Press lives on pointer-down. Theme swap eases colour, not position. */

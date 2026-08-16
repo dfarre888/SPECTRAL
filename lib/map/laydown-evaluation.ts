@@ -6,6 +6,13 @@ import { RED_EFFECTORS } from '@/data/seed-effectors-red'
 import { analyzeLaydown } from '@/lib/map/laydown-analysis'
 import { buildOverlapVolume, uasToCuasDistance3dM } from '@/lib/map/overlap'
 import { formatCatalogDisplayName } from '@/lib/map/catalog-display-name'
+import {
+  finishClassForCuasMethods,
+  finishClassForEffect,
+  finishOutcomeLine,
+  finishPctLabel,
+  type FinishClass,
+} from '@/lib/map/finish-class'
 import { resolveSpectrumUas } from '@/lib/map/spectrum-bridge'
 import { computeDetectionPct } from '@/lib/map/threat-assessment'
 import type {
@@ -51,6 +58,8 @@ export interface EvaluatedItem {
   linkedEffectors?: string[]
   /** Kill-chain: radars that cue this effector. */
   linkedRadars?: string[]
+  /** Deny the link vs destroy the airframe. */
+  finishClass?: FinishClass
 }
 
 export interface EvaluationSection {
@@ -139,13 +148,20 @@ export interface LaydownEvaluation {
 export interface CommanderScoreboard {
   detect: number
   defeat: number
+  deny: number
+  destroy: number
   detectBlind: number
   noShot: number
-  bestDefeat: { name: string; pct: number } | null
-  verdict: 'can_finish' | 'detect_only' | 'blind'
+  bestDefeat: { name: string; pct: number; finishClass?: FinishClass } | null
+  bestDeny: { name: string; pct: number } | null
+  bestDestroy: { name: string; pct: number } | null
+  verdict: 'can_finish' | 'deny_only' | 'detect_only' | 'blind'
   verdictLine: string
+  williamtownLine: string | null
   detectSection?: EvaluationSection
   defeatSection?: EvaluationSection
+  denySection?: EvaluationSection
+  destroySection?: EvaluationSection
   detectBlindSection?: EvaluationSection
   noShotSection?: EvaluationSection
 }
@@ -154,6 +170,8 @@ export interface CommanderCompareRow {
   instanceId: string
   name: string
   detect: number
+  deny: number
+  destroy: number
   defeat: number
   verdict: CommanderScoreboard['verdict']
   bestDefeat: CommanderScoreboard['bestDefeat']
@@ -181,6 +199,13 @@ export function scoreboardSections(evaluation: LaydownEvaluation) {
   }
 }
 
+function bestByPct(items: EvaluatedItem[]): { name: string; pct: number; finishClass?: FinishClass } | null {
+  const ranked = [...items].sort((a, b) => (b.pct ?? 0) - (a.pct ?? 0))
+  const top = ranked[0]
+  if (!top || top.pct == null) return null
+  return { name: top.name, pct: top.pct, finishClass: top.finishClass }
+}
+
 /** Commander roll-up — counts only, not the 200-row catalog dump. */
 export function commanderScoreboard(evaluation: LaydownEvaluation): CommanderScoreboard {
   const { detect: detectSection, detectBlind: detectBlindSection, defeat: defeatSection, noShot: noShotSection } =
@@ -190,44 +215,75 @@ export function commanderScoreboard(evaluation: LaydownEvaluation): CommanderSco
   const defeatItems = defeatSection?.items ?? []
   const defeat = defeatItems.length
   const noShot = noShotSection?.items.length ?? 0
-  const ranked = [...defeatItems].sort((a, b) => (b.pct ?? 0) - (a.pct ?? 0))
-  const top = ranked[0]
-  const bestDefeat = top && top.pct != null ? { name: top.name, pct: top.pct } : null
+  const denyItems = defeatItems.filter((item) => item.finishClass === 'deny')
+  const destroyItems = defeatItems.filter((item) => item.finishClass === 'destroy')
+  const untyped = defeatItems.filter((item) => item.finishClass == null)
+  const deny = denyItems.length
+  const destroy = destroyItems.length + untyped.length
+  const bestDeny = bestByPct(denyItems)
+  const bestDestroy = bestByPct([...destroyItems, ...untyped])
+  const bestDefeat = bestDestroy ?? bestDeny ?? bestByPct(defeatItems)
+
+  const denySection: EvaluationSection | undefined =
+    defeatSection && deny > 0
+      ? { title: 'Can deny (link)', tone: 'can', items: denyItems }
+      : undefined
+  const destroySection: EvaluationSection | undefined =
+    defeatSection && destroy > 0
+      ? { title: 'Can destroy (airframe)', tone: 'can', items: [...destroyItems, ...untyped] }
+      : undefined
 
   const hasDetectAxis = detectSection != null
   const hasDefeatAxis = defeatSection != null
+  const hasDestroy = destroy > 0
+  const hasDeny = deny > 0
 
   let verdict: CommanderScoreboard['verdict'] = 'blind'
   let verdictLine = hasDetectAxis
     ? 'No catalog sensor sees this airframe.'
     : 'No catalog effector has a finish path.'
-  if (hasDetectAxis && hasDefeatAxis && detect > 0 && defeat > 0) {
+  let williamtownLine: string | null = null
+
+  if (hasDestroy && (detect > 0 || !hasDetectAxis)) {
     verdict = 'can_finish'
-    verdictLine = bestDefeat
-      ? `Find and finish available. Best catalog Pk: ${bestDefeat.name} ${bestDefeat.pct}%.`
-      : 'Find and finish available in the catalog.'
+    verdictLine = bestDestroy
+      ? `Find and destroy available. Best P(kill): ${bestDestroy.name} ${bestDestroy.pct}%.`
+      : 'Find and destroy available in the catalog.'
+    if (hasDeny) {
+      williamtownLine =
+        'RF guns (DroneGun class) deny the pilot only. Do not read P(link) as a crash. Williamtown: an RF buy without HPM or kinetic leaves the airframe up.'
+    }
+  } else if (hasDeny && (detect > 0 || !hasDetectAxis)) {
+    verdict = 'deny_only'
+    verdictLine = bestDeny
+      ? `Find and deny only. Best P(link): ${bestDeny.name} ${bestDeny.pct}%. Airframe stays up.`
+      : 'Sensors can find it. Catalog effectors only deny the link — the airframe stays up.'
+    williamtownLine =
+      'RAAF Williamtown lesson: a DroneGun-class purchase denies COTS C2/GNSS. It does not drop the airframe. Fibre-optic and encrypted links walk through. Layer HPM or kinetic if the aircraft must not fly again.'
   } else if (hasDetectAxis && detect > 0 && (!hasDefeatAxis || defeat === 0)) {
     verdict = 'detect_only'
     verdictLine = hasDefeatAxis
-      ? 'Sensors can find it. No catalog effector has a finish path.'
+      ? 'Sensors can find it. No catalog effector has a deny or destroy path.'
       : 'Sensors can find catalog threats in this class.'
-  } else if (!hasDetectAxis && defeat > 0) {
-    verdict = 'can_finish'
-    verdictLine = bestDefeat
-      ? `Finish path available. Best catalog Pk: ${bestDefeat.name} ${bestDefeat.pct}%.`
-      : 'Finish path available in the catalog.'
   }
 
   return {
     detect,
     defeat,
+    deny,
+    destroy,
     detectBlind,
     noShot,
     bestDefeat,
+    bestDeny,
+    bestDestroy,
     verdict,
     verdictLine,
+    williamtownLine,
     detectSection,
     defeatSection,
+    denySection,
+    destroySection,
     detectBlindSection,
     noShotSection,
   }
@@ -241,6 +297,8 @@ export function uasCommanderCompare(state: LaydownState): CommanderCompareRow[] 
       instanceId: uas.instanceId,
       name: uas.asset.name,
       detect: board.detect,
+      deny: board.deny,
+      destroy: board.destroy,
       defeat: board.defeat,
       verdict: board.verdict,
       bestDefeat: board.bestDefeat,
@@ -545,6 +603,7 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
   for (const cuasAsset of state.catalogCuas) {
     const scored = scoreCuasVsUas(uas, cuasAsset, uas.lon, uas.lat, uas.terrainAMSL)
     if (scored.canShoot) {
+      const finishClass = finishClassForCuasMethods(cuasAsset.defeat_methods)
       canShootIds.add(cuasAsset.id)
       canShoot.push({
         kind: 'cuas',
@@ -552,7 +611,8 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
         name: cuasAsset.name,
         pct: scored.defeatPct,
         placed: placed.cuas.has(cuasAsset.id),
-        reason: `Co-located virtual C-UAS · P(defeat) ${scored.defeatPct}%`,
+        finishClass,
+        reason: `Co-located ${finishClass === 'deny' ? 'RF deny' : 'hard-kill'} · ${finishPctLabel(finishClass)} ${scored.defeatPct}% · ${finishOutcomeLine(finishClass)}`,
       })
     }
   }
@@ -560,6 +620,7 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
   for (const effector of ALL_EFFECTORS) {
     const shot = effectorCanShootUas(effector, uas, uas.lon, uas.lat)
     if (shot.can) {
+      const finishClass = finishClassForEffect(effector.effect)
       canShootIds.add(effector.id)
       canShoot.push({
         kind: 'effector',
@@ -570,6 +631,7 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
         }),
         pct: shot.pct,
         placed: placed.effector.has(effector.id),
+        finishClass,
         parentSystem: effector.associated_system ?? undefined,
         linkedRadars: (effector.cueing_radar_ids ?? [])
           .map((id) => RADAR_BY_ID.get(id))
@@ -707,14 +769,16 @@ export function evaluateCuas(cuas: PlacedCuas, state: LaydownState): LaydownEval
       infoPanelClosed: true,
     }
     const scored = scoreCuasVsUas(virtualUas, cuas.asset, cuas.lon, cuas.lat, cuas.terrainAMSL)
+    const finishClass = finishClassForCuasMethods(cuas.asset.defeat_methods)
     const row: EvaluatedItem = {
       kind: 'uas',
       assetId: asset.id,
       name: asset.name,
       pct: scored.defeatPct,
       placed: placed.uas.has(asset.id),
+      finishClass,
       reason: scored.canShoot
-        ? `Co-located · P(defeat) ${scored.defeatPct}%`
+        ? `Co-located · ${finishPctLabel(finishClass)} ${scored.defeatPct}% · ${finishOutcomeLine(finishClass)}`
         : scored.inRange
           ? `In envelope but survivable (${scored.defeatPct}%)`
           : `Outside ${cuas.asset.defeat_range_km.toFixed(1)} km defeat sphere`,
@@ -786,13 +850,17 @@ export function evaluateEffector(effector: MapPlacedEffector, state: LaydownStat
       infoPanelClosed: true,
     }
     const shot = effectorCanShootUas(seed, virtualUas, effector.lon, effector.lat)
+    const finishClass = finishClassForEffect(seed.effect)
     const row: EvaluatedItem = {
       kind: 'uas',
       assetId: asset.id,
       name: asset.name,
       pct: shot.pct,
       placed: placed.uas.has(asset.id),
-      reason: shot.reason,
+      finishClass,
+      reason: shot.can
+        ? `${shot.reason} · ${finishPctLabel(finishClass)} · ${finishOutcomeLine(finishClass)}`
+        : shot.reason,
     }
     if (shot.can) canShoot.push(row)
     else cannotShoot.push(row)

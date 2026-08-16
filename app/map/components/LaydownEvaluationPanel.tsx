@@ -11,6 +11,7 @@ import type {
   SelectedLaydownItem,
 } from '@/lib/map/laydown-evaluation'
 import { formatCatalogDisplayName } from '@/lib/map/catalog-display-name'
+import { finishClassLabel, finishPctLabel } from '@/lib/map/finish-class'
 import {
   commanderScoreboard,
   groupEvaluatedByIadsStack,
@@ -36,12 +37,13 @@ interface LaydownEvaluationPanelProps {
   compareRows?: CommanderCompareRow[]
 }
 
-type ScoreboardTab = 'detect' | 'defeat' | 'gaps'
+type ScoreboardTab = 'detect' | 'deny' | 'destroy' | 'gaps'
 
 const PREVIEW_LIMIT = 8
 
-const VERDICT_LABEL: Record<'can_finish' | 'detect_only' | 'blind', string> = {
-  can_finish: 'Find and finish',
+const VERDICT_LABEL: Record<'can_finish' | 'deny_only' | 'detect_only' | 'blind', string> = {
+  can_finish: 'Find and destroy',
+  deny_only: 'Find and deny — airframe stays up',
   detect_only: 'Detect only',
   blind: 'Blind',
 }
@@ -102,7 +104,11 @@ function EvalRow({
         selected
           ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
           : 'border-transparent',
-        tone === 'can' ? 'border-l-2 border-l-green-500/60' : 'opacity-80',
+        item.finishClass === 'deny' && tone === 'can'
+          ? 'border-l-2 border-l-amber-400/70'
+          : tone === 'can'
+            ? 'border-l-2 border-l-green-500/60'
+            : 'opacity-80',
       )}
     >
       <div className="flex items-start justify-between gap-2">
@@ -112,16 +118,39 @@ function EvalRow({
             <span className="ml-1.5 text-[9px] uppercase text-[var(--store-accent)]">on map</span>
           )}
         </p>
-        {item.pct != null && (
-          <span
-            className={cn(
-              'text-[11px] font-mono shrink-0',
-              tone === 'can' ? 'text-green-400' : 'store-text-muted',
-            )}
-          >
-            {item.pct}%
-          </span>
-        )}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {item.finishClass && (
+            <span
+              className={cn(
+                'text-[8px] font-semibold uppercase tracking-wider px-1 py-0.5 rounded',
+                item.finishClass === 'destroy'
+                  ? 'bg-green-950/60 text-green-400 border border-green-500/30'
+                  : 'bg-amber-950/50 text-amber-300 border border-amber-400/30',
+              )}
+            >
+              {finishClassLabel(item.finishClass)}
+            </span>
+          )}
+          {item.pct != null && (
+            <span
+              className={cn(
+                'text-[11px] font-mono',
+                item.finishClass === 'deny'
+                  ? 'text-amber-300'
+                  : tone === 'can'
+                    ? 'text-green-400'
+                    : 'store-text-muted',
+              )}
+            >
+              {item.pct}%
+              {item.finishClass ? (
+                <span className="block text-[8px] leading-none store-text-muted text-right">
+                  {finishPctLabel(item.finishClass)}
+                </span>
+              ) : null}
+            </span>
+          )}
+        </div>
       </div>
       {item.parentSystem && !compactStack && (
         <p className="text-[9px] font-mono text-cyan-400/90 mt-0.5">{item.parentSystem}</p>
@@ -295,7 +324,7 @@ function ScoreTile({
   value: number
   hint: string
   active: boolean
-  tone: 'can' | 'cannot' | 'neutral'
+  tone: 'can' | 'cannot' | 'neutral' | 'deny'
   onClick: () => void
 }) {
   return (
@@ -314,7 +343,13 @@ function ScoreTile({
       <p
         className={cn(
           'text-lg font-mono leading-none mt-1',
-          tone === 'can' ? 'text-green-400' : tone === 'cannot' ? 'store-text-muted' : 'text-white',
+          tone === 'can'
+            ? 'text-green-400'
+            : tone === 'deny'
+              ? 'text-amber-300'
+              : tone === 'cannot'
+                ? 'store-text-muted'
+                : 'text-white',
         )}
       >
         {value}
@@ -368,17 +403,17 @@ export function LaydownEvaluationPanel({
   compareRows = [],
 }: LaydownEvaluationPanelProps) {
   const board = useMemo(() => (evaluation ? commanderScoreboard(evaluation) : null), [evaluation])
-  const [tab, setTab] = useState<ScoreboardTab>('defeat')
+  const [tab, setTab] = useState<ScoreboardTab>('destroy')
   const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     if (!board) return
-    if (board.verdict === 'can_finish' && board.defeatSection) setTab('defeat')
+    if (board.destroy > 0) setTab('destroy')
+    else if (board.deny > 0) setTab('deny')
     else if (board.detectSection) setTab('detect')
-    else if (board.defeatSection) setTab('defeat')
     else setTab('gaps')
     setExpanded(false)
-  }, [evaluation?.subject.instanceId, board?.verdict, board?.detectSection, board?.defeatSection])
+  }, [evaluation?.subject.instanceId, board?.verdict, board?.destroy, board?.deny, board?.detectSection])
 
   if (!evaluation || !board) return null
 
@@ -387,15 +422,17 @@ export function LaydownEvaluationPanel({
   const activeSection =
     tab === 'detect'
       ? board.detectSection
-      : tab === 'defeat'
-        ? board.defeatSection
-        : null
+      : tab === 'deny'
+        ? board.denySection
+        : tab === 'destroy'
+          ? board.destroySection
+          : null
   const gapSections = [board.detectBlindSection, board.noShotSection].filter(
     (section): section is EvaluationSection => section != null,
   )
 
   return (
-    <StorePanel className="absolute top-14 right-3 z-20 w-[min(100%,24rem)] max-h-[calc(100%-4rem)] overflow-y-auto p-3 shadow-xl pointer-events-auto border-[var(--store-accent-border)]">
+    <StorePanel className="absolute top-14 right-3 z-20 w-[min(100%,26rem)] max-h-[calc(100%-4rem)] overflow-y-auto p-3 shadow-xl pointer-events-auto border-[var(--store-accent-border)]">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--store-accent)] flex items-center gap-1.5">
@@ -449,7 +486,7 @@ export function LaydownEvaluationPanel({
           'rounded-lg border px-2.5 py-2 mb-3',
           board.verdict === 'can_finish'
             ? 'border-green-500/40 bg-green-950/30'
-            : board.verdict === 'detect_only'
+            : board.verdict === 'deny_only' || board.verdict === 'detect_only'
               ? 'border-amber-400/40 bg-amber-950/20'
               : 'border-[var(--store-line)] bg-[var(--store-surface-1)]',
         )}
@@ -459,7 +496,7 @@ export function LaydownEvaluationPanel({
             'text-[10px] font-semibold uppercase tracking-wider',
             board.verdict === 'can_finish'
               ? 'text-green-400'
-              : board.verdict === 'detect_only'
+              : board.verdict === 'deny_only' || board.verdict === 'detect_only'
                 ? 'text-amber-300'
                 : 'store-text-muted',
           )}
@@ -468,11 +505,19 @@ export function LaydownEvaluationPanel({
         </p>
         <p className="text-[11px] text-white mt-1 leading-snug">{board.verdictLine}</p>
         <p className="text-[9px] store-text-muted mt-1">
-          Pk figures are OSINT / training estimates — not accredited Pk.
+          P(kill) = airframe down. P(link) = pilot denied, airframe recoverable. OSINT / training estimates — not
+          accredited Pk.
         </p>
       </div>
 
-      <div className="flex gap-1.5 mb-3">
+      {board.williamtownLine && (
+        <div className="rounded-lg border border-amber-400/40 bg-amber-950/25 px-2.5 py-2 mb-3">
+          <p className="text-[9px] font-semibold uppercase tracking-wider text-amber-300">Williamtown lesson</p>
+          <p className="text-[11px] text-white mt-1 leading-snug">{board.williamtownLine}</p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 gap-1.5 mb-3">
         {board.detectSection && (
           <ScoreTile
             label="Detect"
@@ -486,15 +531,28 @@ export function LaydownEvaluationPanel({
             }}
           />
         )}
-        {board.defeatSection && (
+        {(board.defeatSection || board.denySection) && (
           <ScoreTile
-            label="Defeat"
-            value={board.defeat}
-            hint="Can finish"
-            active={tab === 'defeat'}
-            tone={board.defeat > 0 ? 'can' : 'cannot'}
+            label="Deny"
+            value={board.deny}
+            hint="Link only · stays up"
+            active={tab === 'deny'}
+            tone={board.deny > 0 ? 'deny' : 'cannot'}
             onClick={() => {
-              setTab('defeat')
+              setTab('deny')
+              setExpanded(false)
+            }}
+          />
+        )}
+        {(board.defeatSection || board.destroySection) && (
+          <ScoreTile
+            label="Destroy"
+            value={board.destroy}
+            hint="Airframe down"
+            active={tab === 'destroy'}
+            tone={board.destroy > 0 ? 'can' : 'cannot'}
+            onClick={() => {
+              setTab('destroy')
               setExpanded(false)
             }}
           />
@@ -503,7 +561,7 @@ export function LaydownEvaluationPanel({
           <ScoreTile
             label="Gaps"
             value={gapCount}
-            hint="No shot"
+            hint="No find / no finish"
             active={tab === 'gaps'}
             tone="cannot"
             onClick={() => {
@@ -519,10 +577,11 @@ export function LaydownEvaluationPanel({
           <p className="px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-wider store-text-muted">
             Airframe compare
           </p>
-          <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-2 px-2.5 pb-1 text-[9px] font-mono store-text-muted">
+          <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-2.5 pb-1 text-[9px] font-mono store-text-muted">
             <span />
-            <span>Detect</span>
-            <span>Defeat</span>
+            <span>Find</span>
+            <span>Deny</span>
+            <span>Kill</span>
             <span>Call</span>
           </div>
           {compareRows.map((row) => {
@@ -533,7 +592,7 @@ export function LaydownEvaluationPanel({
                 type="button"
                 onClick={() => onSelectItem({ kind: 'uas', instanceId: row.instanceId })}
                 className={cn(
-                  'w-full grid grid-cols-[1fr_auto_auto_auto] gap-x-2 px-2.5 py-1.5 text-left text-[10px] font-mono border-t border-[var(--store-line)]',
+                  'w-full grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-2.5 py-1.5 text-left text-[10px] font-mono border-t border-[var(--store-line)]',
                   active
                     ? 'bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
                     : 'hover:bg-[var(--store-surface-2)] text-white',
@@ -541,22 +600,43 @@ export function LaydownEvaluationPanel({
               >
                 <span className="truncate">{row.name}</span>
                 <span className={row.detect > 0 ? 'text-green-400' : 'store-text-muted'}>{row.detect}</span>
-                <span className={row.defeat > 0 ? 'text-green-400' : 'store-text-muted'}>{row.defeat}</span>
+                <span className={row.deny > 0 ? 'text-amber-300' : 'store-text-muted'}>{row.deny}</span>
+                <span className={row.destroy > 0 ? 'text-green-400' : 'store-text-muted'}>{row.destroy}</span>
                 <span
                   className={
                     row.verdict === 'can_finish'
                       ? 'text-green-400'
-                      : row.verdict === 'detect_only'
+                      : row.verdict === 'deny_only' || row.verdict === 'detect_only'
                         ? 'text-amber-300'
                         : 'store-text-muted'
                   }
                 >
-                  {row.verdict === 'can_finish' ? 'Finish' : row.verdict === 'detect_only' ? 'Find' : 'Blind'}
+                  {row.verdict === 'can_finish'
+                    ? 'Kill'
+                    : row.verdict === 'deny_only'
+                      ? 'Deny'
+                      : row.verdict === 'detect_only'
+                        ? 'Find'
+                        : 'Blind'}
                 </span>
               </button>
             )
           })}
         </div>
+      )}
+
+      {tab !== 'gaps' && !activeSection && (tab === 'deny' || tab === 'destroy') && (
+        <p className="text-[11px] text-amber-200/90 leading-snug mb-2">
+          {tab === 'deny'
+            ? 'No catalog RF deny path for this airframe.'
+            : 'No catalog hard-kill path. A DroneGun-class RF buy is not a crash — the airframe stays up.'}
+        </p>
+      )}
+
+      {tab === 'deny' && activeSection && (
+        <p className="text-[10px] text-amber-200/80 leading-snug mb-2">
+          These systems take the pilot off the stick. They do not drop the aircraft.
+        </p>
       )}
 
       {tab !== 'gaps' && activeSection && (
@@ -567,7 +647,7 @@ export function LaydownEvaluationPanel({
               activeSection.tone === 'can' ? 'text-green-400' : 'store-text-muted',
             )}
           >
-            {tab === 'detect' ? 'Can detect' : 'Can shoot down'}
+            {tab === 'detect' ? 'Can detect' : tab === 'deny' ? 'Can deny — link only' : 'Can destroy — airframe down'}
             <span className="ml-1.5 font-mono font-normal normal-case">({activeSection.items.length})</span>
           </p>
           <PreviewList

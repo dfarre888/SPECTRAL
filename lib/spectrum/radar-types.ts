@@ -117,7 +117,7 @@ export function radarToCapability(r: RadarSystem): SpectrumCapability {
     axis: 'rf',
     layer: 'radar',
     fn: r.side === 'blue' ? 'detect_radar' : 'radar_emit',
-    label: `${r.name}${r.nato_name ? ` (${r.nato_name})` : ''}`,
+    label: r.nato_name ? `${r.nato_name} (${r.name})` : r.name,
     freq_low_hz: r.freq_low_hz,
     freq_high_hz: r.freq_high_hz,
     range_km: r.instrumented_range_km ?? undefined,

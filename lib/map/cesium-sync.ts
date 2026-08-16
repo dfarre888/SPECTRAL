@@ -18,6 +18,7 @@ import {
   type MaskingRayResult,
   type TerrainShadowFootprint,
 } from '@/lib/map/terrain-masking'
+import { formatEffectorDisplayName, formatRadarDisplayName } from '@/lib/map/catalog-display-name'
 import type { SelectedLaydownItem } from '@/lib/map/laydown-evaluation'
 import { isSameLaydownItem } from '@/lib/map/laydown-evaluation'
 import { haversineM } from '@/lib/propagation/geo'
@@ -1032,7 +1033,7 @@ export function syncMapEntities(
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
     })
     entity.label = new Cesium.LabelGraphics({
-      text: `${radar.asset.name}\n${radar.asset.detection_range_km.toFixed(0)} km detect`,
+      text: `${formatRadarDisplayName(radar.asset)}\n${radar.asset.detection_range_km.toFixed(0)} km detect`,
       font: '12px JetBrains Mono',
       fillColor: Cesium.Color.WHITE,
       outlineColor: Cesium.Color.BLACK,
@@ -1095,7 +1096,7 @@ export function syncMapEntities(
 
     const cueLabel =
       eff.asset.linkedRadars.length > 0
-        ? ` · ${eff.asset.linkedRadars.map((r) => r.name).join(' + ')}`
+        ? ` · ${eff.asset.linkedRadars.map((r) => formatRadarDisplayName(r)).join(' + ')}`
         : ''
 
     const entity = ensureEntity(viewer, id, () =>
@@ -1115,7 +1116,7 @@ export function syncMapEntities(
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
     })
     entity.label = new Cesium.LabelGraphics({
-      text: `${eff.asset.name}\n${eff.asset.engagement_max_km.toFixed(0)} km engage${cueLabel}`,
+      text: `${formatEffectorDisplayName(eff.asset)}\n${eff.asset.engagement_max_km.toFixed(0)} km engage${cueLabel}`,
       font: '12px JetBrains Mono',
       fillColor: Cesium.Color.WHITE,
       outlineColor: Cesium.Color.BLACK,

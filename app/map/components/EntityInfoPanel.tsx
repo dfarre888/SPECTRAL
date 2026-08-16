@@ -28,7 +28,7 @@ export function EntityInfoPanel({
   const flight = computeMissionFlightDetails(uas, placedCuas, placedRadars, placedEffectors)
   return (
     <div
-      className="absolute z-20 w-72 rounded-2xl store-panel shadow-xl pointer-events-auto backdrop-blur-sm"
+      className="map-material-float absolute z-20 w-72 rounded-2xl pointer-events-auto"
       style={{ left: screenX + 12, top: screenY - 8 }}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--store-line)] gap-2">

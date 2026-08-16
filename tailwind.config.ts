@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './app/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -10,12 +11,12 @@ const config: Config = {
     extend: {
       colors: {
         // Spectral design system — aligned with A3DM store tokens
-        bg:      '#080808',
-        surf1:   '#0f0f10',
-        surf2:   '#161618',
-        surf3:   '#1c1c1e',
-        border:  'rgba(255,255,255,0.08)',
-        divider: 'rgba(255,255,255,0.06)',
+        bg:      'var(--store-bg)',
+        surf1:   'var(--store-surface)',
+        surf2:   'var(--store-surface-2)',
+        surf3:   'var(--store-surface-2)',
+        border:  'var(--store-line)',
+        divider: 'var(--store-line)',
         store: {
           bg:      'var(--store-bg)',
           surface: 'var(--store-surface)',
@@ -26,9 +27,9 @@ const config: Config = {
           accent:  'var(--store-accent)',
         },
         // Text
-        't-primary':   'rgba(244,244,245,0.92)',
-        't-secondary': 'rgba(244,244,245,0.62)',
-        't-muted':     'rgba(244,244,245,0.38)',
+        't-primary':   'var(--t-primary)',
+        't-secondary': 'var(--t-secondary)',
+        't-muted':     'var(--t-muted)',
         // Force colours
         red:    '#EF4444',  // Red force
         blue:   '#3B82F6',  // Blue force

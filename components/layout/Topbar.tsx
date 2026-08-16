@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Search, Bell, Settings, Menu } from 'lucide-react'
+import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { OperationsChrome } from '@/components/operations/OperationsChrome'
 import { useMobileNav } from '@/components/layout/MobileNavContext'
 import { federatedSearch } from '@/lib/search/federated-index'
@@ -76,6 +77,8 @@ export function Topbar() {
 
       <OperationsChrome />
 
+      <ThemeToggle />
+
       <div className="relative">
         <button
           type="button"
@@ -131,6 +134,13 @@ export function Topbar() {
               <span className="text-white font-medium">Currency queue</span>
               <span className="block text-[10px] store-text-muted font-mono mt-0.5">DS TTP review pipeline</span>
             </Link>
+            <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--store-line)]">
+              <div>
+                <span className="text-white font-medium text-xs">Appearance</span>
+                <span className="block text-[10px] store-text-muted font-mono mt-0.5">Briefing paper / ops floor</span>
+              </div>
+              <ThemeToggle labeled />
+            </div>
             <Link
               href="/login"
               className="block px-3 py-2 text-xs hover:bg-[var(--store-surface-2)]"

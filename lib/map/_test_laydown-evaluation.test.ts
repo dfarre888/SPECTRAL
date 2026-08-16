@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { buildOverlapVolume } from '@/lib/map/overlap'
 import {
   buildLaydownEvaluation,
+  commanderScoreboard,
   evaluateCuas,
   evaluateEffector,
   evaluateRadar,
@@ -12,9 +13,11 @@ import {
   listPlacedLaydownItems,
   mapUasToTargetClass,
   parseEntityLaydownPick,
+  uasCommanderCompare,
   type LaydownState,
   type SelectedLaydownItem,
 } from '@/lib/map/laydown-evaluation'
+import { resolveSpectrumUas } from '@/lib/map/spectrum-bridge'
 import { getSpectraMapAssets } from '@/lib/map/spectra-assets'
 import type { MapCuasAsset, MapUasAsset, PlacedCuas, PlacedEffector, PlacedRadar, PlacedUas } from '@/lib/map/types'
 
@@ -227,6 +230,151 @@ describe('laydown-evaluation', () => {
     if (standalone) {
       expect(standalone.items.every((i) => !i.parentSystem?.trim())).toBe(true)
     }
+  })
+
+  it('A3DM sheet IDs outside the DJI prefix still get an Estimated finish profile', () => {
+    const trinity = resolveSpectrumUas('quantum-trinity-f90-mapping')
+    const volanti = resolveSpectrumUas('carbonix-volanti-mapping-vtol')
+    expect(trinity?.confidence).toBe('estimated')
+    expect(volanti?.confidence).toBe('estimated')
+    expect(trinity?.group).toBe(1)
+    expect(trinity?.capabilities?.length).toBeGreaterThan(0)
+
+    const uas: PlacedUas = {
+      ...placedFpv(),
+      instanceId: 'uas-trinity',
+      asset: {
+        id: 'quantum-trinity-f90-mapping',
+        name: 'Quantum Systems Trinity F90+',
+        slug: 'quantum-trinity-f90-mapping',
+        category: 'cots',
+        categoryLabel: 'COTS',
+        catalog_tier: 'cots',
+        image_url: null,
+        max_altitude_agl_m: 5500,
+        altitude_reference: 'AGL',
+        max_range_km: 5,
+        max_speed_kmh: 43.2,
+        endurance_min: 90,
+        climb_rate_mpm: 300,
+        rangeEstimated: true,
+      },
+    }
+    const evalResult = evaluateUas(uas, baseState({ catalogUas: [uas.asset] }))
+    const canShoot = evalResult.sections.find((s) => s.title === 'Can shoot down')!
+    const canDetect = evalResult.sections.find((s) => s.title === 'Radars — can detect')!
+    expect(canDetect.items.length).toBeGreaterThan(0)
+    expect(canShoot.items.length).toBeGreaterThan(0)
+    expect(canShoot.items.some((i) => i.pct != null && i.pct > 0)).toBe(true)
+    expect(commanderScoreboard(evalResult).verdict).toBe('can_finish')
+  })
+
+  it('COTS Mavic 4 Pro gets an estimated Group 1 spectrum profile', () => {
+    const profile = resolveSpectrumUas('dji-mavic-4-pro')
+    expect(profile).not.toBeNull()
+    expect(profile?.group).toBe(1)
+    expect(profile?.confidence).toBe('estimated')
+    expect(profile?.capabilities?.length).toBeGreaterThan(0)
+    expect(profile?.capabilities?.some((c) => c.fn === 'control' || c.fn === 'video')).toBe(true)
+  })
+
+  it('seeded Mavic 3 keeps the curated dossier, not the COTS stand-in', () => {
+    const profile = resolveSpectrumUas('dji-mavic-3')
+    expect(profile?.confidence).toBe('curated')
+    expect(profile?.name).toBe('DJI Mavic 3')
+  })
+
+  it('evaluateUas finishes COTS Mavic 4 Pro — can shoot is no longer empty', () => {
+    const uas: PlacedUas = {
+      ...placedFpv(),
+      instanceId: 'uas-mavic-4',
+      asset: {
+        id: 'dji-mavic-4-pro',
+        name: 'DJI Mavic 4 Pro',
+        slug: 'dji-mavic-4-pro',
+        category: 'cots',
+        categoryLabel: 'COTS',
+        image_url: null,
+        max_altitude_agl_m: 6000,
+        altitude_reference: 'AGL',
+        max_range_km: 5,
+        max_speed_kmh: 43.2,
+        endurance_min: 30,
+        climb_rate_mpm: 300,
+        rangeEstimated: true,
+      },
+    }
+    const evalResult = evaluateUas(uas, baseState({ catalogUas: [uas.asset] }))
+    const canShoot = evalResult.sections.find((s) => s.title === 'Can shoot down')!
+    const canDetect = evalResult.sections.find((s) => s.title === 'Radars — can detect')!
+    expect(canDetect.items.length).toBeGreaterThan(0)
+    expect(canShoot.items.length).toBeGreaterThan(0)
+    expect(canShoot.items.some((i) => i.assetId === cuasAsset.id)).toBe(true)
+    expect(canShoot.items.find((i) => i.assetId === cuasAsset.id)?.finishClass).toBe('deny')
+    expect(canShoot.items.some((i) => i.finishClass === 'destroy')).toBe(true)
+
+    const board = commanderScoreboard(evalResult)
+    expect(board.verdict).toBe('can_finish')
+    expect(board.defeat).toBe(canShoot.items.length)
+    expect(board.deny).toBeGreaterThan(0)
+    expect(board.destroy).toBeGreaterThan(0)
+    expect(board.detect).toBe(canDetect.items.length)
+    expect(board.bestDefeat).not.toBeNull()
+  })
+
+  it('uasCommanderCompare puts Detect / Defeat side by side for two airframes', () => {
+    const mavic3: PlacedUas = {
+      ...placedFpv(),
+      instanceId: 'uas-mavic-3',
+      asset: {
+        id: 'dji-mavic-3',
+        name: 'DJI Mavic 3',
+        slug: 'dji-mavic-3',
+        category: 'cots',
+        categoryLabel: 'COTS',
+        image_url: null,
+        max_altitude_agl_m: 6000,
+        altitude_reference: 'AGL',
+        max_range_km: 15,
+        max_speed_kmh: 75,
+        endurance_min: 46,
+        climb_rate_mpm: 300,
+      },
+    }
+    const mavic4: PlacedUas = {
+      ...mavic3,
+      instanceId: 'uas-mavic-4',
+      asset: {
+        ...mavic3.asset,
+        id: 'dji-mavic-4-pro',
+        name: 'DJI Mavic 4 Pro',
+        slug: 'dji-mavic-4-pro',
+        max_range_km: 5,
+        rangeEstimated: true,
+      },
+    }
+    const rows = uasCommanderCompare(
+      baseState({
+        placedUas: [mavic3, mavic4],
+        catalogUas: [mavic3.asset, mavic4.asset],
+      }),
+    )
+    expect(rows).toHaveLength(2)
+    expect(rows.every((r) => r.verdict === 'can_finish')).toBe(true)
+    expect(rows.every((r) => r.detect > 0 && r.defeat > 0)).toBe(true)
+  })
+
+  it('evaluateUas names radars with spoken name first and designator second', () => {
+    const evalResult = evaluateUas(placedFpv(), baseState())
+    const cannotDetect = evalResult.sections.find((s) => s.title === 'Radars — cannot detect')!
+    const complement = evalResult.sections.find((s) => s.title === 'Cannot detect or shoot')!
+    const bigBird = cannotDetect.items.find((i) => i.assetId === 'radar-91n6e-big-bird')
+    const tombstone = complement.items.find((i) => i.assetId === 'radar-64n6-tombstone')
+    const s500 = complement.items.find((i) => i.assetId === 'radar-s500-91n6a')
+    expect(bigBird?.name).toBe('Big Bird (91N6E)')
+    expect(tombstone?.name).toBe('Tombstone (64N6E)')
+    expect(s500?.name).toBe('S-500 Prometheus (91N6A(M))')
+    expect(tombstone?.parentSystem).toBeTruthy()
   })
 
   it('evaluateUas items include kind on every row', () => {

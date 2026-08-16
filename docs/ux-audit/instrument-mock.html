@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SPECTRAL — Gold-cup store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f4f5;
+      --surface: #ffffff;
+      --well: #ececee;
+      --ink: rgba(9,9,11,0.92);
+      --soft: rgba(9,9,11,0.62);
+      --mute: rgba(9,9,11,0.42);
+      --line: rgba(9,9,11,0.10);
+      --accent: #f97316;
+      --accent-glow: rgba(249,115,22,0.12);
+      --accent-line: rgba(249,115,22,0.40);
+      --ok: #15803d;
+      --warn: #b45309;
+      --shadow: 0 12px 32px rgba(9,9,11,0.10);
+    }
+    [data-theme="dark"] {
+      --bg: #080808;
+      --surface: #0f0f10;
+      --well: #161618;
+      --ink: rgba(244,244,245,0.92);
+      --soft: rgba(244,244,245,0.62);
+      --mute: rgba(244,244,245,0.38);
+      --line: rgba(255,255,255,0.08);
+      --ok: #4ade80;
+      --warn: #fbbf24;
+      --shadow: 0 12px 32px rgba(0,0,0,0.45);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 13px;
+    }
+    .banner {
+      background: #1a1a0a;
+      color: #f59e0b;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-align: center;
+      padding: 4px 0;
+    }
+    .shell { display: flex; height: calc(100% - 22px); }
+    .nav {
+      width: 288px;
+      background: var(--surface);
+      border-right: 1px solid var(--line);
+      padding: 16px 20px;
+    }
+    .back { color: var(--mute); font-size: 11px; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: var(--accent-glow);
+      border: 1px solid var(--accent-line);
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+    }
+    .word {
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .sub { color: var(--mute); font-size: 10px; }
+    .pill {
+      display: inline-flex;
+      margin-top: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--accent-line);
+      background: var(--accent-glow);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .forces { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .force {
+      border: 1px solid var(--line);
+      background: var(--well);
+      color: var(--mute);
+      border-radius: 12px;
+      padding: 8px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+    .force.on { background: var(--accent); color: #0a0a0a; border-color: var(--accent); }
+    .search {
+      width: 100%;
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      background: var(--well);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: var(--ink);
+      font: inherit;
+    }
+    .card {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      background: var(--well);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .card b { display: block; }
+    .card span { color: var(--mute); font-size: 11px; font-family: "JetBrains Mono", ui-monospace, monospace; }
+    .col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .strip {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .btn {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 10px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background: var(--well);
+      color: var(--ink);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+    .btn.pri { border-color: rgba(249,115,22,0.5); color: var(--accent); }
+    .btn.cyan { border-color: rgba(6,182,212,0.4); color: #06b6d4; }
+    .ml { margin-left: auto; }
+    .stage {
+      flex: 1;
+      background:
+        radial-gradient(70% 60% at 62% 42%, #1a3344 0%, #050507 68%);
+      position: relative;
+      min-height: 0;
+    }
+    .score {
+      position: absolute;
+      top: 56px;
+      right: 12px;
+      width: 360px;
+      background: var(--surface);
+      border: 1px solid var(--accent-line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 12px;
+    }
+    h1 { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 4px; }
+    .meta { color: var(--mute); font-size: 9px; margin-bottom: 8px; }
+    .name { font-size: 12px; font-weight: 600; margin: 0 0 8px; }
+    .verdict {
+      border: 1px solid rgba(180,83,9,0.4);
+      background: rgba(217,119,6,0.12);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+    }
+    .k { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--warn); }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .tile {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .tile.on { border-color: var(--accent-line); background: var(--accent-glow); }
+    .tile span { display: block; color: var(--mute); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .tile b { display: block; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 18px; margin-top: 4px; }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+  </style>
+</head>
+<body>
+  <div class="banner">UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY</div>
+  <div class="shell">
+    <aside class="nav">
+      <div class="back">← Dashboard</div>
+      <div class="brand">
+        <div class="icon">M</div>
+        <div>
+          <div class="word">Map Intel</div>
+          <div class="sub">Terrain laydown & envelopes</div>
+        </div>
+      </div>
+      <div class="pill">Place assets on globe</div>
+      <div class="forces">
+        <button class="force" type="button">RED</button>
+        <button class="force" type="button">BLUE</button>
+        <button class="force on" type="button">BOTH</button>
+      </div>
+      <input class="search" placeholder="Search platforms, NATO name…" />
+      <div class="card"><b>DJI Mavic 4 Pro</b><span>Group 1 · COTS</span></div>
+      <div class="card"><b>DroneGun Tactical</b><span>RF deny · P(link)</span></div>
+    </aside>
+    <div class="col">
+      <div class="strip">
+        <span class="sub" style="font-family:JetBrains Mono,monospace">Unsaved laydown</span>
+        <button class="btn" type="button">Save</button>
+        <button class="btn" type="button">New</button>
+        <button class="btn" type="button">Load</button>
+        <button class="btn pri" type="button">WOPR</button>
+        <button class="btn pri" type="button">PCM</button>
+        <button class="btn cyan" type="button">Library</button>
+        <button class="btn" type="button">C-UAS Siting</button>
+        <button class="btn" type="button">EW Deconflict</button>
+        <button class="btn ml" id="theme" type="button">Dark</button>
+      </div>
+      <div class="stage">
+        <aside class="score">
+          <h1>Laydown evaluation</h1>
+          <div class="meta">Commander scoreboard · OSINT catalog · virtual geometry</div>
+          <p class="name">DJI Mavic 4 Pro</p>
+          <div class="verdict">
+            <div class="k">Find and deny — airframe stays up</div>
+            <div class="sub" style="margin-top:4px">P(link) 71%. Williamtown: an RF buy is not a crash.</div>
+          </div>
+          <div class="grid">
+            <div class="tile"><span>Detect</span><b class="ok">15</b></div>
+            <div class="tile on"><span>Deny</span><b class="warn">2</b></div>
+            <div class="tile"><span>Destroy</span><b>0</b></div>
+            <div class="tile"><span>Gaps</span><b>11</b></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+  <script>
+    const root = document.documentElement
+    const btn = document.getElementById('theme')
+    btn.onclick = () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark'
+      root.dataset.theme = next
+      btn.textContent = next === 'dark' ? 'Light' : 'Dark'
+    }
+  </script>
+</body>
+</html>

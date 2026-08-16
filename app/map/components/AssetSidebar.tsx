@@ -32,6 +32,8 @@ import {
   type MapForceFilter,
   uasForceSides,
 } from '@/lib/map/force-filter'
+import { formatEffectorDisplayName, formatRadarDisplayName } from '@/lib/map/catalog-display-name'
+import { isCotsCatalog, isCotsDji } from '@/lib/map/cots-defaults'
 import { filterMapAssets, type MapAssetSearchHit } from '@/lib/map/map-asset-search'
 import { operationalEnvelopeRadiusKm } from '@/lib/map/range-declaration'
 import type { SelectedLaydownItem } from '@/lib/map/laydown-evaluation'
@@ -122,6 +124,8 @@ export function AssetSidebar({
   onOpenSpectralAnalysis,
 }: AssetSidebarProps) {
   const operations = isOperationsEditionClient()
+  const [cotsOpen, setCotsOpen] = useState(true)
+  const [cotsDjiOpen, setCotsDjiOpen] = useState(false)
   const [uasOpen, setUasOpen] = useState(false)
   const [cuasOpen, setCuasOpen] = useState(false)
   const [radarsOpen, setRadarsOpen] = useState(false)
@@ -157,6 +161,17 @@ export function AssetSidebar({
   const visibleHits = useMemo(
     () => filterMapAssetHits(filtered.hits, forceFilter),
     [filtered.hits, forceFilter],
+  )
+  const cotsAll = useMemo(
+    () =>
+      visibleUas
+        .filter((asset) => isCotsCatalog(asset) || isCotsDji(asset))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [visibleUas],
+  )
+  const cotsDji = useMemo(
+    () => cotsAll.filter((asset) => isCotsDji(asset)),
+    [cotsAll],
   )
 
   const placingUasId =
@@ -197,8 +212,7 @@ export function AssetSidebar({
     <aside
       className={cn(
         'w-72 xl:w-80 flex-shrink-0 flex flex-col h-full',
-        'store-panel border-r border-[var(--store-line)] border-t-0 border-b-0 border-l-0 rounded-none',
-        'bg-[var(--store-surface)]',
+        'map-material border-r border-[var(--store-line)] border-t-0 border-b-0 border-l-0 rounded-none',
       )}
     >
       {/* Header — matches main Sidebar / store catalog */}
@@ -226,13 +240,13 @@ export function AssetSidebar({
           <ForceFilterButton
             label="RED"
             active={forceFilter === 'red'}
-            activeClassName="bg-red-600 text-white border-red-600"
+            activeClassName="bg-red-600 text-white border-red-600 theme-keep-white"
             onClick={() => setForceFilter('red')}
           />
           <ForceFilterButton
             label="BLUE"
             active={forceFilter === 'blue'}
-            activeClassName="bg-blue-600 text-white border-blue-600"
+            activeClassName="bg-blue-600 text-white border-blue-600 theme-keep-white"
             onClick={() => setForceFilter('blue')}
           />
           <ForceFilterButton
@@ -299,6 +313,60 @@ export function AssetSidebar({
               </div>
             )}
           </StoreFilterSection>
+        )}
+
+        {(!searchActive || cotsAll.length > 0) && cotsAll.length > 0 && (
+          <CollapsibleSection
+            open={cotsOpen}
+            onToggle={() => setCotsOpen(!cotsOpen)}
+            label="COTS catalog"
+            count={cotsAll.length}
+            icon={<Plane size={14} className="text-[var(--store-accent)]" />}
+          >
+            <div className="space-y-2 max-h-72 overflow-y-auto pr-0.5">
+              {cotsAll.map((asset) => (
+                <MapAssetPickCard
+                  key={`cots-${asset.id}`}
+                  id={asset.id}
+                  kicker={isCotsDji(asset) ? 'COTS DJI' : 'COTS'}
+                  name={asset.name}
+                  sub={formatUasSubline(asset)}
+                  active={placingUasId === asset.id}
+                  highlighted={highlightedIds.includes(asset.id)}
+                  onClick={() => onSelectUas(asset)}
+                  accent="threat"
+                  thumbnailVariant="uas"
+                />
+              ))}
+            </div>
+          </CollapsibleSection>
+        )}
+
+        {(!searchActive || cotsDji.length > 0) && cotsDji.length > 0 && (
+          <CollapsibleSection
+            open={cotsDjiOpen}
+            onToggle={() => setCotsDjiOpen(!cotsDjiOpen)}
+            label="COTS DJI"
+            count={cotsDji.length}
+            icon={<Plane size={14} className="text-[var(--store-accent)]" />}
+          >
+            <div className="space-y-2 max-h-64 overflow-y-auto pr-0.5">
+              {cotsDji.map((asset) => (
+                <MapAssetPickCard
+                  key={`cots-dji-${asset.id}`}
+                  id={asset.id}
+                  kicker="COTS DJI"
+                  name={asset.name}
+                  sub={formatUasSubline(asset)}
+                  active={placingUasId === asset.id}
+                  highlighted={highlightedIds.includes(asset.id)}
+                  onClick={() => onSelectUas(asset)}
+                  accent="threat"
+                  thumbnailVariant="uas"
+                />
+              ))}
+            </div>
+          </CollapsibleSection>
         )}
 
         {(!searchActive || visibleUas.length > 0) && (
@@ -369,7 +437,7 @@ export function AssetSidebar({
                   key={asset.id}
                   id={asset.id}
                   kicker={asset.roleLabel}
-                  name={asset.name}
+                  name={formatRadarDisplayName(asset)}
                   sub={formatRadarSubline(asset)}
                   active={placingRadarId === asset.id}
                   highlighted={highlightedIds.includes(asset.id)}
@@ -396,7 +464,7 @@ export function AssetSidebar({
                   key={asset.id}
                   id={asset.id}
                   kicker={asset.tierLabel}
-                  name={asset.name}
+                  name={formatEffectorDisplayName(asset)}
                   sub={formatEffectorSubline(asset)}
                   active={placingEffectorId === asset.id}
                   highlighted={highlightedIds.includes(asset.id)}
@@ -538,13 +606,13 @@ export function AssetSidebar({
                 >
                 <StorePanel inner className="relative p-3 pl-9">
                   <RemoveButton
-                    label={`Remove ${r.asset.name}`}
+                    label={`Remove ${formatRadarDisplayName(r.asset)}`}
                     onClick={() => onRemoveRadar(r.instanceId)}
                   />
                   <div className="flex items-start gap-3">
-                    <PlatformThumbnail id={r.asset.id} name={r.asset.name} size="md" variant="cuas" />
+                    <PlatformThumbnail id={r.asset.id} name={formatRadarDisplayName(r.asset)} size="md" variant="cuas" />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-white truncate">{r.asset.name}</p>
+                      <p className="text-[13px] font-semibold text-white truncate">{formatRadarDisplayName(r.asset)}</p>
                       <p className="text-[11px] store-text-muted font-mono mt-0.5">
                         {r.lat.toFixed(4)}°, {r.lon.toFixed(4)}°
                       </p>
@@ -570,13 +638,13 @@ export function AssetSidebar({
                 >
                 <StorePanel inner className="relative p-3 pl-9">
                   <RemoveButton
-                    label={`Remove ${e.asset.name}`}
+                    label={`Remove ${formatEffectorDisplayName(e.asset)}`}
                     onClick={() => onRemoveEffector(e.instanceId)}
                   />
                   <div className="flex items-start gap-3">
-                    <PlatformThumbnail id={e.asset.id} name={e.asset.name} size="md" variant="cuas" />
+                    <PlatformThumbnail id={e.asset.id} name={formatEffectorDisplayName(e.asset)} size="md" variant="cuas" />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-white truncate">{e.asset.name}</p>
+                      <p className="text-[13px] font-semibold text-white truncate">{formatEffectorDisplayName(e.asset)}</p>
                       <p className="text-[11px] store-text-muted font-mono mt-0.5">
                         {e.lat.toFixed(4)}°, {e.lon.toFixed(4)}°
                       </p>
@@ -701,7 +769,7 @@ function ForceFilterButton({
       type="button"
       onClick={onClick}
       className={cn(
-        'rounded-xl border px-2 py-2 text-[10px] font-semibold tracking-widest uppercase transition-colors',
+        'map-press rounded-xl border px-2 py-2 text-[10px] font-semibold tracking-widest uppercase',
         active
           ? activeClassName
           : 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-muted hover:text-white',
@@ -811,7 +879,7 @@ function MapSearchResultCard({
         <MapAssetPickCard
           id={asset.id}
           kicker={asset.roleLabel}
-          name={asset.name}
+          name={formatRadarDisplayName(asset)}
           sub={formatRadarSubline(asset)}
           active={placingRadarId === asset.id}
           highlighted={highlightedIds.includes(asset.id)}
@@ -827,7 +895,7 @@ function MapSearchResultCard({
         <MapAssetPickCard
           id={asset.id}
           kicker={asset.tierLabel}
-          name={asset.name}
+          name={formatEffectorDisplayName(asset)}
           sub={formatEffectorSubline(asset)}
           active={placingEffectorId === asset.id}
           highlighted={highlightedIds.includes(asset.id)}
@@ -912,23 +980,31 @@ function formatUasSubline(asset: MapUasAsset): string {
   const rangeStr =
     ferry > opKm + 0.05
       ? `${opKm.toFixed(1)} km ops · ${ferry.toFixed(0)} km ferry`
-      : `${opKm.toFixed(1)} km envelope`
+      : asset.rangeEstimated
+        ? `${opKm.toFixed(1)} km envelope (estimated)`
+        : `${opKm.toFixed(1)} km envelope`
   const altRef = asset.altitude_reference === 'AMSL' ? 'AMSL' : 'AGL'
-  return `${rangeStr} · ${asset.max_altitude_agl_m} m ${altRef}`
+  const payloadN = asset.payloads?.length ?? 0
+  const payloadStr =
+    payloadN === 0
+      ? ''
+      : payloadN === 1
+        ? ` · ${asset.payloads![0].name}`
+        : ` · ${payloadN} payloads`
+  return `${rangeStr} · ${asset.max_altitude_agl_m} m ${altRef}${payloadStr}`
 }
 
 function formatRadarSubline(asset: MapRadarAsset): string {
   const sector =
     asset.sector_deg >= 360 ? '360°' : `${asset.sector_deg.toFixed(0)}° sector`
-  const nato = asset.nato_name ? ` · ${asset.nato_name}` : ''
-  return `${asset.detection_range_km.toFixed(0)} km · ${asset.bandsLabel} · ${sector}${nato}`
+  return `${asset.detection_range_km.toFixed(0)} km · ${asset.bandsLabel} · ${sector}`
 }
 
 function formatEffectorSubline(asset: MapEffectorAsset): string {
   const alt = `${asset.alt_min_km.toFixed(0)}–${asset.alt_max_km.toFixed(0)} km alt`
   const cue =
     asset.linkedRadars.length > 0
-      ? ` · cue: ${asset.linkedRadars.map((r) => r.name).join(' + ')}`
+      ? ` · cue: ${asset.linkedRadars.map((r) => formatRadarDisplayName(r)).join(' + ')}`
       : ''
   return `${asset.engagement_max_km.toFixed(0)} km engage · ${alt}${cue}`
 }

@@ -57,7 +57,7 @@ export function SamInterceptPanel({ onClose }: SamInterceptPanelProps) {
   )
 
   return (
-    <div className="w-[320px] rounded-xl border border-[var(--store-line)] bg-[#0A0A0F] shadow-2xl flex flex-col max-h-[calc(100vh-120px)] overflow-hidden">
+    <div className="w-[320px] rounded-xl border border-[var(--store-line)] bg-[var(--store-surface)] shadow-2xl flex flex-col max-h-[calc(100vh-120px)] overflow-hidden">
       <div className="flex items-center justify-between gap-2 border-b border-[var(--store-line)] px-3 py-2.5">
         <div className="flex items-center gap-2 text-[#F97316] text-xs font-semibold uppercase tracking-wide">
           <Zap className="h-4 w-4" /> SAM Intercept Calculator

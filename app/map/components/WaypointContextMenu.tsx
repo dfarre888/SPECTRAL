@@ -54,7 +54,7 @@ export function WaypointContextMenu({ target, onApply, onClose }: WaypointContex
   return (
     <>
       <button type="button" className="fixed inset-0 z-30 cursor-default" aria-label="Close menu" onClick={onClose} />
-      <div className="absolute z-40 w-56 rounded-xl store-panel shadow-xl border border-[var(--store-line)] overflow-hidden pointer-events-auto p-3 space-y-2" style={{ left: target.screenX, top: target.screenY }}>
+      <div className="map-material-float absolute z-40 w-56 rounded-xl overflow-hidden pointer-events-auto p-3 space-y-2" style={{ left: target.screenX, top: target.screenY }}>
         <p className="text-[10px] store-text-muted truncate">Waypoint · {target.assetName}</p>
         <label className="block text-[10px] store-text-muted">Longitude
           <input

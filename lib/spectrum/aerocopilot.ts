@@ -13,6 +13,7 @@
  * whether reasoning is local or model-driven.
  */
 
+import { formatCatalogDisplayName } from '@/lib/map/catalog-display-name';
 import type { Platform, Side } from './types';
 import type { RadarSystem, TargetClass, RadarMobility } from './radar-types';
 import type { EffectorSystem } from './effector-types';
@@ -423,7 +424,7 @@ function handleExplainRadar(
     };
   }
   return {
-    answer: `${r.name}${r.nato_name ? ` (${r.nato_name})` : ''} is a ${r.side === 'red' ? 'threat' : 'friendly'} ${r.role.replace('_', ' ')} radar on the ${r.bands.join('/')}-band (${fmtGhz(r.freq_low_hz)}–${fmtGhz(r.freq_high_hz)}). It's ${r.mobility.replace('_', '-')}, reaches about ${r.instrumented_range_km ?? '?'} km, and ${r.can_detect.includes('stealth') ? 'has some counter-stealth capability' : 'is not a counter-stealth sensor'}. It cannot reliably detect ${r.cannot_detect.join(', ') || 'few target classes'}.`,
+    answer: `${formatCatalogDisplayName({ name: r.name, natoName: r.nato_name, parentSystem: r.associated_system })} is a ${r.side === 'red' ? 'threat' : 'friendly'} ${r.role.replace('_', ' ')} radar on the ${r.bands.join('/')}-band (${fmtGhz(r.freq_low_hz)}–${fmtGhz(r.freq_high_hz)}). It's ${r.mobility.replace('_', '-')}, reaches about ${r.instrumented_range_km ?? '?'} km, and ${r.can_detect.includes('stealth') ? 'has some counter-stealth capability' : 'is not a counter-stealth sensor'}. It cannot reliably detect ${r.cannot_detect.join(', ') || 'few target classes'}.`,
     reasoning: [
       ...(r.strengths ?? []).map((s) => `Strength: ${s}`),
       ...(r.limitations ?? []).map((l) => `Limitation: ${l}`),

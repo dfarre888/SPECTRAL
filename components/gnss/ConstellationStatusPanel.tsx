@@ -48,7 +48,7 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
       {constellations.map((c) => (
         <div
           key={c.id}
-          className="rounded-xl border border-white/10 bg-[#0A0A0F] p-4 space-y-3"
+          className="rounded-xl border border-[var(--store-line)] bg-[var(--store-surface)] p-4 space-y-3"
         >
           <div className="flex items-start justify-between gap-2">
             <div>

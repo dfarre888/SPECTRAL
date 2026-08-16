@@ -6,6 +6,7 @@ import {
   capsNavalCiws,
   capsRfJammer,
 } from '@/data/capability-templates'
+import { getA3dmDrone, isA3dmPlatformId } from '@/lib/a3dm/catalog'
 import { resolveCapabilities } from '@/lib/spectrum/fallback'
 import type { MapCuasAsset } from '@/lib/map/types'
 import type { Platform, SpectrumCapability } from '@/lib/spectrum/types'
@@ -21,20 +22,80 @@ function normalizePlatformId(id: string): string {
   return PLATFORM_ID_ALIASES[id] ?? id
 }
 
+export function isCotsMapId(id: string): boolean {
+  return /^(dji|autel|skydio|parrot|yuneec|jouav|xag|wingtra|sensefly|ebee|anafi|freefly|hylio|delair|ideaforge)-/i.test(
+    id,
+  )
+}
+
+function humanizeCotsId(id: string): string {
+  return id
+    .split('-')
+    .map((part) => (part.toLowerCase() === 'dji' ? 'DJI' : part.charAt(0).toUpperCase() + part.slice(1)))
+    .join(' ')
+}
+
+/**
+ * Group 1 COTS stand-in when the airframe is not in the military seed dossier.
+ * Bands are Estimated ISM/GNSS family defaults (same class as Mavic 3), not a curated signature.
+ */
+function synthesizeCotsSpectrumUas(id: string): Platform {
+  const a3dm = getA3dmDrone(id)
+  const name = a3dm
+    ? a3dm.sub_category && a3dm.sub_category !== 'Standard'
+      ? `${a3dm.manufacturer} ${a3dm.name} (${a3dm.sub_category})`
+      : `${a3dm.manufacturer} ${a3dm.name}`
+    : humanizeCotsId(id)
+  const stub: Platform = {
+    id,
+    name,
+    side: 'red',
+    group: 1,
+    origin: a3dm?.manufacturer ? `${a3dm.manufacturer} (A3DM COTS)` : 'COTS (estimated family)',
+    category: 'COTS',
+    role: 'ISR / adapted munition carrier',
+    confidence: 'estimated',
+    gnss_dependency: 'high',
+    gnss_used: ['GPS', 'GLONASS', 'Galileo', 'BeiDou'],
+    c2_uplink_mhz: 2450,
+    video_mhz: 5800,
+    control_link_freq: '2.4 / 5.8 GHz ISM (estimated COTS family)',
+    defeat_note:
+      'Estimated Group 1–2 COTS — RF jam 2.4/5.8 GHz C2 + video; GNSS spoof forces land or RTH. Same class as Mavic 3 family.',
+    intel_note:
+      'A3DM / COTS sheet airframe with no military seed dossier. Spectrum bands are Estimated ISM/GNSS family defaults for training — not a curated per-airframe signature. Finish Pk is the catalog training default, not accredited Pk.',
+    capabilities: [],
+  }
+  return {
+    ...stub,
+    capabilities: resolveCapabilities(stub),
+  }
+}
+
 /** Resolve a Map Intel UAS id to a spectrum Platform (Red threat) with capabilities. */
 export function resolveSpectrumUas(id: string): Platform | null {
   const normalized = normalizePlatformId(id)
   const seed = PLATFORMS.find((p) => p.id === normalized || p.id === id)
-  if (!seed) return null
-
-  const curated = capsByPlatform.get(seed.id) ?? []
-  const platform: Platform = {
-    ...seed,
-    side: 'red',
-    capabilities:
-      curated.length > 0 ? curated : resolveCapabilities({ ...seed, capabilities: [] }),
+  if (seed) {
+    const curated = capsByPlatform.get(seed.id) ?? []
+    const platform: Platform = {
+      ...seed,
+      side: 'red',
+      capabilities:
+        curated.length > 0 ? curated : resolveCapabilities({ ...seed, capabilities: [] }),
+    }
+    return platform
   }
-  return platform
+
+  if (
+    isA3dmPlatformId(id) ||
+    isA3dmPlatformId(normalized) ||
+    isCotsMapId(id) ||
+    isCotsMapId(normalized)
+  ) {
+    return synthesizeCotsSpectrumUas(id)
+  }
+  return null
 }
 
 /** Synthetic Blue effector platform from a placed C-UAS asset. */

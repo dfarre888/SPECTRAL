@@ -67,7 +67,7 @@ export function BandTileFullscreenModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex flex-col bg-[#0A0A0F]"
+      className="fixed inset-0 z-[100] flex flex-col bg-[var(--store-bg)]"
       role="dialog"
       aria-modal="true"
       aria-label={`${tile.band} band detail`}

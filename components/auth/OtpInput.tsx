@@ -86,7 +86,7 @@ export function OtpInput({ onComplete, loading = false, error = false }: OtpInpu
         ))}
       </div>
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#0A0A0F]/60 rounded-xl">
+        <div className="absolute inset-0 flex items-center justify-center bg-[var(--store-bg)]/60 rounded-xl">
           <Loader2 className="w-5 h-5 animate-spin text-[var(--store-accent)]" />
         </div>
       )}

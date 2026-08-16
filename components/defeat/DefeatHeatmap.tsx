@@ -223,7 +223,7 @@ export function DefeatHeatmap({
           <tbody>
             {filteredSystems.map((system) => (
               <tr key={system.id}>
-                <td className="sticky left-0 z-20 bg-[#0A0A0F] border border-white/5 px-3 py-2 max-w-[180px]">
+                <td className="sticky left-0 z-20 bg-[var(--store-bg)] border border-white/5 px-3 py-2 max-w-[180px]">
                   <span className="text-xs text-slate-200 truncate block">{system.name}</span>
                 </td>
                 {platforms.map((platform) => {

@@ -1,0 +1,1002 @@
+[
+  {
+    "id": "MFR-001",
+    "name": "DJI",
+    "country": "China",
+    "type": "Drone+Payload",
+    "website": "dji.com",
+    "notes": "World's largest drone OEM"
+  },
+  {
+    "id": "MFR-002",
+    "name": "Autel Robotics",
+    "country": "China/USA",
+    "type": "Drone+Payload",
+    "website": "autelrobotics.com",
+    "notes": "Consumer + enterprise"
+  },
+  {
+    "id": "MFR-003",
+    "name": "Skydio",
+    "country": "USA",
+    "type": "Drone+Payload",
+    "website": "skydio.com",
+    "notes": "Autonomous AI drones; NDAA"
+  },
+  {
+    "id": "MFR-004",
+    "name": "Parrot",
+    "country": "France",
+    "type": "Drone+Payload",
+    "website": "parrot.com",
+    "notes": "Anafi platform; Blue UAS"
+  },
+  {
+    "id": "MFR-005",
+    "name": "Yuneec",
+    "country": "China/Germany",
+    "type": "Drone+Payload",
+    "website": "yuneec.com",
+    "notes": "Typhoon/H520/H850"
+  },
+  {
+    "id": "MFR-006",
+    "name": "Wingtra",
+    "country": "Switzerland",
+    "type": "Drone+Payload",
+    "website": "wingtra.com",
+    "notes": "VTOL mapping"
+  },
+  {
+    "id": "MFR-007",
+    "name": "senseFly (AgEagle)",
+    "country": "Switzerland/USA",
+    "type": "Drone+Payload",
+    "website": "ageagle.com",
+    "notes": "eBee fixed-wing"
+  },
+  {
+    "id": "MFR-008",
+    "name": "Quantum Systems",
+    "country": "Germany",
+    "type": "Drone+Payload",
+    "website": "quantum-systems.com",
+    "notes": "Trinity / Vector VTOL"
+  },
+  {
+    "id": "MFR-009",
+    "name": "Carbonix",
+    "country": "Australia",
+    "type": "Drone",
+    "website": "carbonix.com.au",
+    "notes": "AU VTOL fixed-wing"
+  },
+  {
+    "id": "MFR-010",
+    "name": "JOUAV",
+    "country": "China",
+    "type": "Drone+Payload",
+    "website": "jouav.com",
+    "notes": "CW-series VTOL"
+  },
+  {
+    "id": "MFR-011",
+    "name": "Delair",
+    "country": "France",
+    "type": "Drone+Payload",
+    "website": "delair.aero",
+    "notes": "Fixed-wing BVLOS"
+  },
+  {
+    "id": "MFR-012",
+    "name": "Microdrones",
+    "country": "Germany/Canada",
+    "type": "Drone+Payload",
+    "website": "microdrones.com",
+    "notes": "md4 family"
+  },
+  {
+    "id": "MFR-013",
+    "name": "AeroVironment",
+    "country": "USA",
+    "type": "Drone+Payload",
+    "website": "avinc.com",
+    "notes": "Quantix / Puma / Raven"
+  },
+  {
+    "id": "MFR-014",
+    "name": "Censys Technologies",
+    "country": "USA",
+    "type": "Drone+Payload",
+    "website": "censystech.com",
+    "notes": "Sentaero BVLOS"
+  },
+  {
+    "id": "MFR-015",
+    "name": "Event 38",
+    "country": "USA",
+    "type": "Drone+Payload",
+    "website": "event38.com",
+    "notes": "E-series mapping"
+  },
+  {
+    "id": "MFR-016",
+    "name": "Freefly Systems",
+    "country": "USA",
+    "type": "Drone+Payload",
+    "website": "freeflysystems.com",
+    "notes": "Alta X heavy-lift; NDAA"
+  },
+  {
+    "id": "MFR-017",
+    "name": "Inspired Flight",
+    "country": "USA",
+    "type": "Drone",
+    "website": "inspiredflight.com",
+    "notes": "IF800/IF1200 NDAA"
+  },
+  {
+    "id": "MFR-018",
+    "name": "Watts Innovations",
+    "country": "USA",
+    "type": "Drone",
+    "website": "wattsinnovations.com",
+    "notes": "PRISM Sky/Air"
+  },
+  {
+    "id": "MFR-019",
+    "name": "Acecore Technologies",
+    "country": "Netherlands",
+    "type": "Drone",
+    "website": "acecoretechnologies.com",
+    "notes": "Zoe/Neo/Noa"
+  },
+  {
+    "id": "MFR-020",
+    "name": "Harris Aerial",
+    "country": "USA",
+    "type": "Drone",
+    "website": "harrisaerial.com",
+    "notes": "Carrier hexacopters"
+  },
+  {
+    "id": "MFR-021",
+    "name": "XAG",
+    "country": "China",
+    "type": "Drone+Payload",
+    "website": "xa.com",
+    "notes": "Agricultural drones"
+  },
+  {
+    "id": "MFR-022",
+    "name": "Hylio",
+    "country": "USA",
+    "type": "Drone",
+    "website": "hyl.io",
+    "notes": "AG-series sprayers"
+  },
+  {
+    "id": "MFR-023",
+    "name": "ZenaDrone",
+    "country": "USA",
+    "type": "Drone",
+    "website": "zenadrone.com",
+    "notes": "Heavy-lift octocopter"
+  },
+  {
+    "id": "MFR-024",
+    "name": "Aerosonde (Textron)",
+    "country": "Australia/USA",
+    "type": "Drone",
+    "website": "textronsystems.com",
+    "notes": "Long-endurance ISR"
+  },
+  {
+    "id": "MFR-025",
+    "name": "V-TOL Aerospace",
+    "country": "Australia",
+    "type": "Drone",
+    "website": "v-tol.com",
+    "notes": "AU VTOL platforms"
+  },
+  {
+    "id": "MFR-026",
+    "name": "Insitu (Boeing)",
+    "country": "USA/Australia",
+    "type": "Drone+Payload",
+    "website": "insitu.com",
+    "notes": "ScanEagle/Integrator"
+  },
+  {
+    "id": "MFR-027",
+    "name": "General Atomics",
+    "country": "USA",
+    "type": "Drone+Payload",
+    "website": "ga-asi.com",
+    "notes": "MQ-9B SkyGuardian"
+  },
+  {
+    "id": "MFR-028",
+    "name": "Aeronautics",
+    "country": "Israel",
+    "type": "Drone+Payload",
+    "website": "aeronautics-sys.com",
+    "notes": "Orbiter series"
+  },
+  {
+    "id": "MFR-029",
+    "name": "Elbit Systems",
+    "country": "Israel",
+    "type": "Drone",
+    "website": "elbitsystems.com",
+    "notes": "Skylark/Hermes"
+  },
+  {
+    "id": "MFR-030",
+    "name": "IAI",
+    "country": "Israel",
+    "type": "Drone",
+    "website": "iai.co.il",
+    "notes": "Heron/Bird-Eye/Panther"
+  },
+  {
+    "id": "MFR-031",
+    "name": "BlueBird Aero Systems",
+    "country": "Israel",
+    "type": "Drone",
+    "website": "bluebird-uav.com",
+    "notes": "SpyLite/ThunderB"
+  },
+  {
+    "id": "MFR-032",
+    "name": "XTEND Systems",
+    "country": "Israel",
+    "type": "Drone",
+    "website": "xtend.us",
+    "notes": "Wolverine/Skylord"
+  },
+  {
+    "id": "MFR-033",
+    "name": "Robotican",
+    "country": "Israel",
+    "type": "Drone",
+    "website": "robotican.net",
+    "notes": "Goshawk/Rooster"
+  },
+  {
+    "id": "MFR-034",
+    "name": "Steadicopter",
+    "country": "Israel",
+    "type": "Drone",
+    "website": "steadicopter.com",
+    "notes": "Black Eagle helicopter UAV"
+  },
+  {
+    "id": "MFR-035",
+    "name": "Easy Aerial",
+    "country": "USA/Israel",
+    "type": "Drone",
+    "website": "easyaerial.com",
+    "notes": "Tethered + autonomous"
+  },
+  {
+    "id": "MFR-036",
+    "name": "Vantage Robotics",
+    "country": "USA",
+    "type": "Drone",
+    "website": "vantagerobotics.com",
+    "notes": "Vesper/Trace"
+  },
+  {
+    "id": "MFR-037",
+    "name": "Teal Drones (Red Cat)",
+    "country": "USA",
+    "type": "Drone",
+    "website": "tealdrones.com",
+    "notes": "Teal 2 / Black Widow"
+  },
+  {
+    "id": "MFR-038",
+    "name": "Brinc Drones",
+    "country": "USA",
+    "type": "Drone",
+    "website": "brincdrones.com",
+    "notes": "LEMUR public safety"
+  },
+  {
+    "id": "MFR-039",
+    "name": "Skyfish",
+    "country": "USA",
+    "type": "Drone+Payload",
+    "website": "skyfish.com",
+    "notes": "M-series mapping"
+  },
+  {
+    "id": "MFR-040",
+    "name": "Sky-Hero",
+    "country": "Belgium",
+    "type": "Drone",
+    "website": "sky-hero.com",
+    "notes": "Loki tactical"
+  },
+  {
+    "id": "MFR-041",
+    "name": "Shield AI",
+    "country": "USA",
+    "type": "Drone",
+    "website": "shield.ai",
+    "notes": "V-BAT / Nova"
+  },
+  {
+    "id": "MFR-042",
+    "name": "AscentAeroSystems",
+    "country": "USA",
+    "type": "Drone",
+    "website": "ascentaerosystems.com",
+    "notes": "Coaxial Spirit/NX"
+  },
+  {
+    "id": "MFR-043",
+    "name": "Anduril",
+    "country": "USA",
+    "type": "Drone",
+    "website": "anduril.com",
+    "notes": "Ghost/Anvil"
+  },
+  {
+    "id": "MFR-044",
+    "name": "ModalAI",
+    "country": "USA",
+    "type": "Drone",
+    "website": "modalai.com",
+    "notes": "Starling/VOXL"
+  },
+  {
+    "id": "MFR-045",
+    "name": "ALTI Unmanned",
+    "country": "South Africa",
+    "type": "Drone",
+    "website": "altiuas.com",
+    "notes": "Transition VTOL"
+  },
+  {
+    "id": "MFR-046",
+    "name": "Threod Systems",
+    "country": "Estonia",
+    "type": "Drone",
+    "website": "threod.com",
+    "notes": "EOS/Stream C/Titan"
+  },
+  {
+    "id": "MFR-047",
+    "name": "Wingcopter",
+    "country": "Germany",
+    "type": "Drone",
+    "website": "wingcopter.com",
+    "notes": "Delivery VTOL"
+  },
+  {
+    "id": "MFR-048",
+    "name": "A2Z Drone Delivery",
+    "country": "USA",
+    "type": "Drone",
+    "website": "a2zdronedelivery.com",
+    "notes": "RDS-series"
+  },
+  {
+    "id": "MFR-049",
+    "name": "Matternet",
+    "country": "USA/Switzerland",
+    "type": "Drone",
+    "website": "mttr.net",
+    "notes": "M2 delivery"
+  },
+  {
+    "id": "MFR-050",
+    "name": "Foxtech",
+    "country": "China",
+    "type": "Drone+Payload",
+    "website": "foxtechfpv.com",
+    "notes": "Loong/GAIA"
+  },
+  {
+    "id": "MFR-051",
+    "name": "Hubsan",
+    "country": "China",
+    "type": "Drone",
+    "website": "hubsan.com",
+    "notes": "Zino consumer"
+  },
+  {
+    "id": "MFR-052",
+    "name": "Tarot Group",
+    "country": "China",
+    "type": "Drone",
+    "website": "tarotrc.com",
+    "notes": "Frame/UAV kits"
+  },
+  {
+    "id": "MFR-053",
+    "name": "Walkera",
+    "country": "China",
+    "type": "Drone",
+    "website": "walkera.com",
+    "notes": "Consumer FPV"
+  },
+  {
+    "id": "MFR-054",
+    "name": "Yangda",
+    "country": "China",
+    "type": "Drone",
+    "website": "yangda.com",
+    "notes": "Industrial UAVs"
+  },
+  {
+    "id": "MFR-055",
+    "name": "ACSL",
+    "country": "Japan",
+    "type": "Drone",
+    "website": "acsl.co.jp",
+    "notes": "SOTEN/PD6"
+  },
+  {
+    "id": "MFR-056",
+    "name": "Prodrone",
+    "country": "Japan",
+    "type": "Drone",
+    "website": "prodrone.com",
+    "notes": "PD-series"
+  },
+  {
+    "id": "MFR-057",
+    "name": "Yamaha",
+    "country": "Japan",
+    "type": "Drone",
+    "website": "yamahamotorsports.com",
+    "notes": "FAZER R agriculture"
+  },
+  {
+    "id": "MFR-058",
+    "name": "Doosan Mobility Innovation",
+    "country": "South Korea",
+    "type": "Drone",
+    "website": "doosanmobility.com",
+    "notes": "Hydrogen DS30"
+  },
+  {
+    "id": "MFR-059",
+    "name": "Garuda Aerospace",
+    "country": "India",
+    "type": "Drone",
+    "website": "garudaaerospace.com",
+    "notes": "AU/in market"
+  },
+  {
+    "id": "MFR-060",
+    "name": "ideaForge",
+    "country": "India",
+    "type": "Drone",
+    "website": "ideaforgetech.com",
+    "notes": "SWITCH/Q-series"
+  },
+  {
+    "id": "MFR-061",
+    "name": "Asteria Aerospace",
+    "country": "India",
+    "type": "Drone",
+    "website": "asteria.co.in",
+    "notes": "A200/Genesis"
+  },
+  {
+    "id": "MFR-062",
+    "name": "Flyability",
+    "country": "Switzerland",
+    "type": "Drone+Payload",
+    "website": "flyability.com",
+    "notes": "Elios indoor"
+  },
+  {
+    "id": "MFR-063",
+    "name": "Exyn Technologies",
+    "country": "USA",
+    "type": "Drone",
+    "website": "exyn.com",
+    "notes": "ExynAero autonomous"
+  },
+  {
+    "id": "MFR-064",
+    "name": "Sypaq Systems",
+    "country": "Australia",
+    "type": "Drone",
+    "website": "sypaq.com.au",
+    "notes": "Corvo PPDS"
+  },
+  {
+    "id": "MFR-065",
+    "name": "Anzu Robotics",
+    "country": "USA",
+    "type": "Drone",
+    "website": "anzurobotics.com",
+    "notes": "Raptor (NDAA)"
+  },
+  {
+    "id": "MFR-066",
+    "name": "MicaSense",
+    "country": "USA",
+    "type": "Payload",
+    "website": "micasense.com",
+    "notes": "Multispectral; AgEagle subsidiary"
+  },
+  {
+    "id": "MFR-067",
+    "name": "Sentera",
+    "country": "USA",
+    "type": "Payload",
+    "website": "sentera.com",
+    "notes": "Multispectral / RGB"
+  },
+  {
+    "id": "MFR-068",
+    "name": "SlantRange",
+    "country": "USA",
+    "type": "Payload",
+    "website": "slantrange.com",
+    "notes": "Agriculture multispec"
+  },
+  {
+    "id": "MFR-069",
+    "name": "AgEagle Sensors",
+    "country": "USA",
+    "type": "Payload",
+    "website": "ageagle.com",
+    "notes": "Owns MicaSense"
+  },
+  {
+    "id": "MFR-070",
+    "name": "YellowScan",
+    "country": "France",
+    "type": "Payload",
+    "website": "yellowscan.com",
+    "notes": "LiDAR systems"
+  },
+  {
+    "id": "MFR-071",
+    "name": "Phoenix LiDAR Systems",
+    "country": "USA",
+    "type": "Payload",
+    "website": "phoenixlidar.com",
+    "notes": "LiDAR systems"
+  },
+  {
+    "id": "MFR-072",
+    "name": "Emesent",
+    "country": "Australia",
+    "type": "Payload",
+    "website": "emesent.com",
+    "notes": "Hovermap autonomous SLAM"
+  },
+  {
+    "id": "MFR-073",
+    "name": "Riegl",
+    "country": "Austria",
+    "type": "Payload",
+    "website": "riegl.com",
+    "notes": "Survey-grade LiDAR"
+  },
+  {
+    "id": "MFR-074",
+    "name": "Velodyne/Ouster",
+    "country": "USA",
+    "type": "Payload",
+    "website": "ouster.com",
+    "notes": "LiDAR pucks/modules"
+  },
+  {
+    "id": "MFR-075",
+    "name": "LidarUSA",
+    "country": "USA",
+    "type": "Payload",
+    "website": "lidarusa.com",
+    "notes": "Snoopy series"
+  },
+  {
+    "id": "MFR-076",
+    "name": "GeoCue",
+    "country": "USA",
+    "type": "Payload",
+    "website": "geocue.com",
+    "notes": "TrueView LiDAR"
+  },
+  {
+    "id": "MFR-077",
+    "name": "Routescene",
+    "country": "UK",
+    "type": "Payload",
+    "website": "routescene.com",
+    "notes": "LidarPod"
+  },
+  {
+    "id": "MFR-078",
+    "name": "Phase One",
+    "country": "Denmark",
+    "type": "Payload",
+    "website": "phaseone.com",
+    "notes": "Medium-format cameras"
+  },
+  {
+    "id": "MFR-079",
+    "name": "Sony",
+    "country": "Japan",
+    "type": "Payload",
+    "website": "sony.com",
+    "notes": "Cameras for UAV mapping"
+  },
+  {
+    "id": "MFR-080",
+    "name": "Share UAV",
+    "country": "China",
+    "type": "Payload",
+    "website": "share-3d.com",
+    "notes": "Oblique mapping payloads"
+  },
+  {
+    "id": "MFR-081",
+    "name": "TetraCam",
+    "country": "USA",
+    "type": "Payload",
+    "website": "tetracam.com",
+    "notes": "Multispectral"
+  },
+  {
+    "id": "MFR-082",
+    "name": "Workswell",
+    "country": "Czech Republic",
+    "type": "Payload",
+    "website": "workswell.eu",
+    "notes": "Thermal Wiris"
+  },
+  {
+    "id": "MFR-083",
+    "name": "FLIR / Teledyne",
+    "country": "USA",
+    "type": "Payload",
+    "website": "flir.com",
+    "notes": "Thermal cores + modules"
+  },
+  {
+    "id": "MFR-084",
+    "name": "Hexagon (Leica)",
+    "country": "Sweden",
+    "type": "Drone+Payload",
+    "website": "leica-geosystems.com",
+    "notes": "BLK2FLY"
+  },
+  {
+    "id": "MFR-085",
+    "name": "Sierra-Olympia",
+    "country": "USA",
+    "type": "Payload",
+    "website": "sierraolympia.com",
+    "notes": "Thermal/OGI"
+  },
+  {
+    "id": "MFR-086",
+    "name": "Headwall Photonics",
+    "country": "USA",
+    "type": "Payload",
+    "website": "headwallphotonics.com",
+    "notes": "Hyperspectral"
+  },
+  {
+    "id": "MFR-087",
+    "name": "Cubert",
+    "country": "Germany",
+    "type": "Payload",
+    "website": "cubert-hyperspectral.com",
+    "notes": "Hyperspectral"
+  },
+  {
+    "id": "MFR-088",
+    "name": "Resonon",
+    "country": "USA",
+    "type": "Payload",
+    "website": "resonon.com",
+    "notes": "Hyperspectral"
+  },
+  {
+    "id": "MFR-089",
+    "name": "BaySpec",
+    "country": "USA",
+    "type": "Payload",
+    "website": "bayspec.com",
+    "notes": "Hyperspectral"
+  },
+  {
+    "id": "MFR-090",
+    "name": "SeekOps",
+    "country": "USA",
+    "type": "Payload",
+    "website": "seekops.com",
+    "notes": "Methane sensors"
+  },
+  {
+    "id": "MFR-091",
+    "name": "Pergam",
+    "country": "Germany/USA",
+    "type": "Payload",
+    "website": "pergamusa.com",
+    "notes": "Methane laser"
+  },
+  {
+    "id": "MFR-092",
+    "name": "Sniffer4D",
+    "country": "China",
+    "type": "Payload",
+    "website": "sniffer4d.com",
+    "notes": "Multi-gas detector"
+  },
+  {
+    "id": "MFR-093",
+    "name": "Geometrics",
+    "country": "USA",
+    "type": "Payload",
+    "website": "geometrics.com",
+    "notes": "MagArrow magnetometer"
+  },
+  {
+    "id": "MFR-094",
+    "name": "Sensys",
+    "country": "Germany",
+    "type": "Payload",
+    "website": "sensysmagnetometer.com",
+    "notes": "MagDrone"
+  },
+  {
+    "id": "MFR-095",
+    "name": "Echodyne",
+    "country": "USA",
+    "type": "Payload",
+    "website": "echodyne.com",
+    "notes": "DAA radar"
+  },
+  {
+    "id": "MFR-096",
+    "name": "ParaZero",
+    "country": "Israel/USA",
+    "type": "Safety",
+    "website": "parazero.com",
+    "notes": "SafeAir parachutes"
+  },
+  {
+    "id": "MFR-097",
+    "name": "AVSS",
+    "country": "Canada",
+    "type": "Safety",
+    "website": "avss.co",
+    "notes": "PRS parachutes + FTS"
+  },
+  {
+    "id": "MFR-098",
+    "name": "Indemnis",
+    "country": "USA",
+    "type": "Safety",
+    "website": "indemnis.com",
+    "notes": "Nexus ballistic"
+  },
+  {
+    "id": "MFR-099",
+    "name": "Drone Rescue Systems",
+    "country": "Austria",
+    "type": "Safety",
+    "website": "dronerescue.com",
+    "notes": "DRS parachutes"
+  },
+  {
+    "id": "MFR-100",
+    "name": "Galaxy GRS",
+    "country": "Czech Republic",
+    "type": "Safety",
+    "website": "galaxysky.cz",
+    "notes": "GBS ballistic"
+  },
+  {
+    "id": "MFR-101",
+    "name": "Mars Parachutes",
+    "country": "USA",
+    "type": "Safety",
+    "website": "marsparachutes.com",
+    "notes": "Drone parachute kits"
+  },
+  {
+    "id": "MFR-102",
+    "name": "Skycat",
+    "country": "Czech Republic",
+    "type": "Safety",
+    "website": "skycat.pro",
+    "notes": "X-series launchers"
+  },
+  {
+    "id": "MFR-103",
+    "name": "Fruity Chutes",
+    "country": "USA",
+    "type": "Safety",
+    "website": "fruitychutes.com",
+    "notes": "Iris Ultra / Peregrine"
+  },
+  {
+    "id": "MFR-104",
+    "name": "Opale Parachutes",
+    "country": "France",
+    "type": "Safety",
+    "website": "opale-parachutes.com",
+    "notes": "Crossfly / Rescue"
+  },
+  {
+    "id": "MFR-105",
+    "name": "UAVOS",
+    "country": "Switzerland",
+    "type": "Safety",
+    "website": "uavos.com",
+    "notes": "FTS modules"
+  },
+  {
+    "id": "MFR-106",
+    "name": "Dronavia",
+    "country": "France",
+    "type": "Safety",
+    "website": "dronavia.com",
+    "notes": "EU FTS / compliance"
+  },
+  {
+    "id": "MFR-107",
+    "name": "uAvionix",
+    "country": "USA",
+    "type": "Safety/Accessory",
+    "website": "uavionix.com",
+    "notes": "ADS-B + Remote ID"
+  },
+  {
+    "id": "MFR-108",
+    "name": "Dronetag",
+    "country": "Czech Republic",
+    "type": "Safety",
+    "website": "dronetag.com",
+    "notes": "Remote ID modules"
+  },
+  {
+    "id": "MFR-109",
+    "name": "Aerobits",
+    "country": "Poland",
+    "type": "Safety/Accessory",
+    "website": "aerobits.pl",
+    "notes": "ADS-B + RID"
+  },
+  {
+    "id": "MFR-110",
+    "name": "CZI",
+    "country": "China",
+    "type": "Accessory",
+    "website": "czidrone.com",
+    "notes": "Speakers/spotlights/droppers"
+  },
+  {
+    "id": "MFR-111",
+    "name": "JZ Drones",
+    "country": "China",
+    "type": "Accessory",
+    "website": "jzdrones.com",
+    "notes": "Spotlight/speaker combos"
+  },
+  {
+    "id": "MFR-112",
+    "name": "Firehouse Technology",
+    "country": "USA",
+    "type": "Accessory",
+    "website": "firehousetechnology.com",
+    "notes": "ARC strobes"
+  },
+  {
+    "id": "MFR-113",
+    "name": "Lume Cube",
+    "country": "USA",
+    "type": "Accessory",
+    "website": "lumecube.com",
+    "notes": "Drone strobes"
+  },
+  {
+    "id": "MFR-114",
+    "name": "Drone Sky Hook",
+    "country": "USA",
+    "type": "Accessory",
+    "website": "droneskyhook.com",
+    "notes": "Payload release"
+  },
+  {
+    "id": "MFR-115",
+    "name": "Drone Amplified",
+    "country": "USA",
+    "type": "Accessory",
+    "website": "droneamplified.com",
+    "notes": "IGNIS aerial ignition"
+  },
+  {
+    "id": "MFR-116",
+    "name": "Emlid",
+    "country": "Hong Kong/Russia",
+    "type": "Accessory",
+    "website": "emlid.com",
+    "notes": "Reach RTK modules"
+  },
+  {
+    "id": "MFR-117",
+    "name": "Topcon",
+    "country": "Japan",
+    "type": "Accessory",
+    "website": "topconpositioning.com",
+    "notes": "Survey RTK"
+  },
+  {
+    "id": "MFR-118",
+    "name": "Trimble",
+    "country": "USA",
+    "type": "Accessory",
+    "website": "trimble.com",
+    "notes": "Applanix APX RTK"
+  },
+  {
+    "id": "MFR-119",
+    "name": "NovAtel",
+    "country": "Canada",
+    "type": "Accessory",
+    "website": "novatel.com",
+    "notes": "OEM7 / SPAN"
+  },
+  {
+    "id": "MFR-120",
+    "name": "Elistair",
+    "country": "France",
+    "type": "Accessory",
+    "website": "elistair.com",
+    "notes": "Tethering"
+  },
+  {
+    "id": "MFR-121",
+    "name": "Hoverfly",
+    "country": "USA",
+    "type": "Accessory",
+    "website": "hoverflytech.com",
+    "notes": "Sentry/Spectre tether"
+  },
+  {
+    "id": "MFR-122",
+    "name": "Drone Aviation",
+    "country": "USA",
+    "type": "Accessory",
+    "website": "droneaviationcorp.com",
+    "notes": "WATT tether"
+  },
+  {
+    "id": "MFR-123",
+    "name": "Volarious",
+    "country": "USA/Singapore",
+    "type": "Accessory",
+    "website": "volarious.com",
+    "notes": "V-Line tether"
+  },
+  {
+    "id": "MFR-124",
+    "name": "Neros Technologies",
+    "country": "USA",
+    "type": "Drone",
+    "website": "neros.com",
+    "notes": "FPV strike; first FPV on Blue UAS"
+  },
+  {
+    "id": "MFR-125",
+    "name": "AIRINS",
+    "country": "France/USA",
+    "type": "Payload",
+    "website": "airins.com",
+    "notes": "Methane / gas detection payloads"
+  }
+]

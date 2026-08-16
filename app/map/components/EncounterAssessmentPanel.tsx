@@ -97,7 +97,7 @@ export function EncounterAssessmentPanel({
   const platformWarheads = getWarheadsForPlatform(uas.asset.id)
 
   return (
-    <div className="shrink-0 rounded-xl store-panel border border-[var(--store-line)] shadow-xl w-full overflow-hidden">
+    <div className="map-material-float shrink-0 rounded-xl w-full overflow-hidden">
       <div className="px-3 py-2 border-b border-[var(--store-line)] bg-[var(--store-surface-2)]">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0">

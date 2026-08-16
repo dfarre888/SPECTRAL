@@ -32,11 +32,13 @@ import { writeLaydownSession } from '@/lib/map/laydown-session'
 import { writeDashboardSelectedAssetId } from '@/lib/dashboard/laydown-bridge'
 import { useBattlespacePlan } from '@/app/map/hooks/useBattlespacePlan'
 import { PlannerToolbar } from '@/components/planner/PlannerToolbar'
+import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { PlanLoadDialog } from '@/components/planner/PlanLoadDialog'
 import toast from 'react-hot-toast'
 import { IadsStackPanel } from '@/app/map/components/IadsStackPanel'
 import { getVignette, vignetteToLaydown } from '@/lib/planner/vignettes'
 import { hydrateLaydown } from '@/lib/planner/battlespace-plan'
+import { readForcePackage, clearForcePackage } from '@/lib/force/package-session'
 import { haversineM } from '@/lib/propagation/geo'
 import {
   buildLaydownEvaluation,
@@ -45,9 +47,11 @@ import {
   catalogRadars,
   isSameLaydownItem,
   listPlacedLaydownItems,
+  uasCommanderCompare,
   type EvaluatedItem,
   type SelectedLaydownItem,
 } from '@/lib/map/laydown-evaluation'
+import { formatEffectorDisplayName, formatRadarDisplayName } from '@/lib/map/catalog-display-name'
 import { getSpectraMapAssets, toMapEffectorAsset, toMapRadarAsset } from '@/lib/map/spectra-assets'
 import { buildThreatAssessments } from '@/lib/map/threat-assessment'
 import { resolveAssetPlacement } from '@/lib/map/counter-system-registry'
@@ -55,6 +59,7 @@ import { envelopeDiscAltitudeM } from '@/lib/map/range-declaration'
 import type { TerrainHeightUpdate } from '@/lib/map/terrain'
 import { cn } from '@/lib/utils'
 import { GlobeSkeleton } from '@/components/ui/loading-skeleton'
+import { ensureCotsMapAssets } from '@/lib/map/ensure-cots-assets'
 import type { MapAssetsPayload, CursorPosition, PlacementMode, PlacedCuas, PlacedEffector, PlacedRadar, PlacedUas, MapCuasAsset, MapEffectorAsset, MapRadarAsset, MapUasAsset } from '@/lib/map/types'
 import type { RcsFacets } from '@/lib/spectral/detectionPhysicsConstants'
 
@@ -85,7 +90,7 @@ const MapBottomBar = dynamic(
 )
 
 function mapToolbarBtn(active: boolean, accent: 'orange' | 'cyan'): string {
-  const base = 'px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border shadow-md transition-colors'
+  const base = 'map-press px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border shadow-md'
   if (active) {
     return accent === 'orange'
       ? `${base} bg-[#F97316] border-[#F97316] text-[#0A0A0F]`
@@ -100,7 +105,7 @@ interface MapIntelViewProps {
 
 export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const searchParams = useSearchParams()
-  const [assets] = useState(initialAssets)
+  const [assets] = useState(() => ensureCotsMapAssets(initialAssets))
   const [placedUas, setPlacedUas] = useState<PlacedUas[]>([])
   const [rcsOverrides, setRcsOverrides] = useState<Record<string, RcsFacets>>({})
   const [placedCuas, setPlacedCuas] = useState<PlacedCuas[]>([])
@@ -113,6 +118,11 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const [stagingBanner, setStagingBanner] = useState<{
     stagedCount: number
     matchedCount: number
+  } | null>(null)
+  const [forceBanner, setForceBanner] = useState<{
+    theatre: string
+    placed: number
+    unmatched: number
   } | null>(null)
   const [highlightedIds, setHighlightedIds] = useState<string[]>([])
   const [terrainEpoch, setTerrainEpoch] = useState(0)
@@ -508,6 +518,11 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     [selectedLaydownItem, laydownState],
   )
 
+  const uasCompareRows = useMemo(
+    () => (placedUas.length > 1 ? uasCommanderCompare(laydownState) : []),
+    [placedUas.length, laydownState],
+  )
+
   const placedLaydownChips = useMemo(() => {
     const nameFor = (item: SelectedLaydownItem) => {
       switch (item.kind) {
@@ -515,10 +530,14 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           return placedUas.find((u) => u.instanceId === item.instanceId)?.asset.name ?? item.instanceId
         case 'cuas':
           return placedCuas.find((c) => c.instanceId === item.instanceId)?.asset.name ?? item.instanceId
-        case 'radar':
-          return placedRadars.find((r) => r.instanceId === item.instanceId)?.asset.name ?? item.instanceId
-        case 'effector':
-          return placedEffectors.find((e) => e.instanceId === item.instanceId)?.asset.name ?? item.instanceId
+        case 'radar': {
+          const radar = placedRadars.find((r) => r.instanceId === item.instanceId)
+          return radar ? formatRadarDisplayName(radar.asset) : item.instanceId
+        }
+        case 'effector': {
+          const effector = placedEffectors.find((e) => e.instanceId === item.instanceId)
+          return effector ? formatEffectorDisplayName(effector.asset) : item.instanceId
+        }
       }
     }
     return listPlacedLaydownItems(laydownState).map((item) => ({
@@ -758,6 +777,38 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     planner.setPlanName(v.name)
   }, [searchParams, assets])
 
+  const forceHandledRef = useRef(false)
+  useEffect(() => {
+    if (forceHandledRef.current) return
+    if (searchParams.get('from') !== 'force') return
+    const theatreId = searchParams.get('forceTheatre')
+    if (!theatreId) return
+    forceHandledRef.current = true
+    const stored = readForcePackage()
+    const ids = stored?.selectedIds ?? []
+    const q = new URLSearchParams({ theatre: theatreId, ids: ids.join(',') })
+    void fetch(`/api/force/package?${q.toString()}`)
+      .then((r) => r.json())
+      .then((json: { laydown?: Parameters<typeof hydrateLaydown>[0]; theatre?: { name: string }; placed?: number; unmatched?: unknown[] }) => {
+        if (!json.laydown) return
+        const hydrated = hydrateLaydown(json.laydown, assets)
+        setPlacedUas(hydrated.placedUas)
+        setPlacedCuas(hydrated.placedCuas)
+        setPlacedRadars(hydrated.placedRadars)
+        setPlacedEffectors(hydrated.placedEffectors)
+        planner.setPlanName(json.theatre?.name ?? 'Force package')
+        setForceBanner({
+          theatre: json.theatre?.name ?? theatreId,
+          placed: json.placed ?? 0,
+          unmatched: json.unmatched?.length ?? 0,
+        })
+        clearForcePackage()
+      })
+      .catch(() => {
+        forceHandledRef.current = false
+      })
+  }, [searchParams, assets])
+
   useEffect(() => {
     const planId = searchParams.get('planId') ?? searchParams.get('plan')
     if (planId) void planner.loadPlan(planId)
@@ -825,7 +876,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   }, [adjudication.analysis, placedUas, placedCuas])
 
   return (
-    <div className="flex h-full w-full overflow-hidden">
+    <div className="map-intel flex h-full w-full overflow-hidden">
       <AssetSidebar
         assets={assets}
         placedUas={placedUas}
@@ -879,39 +930,72 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
       />
 
       <div className="relative flex-1 flex flex-col min-w-0">
-        <PlannerToolbar
-          planName={planner.planName}
-          planId={planner.planId}
-          saving={planner.saving}
-          lastSaved={planner.lastSaved}
-          error={planner.error}
-          onSave={() => void planner.savePlan()}
-          onNew={() => {
-            const hasLaydown =
-              placedUas.length + placedCuas.length + placedRadars.length + placedEffectors.length > 0
-            if (hasLaydown && !window.confirm('Start a new plan? This clears all placed assets.')) return
-            planner.newPlan()
-          }}
-          onLoadClick={() => setLoadPlanOpen(true)}
-          onPublishWopr={() => {
-            void planner
-              .publishWopr()
-              .then((id) => {
-                if (id) window.location.href = `/arena?scenario=${id}`
-                else toast.error('WOPR publish failed — save the plan and try again.')
-              })
-              .catch((e) => toast.error(e instanceof Error ? e.message : 'WOPR publish failed'))
-          }}
-          onPublishPcm={() => {
-            void planner
-              .publishPcm()
-              .then((id) => {
-                if (id) window.location.href = `/pcm/exercise/${id}`
-                else toast.error('PCM publish failed — save the plan and try again.')
-              })
-              .catch((e) => toast.error(e instanceof Error ? e.message : 'PCM publish failed'))
-          }}
-        />
+        <div className="shrink-0 border-b border-[var(--store-line)] bg-[var(--store-surface)]">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <PlannerToolbar
+              planName={planner.planName}
+              planId={planner.planId}
+              saving={planner.saving}
+              lastSaved={planner.lastSaved}
+              error={planner.error}
+              onSave={() => void planner.savePlan()}
+              onNew={() => {
+                const hasLaydown =
+                  placedUas.length + placedCuas.length + placedRadars.length + placedEffectors.length > 0
+                if (hasLaydown && !window.confirm('Start a new plan? This clears all placed assets.')) return
+                planner.newPlan()
+              }}
+              onLoadClick={() => setLoadPlanOpen(true)}
+              onPublishWopr={() => {
+                void planner
+                  .publishWopr()
+                  .then((id) => {
+                    if (id) window.location.href = `/arena?scenario=${id}`
+                    else toast.error('WOPR publish failed — save the plan and try again.')
+                  })
+                  .catch((e) => toast.error(e instanceof Error ? e.message : 'WOPR publish failed'))
+              }}
+              onPublishPcm={() => {
+                void planner
+                  .publishPcm()
+                  .then((id) => {
+                    if (id) window.location.href = `/pcm/exercise/${id}`
+                    else toast.error('PCM publish failed — save the plan and try again.')
+                  })
+                  .catch((e) => toast.error(e instanceof Error ? e.message : 'PCM publish failed'))
+              }}
+            />
+            <div className="px-2 py-1">
+              <ThemeToggle labeled />
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5 px-2 pb-1.5">
+            <button type="button" onClick={activateBlastRisk} className={mapToolbarBtn(riskMode === 'blast', 'orange')}>Blast</button>
+            <button type="button" onClick={activateJammingRisk} className={mapToolbarBtn(riskMode === 'jamming', 'cyan')}>EW Jam</button>
+            <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'cuas-siting' ? 'none' : 'cuas-siting')) }} className={mapToolbarBtn(mapTool === 'cuas-siting', 'cyan')}>C-UAS Siting</button>
+            <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'ew-deconflict' ? 'none' : 'ew-deconflict')) }} className={mapToolbarBtn(mapTool === 'ew-deconflict', 'cyan')}>EW Deconflict</button>
+            <button type="button" onClick={() => setShowIadsPanel((v) => !v)} className={mapToolbarBtn(showIadsPanel, 'cyan')}>IADS</button>
+            <button
+              type="button"
+              disabled={placedUas.length === 0}
+              onClick={toggleFlightPathEdit}
+              className={mapToolbarBtn(flightPathEditActive, 'orange')}
+              title={placedUas.length === 0 ? 'Place a UAS first' : 'Edit flight paths'}
+            >
+              Edit flight path
+            </button>
+            {riskMode === 'blast' && (
+              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
+                {WARHEAD_DB.map((w) => (<option key={w.weapon_id} value={w.weapon_id}>{w.weapon_name}</option>))}
+              </select>
+            )}
+            {riskMode === 'jamming' && (
+              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
+                {JAMMER_DB.map((j) => (<option key={j.jammer_id} value={j.jammer_id}>{j.jammer_name}</option>))}
+              </select>
+            )}
+          </div>
+        </div>
         <PlanLoadDialog
           open={loadPlanOpen}
           onClose={() => setLoadPlanOpen(false)}
@@ -922,8 +1006,9 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             })
           }}
         />
+        <div className="relative flex-1 min-h-0">
         {showIadsPanel && (
-          <div className="absolute bottom-16 left-3 z-20 w-72 max-h-64 overflow-y-auto rounded-xl border border-[var(--store-line)] bg-[var(--store-bg)]/95 shadow-lg">
+          <div className="map-material-float absolute bottom-16 left-3 z-20 w-72 max-h-64 overflow-y-auto rounded-xl">
             <div className="flex justify-between items-center px-2 py-1 border-b border-[var(--store-line)]">
               <span className="text-[10px] font-mono text-cyan">IADS stacks</span>
               <button type="button" className="store-text-muted text-xs" onClick={() => setShowIadsPanel(false)}>✕</button>
@@ -939,7 +1024,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           </div>
         )}
         {stagingBanner && (
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl store-panel border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3 shadow-lg">
+          <div className="map-material-float absolute top-2 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3">
             <span>
               AeroCopilot staged {stagingBanner.stagedCount} system
               {stagingBanner.stagedCount === 1 ? '' : 's'} — {stagingBanner.matchedCount} matched
@@ -951,6 +1036,25 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
               onClick={dismissStagingBanner}
               className="store-text-muted hover:text-[var(--store-accent)] shrink-0"
               aria-label="Dismiss staging banner"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+        {forceBanner && (
+          <div className="map-material-float absolute top-14 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3">
+            <span>
+              Force package — {forceBanner.theatre}: {forceBanner.placed} envelopes placed
+              {forceBanner.unmatched > 0
+                ? ` · ${forceBanner.unmatched} ORBAT types have no map model (Estimated, listed only)`
+                : ''}
+              . Continue in Arena / PCM for the work-up, not a campaign auto-play.
+            </span>
+            <button
+              type="button"
+              onClick={() => setForceBanner(null)}
+              className="store-text-muted hover:text-[var(--store-accent)] shrink-0"
+              aria-label="Dismiss force package banner"
             >
               ✕
             </button>
@@ -969,44 +1073,14 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
               : placementMode.kind === 'loiter'
               ? 'Place Loiter — click globe for loiter point · Esc to cancel'
               : placementMode.kind === 'radar'
-                ? `Placing radar ${placementMode.asset.name} · click terrain · Esc to cancel`
+                ? `Placing radar ${formatRadarDisplayName(placementMode.asset)} · click terrain · Esc to cancel`
                 : placementMode.kind === 'effector'
-                  ? `Placing ${placementMode.asset.tierLabel} ${placementMode.asset.name} · click terrain · Esc to cancel`
+                  ? `Placing ${placementMode.asset.tierLabel} ${formatEffectorDisplayName(placementMode.asset)} · click terrain · Esc to cancel`
                   : placementMode.kind === 'uas'
                     ? `Placing ${placementMode.asset.name} · click terrain · Esc to cancel`
                     : `Placing ${placementMode.asset.name} · click terrain · Esc to cancel`}
           </div>
         )}
-
-        <div className="relative flex-1 min-h-0">
-
-          <div className="absolute top-2 right-3 z-20 flex flex-wrap items-center gap-1.5 max-w-[calc(100%-1rem)] justify-end pointer-events-auto">
-            <button type="button" onClick={activateBlastRisk} className={mapToolbarBtn(riskMode === 'blast', 'orange')}>Blast</button>
-            <button type="button" onClick={activateJammingRisk} className={mapToolbarBtn(riskMode === 'jamming', 'cyan')}>EW Jam</button>
-            <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'cuas-siting' ? 'none' : 'cuas-siting')) }} className={mapToolbarBtn(mapTool === 'cuas-siting', 'cyan')}>C-UAS Siting</button>
-            <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'ew-deconflict' ? 'none' : 'ew-deconflict')) }} className={mapToolbarBtn(mapTool === 'ew-deconflict', 'cyan')}>EW Deconflict</button>
-            <button type="button" onClick={() => setShowIadsPanel((v) => !v)} className={mapToolbarBtn(showIadsPanel, 'cyan')}>IADS</button>
-            <button
-              type="button"
-              disabled={placedUas.length === 0}
-              onClick={toggleFlightPathEdit}
-              className={mapToolbarBtn(flightPathEditActive, 'orange')}
-              title={placedUas.length === 0 ? 'Place a UAS first' : 'Edit flight paths'}
-            >
-              Edit flight path
-            </button>
-
-            {riskMode === 'blast' && (
-              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] shadow-md px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
-                {WARHEAD_DB.map((w) => (<option key={w.weapon_id} value={w.weapon_id}>{w.weapon_name}</option>))}
-              </select>
-            )}
-            {riskMode === 'jamming' && (
-              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] shadow-md px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
-                {JAMMER_DB.map((j) => (<option key={j.jammer_id} value={j.jammer_id}>{j.jammer_name}</option>))}
-              </select>
-            )}
-          </div>
 
           <CesiumMapPanel
             placedUas={placedUas}
@@ -1143,6 +1217,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             onSelectItem={handleSelectPlacedItem}
             onEvalItemClick={handleEvaluationItemClick}
             adjudicationSource={adjudication.source}
+            compareRows={uasCompareRows}
           />
 
           {pendingMissionUas && (

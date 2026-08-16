@@ -16,6 +16,7 @@ import type {
   Side,
 } from '@/lib/spectrum/types';
 import { resolveCapabilities } from '@/lib/spectrum/fallback';
+import { a3dmSpectrumPlatforms } from '@/lib/a3dm/to-spectrum';
 import { PLATFORMS } from '@/data/seed-platforms';
 import { CAPABILITIES } from '@/data/seed-capabilities';
 import { CATALOGUE_VARIANTS, SHAHED_VARIANTS } from '@/data/seed-variants';
@@ -32,10 +33,12 @@ function hydrateSeed(): Platform[] {
     arr.push(c);
     capsByPlatform.set(c.platform_id, arr);
   }
-  return PLATFORMS.map((p) => ({
+  const military = PLATFORMS.map((p) => ({
     ...p,
     capabilities: capsByPlatform.get(p.id) ?? [],
   }));
+  const seen = new Set(military.map((p) => p.id));
+  return [...military, ...a3dmSpectrumPlatforms().filter((p) => !seen.has(p.id))];
 }
 
 const SEED = hydrateSeed();

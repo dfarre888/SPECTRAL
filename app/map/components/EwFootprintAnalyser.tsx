@@ -93,8 +93,7 @@ export function EwFootprintAnalyser({
 
   return (
     <div
-      className="absolute bottom-16 left-3 z-30 w-[min(100%,20rem)] rounded-xl border shadow-xl pointer-events-auto"
-      style={{ background: '#0A0A0F', borderColor: 'var(--store-line)' }}
+      className="map-material-float absolute bottom-16 left-3 z-30 w-[min(100%,20rem)] rounded-xl pointer-events-auto"
     >
       <div className="p-3 space-y-3 text-[11px] store-text-body">
         <div className="flex items-start justify-between gap-2">

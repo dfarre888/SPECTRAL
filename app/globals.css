@@ -28,6 +28,7 @@
   --store-surface:        #0f0f10;
   --store-surface-2:      #161618;
   --store-line:           rgba(255, 255, 255, 0.08);
+  --store-ink:            rgba(244, 244, 245, 0.92);
   --store-ink-soft:       rgba(244, 244, 245, 0.62);
   --store-ink-mute:       rgba(244, 244, 245, 0.38);
   --store-accent:         #f97316;
@@ -37,6 +38,162 @@
 
   --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --store-material: var(--store-surface);
+  --store-material-float: var(--store-surface);
+  --store-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --store-status-ok: #4ade80;
+  --store-status-warn: #fbbf24;
+  --store-status-ok-bg: rgba(22, 163, 74, 0.18);
+  --store-status-warn-bg: rgba(217, 119, 6, 0.16);
+  color-scheme: dark;
+}
+
+/* Gold-cup A3DM store, inverted. Same cards and type. Opaque — not frost. */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f4f5;
+  --surf1: #ffffff;
+  --surf2: #ececee;
+  --border: rgba(9, 9, 11, 0.10);
+  --t-primary: rgba(9, 9, 11, 0.92);
+  --t-secondary: rgba(9, 9, 11, 0.62);
+  --t-muted: rgba(9, 9, 11, 0.42);
+
+  --store-bg:             #f4f4f5;
+  --store-surface:        #ffffff;
+  --store-surface-2:      #ececee;
+  --store-line:           rgba(9, 9, 11, 0.10);
+  --store-ink:            rgba(9, 9, 11, 0.92);
+  --store-ink-soft:       rgba(9, 9, 11, 0.62);
+  --store-ink-mute:       rgba(9, 9, 11, 0.42);
+  --store-accent:         #f97316;
+  --store-accent-glow:    rgba(249, 115, 22, 0.12);
+  --store-accent-border:  rgba(249, 115, 22, 0.40);
+  --store-success:        #16a34a;
+  --store-material:       #ffffff;
+  --store-material-float: #ffffff;
+  --store-shadow:         0 12px 32px rgba(9, 9, 11, 0.10);
+  --store-status-ok:      #15803d;
+  --store-status-warn:    #b45309;
+  --store-status-ok-bg:   rgba(22, 163, 74, 0.12);
+  --store-status-warn-bg: rgba(217, 119, 6, 0.12);
+}
+
+[data-theme="light"] .hub-page-canvas {
+  background:
+    radial-gradient(80rem 50rem at 0% 100%, rgba(234, 88, 12, 0.06), transparent 60%),
+    var(--store-bg);
+}
+
+[data-theme="light"] .nav-item-active {
+  color: var(--store-ink);
+}
+
+[data-theme="light"] .hub-tab-inactive:hover {
+  background: rgba(9, 9, 11, 0.04);
+}
+
+/* text-white is used as primary ink on chrome. Keep HUD/globe overlays white. */
+[data-theme="light"] .text-white {
+  color: var(--store-ink) !important;
+}
+
+[data-theme="light"] .hover\:text-white:hover {
+  color: var(--store-ink) !important;
+}
+
+[data-theme="light"] .theme-on-globe,
+[data-theme="light"] .theme-on-globe .text-white {
+  color: #fff !important;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
+
+[data-theme="light"] .theme-keep-white,
+[data-theme="light"] .theme-keep-white.text-white {
+  color: #fff !important;
+}
+
+/* Map Intel — gold-cup store chrome. Opaque zinc / paper. */
+.map-material {
+  background: var(--store-material);
+  border: 1px solid var(--store-line);
+}
+
+.map-material-float {
+  background: var(--store-material-float);
+  border: 1px solid var(--store-line);
+  box-shadow: var(--store-shadow);
+}
+
+/* Press lives on pointer-down. Theme swap eases colour, not position. */
+.map-press {
+  transition:
+    transform 120ms var(--ease-out),
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.map-press:active {
+  transform: scale(0.97);
+}
+
+html {
+  transition: background-color 200ms var(--ease-out), color 200ms var(--ease-out);
+}
+
+/* Dark-mode status leftovers on the map scoreboard */
+[data-theme="light"] .map-intel .text-green-400 { color: var(--store-status-ok) !important; }
+[data-theme="light"] .map-intel .text-amber-300 { color: var(--store-status-warn) !important; }
+[data-theme="light"] .map-intel .text-amber-200\/90,
+[data-theme="light"] .map-intel .text-amber-200\/80 { color: var(--store-status-warn) !important; }
+[data-theme="light"] .map-intel .bg-green-950\/30,
+[data-theme="light"] .map-intel .bg-green-950\/60 { background: var(--store-status-ok-bg) !important; }
+[data-theme="light"] .map-intel .bg-amber-950\/20,
+[data-theme="light"] .map-intel .bg-amber-950\/25,
+[data-theme="light"] .map-intel .bg-amber-950\/50 { background: var(--store-status-warn-bg) !important; }
+[data-theme="light"] .map-intel select,
+[data-theme="light"] .map-intel input:not([type='range']) {
+  background: var(--store-surface);
+  color: var(--store-ink);
+}
+
+[data-theme="light"] .map-intel .bg-black\/20,
+[data-theme="light"] .map-intel .bg-black\/25,
+[data-theme="light"] .map-intel .bg-black\/40 {
+  background: rgba(9, 9, 11, 0.04) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  .map-press {
+    transition: none;
+  }
+  .map-press:active {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .map-material,
+  .map-material-float {
+    background: var(--store-surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .map-material,
+  .map-material-float {
+    background: var(--store-surface);
+    border-color: var(--store-ink-soft);
+    backdrop-filter: none;
+  }
 }
 
 * { box-sizing: border-box; }

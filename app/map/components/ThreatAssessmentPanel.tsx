@@ -54,7 +54,7 @@ export function ThreatAssessmentPanel({
     assessments.find((a) => a.uasInstanceId === selectedUasInstanceId) ?? assessments[0]
 
   return (
-    <StorePanel className="absolute top-3 right-3 z-20 w-[min(100%,22rem)] p-3 shadow-xl pointer-events-auto border-[var(--store-accent-border)]">
+    <StorePanel className="map-material-float absolute top-3 right-3 z-20 w-[min(100%,22rem)] p-3 pointer-events-auto border-[var(--store-accent-border)]">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--store-accent)] flex items-center gap-1.5">

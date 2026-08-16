@@ -89,11 +89,14 @@ const MapBottomBar = dynamic(
   { ssr: false }
 )
 
-function mapToolbarBtn(active: boolean, _accent: 'orange' | 'cyan'): string {
-  return cn(
-    'map-press map-chip px-0 py-1 text-[11px] font-medium tracking-[0.02em]',
-    active ? 'text-[var(--store-ink)]' : 'store-text-muted hover:text-[var(--store-ink)]',
-  )
+function mapToolbarBtn(active: boolean, accent: 'orange' | 'cyan'): string {
+  const base = 'map-press px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border shadow-md'
+  if (active) {
+    return accent === 'orange'
+      ? `${base} bg-[#F97316] border-[#F97316] text-[#0A0A0F]`
+      : `${base} bg-[#06B6D4] border-[#06B6D4] text-[#0A0A0F]`
+  }
+  return `${base} bg-[var(--store-surface-2)] border-[var(--store-line)] text-white hover:bg-[var(--store-surface)] hover:border-[var(--store-accent-border)]`
 }
 
 interface MapIntelViewProps {
@@ -927,8 +930,8 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
       />
 
       <div className="relative flex-1 flex flex-col min-w-0">
-        <div className="map-strip shrink-0">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2.5">
+        <div className="shrink-0 border-b border-[var(--store-line)] bg-[var(--store-surface)]">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <PlannerToolbar
               planName={planner.planName}
               planId={planner.planId}
@@ -962,8 +965,11 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
                   .catch((e) => toast.error(e instanceof Error ? e.message : 'PCM publish failed'))
               }}
             />
-            <span className="hidden sm:block w-px h-3 bg-[var(--store-line)]" aria-hidden />
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <div className="px-2 py-1">
+              <ThemeToggle labeled />
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5 px-2 pb-1.5">
             <button type="button" onClick={activateBlastRisk} className={mapToolbarBtn(riskMode === 'blast', 'orange')}>Blast</button>
             <button type="button" onClick={activateJammingRisk} className={mapToolbarBtn(riskMode === 'jamming', 'cyan')}>EW Jam</button>
             <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'cuas-siting' ? 'none' : 'cuas-siting')) }} className={mapToolbarBtn(mapTool === 'cuas-siting', 'cyan')}>C-UAS Siting</button>
@@ -976,22 +982,18 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
               className={mapToolbarBtn(flightPathEditActive, 'orange')}
               title={placedUas.length === 0 ? 'Place a UAS first' : 'Edit flight paths'}
             >
-              Flight path
+              Edit flight path
             </button>
             {riskMode === 'blast' && (
-              <select className="text-[10px] bg-transparent border-0 border-b border-[var(--store-line)] px-0 py-1 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
+              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
                 {WARHEAD_DB.map((w) => (<option key={w.weapon_id} value={w.weapon_id}>{w.weapon_name}</option>))}
               </select>
             )}
             {riskMode === 'jamming' && (
-              <select className="text-[10px] bg-transparent border-0 border-b border-[var(--store-line)] px-0 py-1 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
+              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
                 {JAMMER_DB.map((j) => (<option key={j.jammer_id} value={j.jammer_id}>{j.jammer_name}</option>))}
               </select>
             )}
-            </div>
-            <div className="ml-auto">
-              <ThemeToggle labeled />
-            </div>
           </div>
         </div>
         <PlanLoadDialog

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import { ClassificationBanner } from '@/components/operations/ClassificationBanner'
+import { THEME_BOOT_SCRIPT } from '@/lib/ui/theme'
 
 export const metadata: Metadata = {
   title: 'Spectral — Drone Threat Intelligence',
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+      </head>
       <body className="hub-page-canvas overflow-hidden">
         <ClassificationBanner />
         {children}

@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Search, Bell, Settings, Menu } from 'lucide-react'
+import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { OperationsChrome } from '@/components/operations/OperationsChrome'
 import { useMobileNav } from '@/components/layout/MobileNavContext'
 import { federatedSearch } from '@/lib/search/federated-index'
@@ -75,6 +76,8 @@ export function Topbar() {
       <div className="flex-1" />
 
       <OperationsChrome />
+
+      <ThemeToggle />
 
       <div className="relative">
         <button

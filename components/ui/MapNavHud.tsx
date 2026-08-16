@@ -65,7 +65,7 @@ export function MapNavHud({
   return (
     <div
       data-testid="map-nav-hud"
-      className={cn('flex items-center gap-3', className)}
+      className={cn('theme-on-globe flex items-center gap-3', className)}
       style={style}
     >
       <div data-testid="map-nav-wheel">

@@ -28,6 +28,7 @@
   --store-surface:        #0f0f10;
   --store-surface-2:      #161618;
   --store-line:           rgba(255, 255, 255, 0.08);
+  --store-ink:            rgba(244, 244, 245, 0.92);
   --store-ink-soft:       rgba(244, 244, 245, 0.62);
   --store-ink-mute:       rgba(244, 244, 245, 0.38);
   --store-accent:         #f97316;
@@ -37,6 +38,63 @@
 
   --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  color-scheme: dark;
+}
+
+/* Daylight briefing-room paper. Default remains dark ops floor. */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f4f5;
+  --surf1: #ffffff;
+  --surf2: #f4f4f5;
+  --border: rgba(9, 9, 11, 0.12);
+  --t-primary: rgba(9, 9, 11, 0.92);
+  --t-secondary: rgba(9, 9, 11, 0.68);
+  --t-muted: rgba(9, 9, 11, 0.45);
+
+  --store-bg:             #f4f4f5;
+  --store-surface:        #ffffff;
+  --store-surface-2:      #f4f4f5;
+  --store-line:           rgba(9, 9, 11, 0.10);
+  --store-ink:            rgba(9, 9, 11, 0.92);
+  --store-ink-soft:       rgba(9, 9, 11, 0.68);
+  --store-ink-mute:       rgba(9, 9, 11, 0.45);
+  --store-accent:         #ea580c;
+  --store-accent-glow:    rgba(234, 88, 12, 0.10);
+  --store-accent-border:  rgba(234, 88, 12, 0.40);
+  --store-success:        #16a34a;
+}
+
+[data-theme="light"] .hub-page-canvas {
+  background:
+    radial-gradient(80rem 50rem at 0% 100%, rgba(234, 88, 12, 0.06), transparent 60%),
+    var(--store-bg);
+}
+
+[data-theme="light"] .nav-item-active {
+  color: var(--store-ink);
+}
+
+[data-theme="light"] .hub-tab-inactive:hover {
+  background: rgba(9, 9, 11, 0.04);
+}
+
+/* text-white is used as primary ink on chrome. Keep HUD/globe overlays white. */
+[data-theme="light"] .text-white {
+  color: var(--store-ink) !important;
+}
+
+[data-theme="light"] .hover\:text-white:hover {
+  color: var(--store-ink) !important;
+}
+
+[data-theme="light"] .theme-on-globe,
+[data-theme="light"] .theme-on-globe .text-white {
+  color: #fff !important;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
 }
 
 * { box-sizing: border-box; }

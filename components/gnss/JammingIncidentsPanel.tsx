@@ -99,7 +99,7 @@ export function JammingIncidentsPanel({ incidents }: JammingIncidentsPanelProps)
               className={`w-full text-left rounded-xl border p-3 transition-colors ${
                 selectedId === inc.id
                   ? 'border-orange-500/50 bg-orange-500/5'
-                  : 'border-white/10 bg-[#0A0A0F] hover:border-white/20'
+                  : 'border-[var(--store-line)] bg-[var(--store-surface)] hover:border-[var(--store-accent-border)]'
               }`}
             >
               <p className="text-sm font-medium text-white">{inc.incident_name}</p>
@@ -128,11 +128,11 @@ export function JammingIncidentsPanel({ incidents }: JammingIncidentsPanelProps)
         ))}
       </ul>
       <div className="space-y-3">
-        <div className="rounded-xl border border-white/10 bg-[#0A0A0F] p-2">
+        <div className="rounded-xl border border-[var(--store-line)] bg-[var(--store-surface)] p-2">
           <svg ref={svgRef} className="w-full h-auto" role="img" aria-label="Jamming incident map" />
         </div>
         {selected ? (
-          <div className="rounded-xl border border-white/10 bg-[#0A0A0F] p-4 text-xs space-y-2">
+          <div className="rounded-xl border border-[var(--store-line)] bg-[var(--store-surface)] p-4 text-xs space-y-2">
             <p className="store-text-body leading-relaxed">{selected.source_ref}</p>
             {selected.platform_impacts.length > 0 ? (
               <ul className="font-mono text-[10px] text-cyan-400 space-y-1">

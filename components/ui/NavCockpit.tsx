@@ -39,7 +39,7 @@ export function NavCockpit({ onRotate, onTilt }: NavCockpitProps) {
   }, [isDragging, onRotate, onTilt])
 
   return (
-    <div className="relative select-none group">
+    <div className="theme-on-globe relative select-none group">
       <div className="relative w-32 h-32 flex items-center justify-center">
         <div
           ref={wheelRef}

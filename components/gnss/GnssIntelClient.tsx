@@ -28,8 +28,8 @@ export function GnssIntelClient({ constellations, dependencies, incidents }: Gns
   const [tab, setTab] = useState<Tab>('constellations')
 
   return (
-    <div className="space-y-4 bg-[#0A0A0F]">
-      <div className="flex flex-wrap gap-2 border-b border-white/10 pb-2">
+    <div className="space-y-4 bg-[var(--store-bg)]">
+      <div className="flex flex-wrap gap-2 border-b border-[var(--store-line)] pb-2">
         {TABS.map((t) => (
           <button
             key={t.id}

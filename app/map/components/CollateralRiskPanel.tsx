@@ -64,7 +64,7 @@ export function CollateralRiskPanel({
   return (
     <div
       className="absolute top-14 right-3 z-30 w-80 max-h-[calc(100%-4rem)] overflow-y-auto rounded-xl border shadow-xl pointer-events-auto"
-      style={{ background: '#0A0A0F', borderColor: 'var(--store-line)' }}
+      style={{ background: 'var(--store-surface)', borderColor: 'var(--store-line)' }}
     >
       <div className="p-3 space-y-3 text-[11px] store-text-body">
         <div className="flex items-start justify-between gap-2">

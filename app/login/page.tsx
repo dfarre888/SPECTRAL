@@ -8,6 +8,7 @@ import { MfaEnroll } from '@/components/auth/MfaEnroll'
 import { createClient } from '@/lib/supabase/client'
 import { getOidcLoginHref, isOidcEnabledClient } from '@/lib/operations/oidc-client'
 import { StorePanel } from '@/components/ui/store-surface'
+import { ThemeToggle } from '@/components/layout/ThemeToggle'
 
 type AuthStep = 'credentials' | 'mfa-enroll' | 'mfa-challenge'
 
@@ -68,7 +69,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="hub-page-canvas min-h-[calc(100vh-20px)] flex items-center justify-center p-6">
+    <div className="hub-page-canvas min-h-[calc(100vh-20px)] flex items-center justify-center p-6 relative">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <StorePanel className="w-full max-w-md p-8">
         {step === 'credentials' && (
           <>

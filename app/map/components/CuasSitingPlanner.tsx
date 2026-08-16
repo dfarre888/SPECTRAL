@@ -42,7 +42,7 @@ export function CuasSitingPlanner({ placedUas, placedCuas, onClose }: CuasSiting
 
   return (
     <div
-      className="absolute top-14 left-3 z-30 w-[min(100%,22rem)] max-h-[calc(100%-4rem)] overflow-y-auto rounded-xl border shadow-xl pointer-events-auto"
+      className="absolute top-28 left-3 z-30 w-[min(100%,22rem)] max-h-[calc(100%-8rem)] overflow-y-auto rounded-xl border shadow-xl pointer-events-auto"
       style={{ background: '#0A0A0F', borderColor: 'var(--store-line)' }}
     >
       <div className="p-3 space-y-3 text-[11px] store-text-body">

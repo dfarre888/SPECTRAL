@@ -1049,7 +1049,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
 
         <div className="relative flex-1 min-h-0">
 
-          <div className="absolute top-2 right-3 z-20 flex flex-wrap items-center gap-1.5 max-w-[calc(100%-1rem)] justify-end pointer-events-auto">
+          <div className="absolute top-14 left-3 z-20 flex flex-wrap items-center gap-1.5 max-w-[min(100%-8rem,32rem)] justify-start pointer-events-auto">
             <button type="button" onClick={activateBlastRisk} className={mapToolbarBtn(riskMode === 'blast', 'orange')}>Blast</button>
             <button type="button" onClick={activateJammingRisk} className={mapToolbarBtn(riskMode === 'jamming', 'cyan')}>EW Jam</button>
             <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'cuas-siting' ? 'none' : 'cuas-siting')) }} className={mapToolbarBtn(mapTool === 'cuas-siting', 'cyan')}>C-UAS Siting</button>

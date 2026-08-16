@@ -19,7 +19,7 @@ export function PlatformContextMenu({ target, onAdd, onClose }: PlatformContextM
         onClick={onClose}
       />
       <div
-        className="absolute z-40 min-w-[140px] rounded-xl store-panel shadow-xl border border-[var(--store-line)] overflow-hidden pointer-events-auto"
+        className="map-material-float absolute z-40 min-w-[140px] rounded-xl overflow-hidden pointer-events-auto"
         style={{ left: target.screenX, top: target.screenY }}
         role="menu"
       >
@@ -33,7 +33,7 @@ export function PlatformContextMenu({ target, onAdd, onClose }: PlatformContextM
             onAdd()
             onClose()
           }}
-          className="flex w-full items-center gap-2 px-3 py-2.5 text-[11px] font-semibold text-white hover:bg-[var(--store-surface-2)] transition-colors"
+          className="map-press flex w-full items-center gap-2 px-3 py-2.5 text-[11px] font-semibold text-white hover:bg-[var(--store-surface-2)]"
         >
           <Plus className="w-3.5 h-3.5 text-[var(--store-accent)]" />
           ADD

@@ -14,6 +14,20 @@ export const STORE = {
   accentGlow: 'var(--store-accent-glow)',
   accentBorder: 'var(--store-accent-border)',
   success: 'var(--store-success)',
+  material: 'var(--store-material)',
+  materialFloat: 'var(--store-material-float)',
+  shadow: 'var(--store-shadow)',
+  statusOk: 'var(--store-status-ok)',
+  statusWarn: 'var(--store-status-warn)',
+} as const
+
+/** Map Intel chrome classes — light theme proving ground for program rollout. */
+export const MAP_THEME = {
+  scope: 'map-intel',
+  material: 'map-material',
+  float: 'map-material-float',
+  press: 'map-press',
+  keepWhite: 'theme-keep-white',
 } as const
 
 export const STORE_FONT_DISPLAY = 'var(--font-display), system-ui, sans-serif'

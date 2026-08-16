@@ -212,8 +212,7 @@ export function AssetSidebar({
     <aside
       className={cn(
         'w-72 xl:w-80 flex-shrink-0 flex flex-col h-full',
-        'store-panel border-r border-[var(--store-line)] border-t-0 border-b-0 border-l-0 rounded-none',
-        'bg-[var(--store-surface)]',
+        'map-material border-r border-[var(--store-line)] border-t-0 border-b-0 border-l-0 rounded-none',
       )}
     >
       {/* Header — matches main Sidebar / store catalog */}
@@ -241,13 +240,13 @@ export function AssetSidebar({
           <ForceFilterButton
             label="RED"
             active={forceFilter === 'red'}
-            activeClassName="bg-red-600 text-white border-red-600"
+            activeClassName="bg-red-600 text-white border-red-600 theme-keep-white"
             onClick={() => setForceFilter('red')}
           />
           <ForceFilterButton
             label="BLUE"
             active={forceFilter === 'blue'}
-            activeClassName="bg-blue-600 text-white border-blue-600"
+            activeClassName="bg-blue-600 text-white border-blue-600 theme-keep-white"
             onClick={() => setForceFilter('blue')}
           />
           <ForceFilterButton
@@ -770,7 +769,7 @@ function ForceFilterButton({
       type="button"
       onClick={onClick}
       className={cn(
-        'rounded-xl border px-2 py-2 text-[10px] font-semibold tracking-widest uppercase transition-colors',
+        'map-press rounded-xl border px-2 py-2 text-[10px] font-semibold tracking-widest uppercase',
         active
           ? activeClassName
           : 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-muted hover:text-white',

@@ -89,7 +89,7 @@ const MapBottomBar = dynamic(
 )
 
 function mapToolbarBtn(active: boolean, accent: 'orange' | 'cyan'): string {
-  const base = 'px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border shadow-md transition-colors'
+  const base = 'map-press px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border shadow-md'
   if (active) {
     return accent === 'orange'
       ? `${base} bg-[#F97316] border-[#F97316] text-[#0A0A0F]`
@@ -875,7 +875,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   }, [adjudication.analysis, placedUas, placedCuas])
 
   return (
-    <div className="flex h-full w-full overflow-hidden">
+    <div className="map-intel flex h-full w-full overflow-hidden">
       <AssetSidebar
         assets={assets}
         placedUas={placedUas}
@@ -973,7 +973,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           }}
         />
         {showIadsPanel && (
-          <div className="absolute bottom-16 left-3 z-20 w-72 max-h-64 overflow-y-auto rounded-xl border border-[var(--store-line)] bg-[var(--store-bg)]/95 shadow-lg">
+          <div className="map-material-float absolute bottom-16 left-3 z-20 w-72 max-h-64 overflow-y-auto rounded-xl">
             <div className="flex justify-between items-center px-2 py-1 border-b border-[var(--store-line)]">
               <span className="text-[10px] font-mono text-cyan">IADS stacks</span>
               <button type="button" className="store-text-muted text-xs" onClick={() => setShowIadsPanel(false)}>✕</button>
@@ -989,7 +989,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           </div>
         )}
         {stagingBanner && (
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl store-panel border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3 shadow-lg">
+          <div className="map-material-float absolute top-2 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3">
             <span>
               AeroCopilot staged {stagingBanner.stagedCount} system
               {stagingBanner.stagedCount === 1 ? '' : 's'} — {stagingBanner.matchedCount} matched
@@ -1007,7 +1007,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           </div>
         )}
         {forceBanner && (
-          <div className="absolute top-14 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl store-panel border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3 shadow-lg">
+          <div className="map-material-float absolute top-14 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3">
             <span>
               Force package — {forceBanner.theatre}: {forceBanner.placed} envelopes placed
               {forceBanner.unmatched > 0

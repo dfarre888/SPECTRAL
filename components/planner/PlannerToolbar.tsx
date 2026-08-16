@@ -17,9 +17,9 @@ interface PlannerToolbarProps {
 }
 
 export function PlannerToolbar(props: PlannerToolbarProps) {
-  const btn = 'px-2 py-1 rounded border text-[10px] font-mono font-semibold transition-colors';
+  const btn = 'map-press px-2 py-1 rounded border text-[10px] font-mono font-semibold';
   return (
-    <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex flex-wrap items-center gap-1.5 px-2 py-1.5 rounded-xl border border-[var(--store-line)] bg-[var(--store-bg)]/90 backdrop-blur-sm shadow-lg max-w-[95vw]">
+    <div className="map-material-float absolute top-3 left-1/2 -translate-x-1/2 z-30 flex flex-wrap items-center gap-1.5 px-2 py-1.5 rounded-xl max-w-[95vw]">
       <span className="text-[10px] font-mono text-cyan truncate max-w-[140px]" title={props.planName}>
         {props.planId ? props.planName : 'Unsaved laydown'}
       </span>

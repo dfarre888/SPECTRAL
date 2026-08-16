@@ -99,7 +99,7 @@ function EvalRow({
       title={actionLabel}
       onClick={() => onItemClick(item)}
       className={cn(
-        'store-panel-inner rounded-lg px-2.5 py-2 w-full text-left cursor-pointer transition-colors border',
+        'map-press store-panel-inner rounded-lg px-2.5 py-2 w-full text-left cursor-pointer border',
         'hover:bg-[var(--store-surface-2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--store-accent-border)]',
         selected
           ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
@@ -332,7 +332,7 @@ function ScoreTile({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex-1 min-w-0 rounded-lg border px-2 py-2 text-left transition-colors',
+        'map-press flex-1 min-w-0 rounded-lg border px-2 py-2 text-left',
         'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--store-accent-border)]',
         active
           ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
@@ -432,7 +432,7 @@ export function LaydownEvaluationPanel({
   )
 
   return (
-    <StorePanel className="absolute top-14 right-3 z-20 w-[min(100%,26rem)] max-h-[calc(100%-4rem)] overflow-y-auto p-3 shadow-xl pointer-events-auto border-[var(--store-accent-border)]">
+    <StorePanel className="map-material-float absolute top-14 right-3 z-20 w-[min(100%,26rem)] max-h-[calc(100%-4rem)] overflow-y-auto p-3 pointer-events-auto border-[var(--store-accent-border)]">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--store-accent)] flex items-center gap-1.5">
@@ -466,7 +466,7 @@ export function LaydownEvaluationPanel({
                 type="button"
                 onClick={() => onSelectItem(item)}
                 className={cn(
-                  'px-2 py-0.5 rounded-lg text-[10px] font-mono border transition-colors truncate max-w-full',
+                  'map-press px-2 py-0.5 rounded-lg text-[10px] font-mono border truncate max-w-full',
                   active
                     ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
                     : 'border-[var(--store-line)] store-text-muted hover:text-white',
@@ -488,7 +488,7 @@ export function LaydownEvaluationPanel({
             ? 'border-green-500/40 bg-green-950/30'
             : board.verdict === 'deny_only' || board.verdict === 'detect_only'
               ? 'border-amber-400/40 bg-amber-950/20'
-              : 'border-[var(--store-line)] bg-[var(--store-surface-1)]',
+              : 'border-[var(--store-line)] bg-[var(--store-surface-2)]',
         )}
       >
         <p

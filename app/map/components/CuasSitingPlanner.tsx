@@ -42,8 +42,7 @@ export function CuasSitingPlanner({ placedUas, placedCuas, onClose }: CuasSiting
 
   return (
     <div
-      className="absolute top-28 left-3 z-30 w-[min(100%,22rem)] max-h-[calc(100%-8rem)] overflow-y-auto rounded-xl border shadow-xl pointer-events-auto"
-      style={{ background: 'var(--store-surface)', borderColor: 'var(--store-line)' }}
+      className="map-material-float absolute top-28 left-3 z-30 w-[min(100%,22rem)] max-h-[calc(100%-8rem)] overflow-y-auto rounded-xl pointer-events-auto"
     >
       <div className="p-3 space-y-3 text-[11px] store-text-body">
         <div className="flex items-start justify-between gap-2">

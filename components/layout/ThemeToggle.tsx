@@ -20,7 +20,7 @@ export function ThemeToggle() {
       aria-pressed={theme === 'light'}
       title={theme === 'dark' ? 'Light theme' : 'Dark theme'}
       onClick={() => setTheme((current) => toggleTheme(current))}
-      className="w-7 h-7 rounded-lg flex items-center justify-center store-text-muted hover:text-[var(--store-ink)] hover:bg-[var(--store-surface-2)] transition-colors"
+      className="map-press w-7 h-7 rounded-lg flex items-center justify-center store-text-muted hover:text-[var(--store-ink)] hover:bg-[var(--store-surface-2)]"
     >
       {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
     </button>

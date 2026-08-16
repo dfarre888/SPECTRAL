@@ -45,7 +45,7 @@ export function IadsStackPanel({ assets, onApply }: Props) {
           key={p.id}
           type="button"
           onClick={() => apply(p)}
-          className="w-full text-left rounded-lg border border-[var(--store-line)] px-2 py-2 hover:border-cyan/50 transition-colors"
+          className="map-press w-full text-left rounded-lg border border-[var(--store-line)] px-2 py-2 hover:border-cyan/50"
         >
           <div className="text-xs font-semibold text-white">{p.name}</div>
           <div className="text-[10px] store-text-muted mt-0.5">{p.description}</div>

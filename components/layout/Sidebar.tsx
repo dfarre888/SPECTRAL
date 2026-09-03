@@ -1,44 +1,30 @@
 'use client'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import {
-  Database, Radio, Satellite, Shield, Globe,
-  Swords, GitCompare, LayoutDashboard, ChevronRight, Map, FileUp,
-  Activity, Coins, Crosshair, Target, Flag,
-} from 'lucide-react'
+import { ChevronDown, ChevronRight, Radio } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import { useMobileNav } from '@/components/layout/MobileNavContext'
+import { moduleIcon } from '@/components/navigation/module-presentation'
+import {
+  moduleByHref,
+  sidebarGroups,
+  type ModuleGroupId,
+  type SpectralModule,
+} from '@/lib/navigation/modules'
 
-const BASE_NAV = [
-  { href: '/',          icon: LayoutDashboard, label: 'Dashboard',         sub: 'Command center' },
-  { href: '/platforms', icon: Database,         label: 'Platform Library', sub: 'platforms' },
-  { href: '/force',     icon: Flag,             label: 'Force / ORBAT',    sub: 'Air land sea nations' },
-  { href: '/map',       icon: Map,              label: 'Map Intel',        sub: 'Terrain & envelopes' },
-  { href: '/spectrum',  icon: Radio,            label: 'Spectrum View',    sub: 'SPECTRA / EW intel' },
-  { href: '/gnss',      icon: Satellite,        label: 'GNSS Intelligence',sub: 'Constellations & jammers' },
-  { href: '/defeat',    icon: Shield,           label: 'Defeat Matrix',    sub: 'Countermeasures' },
-  { href: '/conflicts', icon: Globe,            label: 'Conflict Intel',   sub: 'Case studies' },
-  { href: '/conflict',  icon: Activity,         label: 'Incident Timeline', sub: 'Live incident feed' },
-  { href: '/pcm',       icon: Crosshair,        label: 'PCM',              sub: 'Persistent combat model' },
-  { href: '/arena',     icon: Swords,           label: 'Red/Blue Arena',   sub: 'WOPR scenario engine' },
-  { href: '/compare',   icon: GitCompare,       label: 'Platform Compare', sub: 'Side-by-side dossiers' },
-  { href: '/overlay',   icon: Target,           label: 'SAM Engagement',   sub: 'Pk envelope & salvo' },
-] as const
+const COLLAPSE_KEY = 'spectral-nav-collapsed'
 
-const OPERATIONS_NAV = {
-  href: '/operations/import',
-  icon: FileUp,
-  label: 'Data Import',
-  sub: 'Tenant ingest',
-} as const
-
-const DS_TOOLS = {
-  href: '/currency',
-  icon: Coins,
-  label: 'Currency Queue',
-  sub: 'TTP review pipeline',
-} as const
+function readCollapsed(): ModuleGroupId[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = window.localStorage.getItem(COLLAPSE_KEY)
+    return raw ? (JSON.parse(raw) as ModuleGroupId[]) : []
+  } catch {
+    return []
+  }
+}
 
 interface SidebarProps {
   proposedCurrencyCount?: number
@@ -48,29 +34,46 @@ interface SidebarProps {
 export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: SidebarProps) {
   const pathname = usePathname()
   const { open, close } = useMobileNav()
-  const nav = isOperationsEditionClient()
-    ? [...BASE_NAV.slice(0, 3), OPERATIONS_NAV, ...BASE_NAV.slice(3)]
-    : BASE_NAV
+  const groups = useMemo(
+    () => sidebarGroups({ operationsEdition: isOperationsEditionClient() }),
+    [],
+  )
+  const activeModule = moduleByHref(pathname)
 
-  const renderNavItem = ({
-    href,
-    icon: Icon,
-    label,
-    sub,
-    badge,
-  }: {
-    href: string
-    icon: typeof LayoutDashboard
-    label: string
-    sub: string
-    badge?: number
-  }) => {
-    const active = pathname === href || (href !== '/' && pathname.startsWith(href))
+  const [collapsed, setCollapsed] = useState<ModuleGroupId[]>([])
+  useEffect(() => setCollapsed(readCollapsed()), [])
+
+  function toggleGroup(id: ModuleGroupId) {
+    setCollapsed((prev) => {
+      const next = prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]
+      try {
+        window.localStorage.setItem(COLLAPSE_KEY, JSON.stringify(next))
+      } catch {
+        /* private mode — collapse state is a convenience, not state we rely on */
+      }
+      return next
+    })
+  }
+
+  function badgeFor(module: SpectralModule): number | undefined {
+    return module.id === 'currency' ? proposedCurrencyCount : undefined
+  }
+
+  function subFor(module: SpectralModule): string {
+    if (module.id === 'platforms' && platformCount > 0) return `${platformCount} platforms`
+    return module.sub
+  }
+
+  const renderNavItem = (module: SpectralModule) => {
+    const Icon = moduleIcon(module.icon)
+    const active = activeModule?.href === module.href
+    const badge = badgeFor(module)
     return (
       <Link
-        key={href}
-        href={href}
+        key={module.href}
+        href={module.href}
         onClick={() => close()}
+        aria-current={active ? 'page' : undefined}
         className={cn(
           'flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl mb-0.5 group transition-all border',
           active
@@ -85,8 +88,8 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
           )}
         />
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium truncate">{label}</p>
-          <p className="text-[10px] store-text-muted truncate font-mono">{sub}</p>
+          <p className="text-xs font-medium truncate">{module.label}</p>
+          <p className="text-[10px] store-text-muted truncate font-mono">{subFor(module)}</p>
         </div>
         {badge != null && badge > 0 && (
           <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-[var(--store-accent)] text-[10px] font-mono font-bold text-black flex items-center justify-center">
@@ -115,48 +118,60 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
           open ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
         )}
       >
-      <div className="px-5 py-4 border-b border-[var(--store-line)]">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] flex items-center justify-center">
-            <Radio className="w-4 h-4 text-[var(--store-accent)]" />
-          </div>
-          <div>
-            <p className="store-display font-bold text-white tracking-widest text-sm uppercase">Spectral</p>
-            <p className="store-text-muted text-[10px] font-mono tracking-wider">Drone Threat Intel</p>
-          </div>
+        <div className="px-5 py-4 border-b border-[var(--store-line)]">
+          <Link href="/" onClick={() => close()} className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] flex items-center justify-center">
+              <Radio className="w-4 h-4 text-[var(--store-accent)]" />
+            </div>
+            <div>
+              <p className="store-display font-bold text-white tracking-widest text-sm uppercase">
+                Spectral
+              </p>
+              <p className="store-text-muted text-[10px] font-mono tracking-wider">
+                Drone Threat Intel
+              </p>
+            </div>
+          </Link>
         </div>
-      </div>
 
-      <nav className="flex-1 py-3 overflow-y-auto">
-        {nav.map(({ href, icon, label, sub }) =>
-          renderNavItem({
-            href,
-            icon,
-            label,
-            sub:
-              href === '/platforms' && platformCount > 0
-                ? `${platformCount} platforms`
-                : sub,
-          }),
-        )}
-
-        <div className="mt-4 pt-3 mx-4 border-t border-[var(--store-line)]">
-          <p className="text-[10px] font-mono store-text-muted uppercase tracking-wider px-1 mb-2">
-            DS Tools
-          </p>
-          {renderNavItem({
-            ...DS_TOOLS,
-            badge: proposedCurrencyCount,
+        <nav className="flex-1 py-3 overflow-y-auto" aria-label="Modules">
+          {groups.map(({ group, modules }) => {
+            // Never hide the group the user is currently inside.
+            const holdsActive = modules.some((m) => m.href === activeModule?.href)
+            const isCollapsed = collapsed.includes(group.id) && !holdsActive
+            return (
+              <section key={group.id} className="mb-3">
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(group.id)}
+                  aria-expanded={!isCollapsed}
+                  className="w-full flex items-center gap-1.5 px-5 py-1 mb-1 store-text-muted hover:text-white transition-colors"
+                >
+                  <ChevronDown
+                    className={cn(
+                      'w-3 h-3 flex-shrink-0 transition-transform',
+                      isCollapsed && '-rotate-90',
+                    )}
+                  />
+                  <span className="text-[10px] font-mono uppercase tracking-wider">
+                    {group.label}
+                  </span>
+                  <span className="ml-auto text-[10px] font-mono tabular-nums opacity-60">
+                    {modules.length}
+                  </span>
+                </button>
+                {!isCollapsed && modules.map(renderNavItem)}
+              </section>
+            )
           })}
-        </div>
-      </nav>
+        </nav>
 
-      <div className="px-4 py-3 border-t border-[var(--store-line)] space-y-1">
-        <p className="text-[10px] font-mono store-text-muted text-center">
-          SPECTRAL v0.1.0 — UNCLASSIFIED
-        </p>
-      </div>
-    </aside>
+        <div className="px-4 py-3 border-t border-[var(--store-line)] space-y-1">
+          <p className="text-[10px] font-mono store-text-muted text-center">
+            SPECTRAL v0.1.0 — UNCLASSIFIED
+          </p>
+        </div>
+      </aside>
     </>
   )
 }

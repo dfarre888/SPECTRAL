@@ -28,6 +28,14 @@ export default async function Dashboard() {
     ) : (
       <>Operations Command Center</>
     )
+  /**
+   * Distinct from copy.commandSubtitle, which OverviewDashboard renders on the
+   * section header just below — using the same string in both places printed it twice.
+   */
+  const heroSubtitle =
+    skin === 'a3dm'
+      ? 'Fleet, crew and approval status across every RPAS operation you run.'
+      : 'Sovereign counter-UAS intelligence — platform library, spectrum, defeat matrix and live laydown in one picture.'
 
   return (
     <div className="pb-12">
@@ -39,7 +47,7 @@ export default async function Dashboard() {
               variant="compact"
               eyebrow={heroEyebrow}
               title={heroTitle}
-              subtitle={copy.commandSubtitle}
+              subtitle={heroSubtitle}
               trustChip={
                 <>
                   <span

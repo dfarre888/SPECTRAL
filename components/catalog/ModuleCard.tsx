@@ -3,37 +3,11 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import {
-  Crosshair,
-  Database,
-  Flag,
-  GitCompare,
-  Globe,
-  Map,
-  Radio,
-  Satellite,
-  Shield,
-  Swords,
-  Target,
-  type LucideIcon,
-} from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { MODULE_ICONS } from '@/components/navigation/module-presentation'
+import type { ModuleIconName } from '@/lib/navigation/modules'
 
-const MODULE_ICONS = {
-  database: Database,
-  radio: Radio,
-  satellite: Satellite,
-  shield: Shield,
-  globe: Globe,
-  swords: Swords,
-  'git-compare': GitCompare,
-  map: Map,
-  crosshair: Crosshair,
-  target: Target,
-  flag: Flag,
-} as const satisfies Record<string, LucideIcon>
-
-export type ModuleIconName = keyof typeof MODULE_ICONS
+export type { ModuleIconName }
 
 interface ModuleCardProps {
   href: string

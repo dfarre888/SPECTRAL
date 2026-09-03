@@ -14,26 +14,22 @@ import {
 } from '@/components/catalog/StoreFilterSidebar'
 import { StartHereWizard } from '@/components/dashboard/StartHereWizard'
 import type { ModuleCatalogStats } from '@/lib/dashboard/module-stats'
+import {
+  MODULE_ACCENT_CLASSES,
+  catalogModules,
+  type SpectralModule,
+} from '@/lib/navigation/modules'
 import { StorePanel } from '@/components/ui/store-surface'
 
 /** Caller: DashboardHomeTabs moduleCatalog tab via app/(main)/page.tsx */
 
-function buildModules(stats: ModuleCatalogStats) {
-  const platformLabel = stats.platformCount > 0 ? String(stats.platformCount) : '—'
-  return [
-    { href: '/defeat', icon: 'shield' as const, kicker: 'C-UAS', label: 'Defeat Matrix', count: String(stats.defeatSystemCount), unit: 'systems', accent: 'text-[var(--store-success)] bg-[rgba(74,222,128,0.10)] border-[rgba(74,222,128,0.20)]', desc: 'Platform × countermeasure effectiveness grid', priority: 1 },
-    { href: '/gnss', icon: 'satellite' as const, kicker: 'NAVWAR', label: 'GNSS Intelligence', count: String(stats.gnssJammerCount), unit: 'jammers', accent: 'text-cyan bg-cyan/10 border-cyan/25', desc: 'Constellations, denial systems, defeat methods', priority: 2 },
-    { href: '/conflicts', icon: 'globe' as const, kicker: 'CASE STUDY', label: 'Conflict Intel', count: String(stats.conflictCaseCount), unit: 'studies', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Named engagements and operational lessons', priority: 3 },
-    { href: '/map', icon: 'map' as const, kicker: 'COP', label: 'Map Intel', count: 'Live', unit: 'laydown', accent: 'text-cyan bg-cyan/10 border-cyan/25', desc: 'Cesium laydown, mission paths, and force evaluation', priority: 4 },
-    { href: '/arena', icon: 'swords' as const, kicker: 'WARGAME', label: 'Red/Blue Arena', count: '20+', unit: 'injects', accent: 'text-red bg-red/10 border-red/25', desc: 'Scenario engine and exercise briefs', priority: 5 },
-    { href: '/force', icon: 'flag' as const, kicker: 'FORCE', label: 'Force / ORBAT', count: '7', unit: 'nations', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Country air/land/sea catalogue, head-to-head, theatre work-up', priority: 6 },
-    { href: '/platforms', icon: 'database' as const, kicker: 'UAS', label: 'Platform Library', count: platformLabel, unit: 'platforms', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'World military UAS database with OSINT dossiers', priority: 7 },
-    { href: '/spectrum', icon: 'radio' as const, kicker: 'EW', label: 'Spectrum View', count: '6', unit: 'GHz span', accent: 'text-cyan bg-cyan/10 border-cyan/25', desc: 'RF spectrum visualiser and SPECTRA kill-chain', priority: 7 },
-    { href: '/overlay', icon: 'target' as const, kicker: 'SAM', label: 'SAM Engagement', count: 'Pk', unit: 'envelope', accent: 'text-red bg-red/10 border-red/25', desc: 'SAM intercept geometry, range rings, and salvo Pk', priority: 8 },
-    { href: '/planner', icon: 'map' as const, kicker: 'PLANNER', label: 'SPECTRAL Planner', count: String(stats.plannerVignetteCount), unit: 'vignettes', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Battlespace plans, IADS stacks, engagement economics', priority: 9 },
-    { href: '/pcm', icon: 'crosshair' as const, kicker: 'PCM', label: 'Persistent Combat Model', count: 'Live', unit: 'exercises', accent: 'text-[var(--store-accent)] bg-[var(--store-accent-glow)] border-[var(--store-accent-border)]', desc: 'Learner-driven exercises, globe runs, and force design', priority: 10 },
-    { href: '/compare', icon: 'git-compare' as const, kicker: 'ANALYSIS', label: 'Platform Compare', count: '2', unit: 'min pick', accent: 'text-amber bg-amber/10 border-amber/25', desc: 'Library platform dossier side-by-side comparison', priority: 11 },
-  ] as const
+/** Live count where the registry names a stat key, else its static label. */
+function resolveCount(module: SpectralModule, stats: ModuleCatalogStats): string {
+  if (module.countKey) {
+    const value = stats[module.countKey]
+    return value > 0 ? String(value) : '—'
+  }
+  return module.staticCount ?? '—'
 }
 
 const RECENT_INCIDENTS = [
@@ -55,7 +51,7 @@ interface DashboardModuleCatalogProps {
 }
 
 export function DashboardModuleCatalog({ stats }: DashboardModuleCatalogProps) {
-  const modules = buildModules(stats)
+  const modules = catalogModules()
   const sidebarStats = STATS(stats)
 
   return (
@@ -103,7 +99,7 @@ export function DashboardModuleCatalog({ stats }: DashboardModuleCatalogProps) {
     >
       <StartHereWizard />
 
-      <StoreCatalogHeader title="Intelligence Modules" meta={`${modules.length} modules · threat-priority order · Jul 2026`} />
+      <StoreCatalogHeader title="Intelligence Modules" meta={`${modules.length} modules · threat-priority order`} />
 
       <div
         className="grid gap-4 mb-8"
@@ -116,10 +112,10 @@ export function DashboardModuleCatalog({ stats }: DashboardModuleCatalogProps) {
             icon={mod.icon}
             kicker={mod.kicker}
             title={mod.label}
-            blurb={mod.desc}
-            count={mod.count}
-            unit={mod.unit}
-            accentClass={mod.accent}
+            blurb={mod.blurb}
+            count={resolveCount(mod, stats)}
+            unit={mod.countUnit}
+            accentClass={MODULE_ACCENT_CLASSES[mod.accent]}
             index={index}
           />
         ))}

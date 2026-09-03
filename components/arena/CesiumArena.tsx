@@ -62,12 +62,20 @@ export default function CesiumArena({
   useEffect(() => {
     if (!containerRef.current || viewerRef.current) return
 
+    // Viewer creation is async, so viewerRef is still null if React tears the
+    // effect down mid-init (StrictMode double-mount in dev). Without these
+    // guards cleanup destroys nothing, the guard above passes a second time,
+    // and two Viewers attach to the same container — later effects drive the
+    // second while the first paints a dead black canvas over the panel.
+    let destroyed = false
+    let pendingViewer: any = null
+
     // loadCesium() sets window.CESIUM_BASE_URL BEFORE injecting the script tag so
     // Cesium workers find their static assets on startup. Using import('cesium') here
     // was wrong: it set CESIUM_BASE_URL *after* Cesium loaded (workers missed it),
     // and it routed through webpack → Terser mangles Cesium source → build failure.
     loadCesium().then(async (Cesium) => {
-      if (!containerRef.current) return
+      if (destroyed || !containerRef.current) return
 
       const { Viewer, Ion, Color } = Cesium
 
@@ -87,6 +95,13 @@ export default function CesiumArena({
         selectionIndicator: false,
       })
 
+      pendingViewer = viewer
+      if (destroyed) {
+        viewer.destroy()
+        pendingViewer = null
+        return
+      }
+
       viewer.scene.globe.enableLighting = false
       viewer.scene.backgroundColor = Color.fromCssColorString('#0A0A0F')
       viewer.resize()
@@ -101,6 +116,11 @@ export default function CesiumArena({
       // scenario sync effect never touches AIS vessels.
       const aisDs = new Cesium.CustomDataSource('ais-marine')
       await viewer.dataSources.add(aisDs)
+      if (destroyed) {
+        viewer.destroy()
+        pendingViewer = null
+        return
+      }
       aisDs.show = false // default OFF — controlled by showAisLayer prop
       aisDataSourceRef.current = aisDs
 
@@ -112,12 +132,16 @@ export default function CesiumArena({
     })
 
     return () => {
+      destroyed = true
       setCesiumReady(false)
       aisDataSourceRef.current = null
-      if (viewerRef.current && !viewerRef.current.isDestroyed()) {
-        viewerRef.current.destroy()
+      // pendingViewer covers teardown that lands before viewerRef is assigned.
+      const live = viewerRef.current ?? pendingViewer
+      if (live && !live.isDestroyed()) {
+        live.destroy()
       }
       viewerRef.current = null
+      pendingViewer = null
       cesiumRef.current = null
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps

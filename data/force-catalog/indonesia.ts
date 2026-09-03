@@ -1,0 +1,175 @@
+/**
+ * Force Catalogue — Indonesia (IDN).
+ * OSINT only. Verified Jul 2026. Neutral Indo-Pacific; Pitch Black partner.
+ * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY.
+ */
+
+import type { ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
+import {
+  hfVoice, link16, nationFactory, nationalDatalink, pinnedSensor, satcom, uhfVoice,
+} from '@/data/force-catalog/_helpers'
+
+
+const P = nationFactory('IDN', 'Indonesia')
+const ndl = (id: string) => nationalDatalink(id, 'Indonesia tactical datalink')
+
+export const INDONESIA_CATALOG: ForceCatalogPlatformFull[] = [
+
+  P({
+    id: 'IDN-CAT-RAFALE', designation: 'Dassault Rafale (ordered)', short_name: 'Rafale',
+    manufacturer: 'Dassault', domain: 'air', role: 'multirole', force_side: 'neutral',
+    service_status: 'ordered', program_stage: 'lrip', ioc_year: 2026,
+    open_source_summary: '42 Rafale on order — deliveries beginning.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [link16('IDN-CAT-RAFALE'), uhfVoice('IDN-CAT-RAFALE')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-F16', designation: 'F-16C/D Fighting Falcon', short_name: 'F-16',
+    manufacturer: 'Lockheed Martin', domain: 'air', role: 'multirole', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 1989,
+    open_source_summary: 'Viper fleet upgrades.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [link16('IDN-CAT-F16'), uhfVoice('IDN-CAT-F16')],
+    sensors: [pinnedSensor('IDN-CAT-F16', 'radar', 'APG-68', 'X', 'fire-control',
+      ['aircraft', 'cruise_missile', 'surface_contacts'], [], 'X-band AESA — descriptive')],
+  }),
+  P({
+    id: 'IDN-CAT-SU30', designation: 'Su-30MK2 / Su-27SKM', short_name: 'Su-30/27',
+    manufacturer: 'Sukhoi', domain: 'air', role: 'multirole', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 2003,
+    open_source_summary: 'Russian Flanker remnant.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [ndl('IDN-CAT-SU30'), uhfVoice('IDN-CAT-SU30')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-T50', designation: 'T-50i Golden Eagle', short_name: 'T-50i',
+    manufacturer: 'KAI', domain: 'air', role: 'multirole', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 2013,
+    open_source_summary: 'Lead-in fighter/trainer.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [link16('IDN-CAT-T50'), uhfVoice('IDN-CAT-T50')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-C130', designation: 'C-130H/J Hercules', short_name: 'C-130',
+    manufacturer: 'Lockheed Martin', domain: 'air', role: 'transport', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 1960,
+    open_source_summary: 'Airlift backbone.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [satcom('IDN-CAT-C130'), uhfVoice('IDN-CAT-C130')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-CN235', designation: 'CN-235 MPA', short_name: 'CN-235',
+    manufacturer: 'PTDI / Airbus', domain: 'air', role: 'isr', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 1993,
+    open_source_summary: 'Maritime patrol.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [uhfVoice('IDN-CAT-CN235')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-AH64', designation: 'AH-64E Apache', short_name: 'Apache',
+    manufacturer: 'Boeing', domain: 'air', role: 'multirole', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 2018,
+    open_source_summary: 'Attack helicopters.',
+    data_confidence: 'high', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [link16('IDN-CAT-AH64'), uhfVoice('IDN-CAT-AH64')],
+    sensors: [pinnedSensor('IDN-CAT-AH64', 'eo_ir', 'EO/IR', 'IR', 'ISR/targeting',
+      ['ground_targets'], [], 'EO/IR — descriptive')],
+  }),
+  P({
+    id: 'IDN-CAT-LEOPARD', designation: 'Leopard 2RI / Marder', short_name: 'Leopard 2RI',
+    manufacturer: 'KMW', domain: 'ground', role: 'other', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 2016,
+    open_source_summary: 'MBT/IFV modernisation.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [link16('IDN-CAT-LEOPARD'), uhfVoice('IDN-CAT-LEOPARD')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-HARIMAU', designation: 'Kaplan MT / Harimau light tank', short_name: 'Harimau',
+    manufacturer: 'FNSS / PT Pindad', domain: 'ground', role: 'other', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 2020,
+    open_source_summary: 'Medium tank co-development.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [uhfVoice('IDN-CAT-HARIMAU')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-ASTROS', designation: 'Astros II MLRS', short_name: 'Astros',
+    manufacturer: 'Avibras', domain: 'ground', role: 'other', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 2014,
+    open_source_summary: 'Rocket artillery.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [uhfVoice('IDN-CAT-ASTROS')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-MARTADINATA', designation: 'Martadinata SIGMA 10514 FFG', short_name: 'Martadinata FFG',
+    manufacturer: 'Damen / PT PAL', domain: 'maritime', role: 'maritime_surface', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 2017,
+    open_source_summary: 'Guided-missile frigates.',
+    data_confidence: 'high', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [link16('IDN-CAT-MARTADINATA'), uhfVoice('IDN-CAT-MARTADINATA')],
+    sensors: [pinnedSensor('IDN-CAT-MARTADINATA', 'radar', 'SMART-S', 'S', 'volume search',
+      ['aircraft', 'cruise_missile', 'surface_contacts'], [], 'Naval radar — descriptive')],
+  }),
+  P({
+    id: 'IDN-CAT-AHMADYANI', designation: 'Ahmad Yani-class FFG (Van Speijk)', short_name: 'Ahmad Yani FFG',
+    manufacturer: 'legacy', domain: 'maritime', role: 'maritime_surface', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 1986,
+    open_source_summary: 'Legacy frigates.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [uhfVoice('IDN-CAT-AHMADYANI')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-NAGAPASA', designation: 'Nagapasa Type 209/1400 SSK', short_name: 'Nagapasa SSK',
+    manufacturer: 'DSM / PT PAL', domain: 'maritime', role: 'other', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 2017,
+    open_source_summary: 'SSK force.',
+    data_confidence: 'high', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [hfVoice('IDN-CAT-NAGAPASA'), uhfVoice('IDN-CAT-NAGAPASA')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-MAKASSAR', designation: 'Makassar LPD', short_name: 'Makassar LPD',
+    manufacturer: 'Daesun / PT PAL', domain: 'maritime', role: 'maritime_surface', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 2007,
+    open_source_summary: 'Amphibious sealift.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [uhfVoice('IDN-CAT-MAKASSAR')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-ANOA', designation: 'Anoa APS-3 APC', short_name: 'Anoa',
+    manufacturer: 'PT Pindad', domain: 'ground', role: 'other', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 2009,
+    open_source_summary: 'Wheeled APC.',
+    data_confidence: 'medium', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [uhfVoice('IDN-CAT-ANOA')],
+    sensors: [],
+  }),
+  P({
+    id: 'IDN-CAT-CH4', designation: 'CH-4 UAS', short_name: 'CH-4',
+    manufacturer: 'CASC', domain: 'air', role: 'isr', force_side: 'neutral',
+    service_status: 'in_service', program_stage: 'fielded', ioc_year: 2018,
+    open_source_summary: 'Chinese MALE UAS.',
+    data_confidence: 'estimated', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [ndl('IDN-CAT-CH4'), uhfVoice('IDN-CAT-CH4')],
+    sensors: [pinnedSensor('IDN-CAT-CH4', 'eo_ir', 'EO/IR', 'IR', 'ISR/targeting',
+      ['ground_targets'], [], 'EO/IR — descriptive')],
+  }),
+  P({
+    id: 'IDN-CAT-KF21', designation: 'KF-21 partnership (status fluid)', short_name: 'KF-21 IDN',
+    manufacturer: 'KAI', domain: 'air', role: 'multirole', force_side: 'neutral',
+    service_status: 'in_development', program_stage: 'r_and_d', ioc_year: null,
+    open_source_summary: 'Past KF-21 partner — status uncertain OSINT.',
+    data_confidence: 'estimated', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
+    comms: [link16('IDN-CAT-KF21'), uhfVoice('IDN-CAT-KF21')],
+    sensors: [],
+  }),
+]

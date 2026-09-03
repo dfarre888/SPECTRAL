@@ -20,6 +20,14 @@ interface HubUrlTabBarProps {
   testIdPrefix?: string
 }
 
+export interface HubTabBarProps {
+  tabs: HubTabDef[]
+  activeTab: string
+  onTabChange: (key: string) => void
+  className?: string
+  testIdPrefix?: string
+}
+
 export function useHubTab(
   basePath: string,
   tabs: HubTabDef[],
@@ -40,18 +48,20 @@ export function useHubTab(
     router.replace(`${basePath}${qs ? `?${qs}` : ''}`, { scroll: false })
   }
 
-  return { activeTab, setTab }
+  return { activeTab, setTab, searchParams }
 }
 
-export function HubUrlTabBar({
-  basePath,
+/**
+ * Presentational, controlled tab bar. Use when the caller needs to run its own
+ * logic on tab change (see ForceCatalogClient, which clears compare scope).
+ */
+export function HubTabBar({
   tabs,
-  defaultTab,
-  paramKey = 'tab',
+  activeTab,
+  onTabChange,
   className,
   testIdPrefix = 'hub-tab',
-}: HubUrlTabBarProps) {
-  const { activeTab, setTab } = useHubTab(basePath, tabs, defaultTab, paramKey)
+}: HubTabBarProps) {
   const visibleTabs = tabs.filter((t) => t.visible !== false)
 
   return (
@@ -69,7 +79,7 @@ export function HubUrlTabBar({
             role="tab"
             aria-selected={active}
             data-testid={`${testIdPrefix}-${key}`}
-            onClick={() => setTab(key)}
+            onClick={() => onTabChange(key)}
             className={cn(
               'inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors',
               active ? 'hub-tab-active' : 'hub-tab-inactive',
@@ -81,5 +91,27 @@ export function HubUrlTabBar({
         )
       })}
     </div>
+  )
+}
+
+/** URL-bound tab bar — reads and writes the active tab as a query parameter. */
+export function HubUrlTabBar({
+  basePath,
+  tabs,
+  defaultTab,
+  paramKey = 'tab',
+  className,
+  testIdPrefix = 'hub-tab',
+}: HubUrlTabBarProps) {
+  const { activeTab, setTab } = useHubTab(basePath, tabs, defaultTab, paramKey)
+
+  return (
+    <HubTabBar
+      tabs={tabs}
+      activeTab={activeTab}
+      onTabChange={setTab}
+      className={className}
+      testIdPrefix={testIdPrefix}
+    />
   )
 }

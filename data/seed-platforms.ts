@@ -1178,7 +1178,7 @@ export const CORE_PLATFORMS: Platform[] = [
     defeat_note: 'Group 1–3 UAS defeat; mortar and RPG intercept demonstrated; <$1/shot operating cost; weather-limited in rain/dense fog; integrated sensor suite for autonomous cueing',
     control_link_freq: 'N/A (laser)',
     gnss_dependency: 'none',
-    confidence: 'assessed',
+    confidence: 'estimated',
     icon: '◉',
     intel_note:
       'Raytheon RTX High Energy Laser Weapon System — marketed as Apollo HELW from 2024. 20 kW solid-state fiber laser on HMMWV/JLTV platform. Extensively tested at White Sands Missile Range against Group 1–3 UAS, mortars, and artillery projectiles. Part of the US Army IFPC (Indirect Fire Protection Capability) layered defence stack alongside Coyote and Stinger. Under evaluation for SHORAD integration and international partner sales. <$1/shot cost structure designed to address uneconomical exchange ratios against low-cost drone threats.',

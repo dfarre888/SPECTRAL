@@ -12,3 +12,9 @@ yarn-error.log*
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts
+# Leftover atomic-write temp files — OneDrive interrupts the rename.
+# Review with `git status --ignored` then delete; none are referenced.
+*.tmpwrite
+
+# Local build/distribution bundles
+*.tar.gz

@@ -646,8 +646,8 @@ describe('BehaviourMapper — PCM bridge', () => {
 
 
 describe('IADS Threat Catalogue', () => {
-  it('contains exactly 14 entries', () => {
-    expect(IADS_THREAT_CATALOGUE.length).toBe(14);
+  it('contains exactly 15 entries', () => {
+    expect(IADS_THREAT_CATALOGUE.length).toBe(15);
   });
 
   it('marks every entry with SOVEREIGN_CORE_BOUNDARY performance_ref', () => {
@@ -656,14 +656,19 @@ describe('IADS Threat Catalogue', () => {
     }
   });
 
-  it('resolves all sam_profile_id / sam_profile_ids via getSamProfile', () => {
+  it('resolves every declared sam_profile_id / sam_profile_ids via getSamProfile', () => {
+    // Not every entry is an air-defence node — strategic offensive systems
+    // (e.g. cn-jl3-slbm-threat) deliberately carry no SAM profile. The
+    // invariant is referential integrity of the ids that ARE declared.
+    let checked = 0;
     for (const entry of IADS_THREAT_CATALOGUE) {
       const ids = entry.sam_profile_ids ?? (entry.sam_profile_id ? [entry.sam_profile_id] : []);
-      expect(ids.length).toBeGreaterThan(0);
       for (const id of ids) {
-        expect(getSamProfile(id)).toBeDefined();
+        expect(getSamProfile(id), `unresolved sam profile ${id} on ${entry.id}`).toBeDefined();
+        checked += 1;
       }
     }
+    expect(checked).toBeGreaterThan(0);
   });
 
   it('maps all non-null effector_id values to RED_EFFECTORS', () => {

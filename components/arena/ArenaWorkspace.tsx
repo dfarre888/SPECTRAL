@@ -9,6 +9,11 @@ import { worldStateToCopEntities, type CopViewMode } from '@/lib/wopr/cop-entiti
 import type { TickResult, WoprScenario } from '@/lib/wopr/types'
 import { aisBboxSearchParams, type AisVessel } from '@/lib/ais/types'
 import { clsx } from 'clsx'
+import { GuidedTour } from '@/components/tour/GuidedTour'
+import { ARENA_FOG_OF_WAR_TOUR, tourSeenKey, type TourAction } from '@/lib/tour/tours'
+import { ScenarioBriefSheet } from '@/components/wopr/ScenarioBriefSheet'
+import { TickScrubber } from '@/components/wopr/TickScrubber'
+import { appendFrame, clampIndex, frameAt, isLive, type TickFrame } from '@/lib/wopr/tick-history'
 
 import { GlobeSkeleton } from '@/components/ui/loading-skeleton'
 
@@ -42,6 +47,33 @@ export function ArenaWorkspace() {
   const [scenario, setScenario] = useState<WoprScenario | null>(null)
   const [tick, setTick] = useState<TickResult | null>(null)
   const [copMode, setCopMode] = useState<CopViewMode>('orbat')
+
+  // ── Guided walkthrough ────────────────────────────────────────────────────
+  const [tourOpen, setTourOpen] = useState(false)
+  const [briefOpen, setBriefOpen] = useState(false)
+  const [tourSeen, setTourSeen] = useState(true) // assume seen until storage says otherwise
+  useEffect(() => {
+    try {
+      setTourSeen(localStorage.getItem(tourSeenKey(ARENA_FOG_OF_WAR_TOUR.id)) === '1')
+    } catch {
+      // Private browsing / blocked storage — just don't highlight the button.
+      setTourSeen(true)
+    }
+  }, [])
+
+  const closeTour = useCallback(() => {
+    setTourOpen(false)
+    setTourSeen(true)
+    try {
+      localStorage.setItem(tourSeenKey(ARENA_FOG_OF_WAR_TOUR.id), '1')
+    } catch {
+      // Non-fatal: the tour simply offers itself again next visit.
+    }
+  }, [])
+
+  const runTourAction = useCallback((action: TourAction) => {
+    if (action.type === 'cop-mode') setCopMode(action.value)
+  }, [])
 
   // ── AIS marine layer ──────────────────────────────────────────────────────
   /** Layer toggle — OFF by default for faster initial load */
@@ -90,20 +122,54 @@ export function ArenaWorkspace() {
     setScenario(next)
   }, [])
 
+  // ── Replay buffer ─────────────────────────────────────────────────────────
+  // Ticks used to be rendered then dropped, so the COP could only show "now".
+  // Retaining them lets the instructor scrub back through the engagement.
+  const [frames, setFrames] = useState<TickFrame[]>([])
+  const [scrubIndex, setScrubIndex] = useState(0)
+  const [following, setFollowing] = useState(true)
+
   const onTickChange = useCallback((next: TickResult | null) => {
     setTick(next)
-  }, [])
+    if (!next) return
+    setFrames((prev) => {
+      const grown = appendFrame(prev, next)
+      // Only advance the playhead when the user is following live; scrubbing
+      // back must not be yanked forward by an incoming tick.
+      setScrubIndex((idx) => (following ? grown.length - 1 : clampIndex(grown, idx)))
+      return grown
+    })
+  }, [following])
+
+  const scrubTo = useCallback((idx: number) => {
+    setScrubIndex((prev) => {
+      const next = clampIndex(frames, idx)
+      setFollowing(isLive(frames, next))
+      return next
+    })
+  }, [frames])
+
+  const returnToLive = useCallback(() => {
+    setFollowing(true)
+    setScrubIndex(Math.max(0, frames.length - 1))
+  }, [frames.length])
+
+  /** What the COP and the brief actually render — live tick, or a replayed one. */
+  const activeTick = useMemo(() => {
+    if (following) return tick
+    return frameAt(frames, scrubIndex)?.tick ?? tick
+  }, [following, tick, frames, scrubIndex])
 
   const entities = useMemo(
-    () => worldStateToCopEntities(scenario, copMode, tick),
-    [scenario, copMode, tick],
+    () => worldStateToCopEntities(scenario, copMode, activeTick),
+    [scenario, copMode, activeTick],
   )
 
   const center = useMemo(() => deriveCenter(scenario), [scenario])
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-[320px_1fr] gap-4">
-      <div className="space-y-4 min-w-0">
+      <div className="space-y-4 min-w-0" data-tour="scenario-list">
         <WoprScenarioPanel onScenarioChange={onScenarioChange} onTickChange={onTickChange} />
         <SwarmSaturationPanel />
       </div>
@@ -115,7 +181,7 @@ export function ArenaWorkspace() {
 
           <div className="flex flex-wrap items-center gap-1">
             {/* COP view mode tabs */}
-            <div className="flex gap-1" role="tablist" aria-label="COP view mode">
+            <div className="flex gap-1" role="tablist" aria-label="COP view mode" data-tour="cop-tabs">
               {COP_MODES.map((mode) => (
                 <button
                   key={mode.id}
@@ -134,6 +200,50 @@ export function ArenaWorkspace() {
                 </button>
               ))}
             </div>
+
+            {/* ── Printable commander's brief ───────────────────────────── */}
+            <div className="w-px h-4 bg-[var(--store-line)] mx-1" aria-hidden />
+            <button
+              type="button"
+              onClick={() => setBriefOpen(true)}
+              disabled={!scenario}
+              title={scenario ? 'Generate a printable brief for this scenario' : 'Select a scenario first'}
+              className={clsx(
+                'flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-mono border transition-colors',
+                scenario
+                  ? 'store-panel-inner store-text-body hover:border-[var(--store-accent-border)]'
+                  : 'store-panel-inner store-text-muted opacity-40 cursor-not-allowed',
+              )}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="8" y1="13" x2="16" y2="13" />
+                <line x1="8" y1="17" x2="16" y2="17" />
+              </svg>
+              Brief
+            </button>
+
+            {/* ── Guided walkthrough launcher ───────────────────────────── */}
+            <div className="w-px h-4 bg-[var(--store-line)] mx-1" aria-hidden />
+            <button
+              type="button"
+              onClick={() => setTourOpen(true)}
+              title="Walk through the fog-of-war demo"
+              className={clsx(
+                'flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-mono border transition-colors',
+                tourSeen
+                  ? 'store-panel-inner store-text-muted hover:border-[var(--store-accent-border)]'
+                  : 'border-[var(--store-accent-border)] text-[var(--store-accent)] bg-[var(--store-accent)]/10',
+              )}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              Guide
+            </button>
 
             {/* ── AIS marine layer toggle tile ──────────────────────────── */}
             <div className="w-px h-4 bg-[var(--store-line)] mx-1" aria-hidden />
@@ -183,7 +293,7 @@ export function ArenaWorkspace() {
         )}
 
         {/* ── 3D canvas ────────────────────────────────────────────────────── */}
-        <div className="relative h-[480px] w-full rounded-xl overflow-hidden shrink-0">
+        <div className="relative h-[480px] w-full rounded-xl overflow-hidden shrink-0" data-tour="cop-canvas">
           <CesiumArena
             entities={entities}
             center={center}
@@ -191,7 +301,29 @@ export function ArenaWorkspace() {
             aisVessels={aisVessels}
           />
         </div>
+
+        <TickScrubber
+          frames={frames}
+          index={scrubIndex}
+          following={following}
+          onScrub={scrubTo}
+          onReturnToLive={returnToLive}
+        />
       </StorePanel>
+
+      <GuidedTour
+        tour={ARENA_FOG_OF_WAR_TOUR}
+        open={tourOpen}
+        onClose={closeTour}
+        onAction={runTourAction}
+      />
+
+      <ScenarioBriefSheet
+        scenario={scenario}
+        tick={activeTick}
+        open={briefOpen}
+        onClose={() => setBriefOpen(false)}
+      />
     </div>
   )
 }

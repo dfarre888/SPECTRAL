@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { HubPageShell } from '@/components/hub/HubPageShell';
 import { PLANNER_VIGNETTES } from '@/lib/planner/vignettes';
 import { PlannerLibraryClient } from '@/components/planner/PlannerLibraryClient';
+import { DEMO_LAYDOWN, ThreatRoutePanel } from '@/components/map/ThreatRoutePanel';
 
 export default function PlannerPage() {
   return (
@@ -32,6 +33,18 @@ export default function PlannerPage() {
           </Link>
         ))}
       </div>
+      <h2 className="text-sm font-semibold text-white mt-8 mb-2">Threat-aware routing</h2>
+      <p className="text-xs store-text-body mb-3 max-w-3xl">
+        A great-circle leg ignores what is looking at it. This plans the path that minimises
+        cumulative exposure, bending around engagement envelopes and through the Doppler notch,
+        and states plainly when no clear route exists inside the detour allowance.
+      </p>
+      <ThreatRoutePanel
+        start={{ lon: 143.0, lat: -38.0 }}
+        objective={{ lon: 156.0, lat: -31.0 }}
+        placed={DEMO_LAYDOWN}
+      />
+
       <h2 className="text-sm font-semibold text-white mt-8 mb-2">Saved plans</h2>
       <PlannerLibraryClient />
     </HubPageShell>

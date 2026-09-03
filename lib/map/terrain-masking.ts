@@ -7,6 +7,15 @@ import {
   sampleTerrainBatch,
   TERRAIN_SURFACE_AGL_M,
 } from '@/lib/map/terrain'
+import {
+  planSweep,
+  rayVisibility,
+  viewshedQuality,
+  type RaySegment,
+  type RayVisibility,
+  type ViewshedQuality,
+  DEFAULT_SWEEP_BUDGET,
+} from '@/lib/map/viewshed'
 
 /** Min clearance above LOS line before terrain counts as blocking. */
 export const TERRAIN_MASK_CLEARANCE_M = 5
@@ -14,8 +23,16 @@ export const TERRAIN_MASK_CLEARANCE_M = 5
 /** Sample spacing along each LOS ray (m). */
 export const TERRAIN_MASK_STEP_M = 50
 
-/** Azimuth step (degrees) — 72 rays around the emitter. */
+/**
+ * Legacy fixed azimuth step. Retained for callers that still reference it, but
+ * the sweep now derives its step from range via azimuthStepDeg(): at 50 km a
+ * 5 degree step left 4.4 km between rays, so a ridge was caught or missed
+ * depending on where it happened to fall.
+ */
 export const TERRAIN_MASK_AZIMUTH_STEP = 5
+
+/** Default antenna height above ground, metres. */
+export const DEFAULT_EMITTER_MAST_M = 10
 
 /** Drone AGL for dead-ground / viewshed target (MathWorks radar-coverage pattern). */
 export const DRONE_TARGET_AGL_M = 30
@@ -37,6 +54,11 @@ export interface MaskingRayResult {
   boundaryLat: number
   /** Terrain AMSL at the LOS ridge / dead-ground boundary. */
   boundaryTerrainAMSL: number
+  /**
+   * Full visibility profile along the ray. A single distance cannot express
+   * ground that becomes visible again beyond a ridge; this can.
+   */
+  segments: RaySegment[]
 }
 
 export interface SphereLosMaskResult {
@@ -44,6 +66,8 @@ export interface SphereLosMaskResult {
   emitterAltM: number
   footprintCells: TerrainShadowFootprint[]
   rays: MaskingRayResult[]
+  /** Terrain coverage behind the result — surface this rather than hiding it. */
+  quality: ViewshedQuality
 }
 
 export function offsetBearingM(
@@ -69,8 +93,10 @@ export function offsetBearingM(
   return { lon: (lon2 * 180) / Math.PI, lat: (lat2 * 180) / Math.PI }
 }
 
-function emitterAltM(terrainAMSL: number): number {
-  return terrainAMSL + TERRAIN_SURFACE_AGL_M
+function emitterAltM(terrainAMSL: number, mastM: number = DEFAULT_EMITTER_MAST_M): number {
+  // TERRAIN_SURFACE_AGL_M is a 2 m z-fighting offset for draped geometry and
+  // was previously doubling as antenna height, putting every radar on a 2 m mast.
+  return terrainAMSL + mastM
 }
 
 function surfaceAltM(terrainAMSL: number): number {
@@ -136,11 +162,14 @@ export async function computeTerrainMasking(
   maxRange_m: number,
   viewer?: CesiumViewer | null,
 ): Promise<SphereLosMaskResult> {
-  const step_m = TERRAIN_MASK_STEP_M
-  const steps = Math.max(1, Math.floor(maxRange_m / step_m))
+  // Sample budget keeps a long-range sweep from stalling the map: azimuth is
+  // widened before radial resolution is given up.
+  const plan = planSweep(maxRange_m, DEFAULT_SWEEP_BUDGET, TERRAIN_MASK_STEP_M)
+  const step_m = plan.stepM
+  const steps = plan.stepsPerRay
   const h_em = emitterAltM(terrainAMSL)
   const angles: number[] = []
-  for (let a = 0; a < 360; a += TERRAIN_MASK_AZIMUTH_STEP) angles.push(a)
+  for (let a = 0; a < 360; a += plan.azStepDeg) angles.push(a)
 
   const allPoints: { lon: number; lat: number; angle: number; dist: number }[] = []
   for (const angle of angles) {
@@ -160,6 +189,7 @@ export async function computeTerrainMasking(
 
   const rays: MaskingRayResult[] = []
   const visible_m: number[] = []
+  const rayResults: RayVisibility[] = []
   let idx = 0
 
   for (const angle of angles) {
@@ -168,7 +198,16 @@ export async function computeTerrainMasking(
       stepHeights.push(heights[idx])
       idx++
     }
-    const vis = visibleDistanceGroundLevel(stepHeights, step_m, h_em, maxRange_m)
+    // 'block' is the conservative policy: unresolved terrain is treated as
+    // opaque rather than transparent, so the sweep never claims coverage it
+    // could not verify. Unresolved counts are reported in `quality`.
+    const rv = rayVisibility(stepHeights, step_m, terrainAMSL, {
+      emitterMastM: DEFAULT_EMITTER_MAST_M,
+      targetAglM: DRONE_TARGET_AGL_M,
+      unresolvedPolicy: 'block',
+    })
+    rayResults.push(rv)
+    const vis = rv.firstMaskM ?? maxRange_m
     visible_m.push(vis)
     const boundary = offsetBearingM(lon, lat, angle, vis)
     const stepIdx = Math.min(
@@ -180,7 +219,10 @@ export async function computeTerrainMasking(
       visibleDistance_m: vis,
       boundaryLon: boundary.lon,
       boundaryLat: boundary.lat,
-      boundaryTerrainAMSL: stepHeights[stepIdx] ?? terrainAMSL,
+      boundaryTerrainAMSL: Number.isFinite(stepHeights[stepIdx])
+        ? stepHeights[stepIdx]
+        : terrainAMSL,
+      segments: rv.segments,
     })
   }
 
@@ -242,5 +284,6 @@ export async function computeTerrainMasking(
     emitterAltM: h_em,
     footprintCells,
     rays,
+    quality: viewshedQuality(rayResults),
   }
 }

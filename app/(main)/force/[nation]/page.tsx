@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Flag } from 'lucide-react'
 import { HubPageShell } from '@/components/hub/HubPageShell'
 import { CountryOrbatClient } from '@/components/force/CountryOrbatClient'
+import { OrbatComposer } from '@/components/force/OrbatComposer'
 import { parseNationCode } from '@/lib/force/nations'
 import { getNationForce } from '@/lib/force/queries'
 
@@ -46,7 +47,27 @@ export default async function ForceNationPage({ params }: PageProps) {
           No BMI catalog rows on this database. Confirm .env.local points at Sydney (nxnukrnkbxiqberymqzq) and reload.
         </p>
       ) : (
-        <CountryOrbatClient force={force} compareDefault={compareDefault} />
+        <>
+          <CountryOrbatClient force={force} compareDefault={compareDefault} />
+
+          <h2 className="text-sm font-semibold text-white mt-8 mb-1">Battle plan — package composition</h2>
+          <p className="text-xs store-text-body mb-3 max-w-3xl">
+            Toggle platforms in and out of the package. The rollup tracks how many platforms sit on
+            each comms band and which sensor bands stay covered, so dropping an airframe shows its
+            cost immediately — a band held by one platform is flagged before it is lost.
+          </p>
+          <OrbatComposer
+            nationLabel={force.nation.name}
+            platforms={force.platforms.map((p) => ({
+              id: p.id,
+              label: p.short_name || p.designation,
+              domain: p.domain,
+              role: p.role,
+              comms: p.comms.map((c) => ({ kind: c.kind, standard: c.standard, band: c.band })),
+              sensors: p.sensors.map((s2) => ({ band: s2.band, kind: s2.kind })),
+            }))}
+          />
+        </>
       )}
     </HubPageShell>
   )

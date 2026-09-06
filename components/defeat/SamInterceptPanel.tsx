@@ -12,6 +12,11 @@ import {
   type UasTargetCategory,
 } from '@/lib/risk/sam-intercept'
 import { cn } from '@/lib/utils'
+import {
+  checkEnvelope,
+  envelopeBandPct,
+  sliderMaxFor,
+} from '@/lib/risk/envelope-explain'
 
 const TARGET_CATEGORIES: UasTargetCategory[] = [
   'fpv', 'owa', 'loitering_munition', 'tactical_isr', 'male', 'hale',
@@ -56,6 +61,38 @@ export function SamInterceptPanel({ onClose }: SamInterceptPanelProps) {
     [],
   )
 
+  const profile = getSamProfile(systemId)
+
+  // Sliders scale to the selected system. A fixed 40 km axis made every MANPADS
+  // look identical and put its whole envelope in the first tenth of the travel.
+  const rangeSliderMax = profile ? sliderMaxFor(profile.max_range_m) : 40_000
+  const altSliderMax = profile ? sliderMaxFor(profile.max_alt_m) : 30_000
+
+  const envelope = profile
+    ? {
+        minRangeM: profile.min_range_m,
+        maxRangeM: profile.max_range_m,
+        minAltM: profile.min_alt_m,
+        maxAltM: profile.max_alt_m,
+      }
+    : null
+
+  const check = envelope
+    ? checkEnvelope(envelope, slantRange, targetAlt, {
+        systemLabel: profile?.nato_designation,
+        targetLabel: target.replace(/_/g, ' ').toUpperCase(),
+      })
+    : null
+
+  const rangeBand = envelope ? envelopeBandPct(envelope.minRangeM, envelope.maxRangeM, rangeSliderMax) : null
+  const altBand = envelope ? envelopeBandPct(envelope.minAltM, envelope.maxAltM, altSliderMax) : null
+
+  // Keep the sliders inside the new scale when the system changes.
+  useEffect(() => {
+    setSlantRange((v) => Math.min(v, rangeSliderMax))
+    setTargetAlt((v) => Math.min(v, altSliderMax))
+  }, [rangeSliderMax, altSliderMax])
+
   return (
     <div className="w-[320px] rounded-xl border border-[var(--store-line)] bg-[var(--store-surface)] shadow-2xl flex flex-col max-h-[calc(100vh-120px)] overflow-hidden">
       <div className="flex items-center justify-between gap-2 border-b border-[var(--store-line)] px-3 py-2.5">
@@ -74,6 +111,12 @@ export function SamInterceptPanel({ onClose }: SamInterceptPanelProps) {
               <option key={opt.id} value={opt.id}>{opt.label}</option>
             ))}
           </select>
+          {envelope && (
+            <p className="text-[10px] font-mono text-slate-400 pt-0.5">
+              Envelope {(envelope.minRangeM / 1000).toFixed(1)}–{(envelope.maxRangeM / 1000).toFixed(1)} km ·
+              {' '}{envelope.minAltM}–{envelope.maxAltM} m alt
+            </p>
+          )}
         </label>
         <div className="space-y-1">
           <span className="text-[10px] uppercase text-slate-400">Target</span>
@@ -88,15 +131,47 @@ export function SamInterceptPanel({ onClose }: SamInterceptPanelProps) {
         <div className="grid grid-cols-2 gap-2">
           <label className="space-y-1">
             <span className="text-[10px] text-slate-400">Slant range (m)</span>
-            <input type="range" min={0} max={40000} step={500} value={slantRange} onChange={(e) => setSlantRange(Number(e.target.value))} className="w-full" />
-            <span className="font-mono text-[11px] text-cyan">{slantRange.toLocaleString()}</span>
+            <div className="relative">
+              {/* Shaded band marks where an engagement is actually possible. */}
+              {rangeBand && (
+                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-black/40 pointer-events-none">
+                  <div
+                    className="absolute h-full rounded-full bg-emerald-500/35"
+                    style={{ left: `${rangeBand.leftPct}%`, width: `${rangeBand.widthPct}%` }}
+                  />
+                </div>
+              )}
+              <input type="range" min={0} max={rangeSliderMax} step={100} value={slantRange}
+                onChange={(e) => setSlantRange(Number(e.target.value))}
+                className="relative w-full bg-transparent" />
+            </div>
+            <span className={cn('font-mono text-[11px]', check && !check.inEnvelope ? 'text-red-400' : 'text-cyan')}>
+              {slantRange.toLocaleString()}
+            </span>
           </label>
           <label className="space-y-1">
             <span className="text-[10px] text-slate-400">Target alt (m)</span>
-            <input type="range" min={0} max={30000} step={100} value={targetAlt} onChange={(e) => setTargetAlt(Number(e.target.value))} className="w-full" />
-            <span className="font-mono text-[11px] text-cyan">{targetAlt.toLocaleString()}</span>
+            <div className="relative">
+              {altBand && (
+                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-black/40 pointer-events-none">
+                  <div
+                    className="absolute h-full rounded-full bg-emerald-500/35"
+                    style={{ left: `${altBand.leftPct}%`, width: `${altBand.widthPct}%` }}
+                  />
+                </div>
+              )}
+              <input type="range" min={0} max={altSliderMax} step={50} value={targetAlt}
+                onChange={(e) => setTargetAlt(Number(e.target.value))}
+                className="relative w-full bg-transparent" />
+            </div>
+            <span className={cn('font-mono text-[11px]', check && !check.inEnvelope ? 'text-red-400' : 'text-cyan')}>
+              {targetAlt.toLocaleString()}
+            </span>
           </label>
         </div>
+        <p className="text-[9px] font-mono text-slate-500 -mt-1">
+          Green band = engageable. Sliders scale to the selected system.
+        </p>
         <div className="space-y-1">
           <span className="text-[10px] text-slate-400">Salvo</span>
           <div className="flex gap-1">{[1,2,3,4].map((n) => (
@@ -111,9 +186,32 @@ export function SamInterceptPanel({ onClose }: SamInterceptPanelProps) {
         </div>
         {result && (
           <div className="rounded-lg border border-[var(--store-line)] bg-[#111118] p-3 space-y-3">
+            {check && (
+              <p className="text-[10px] text-slate-300 leading-snug">{check.statement}</p>
+            )}
             <div className={cn('text-center text-[10px] font-semibold uppercase py-1 rounded', result.in_envelope ? 'bg-emerald-950/80 text-emerald-400' : 'bg-[#7F1D1D] text-[#EF4444]')}>
               {result.in_envelope ? 'In envelope: yes' : 'Out of engagement envelope'}
             </div>
+            {/* A calculator that says no must say why, and where yes begins. */}
+            {check && !check.inEnvelope && (
+              <div className="space-y-1.5">
+                {check.failures.map((f) => (
+                  <div key={f.axis} className="rounded border border-red-500/25 bg-red-500/5 px-2 py-1.5">
+                    <p className="text-[10px] text-red-200 leading-snug">{f.message}</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (f.axis.startsWith('range')) setSlantRange(f.suggestM)
+                        else setTargetAlt(f.suggestM)
+                      }}
+                      className="mt-1 text-[9px] font-mono text-cyan hover:underline"
+                    >
+                      → snap to {f.suggestM.toLocaleString()} m
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
             {result.in_envelope && (
               <>
                 <PkRow label="Pk single" value={result.pk_single} />

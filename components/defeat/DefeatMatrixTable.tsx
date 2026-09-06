@@ -51,8 +51,14 @@ export function DefeatMatrixTable({
   focusCol = 0,
   onFocusChange,
 }: DefeatMatrixTableProps) {
-  const platformColMin = variant === 'fullscreen' ? 'min-w-[220px]' : 'min-w-[180px]'
-  const systemColMin = variant === 'fullscreen' ? 'min-w-[120px]' : 'min-w-[100px]'
+  // Rows are absolutely positioned by the virtualiser, which takes them out of
+  // normal table layout — so each row would size its own columns and nothing
+  // would line up. Fixed layout plus an explicit colgroup forces identical
+  // widths on every row. These are exact px, not minimums, for that reason.
+  const platformColPx = variant === 'fullscreen' ? 220 : 180
+  const systemColPx = variant === 'fullscreen' ? 120 : 100
+  const platformColMin = variant === 'fullscreen' ? 'w-[220px]' : 'w-[180px]'
+  const systemColMin = variant === 'fullscreen' ? 'w-[120px]' : 'w-[100px]'
   const scrollRef = useRef<HTMLDivElement>(null)
   const cellRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
@@ -130,7 +136,19 @@ export function DefeatMatrixTable({
         aria-colcount={systems.length + 1}
         onKeyDown={handleKeyDown}
       >
-        <table className="w-max min-w-full border-collapse">
+        <table
+          className="border-collapse"
+          style={{
+            tableLayout: 'fixed',
+            width: platformColPx + systems.length * systemColPx,
+          }}
+        >
+          <colgroup>
+            <col style={{ width: platformColPx }} />
+            {systems.map((s2) => (
+              <col key={s2.id} style={{ width: systemColPx }} />
+            ))}
+          </colgroup>
           <thead>
             <tr>
               <th className={`sticky left-0 top-0 z-30 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 text-left ${platformColMin}`}>
@@ -141,7 +159,7 @@ export function DefeatMatrixTable({
               {systems.map((system) => (
                 <th
                   key={system.id}
-                  className={`sticky top-0 z-20 bg-[var(--store-surface)] border border-[var(--store-line)] px-3 py-3 text-center ${systemColMin}`}
+                  className={`sticky top-0 z-20 bg-[var(--store-surface)] border border-[var(--store-line)] px-2 py-3 text-center overflow-hidden ${systemColMin}`}
                 >
                   <div className="flex flex-col items-center gap-1">
                     <PlatformThumbnail
@@ -150,7 +168,10 @@ export function DefeatMatrixTable({
                       size="sm"
                       variant="cuas"
                     />
-                    <span className="text-xs font-medium text-white leading-tight">
+                    <span
+                      className="text-xs font-medium text-white leading-tight line-clamp-2 break-words w-full"
+                      title={system.name}
+                    >
                       {system.name}
                     </span>
                     <span className="text-[10px] font-mono store-text-muted">
@@ -176,14 +197,17 @@ export function DefeatMatrixTable({
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  <td className={`sticky left-0 z-10 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 ${platformColMin}`}>
-                    <div className="flex items-center gap-2">
+                  <td className={`sticky left-0 z-10 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 overflow-hidden ${platformColMin}`}>
+                    <div className="flex items-center gap-2 min-w-0">
                       <PlatformThumbnail id={platform.id} name={platform.name} size="sm" />
-                      <p className="font-semibold text-white text-sm leading-tight">
+                      <p
+                        className="font-semibold text-white text-sm leading-tight truncate min-w-0"
+                        title={platform.name}
+                      >
                         {platform.name}
                       </p>
                     </div>
-                    <p className="text-xs font-mono store-text-muted mt-0.5">
+                    <p className="text-xs font-mono store-text-muted mt-0.5 truncate">
                       {platform.country_of_origin ?? '—'}
                     </p>
                   </td>

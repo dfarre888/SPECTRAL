@@ -16,6 +16,16 @@ import type {
   Platform,
 } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { matchesCategoryPill, type CategoryPill } from '@/lib/platforms/constants'
+import {
+  THREAT_CLASSES,
+  aggregateCell,
+  coveragePct,
+  describeCell,
+  heatColor,
+  heatTextColor,
+  type HeatSample,
+} from '@/lib/defeat/heatmap-aggregate'
 
 export function pkColor(pct: number, isImmune: boolean): string {
   if (isImmune) return '#1a1a2e'
@@ -141,6 +151,38 @@ export function DefeatHeatmap({
     return map
   }, [effectiveness])
 
+  // Bucket platforms into threat classes once. 'other' catches anything the
+  // named pills do not claim, so no platform is silently dropped from the grid.
+  const classPlatforms = useMemo(() => {
+    const buckets: Record<string, Platform[]> = {}
+    for (const c of THREAT_CLASSES) buckets[c.id] = []
+    for (const p of platforms) {
+      const hit = THREAT_CLASSES.find(
+        (c) => c.id !== 'other' && matchesCategoryPill(p.category, c.id as CategoryPill),
+      )
+      buckets[hit ? hit.id : 'other'].push(p)
+    }
+    return buckets
+  }, [platforms])
+
+  const classCounts = useMemo(() => {
+    const out: Record<string, number> = {}
+    for (const [k, v] of Object.entries(classPlatforms)) out[k] = v.length
+    return out
+  }, [classPlatforms])
+
+  const cellFor = useMemo(() => {
+    return (system: AntiDroneSystem, classId: string) => {
+      const members = classPlatforms[classId] ?? []
+      const samples: HeatSample[] = members.map((p) => {
+        const row = cellMap.get(`${p.id}:${system.id}`)
+        const { immune, pct } = resolveHeatmapCell(p, system, row, effectMode, computedSamPkMap)
+        return { pct, immune, confidence: row?.data_confidence }
+      })
+      return aggregateCell(system.id, classId, samples)
+    }
+  }, [classPlatforms, cellMap, effectMode, computedSamPkMap])
+
   if (platforms.length === 0 || filteredSystems.length === 0) {
     return (
       <div className="store-panel rounded-2xl p-12 text-center">
@@ -198,23 +240,30 @@ export function DefeatHeatmap({
         ))}
       </div>
 
-      <div className="overflow-auto max-h-[calc(100vh-200px)] rounded-xl border border-[var(--store-line)]">
-        <table className="border-collapse w-max min-w-full">
+      <div className="overflow-auto max-h-[calc(100vh-260px)] rounded-xl border border-[var(--store-line)]">
+        <table className="border-collapse w-full" style={{ tableLayout: 'fixed' }}>
+          <colgroup>
+            <col style={{ width: 260 }} />
+            {THREAT_CLASSES.map((c) => (
+              <col key={c.id} />
+            ))}
+          </colgroup>
           <thead>
             <tr>
-              <th className="sticky left-0 top-0 z-40 bg-[#111118] border border-white/5 px-3 py-2 min-w-[180px] text-left text-[10px] uppercase text-slate-400">
-                System
+              <th className="sticky left-0 top-0 z-40 bg-[#111118] border border-white/5 px-3 py-2 text-left text-[10px] uppercase text-slate-400">
+                Effector
               </th>
-              {platforms.map((platform) => (
+              {THREAT_CLASSES.map((c) => (
                 <th
-                  key={platform.id}
-                  className="sticky top-0 z-30 bg-[#111118] border border-white/5 px-1 py-2 min-w-[52px]"
+                  key={c.id}
+                  className="sticky top-0 z-30 bg-[#111118] border border-white/5 px-2 py-2 text-center"
+                  title={c.label}
                 >
-                  <span
-                    className="block text-[10px] font-mono text-slate-300 whitespace-nowrap"
-                    style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-                  >
-                    {platform.name}
+                  <span className="block text-[11px] font-semibold text-slate-200 leading-tight">
+                    {c.label}
+                  </span>
+                  <span className="block text-[9px] font-mono text-slate-500">
+                    {classCounts[c.id] ?? 0} platforms
                   </span>
                 </th>
               ))}
@@ -223,41 +272,39 @@ export function DefeatHeatmap({
           <tbody>
             {filteredSystems.map((system) => (
               <tr key={system.id}>
-                <td className="sticky left-0 z-20 bg-[var(--store-bg)] border border-white/5 px-3 py-2 max-w-[180px]">
-                  <span className="text-xs text-slate-200 truncate block">{system.name}</span>
+                <td className="sticky left-0 z-20 bg-[var(--store-bg)] border border-white/5 px-3 py-2 overflow-hidden">
+                  <span className="text-xs text-slate-200 truncate block" title={system.name}>
+                    {system.name}
+                  </span>
+                  <span className="text-[9px] font-mono text-slate-500 truncate block">
+                    {system.country}
+                  </span>
                 </td>
-                {platforms.map((platform) => {
-                  const row = cellMap.get(`${platform.id}:${system.id}`)
-                  const { immune, pct } = resolveHeatmapCell(
-                    platform,
-                    system,
-                    row,
-                    effectMode,
-                    computedSamPkMap,
-                  )
-                  const displayPct = pct ?? 0
-                  const bg = pkColor(displayPct, immune)
-                  const fg = immune ? '#94a3b8' : pkTextColor(displayPct)
+                {THREAT_CLASSES.map((c) => {
+                  const cell = cellFor(system, c.id)
+                  const cov = coveragePct(cell)
                   return (
-                    <td key={platform.id} className="border border-white/5 p-0 min-w-[52px]">
+                    <td key={c.id} className="border border-white/5 p-0">
                       <button
                         type="button"
-                        title={
-                          row
-                            ? `${system.name} vs ${platform.name}: ${immune ? 'immune' : `${displayPct}%`}. Confidence: ${row.data_confidence}`
-                            : `${system.name} vs ${platform.name}`
-                        }
-                        onClick={() => onCellSelect(platform.id, system.id)}
-                        className="relative w-full min-h-[44px] flex items-center justify-center font-mono text-[11px] hover:ring-1 hover:ring-orange/40"
-                        style={{ background: bg, color: fg }}
+                        title={describeCell(cell, system.name, c.label)}
+                        onClick={() => {
+                          const first = classPlatforms[c.id]?.[0]
+                          if (first) onCellSelect(first.id, system.id)
+                        }}
+                        className="relative w-full min-h-[46px] flex flex-col items-center justify-center font-mono hover:ring-1 hover:ring-orange/40"
+                        style={{ background: heatColor(cell.medianPct), color: heatTextColor(cell.medianPct) }}
                       >
-                        {row && (
-                          <span
-                            className="absolute top-0.5 right-0.5 h-1.5 w-1.5 rounded-full"
-                            style={{ background: confidenceDot(row.data_confidence) }}
-                          />
+                        <span className="text-[13px] font-semibold">
+                          {cell.medianPct == null ? '—' : `${cell.medianPct}%`}
+                        </span>
+                        {/* Coverage bar: how much of the class this median rests on. */}
+                        <span className="absolute bottom-0 left-0 h-[2px] bg-current opacity-50" style={{ width: `${cov}%` }} />
+                        {cell.immuneCount > 0 && (
+                          <span className="absolute top-0.5 right-1 text-[8px] opacity-70">
+                            {cell.immuneCount}✕
+                          </span>
                         )}
-                        {immune ? '✕' : pct == null ? '—' : `${displayPct}%`}
                       </button>
                     </td>
                   )
@@ -268,18 +315,28 @@ export function DefeatHeatmap({
         </table>
       </div>
 
-      <p className="text-[10px] font-mono text-slate-500 flex flex-wrap gap-3">
-        <span>■ 0%</span>
-        <span>■ 1–14%</span>
-        <span>■ 15–29%</span>
-        <span>■ 30–49%</span>
-        <span>■ 50–69%</span>
-        <span>■ 70%+</span>
-        <span>✕ Immune</span>
-        <span className="text-cyan">● High</span>
-        <span className="text-amber">● Estimated</span>
-        <span>● Medium</span>
-      </p>
+      <div className="text-[10px] font-mono text-slate-500 space-y-1">
+        <p className="flex flex-wrap gap-3 items-center">
+          <span className="text-slate-400">Median Pk</span>
+          {[10, 25, 40, 55, 70, 90].map((v) => (
+            <span key={v} className="inline-flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-sm" style={{ background: heatColor(v) }} />
+              {v < 15 ? '<15' : v >= 75 ? '75+' : `${v}`}%
+            </span>
+          ))}
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block w-3 h-3 rounded-sm" style={{ background: heatColor(null) }} />
+            no data
+          </span>
+          <span>N✕ = immune in class</span>
+        </p>
+        <p>
+          Each cell is the median across platforms in that class, so one outlier cannot move it.
+          Immune platforms are excluded from the median and counted separately — scoring them
+          zero would read as a weak effector rather than one that cannot apply. The bar under each
+          value shows how much of the class carries an assessment.
+        </p>
+      </div>
     </div>
   )
 }

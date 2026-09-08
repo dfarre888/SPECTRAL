@@ -7,6 +7,7 @@ import {
   diffRollups,
   type ComposerPlatform,
 } from '@/lib/force-catalog/orbat-composer'
+import { focusState, multiFocusState } from '@/lib/ui/band-focus'
 
 interface OrbatComposerProps {
   platforms: ComposerPlatform[]
@@ -33,6 +34,8 @@ function bandTone(b: string): string {
 export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
   const allIds = useMemo(() => new Set(platforms.map((p) => p.id)), [platforms])
   const [selected, setSelected] = useState<Set<string>>(allIds)
+  /** Signature move: pointing at a band lifts everything on it. */
+  const [band, setBand] = useState<string | null>(null)
 
   const full = useMemo(() => composeOrbat(platforms, allIds), [platforms, allIds])
   const current = useMemo(() => composeOrbat(platforms, selected), [platforms, selected])
@@ -104,6 +107,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                       key={p.id}
                       type="button"
                       onClick={() => toggle(p.id)}
+                      data-band-state={on ? multiFocusState(bands, band) : 'neutral'}
                       className={clsx(
                         'w-full flex items-center gap-2.5 rounded-lg px-2.5 py-2 border text-left transition-colors',
                         on
@@ -132,7 +136,14 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                       </span>
                       <span className="flex gap-0.5 shrink-0">
                         {bands.slice(0, 4).map((b) => (
-                          <span key={b} className="w-1.5 h-4 rounded-sm" style={{ background: bandTone(b) }} title={b} />
+                          <span
+                            key={b}
+                            className="w-1.5 h-4 rounded-sm"
+                            style={{ background: bandTone(b) }}
+                            title={b}
+                            onMouseEnter={() => setBand(b)}
+                            onMouseLeave={() => setBand(null)}
+                          />
                         ))}
                       </span>
                     </button>
@@ -177,7 +188,17 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
               {current.commsBands.map((b) => {
                 const spof = current.singlePointBands.includes(b.band)
                 return (
-                  <div key={b.band} className="flex items-center gap-2" title={b.kinds.join(', ')}>
+                  <div
+                    key={b.band}
+                    className="flex items-center gap-2 band-row rounded px-1 -mx-1 cursor-default"
+                    title={b.kinds.join(', ')}
+                    data-band-state={focusState(b.band, band)}
+                    onMouseEnter={() => setBand(b.band)}
+                    onMouseLeave={() => setBand(null)}
+                    onFocus={() => setBand(b.band)}
+                    onBlur={() => setBand(null)}
+                    tabIndex={0}
+                  >
                     <span className="w-10 text-[11px] font-mono text-slate-200 shrink-0">{b.band}</span>
                     <div className="flex-1 h-4 rounded bg-black/30 overflow-hidden">
                       <div className="h-full rounded" style={{
@@ -209,7 +230,17 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
           ) : (
             <div className="space-y-1.5">
               {current.sensorBands.map((b) => (
-                <div key={b.band} className="flex items-center gap-2" title={b.kinds.join(', ')}>
+                <div
+                  key={b.band}
+                  className="flex items-center gap-2 band-row rounded px-1 -mx-1 cursor-default"
+                  title={b.kinds.join(', ')}
+                  data-band-state={focusState(b.band, band)}
+                  onMouseEnter={() => setBand(b.band)}
+                  onMouseLeave={() => setBand(null)}
+                  onFocus={() => setBand(b.band)}
+                  onBlur={() => setBand(null)}
+                  tabIndex={0}
+                >
                   <span className="w-10 text-[11px] font-mono text-slate-200 shrink-0">{b.band}</span>
                   <div className="flex-1 h-4 rounded bg-black/30 overflow-hidden">
                     <div className="h-full rounded" style={{

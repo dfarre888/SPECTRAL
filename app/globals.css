@@ -132,6 +132,36 @@
 .gloss-tile.accent { --gloss-a: #B45309; --gloss-b: #1A1512; --gloss-glow: rgba(249, 115, 22, 0.45); }
 .gloss-tile.cyan   { --gloss-a: #1B6FB8; --gloss-b: #121418; --gloss-glow: rgba(41, 151, 255, 0.45); }
 
+/* ---- Band focus — the signature move ----------------------------------
+   Point at a frequency band anywhere and every element on that band lifts
+   while the rest recedes. Motion stays quiet by design: an opacity change
+   and a 2px lift. No bounce, no scale, nothing that draws attention to the
+   transition rather than the answer.
+
+   The dimmed state is opacity, never display — an element that vanishes
+   takes its layout with it and the page jumps under the pointer.
+   ---------------------------------------------------------------------- */
+[data-band-state] {
+  transition: opacity .22s var(--ease-out), transform .22s var(--ease-out);
+}
+[data-band-state="dimmed"] {
+  opacity: 0.26;
+}
+[data-band-state="focused"] {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+/* The focused row earns a hairline lift rather than a glow — gloss is
+   rationed and a highlight state is not where it should be spent. */
+[data-band-state="focused"].band-row {
+  box-shadow: inset 0 0 0 1px var(--store-line-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-band-state] { transition: none; }
+  [data-band-state="focused"] { transform: none; }
+}
+
 /* Scrims ramp to the ground, not to a mid surface. Ramping to #1D1D1F
    leaves the base of an image reading lighter than the page — a visible band. */
 .scrim-to-ground {

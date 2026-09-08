@@ -9,7 +9,7 @@ const ConflictCesiumMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[440px] rounded-xl border border-[var(--store-line)] bg-[#0A0A0F] flex items-center justify-center text-xs font-mono store-text-muted">
+      <div className="h-[440px] rounded-xl border border-[var(--store-line)] bg-[var(--store-bg)] flex items-center justify-center text-xs font-mono store-text-muted">
         Loading globe…
       </div>
     ),

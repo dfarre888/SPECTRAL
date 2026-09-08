@@ -360,7 +360,7 @@ function PairAssessmentCard({
 
       {operations && pair.propagation && (
         <div className="rounded-lg store-panel px-2.5 py-2 space-y-1.5">
-          <p className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
+          <p className="text-[10px] font-mono store-text-muted uppercase tracking-wider">
             RF link budget (server)
           </p>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] font-mono">

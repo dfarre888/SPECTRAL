@@ -52,7 +52,7 @@ export function AssetIntelligenceCard({ asset, copy }: { asset: TrackedAsset; co
               'mt-2 inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-mono font-semibold',
               asset.payloadActive
                 ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
-                : 'border-slate-500/40 bg-slate-500/10 text-slate-400',
+                : 'border-slate-500/40 bg-slate-500/10 store-text-muted',
             )}
           >
             {asset.payloadActive ? 'Payload active' : 'Payload stowed'}

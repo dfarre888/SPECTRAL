@@ -1,5 +1,6 @@
 'use client'
 
+import { SCENE_GROUND } from '@/lib/ui/store-theme'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { INCIDENT_TYPE_COLOR, normalizeIncidentType } from '@/lib/conflicts/incident-style'
 import type { ConflictIncident } from '@/lib/conflicts/types'
@@ -73,7 +74,7 @@ export function ConflictCesiumMap({
             heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
             showBackground: true,
-            backgroundColor: Cesium.Color.fromCssColorString('#0A0A0F').withAlpha(0.85),
+            backgroundColor: Cesium.Color.fromCssColorString(SCENE_GROUND).withAlpha(0.85),
           })
         : undefined
     }
@@ -203,16 +204,16 @@ export function ConflictCesiumMap({
   }
 
   return (
-    <div className="relative rounded-xl border border-[var(--store-line)] overflow-hidden bg-[#0A0A0F]" style={{ height: MAP_HEIGHT }}>
+    <div className="relative rounded-xl border border-[var(--store-line)] overflow-hidden bg-[var(--store-bg)]" style={{ height: MAP_HEIGHT }}>
       <div ref={containerRef} className="absolute inset-0" />
       {!viewerReady ? (
-        <div className="absolute inset-0 flex items-center justify-center text-xs font-mono store-text-muted bg-[#0A0A0F]/80">
+        <div className="absolute inset-0 flex items-center justify-center text-xs font-mono store-text-muted bg-[var(--store-bg)]/80">
           Loading globe…
         </div>
       ) : null}
       <div className="absolute bottom-2 left-2 flex flex-wrap gap-1.5 max-w-[70%] pointer-events-none">
         {(['cruise_strike', 'ballistic_strike', 'swarm', 'naval', 'intercept', 'uas_strike'] as const).map((t) => (
-          <span key={t} className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/60 text-white/90 border border-white/10">
+          <span key={t} className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/60 text-white/90 border border-[var(--store-line)]">
             <span className="inline-block w-2 h-2 rounded-full mr-1" style={{ background: INCIDENT_TYPE_COLOR[t] }} />
             {t.replace(/_/g, ' ')}
           </span>

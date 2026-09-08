@@ -43,7 +43,7 @@ export function SamDefeatPanel({ platformId }: SamDefeatPanelProps) {
         {rows.map((row) => (
           <li key={row.id} className="space-y-1">
             <div className="flex justify-between text-xs font-mono">
-              <span className="text-slate-300">{row.label}</span>
+              <span className="store-text-body">{row.label}</span>
               <span className="text-[#F97316]">{row.pct}%</span>
             </div>
             <div className="h-2 rounded-full bg-black/40 overflow-hidden">

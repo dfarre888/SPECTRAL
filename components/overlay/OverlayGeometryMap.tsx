@@ -1,5 +1,6 @@
 'use client'
 
+import { SCENE_GROUND } from '@/lib/ui/store-theme'
 import { useEffect, useRef, useState } from 'react'
 import { loadCesium } from '@/lib/map/load-cesium'
 import type { EngagementResult, EngagementScenario } from '@/lib/overlay/engagement-calc'
@@ -70,7 +71,7 @@ export default function OverlayGeometryMap({
         })
 
         viewer.scene.globe.enableLighting = false
-        viewer.scene.backgroundColor = Color.fromCssColorString('#0A0A0F')
+        viewer.scene.backgroundColor = Color.fromCssColorString(SCENE_GROUND)
         viewer.scene.globe.depthTestAgainstTerrain = false
         viewer.resize()
 
@@ -183,7 +184,7 @@ export default function OverlayGeometryMap({
         verticalOrigin: VerticalOrigin.BOTTOM,
         pixelOffset: { x: 0, y: -22 },
         showBackground: true,
-        backgroundColor: Color.fromCssColorString('#0A0A0F').withAlpha(0.85),
+        backgroundColor: Color.fromCssColorString(SCENE_GROUND).withAlpha(0.85),
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
       },
     })
@@ -229,7 +230,7 @@ export default function OverlayGeometryMap({
         verticalOrigin: VerticalOrigin.BOTTOM,
         pixelOffset: { x: 0, y: -20 },
         showBackground: true,
-        backgroundColor: Color.fromCssColorString('#0A0A0F').withAlpha(0.85),
+        backgroundColor: Color.fromCssColorString(SCENE_GROUND).withAlpha(0.85),
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
       },
     })
@@ -279,13 +280,13 @@ export default function OverlayGeometryMap({
         ref={containerRef}
         className="absolute inset-0 w-full h-full rounded-xl overflow-hidden border border-[var(--store-line)]"
         style={{
-          background: '#0A0A0F',
+          background: SCENE_GROUND,
           cursor: placementMode ? 'crosshair' : undefined,
         }}
       />
       {placementBanner ? (
         <div
-          className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-lg border border-[var(--store-accent-border)] bg-[#0A0A0F]/90 px-3 py-1.5 text-[11px] font-mono text-[var(--store-accent)] shadow-lg"
+          className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-lg border border-[var(--store-accent-border)] bg-[var(--store-bg)]/90 px-3 py-1.5 text-[11px] font-mono text-[var(--store-accent)] shadow-lg"
           role="status"
         >
           {placementBanner}

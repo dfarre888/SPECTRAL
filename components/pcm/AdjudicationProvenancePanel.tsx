@@ -45,7 +45,7 @@ export function AdjudicationProvenancePanel({
   const showAccreditedLegend = pair?.data_source === 'accredited';
 
   return (
-    <div className={cn('space-y-4 border-t border-white/10 pt-4', className)}>
+    <div className={cn('space-y-4 border-t border-[var(--store-line)] pt-4', className)}>
       <p className="text-xs store-text-muted uppercase tracking-wider font-semibold">
         PCM provenance
       </p>

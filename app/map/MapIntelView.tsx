@@ -93,8 +93,8 @@ function mapToolbarBtn(active: boolean, accent: 'orange' | 'cyan'): string {
   const base = 'map-press px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border shadow-md'
   if (active) {
     return accent === 'orange'
-      ? `${base} bg-[#F97316] border-[#F97316] text-[#0A0A0F]`
-      : `${base} bg-[#06B6D4] border-[#06B6D4] text-[#0A0A0F]`
+      ? `${base} bg-[#F97316] border-[#F97316] text-[var(--store-bg)]`
+      : `${base} bg-[#06B6D4] border-[#06B6D4] text-[var(--store-bg)]`
   }
   return `${base} bg-[var(--store-surface-2)] border-[var(--store-line)] text-white hover:bg-[var(--store-surface)] hover:border-[var(--store-accent-border)]`
 }

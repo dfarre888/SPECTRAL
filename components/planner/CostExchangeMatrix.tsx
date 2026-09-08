@@ -84,7 +84,7 @@ export function CostExchangeMatrix() {
                 className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border px-3 py-2"
                 style={{ background: tone.bg, borderColor: tone.border }}
               >
-                <span className="text-[12px] text-slate-100 font-medium min-w-[210px] flex-1">
+                <span className="text-[12px] text-[var(--store-ink)] font-medium min-w-[210px] flex-1">
                   {x.effector.label}
                   {x.effector.reusable && (
                     <span className="ml-1.5 text-[9px] font-mono store-text-muted">reusable</span>
@@ -159,7 +159,7 @@ export function CostExchangeMatrix() {
                     className="border-b border-[var(--store-line)]/50"
                     title={`${x.effector.note}\n\n${x.threat.note}`}
                   >
-                    <td className="py-1.5 pr-2 text-[12px] text-slate-100 truncate">{x.effector.label}</td>
+                    <td className="py-1.5 pr-2 text-[12px] text-[var(--store-ink)] truncate">{x.effector.label}</td>
                     <td className="py-1.5 pr-2 text-[12px] store-text-body truncate">{x.threat.label}</td>
                     <td className="py-1.5 pr-2 text-[11px] font-mono" style={{ color: tone.text }}>
                       {formatRatio(x.loRatio)} – {formatRatio(x.hiRatio)}

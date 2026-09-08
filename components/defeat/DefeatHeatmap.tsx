@@ -203,7 +203,7 @@ export function DefeatHeatmap({
               'rounded-full px-3 py-1 text-[10px] font-mono uppercase border',
               effectMode === mode
                 ? 'bg-[#F97316] border-[#F97316] text-white'
-                : 'border-white/10 text-slate-400',
+                : 'border-[var(--store-line)] store-text-muted',
             )}
           >
             {mode.replace(/_/g, ' ')}
@@ -218,7 +218,7 @@ export function DefeatHeatmap({
               'rounded-full px-3 py-1 text-[10px] font-mono border',
               samOnlyFilter
                 ? 'bg-cyan/20 border-cyan text-cyan'
-                : 'border-white/10 text-slate-400',
+                : 'border-[var(--store-line)] store-text-muted',
             )}
           >
             SAM only
@@ -232,7 +232,7 @@ export function DefeatHeatmap({
               'rounded-full px-3 py-1 text-[10px] font-mono border',
               systemGroup === pill.id
                 ? 'bg-[#F97316] border-[#F97316] text-white'
-                : 'border-white/10 text-slate-400',
+                : 'border-[var(--store-line)] store-text-muted',
             )}
           >
             {pill.label}
@@ -250,19 +250,19 @@ export function DefeatHeatmap({
           </colgroup>
           <thead>
             <tr>
-              <th className="sticky left-0 top-0 z-40 bg-[#111118] border border-white/5 px-3 py-2 text-left text-[10px] uppercase text-slate-400">
+              <th className="sticky left-0 top-0 z-40 bg-[var(--store-surface)] border border-[var(--store-line)] px-3 py-2 text-left text-[10px] uppercase store-text-muted">
                 Effector
               </th>
               {THREAT_CLASSES.map((c) => (
                 <th
                   key={c.id}
-                  className="sticky top-0 z-30 bg-[#111118] border border-white/5 px-2 py-2 text-center"
+                  className="sticky top-0 z-30 bg-[var(--store-surface)] border border-[var(--store-line)] px-2 py-2 text-center"
                   title={c.label}
                 >
-                  <span className="block text-[11px] font-semibold text-slate-200 leading-tight">
+                  <span className="block text-[11px] font-semibold text-[var(--store-ink)] leading-tight">
                     {c.label}
                   </span>
-                  <span className="block text-[9px] font-mono text-slate-500">
+                  <span className="block text-[9px] font-mono store-text-muted">
                     {classCounts[c.id] ?? 0} platforms
                   </span>
                 </th>
@@ -272,11 +272,11 @@ export function DefeatHeatmap({
           <tbody>
             {filteredSystems.map((system) => (
               <tr key={system.id}>
-                <td className="sticky left-0 z-20 bg-[var(--store-bg)] border border-white/5 px-3 py-2 overflow-hidden">
-                  <span className="text-xs text-slate-200 truncate block" title={system.name}>
+                <td className="sticky left-0 z-20 bg-[var(--store-bg)] border border-[var(--store-line)] px-3 py-2 overflow-hidden">
+                  <span className="text-xs text-[var(--store-ink)] truncate block" title={system.name}>
                     {system.name}
                   </span>
-                  <span className="text-[9px] font-mono text-slate-500 truncate block">
+                  <span className="text-[9px] font-mono store-text-muted truncate block">
                     {system.country}
                   </span>
                 </td>
@@ -284,7 +284,7 @@ export function DefeatHeatmap({
                   const cell = cellFor(system, c.id)
                   const cov = coveragePct(cell)
                   return (
-                    <td key={c.id} className="border border-white/5 p-0">
+                    <td key={c.id} className="border border-[var(--store-line)] p-0">
                       <button
                         type="button"
                         title={describeCell(cell, system.name, c.label)}
@@ -315,9 +315,9 @@ export function DefeatHeatmap({
         </table>
       </div>
 
-      <div className="text-[10px] font-mono text-slate-500 space-y-1">
+      <div className="text-[10px] font-mono store-text-muted space-y-1">
         <p className="flex flex-wrap gap-3 items-center">
-          <span className="text-slate-400">Median Pk</span>
+          <span className="store-text-muted">Median Pk</span>
           {[10, 25, 40, 55, 70, 90].map((v) => (
             <span key={v} className="inline-flex items-center gap-1">
               <span className="inline-block w-3 h-3 rounded-sm" style={{ background: heatColor(v) }} />

@@ -4,7 +4,7 @@ import type { CurrencyDot, OperationalStatus } from '@/lib/dashboard/types'
 const STATUS_STYLES: Record<OperationalStatus, string> = {
   'in-flight': 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400',
   'pre-flight': 'border-indigo-500/40 bg-indigo-500/10 text-indigo-300',
-  idle: 'border-slate-500/40 bg-slate-500/10 text-slate-300',
+  idle: 'border-slate-500/40 bg-slate-500/10 store-text-body',
   grounded: 'border-red-500/40 bg-red-500/10 text-red-400',
   pending: 'border-amber-500/40 bg-amber-500/10 text-amber-400',
   alert: 'border-red-500/50 bg-red-500/15 text-red-300',

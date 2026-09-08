@@ -35,3 +35,14 @@ export const STORE_FONT_MONO = 'var(--font-mono), ui-monospace, monospace'
 
 export const storeCanvasGradient =
   'radial-gradient(80rem 50rem at 0% 100%, rgba(249,115,22,0.09), transparent 60%), var(--store-bg)'
+
+/**
+ * Ground colour for 3D scenes and canvas surfaces.
+ *
+ * Cesium and raw canvas cannot read CSS custom properties, so the ground has to
+ * be handed to them as a literal. Keeping that literal here means there is still
+ * one place to change it — before this existed, nine components each carried
+ * their own #0A0A0F and every one of them painted lighter than the page after
+ * the ground moved to true black.
+ */
+export const SCENE_GROUND = '#000000'

@@ -44,7 +44,7 @@ export function LiveOperationsMap({
         </Link>
       </div>
 
-      <div className="relative flex-1 min-h-[320px] rounded-xl border border-[var(--store-line)] bg-[#0A0A0F] overflow-hidden">
+      <div className="relative flex-1 min-h-[320px] rounded-xl border border-[var(--store-line)] bg-[var(--store-bg)] overflow-hidden">
         {useCesiumPreview && (
           <MiniCesiumPreview center={mapCenter} tracks={context.tracks} className="absolute inset-0" />
         )}

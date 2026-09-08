@@ -7,6 +7,7 @@
  *
  * Cesium requires browser APIs and cannot run on server.
  */
+import { SCENE_GROUND } from '@/lib/ui/store-theme'
 import { useEffect, useRef, useState } from 'react'
 import { loadCesium } from '@/lib/map/load-cesium'
 import type { AisVessel } from '@/lib/ais/types'
@@ -103,7 +104,7 @@ export default function CesiumArena({
       }
 
       viewer.scene.globe.enableLighting = false
-      viewer.scene.backgroundColor = Color.fromCssColorString('#0A0A0F')
+      viewer.scene.backgroundColor = Color.fromCssColorString(SCENE_GROUND)
       viewer.resize()
 
       // Fix: allow engagement spheres to render through the terrain surface.
@@ -248,7 +249,7 @@ export default function CesiumArena({
           verticalOrigin: VerticalOrigin.BOTTOM,
           pixelOffset: { x: 0, y: -14 } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           showBackground: true,
-          backgroundColor: Color.fromCssColorString('#0A0A0F').withAlpha(0.8),
+          backgroundColor: Color.fromCssColorString(SCENE_GROUND).withAlpha(0.8),
         },
       })
 
@@ -339,7 +340,7 @@ export default function CesiumArena({
           verticalOrigin: VerticalOrigin.BOTTOM,
           pixelOffset: { x: 0, y: -12 } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           showBackground: true,
-          backgroundColor: Color.fromCssColorString('#0A0A0F').withAlpha(0.75),
+          backgroundColor: Color.fromCssColorString(SCENE_GROUND).withAlpha(0.75),
           distanceDisplayCondition: { near: 0, far: 2_000_000 } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
         },
       })
@@ -368,7 +369,7 @@ export default function CesiumArena({
     <div
       ref={containerRef}
       className="absolute inset-0 w-full h-full rounded-xl overflow-hidden border border-[var(--store-line)]"
-      style={{ background: '#0A0A0F' }}
+      style={{ background: SCENE_GROUND }}
     />
   )
 }

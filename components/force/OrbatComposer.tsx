@@ -76,11 +76,11 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
           </div>
           <div className="flex gap-1.5">
             <button type="button" onClick={() => setSelected(new Set(allIds))}
-              className="px-2 py-1 rounded-lg text-[10px] font-mono store-panel-inner text-slate-200 hover:border-[var(--store-accent-border)] border border-transparent">
+              className="px-2 py-1 rounded-lg text-[10px] font-mono store-panel-inner text-[var(--store-ink)] hover:border-[var(--store-accent-border)] border border-transparent">
               All
             </button>
             <button type="button" onClick={() => setSelected(new Set())}
-              className="px-2 py-1 rounded-lg text-[10px] font-mono store-panel-inner text-slate-200 hover:border-[var(--store-accent-border)] border border-transparent">
+              className="px-2 py-1 rounded-lg text-[10px] font-mono store-panel-inner text-[var(--store-ink)] hover:border-[var(--store-accent-border)] border border-transparent">
               None
             </button>
           </div>
@@ -89,7 +89,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
         <div className="max-h-[520px] overflow-y-auto pr-1 space-y-3">
           {byDomain.map(([domain, list]) => (
             <div key={domain}>
-              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1 sticky top-0 bg-[var(--store-surface)] py-1">
+              <p className="text-[10px] font-mono uppercase tracking-wider store-text-muted mb-1 sticky top-0 bg-[var(--store-surface)] py-1">
                 {domain} · {list.filter((p) => selected.has(p.id)).length}/{list.length}
               </p>
               <div className="space-y-1">
@@ -127,10 +127,10 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                       </span>
                       <span className="min-w-0 flex-1">
                         {/* Readability: names are near-white, not muted grey. */}
-                        <span className="block text-[13px] text-slate-100 font-medium truncate" title={p.label}>
+                        <span className="block text-[13px] text-[var(--store-ink)] font-medium truncate" title={p.label}>
                           {p.label}
                         </span>
-                        <span className="block text-[10px] font-mono text-slate-400 truncate">
+                        <span className="block text-[10px] font-mono store-text-muted truncate">
                           {p.role} · {p.comms.length} comms · {p.sensors.length} sensors
                         </span>
                       </span>
@@ -163,7 +163,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
           </p>
           <p className="text-2xl font-bold text-white font-mono tabular-nums">
             {current.selectedCount}
-            <span className="text-sm text-slate-400"> / {current.totalCount}</span>
+            <span className="text-sm store-text-muted"> / {current.totalCount}</span>
           </p>
           <div className="grid grid-cols-4 gap-1.5 mt-3">
             {TIER_META.map((t) => (
@@ -171,7 +171,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                 <p className="text-base font-bold font-mono tabular-nums" style={{ color: t.color }}>
                   {current.tiers[t.key]}
                 </p>
-                <p className="text-[9px] font-mono text-slate-400">{t.label}</p>
+                <p className="text-[9px] font-mono store-text-muted">{t.label}</p>
               </div>
             ))}
           </div>
@@ -182,7 +182,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
             Platforms per comms band
           </p>
           {current.commsBands.length === 0 ? (
-            <p className="text-xs text-slate-400">No comms fit in the current package.</p>
+            <p className="text-xs store-text-muted">No comms fit in the current package.</p>
           ) : (
             <div className="space-y-1.5">
               {current.commsBands.map((b) => {
@@ -199,7 +199,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                     onBlur={() => setBand(null)}
                     tabIndex={0}
                   >
-                    <span className="w-10 text-[11px] font-mono text-slate-200 shrink-0">{b.band}</span>
+                    <span className="w-10 text-[11px] font-mono text-[var(--store-ink)] shrink-0">{b.band}</span>
                     <div className="flex-1 h-4 rounded bg-black/30 overflow-hidden">
                       <div className="h-full rounded" style={{
                         width: `${(b.platformCount / maxBandCount) * 100}%`,
@@ -207,7 +207,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                         opacity: 0.75,
                       }} />
                     </div>
-                    <span className="w-7 text-right text-[11px] font-mono text-slate-100">{b.platformCount}</span>
+                    <span className="w-7 text-right text-[11px] font-mono text-[var(--store-ink)]">{b.platformCount}</span>
                     {spof && <span className="text-[9px] font-mono text-amber-400" title="Only one platform holds this band">⚠</span>}
                   </div>
                 )
@@ -226,7 +226,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
             Sensor bands covered
           </p>
           {current.sensorBands.length === 0 ? (
-            <p className="text-xs text-slate-400">No sensor fit recorded in the current package.</p>
+            <p className="text-xs store-text-muted">No sensor fit recorded in the current package.</p>
           ) : (
             <div className="space-y-1.5">
               {current.sensorBands.map((b) => (
@@ -241,7 +241,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                   onBlur={() => setBand(null)}
                   tabIndex={0}
                 >
-                  <span className="w-10 text-[11px] font-mono text-slate-200 shrink-0">{b.band}</span>
+                  <span className="w-10 text-[11px] font-mono text-[var(--store-ink)] shrink-0">{b.band}</span>
                   <div className="flex-1 h-4 rounded bg-black/30 overflow-hidden">
                     <div className="h-full rounded" style={{
                       width: `${(b.platformCount / maxSensorCount) * 100}%`,
@@ -249,7 +249,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                       opacity: 0.75,
                     }} />
                   </div>
-                  <span className="w-7 text-right text-[11px] font-mono text-slate-100">{b.platformCount}</span>
+                  <span className="w-7 text-right text-[11px] font-mono text-[var(--store-ink)]">{b.platformCount}</span>
                 </div>
               ))}
             </div>
@@ -267,7 +267,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
               </p>
             )}
             {delta.trackDelta !== 0 && (
-              <p className="text-xs text-slate-300 mt-1">
+              <p className="text-xs store-text-body mt-1">
                 Track-capable platforms {delta.trackDelta > 0 ? '+' : ''}{delta.trackDelta}
               </p>
             )}
@@ -275,7 +275,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
         )}
 
         {(current.noCommsIds.length > 0 || current.noSensorIds.length > 0) && (
-          <p className="text-[10px] font-mono text-slate-400 leading-relaxed">
+          <p className="text-[10px] font-mono store-text-muted leading-relaxed">
             {current.noCommsIds.length} selected with no comms fit ·{' '}
             {current.noSensorIds.length} with no sensor fit. Absent data, not absent capability.
           </p>

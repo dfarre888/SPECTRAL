@@ -92,11 +92,11 @@ export function EngagementPanel({
     <div className="w-full max-w-[420px] space-y-4 p-4 overflow-y-auto max-h-[calc(100vh-160px)]">
       <h2 className="text-sm font-semibold text-[#F97316] uppercase tracking-wide">Engagement analysis</h2>
       <label className="block space-y-1 text-xs">
-        <span className="text-slate-400">SAM system</span>
+        <span className="store-text-muted">SAM system</span>
         <select
           value={scenario.system_id}
           onChange={(e) => update({ system_id: e.target.value })}
-          className="w-full rounded border border-white/10 bg-[#111118] px-2 py-1.5 font-mono text-[11px] text-white"
+          className="w-full rounded border border-[var(--store-line)] bg-[var(--store-surface)] px-2 py-1.5 font-mono text-[11px] text-white"
         >
           {SAM_SYSTEM_IDS.map((id) => (
             <option key={id} value={id}>{getSamProfile(id)?.nato_designation ?? id}</option>
@@ -104,7 +104,7 @@ export function EngagementPanel({
         </select>
       </label>
       <label className="block space-y-1 text-xs">
-        <span className="text-slate-400">UAS platform</span>
+        <span className="store-text-muted">UAS platform</span>
         <select
           value={scenario.platform_id}
           onChange={(e) => {
@@ -112,7 +112,7 @@ export function EngagementPanel({
             const cat = platformToUasCategory(id) ?? scenario.target_cat
             update({ platform_id: id, target_cat: cat })
           }}
-          className="w-full rounded border border-white/10 bg-[#111118] px-2 py-1.5 font-mono text-[11px] text-white"
+          className="w-full rounded border border-[var(--store-line)] bg-[var(--store-surface)] px-2 py-1.5 font-mono text-[11px] text-white"
         >
           {matrixPlatforms.map((p) => (
             <option key={p.id} value={p.id}>{p.name}</option>
@@ -120,11 +120,11 @@ export function EngagementPanel({
         </select>
       </label>
       <label className="block space-y-1 text-xs">
-        <span className="text-slate-400">Target category</span>
+        <span className="store-text-muted">Target category</span>
         <select
           value={scenario.target_cat}
           onChange={(e) => update({ target_cat: e.target.value as UasTargetCategory })}
-          className="w-full rounded border border-white/10 bg-[#111118] px-2 py-1.5 font-mono text-[11px] text-white"
+          className="w-full rounded border border-[var(--store-line)] bg-[var(--store-surface)] px-2 py-1.5 font-mono text-[11px] text-white"
         >
           {(['fpv','owa','loitering_munition','tactical_isr','male','hale'] as UasTargetCategory[]).map((c) => (
             <option key={c} value={c}>{c}</option>
@@ -132,19 +132,19 @@ export function EngagementPanel({
         </select>
       </label>
       <label className="block space-y-1 text-xs">
-        <span className="text-slate-400">Slant range proxy — UAS alt (m)</span>
+        <span className="store-text-muted">Slant range proxy — UAS alt (m)</span>
         <input type="range" min={50} max={20000} step={50} value={scenario.uas_alt_m} onChange={(e) => update({ uas_alt_m: Number(e.target.value) })} className="w-full" />
         <span className="font-mono text-cyan">{scenario.uas_alt_m} m · computed slant {Math.round(result.slant_range_m).toLocaleString()} m</span>
       </label>
       <label className="block space-y-1 text-xs">
-        <span className="text-slate-400">Ground range (lat offset)</span>
+        <span className="store-text-muted">Ground range (lat offset)</span>
         <input type="range" min={-0.2} max={0.2} step={0.005} value={scenario.uas_lat - scenario.sam_lat} onChange={(e) => update({ uas_lat: scenario.sam_lat + Number(e.target.value) })} className="w-full" />
       </label>
       <div className="flex flex-wrap gap-1">{ECM_LEVELS.map((level) => (
-        <button key={level} type="button" onClick={() => update({ ecm_level: level })} className={cn('rounded px-2 py-1 text-[10px] font-mono border', scenario.ecm_level===level ? 'bg-[#F97316] text-white border-[#F97316]' : 'border-white/10 text-slate-400')}>{level}</button>
+        <button key={level} type="button" onClick={() => update({ ecm_level: level })} className={cn('rounded px-2 py-1 text-[10px] font-mono border', scenario.ecm_level===level ? 'bg-[#F97316] text-white border-[#F97316]' : 'border-[var(--store-line)] store-text-muted')}>{level}</button>
       ))}</div>
       <div className="flex gap-1">{[1,2,3,4].map((n) => (
-        <button key={n} type="button" onClick={() => update({ salvo_count: n })} className={cn('flex-1 rounded border py-1 font-mono text-[11px]', scenario.salvo_count===n ? 'border-orange bg-orange/20' : 'border-white/10 text-slate-400')}>Salvo ×{n}</button>
+        <button key={n} type="button" onClick={() => update({ salvo_count: n })} className={cn('flex-1 rounded border py-1 font-mono text-[11px]', scenario.salvo_count===n ? 'border-orange bg-orange/20' : 'border-[var(--store-line)] store-text-muted')}>Salvo ×{n}</button>
       ))}</div>
       <EngagementResultView result={result} />
     </div>
@@ -154,29 +154,29 @@ export function EngagementPanel({
 export function EngagementResultView({ result }: { result: EngagementResult }) {
   const intercept = result.intercept
   return (
-    <div className="rounded-xl border border-white/10 bg-[#111118] p-3 space-y-3 text-xs font-mono">
+    <div className="rounded-xl border border-[var(--store-line)] bg-[var(--store-surface)] p-3 space-y-3 text-xs font-mono">
       <div className={cn('text-center uppercase text-[10px] font-semibold py-2 rounded', PHASE_STYLE[result.phase])}>
         {result.phase.replace(/_/g, ' ')}
       </div>
-      <div className="grid grid-cols-2 gap-2 text-slate-300">
+      <div className="grid grid-cols-2 gap-2 store-text-body">
         <p>Slant range</p><p className="text-white">{Math.round(result.slant_range_m).toLocaleString()} m</p>
         <p>Time of flight</p><p className="text-white">{result.time_of_flight_s.toFixed(1)} s</p>
         <p>Bearing</p><p className="text-white">{((result.bearing_deg + 360) % 360).toFixed(0)}°</p>
       </div>
       {intercept && intercept.in_envelope && (
-        <div className="border-t border-white/5 pt-2 space-y-1">
+        <div className="border-t border-[var(--store-line)] pt-2 space-y-1">
           <p>Pk single <span className="text-white text-lg">{intercept.pk_single.toFixed(2)}</span></p>
           <p>Pk salvo (×{intercept.salvo_count}) <span className="text-white text-lg">{intercept.pk_salvo.toFixed(2)}</span></p>
         </div>
       )}
-      <div className="border-t border-white/5 pt-2 space-y-1 text-[10px] text-slate-400">
+      <div className="border-t border-[var(--store-line)] pt-2 space-y-1 text-[10px] store-text-muted">
         <p>Detect {Math.round(result.detect_range_m).toLocaleString()} m</p>
         <p>Track {Math.round(result.track_range_m).toLocaleString()} m</p>
         <p>Launch {Math.round(result.launch_range_m).toLocaleString()} m</p>
         <p>Lethal {Math.round(result.lethal_range_m).toLocaleString()} m</p>
       </div>
       {intercept?.engagement_notes?.slice(0, 3).map((n) => (
-        <p key={n} className="text-[10px] text-slate-400">• {n}</p>
+        <p key={n} className="text-[10px] store-text-muted">• {n}</p>
       ))}
     </div>
   )

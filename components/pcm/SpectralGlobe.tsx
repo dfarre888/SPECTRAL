@@ -1,5 +1,6 @@
 'use client'
 
+import { SCENE_GROUND } from '@/lib/ui/store-theme'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { loadCesium } from '@/lib/map/load-cesium'
 import type { CesiumModule, CesiumViewer } from '@/lib/map/cesium-types'
@@ -61,7 +62,7 @@ export default function SpectralGlobe({ exerciseId, playerRole = 'ref' }: Props)
         infoBox: false,
         selectionIndicator: false,
       })
-      viewer.scene.backgroundColor = Cesium.Color.fromCssColorString('#0A0A0F')
+      viewer.scene.backgroundColor = Cesium.Color.fromCssColorString(SCENE_GROUND)
       viewerRef.current = viewer
     })
   }, [])
@@ -100,7 +101,7 @@ export default function SpectralGlobe({ exerciseId, playerRole = 'ref' }: Props)
   return (
     <div className="relative w-full h-full">
       <div ref={containerRef} className="absolute inset-0" />
-      <div className="absolute bottom-3 left-3 z-10 rounded-lg bg-black/70 border border-white/10 px-3 py-2 font-mono text-[10px] text-[#F97316]">
+      <div className="absolute bottom-3 left-3 z-10 rounded-lg bg-black/70 border border-[var(--store-line)] px-3 py-2 font-mono text-[10px] text-[#F97316]">
         TURN {String(turn).padStart(2, '0')} / {maxTurns}
         <div className="mt-1 h-1.5 w-32 bg-white/10 rounded overflow-hidden">
           <div className="h-full bg-[#F97316]" style={{ width: `${pct}%` }} />
@@ -111,7 +112,7 @@ export default function SpectralGlobe({ exerciseId, playerRole = 'ref' }: Props)
           {feedLabel}
         </div>
       )}
-      <div className="absolute top-3 left-3 z-10 rounded-lg bg-black/70 border border-white/10 p-2 space-y-1 text-[9px] font-mono text-white/70">
+      <div className="absolute top-3 left-3 z-10 rounded-lg bg-black/70 border border-[var(--store-line)] p-2 space-y-1 text-[9px] font-mono text-white/70">
         {(['platforms', 'contacts', 'envelopes', 'fog', 'engagement'] as const).map((k) => (
           <label key={k} className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={layers[k]} onChange={() => setLayers((s) => ({ ...s, [k]: !s[k] }))} />

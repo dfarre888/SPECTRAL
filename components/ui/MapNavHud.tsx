@@ -40,7 +40,7 @@ export function MapNavHud({
   const isBlue = zoomVariant === 'blue'
 
   const zoomShellClass = isBlue
-    ? 'flex flex-col items-center gap-1.5 px-3 pt-2 pb-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10'
+    ? 'flex flex-col items-center gap-1.5 px-3 pt-2 pb-2 rounded-full bg-black/40 backdrop-blur-xl border border-[var(--store-line)]'
     : 'flex flex-col items-center gap-1.5'
 
   const zoomLabelClass = isBlue

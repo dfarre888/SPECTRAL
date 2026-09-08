@@ -7,46 +7,139 @@
 /* Cesium widget overrides */
 @import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
 
+/* ------------------------------------------------------------------ *
+   Dark Frame — true black.
+
+   The ground is #000. The chrome is matte: flat fill, hairline border,
+   nothing else. Gloss is spent in two or three places per screen and
+   nowhere else; that ratio is the whole effect. Put a sweep on every
+   panel and the page reads uniformly plasticky instead of expensive.
+
+   Two deliberate departures from the source brief, both reasoned:
+
+   1. The brief allows one hue and nothing else. That works for a hardware
+      page; it does not work here. This is a data application, and hue is
+      load-bearing — frequency bands, force sides, threat verdicts and heat
+      ramps all encode meaning in colour and would be unreadable in greys.
+      So hue is allowed, with the line drawn at material rather than count:
+      COLOUR BELONGS TO THE DATA, NOT TO THE CHROME. Panels, shells and
+      surfaces stay neutral and matte. No decorative washes, no tinted
+      backgrounds, no accent gradients on furniture.
+
+   2. The brief puts tertiary text at #6E6E73 and says plainly that it is
+      large-text-only at roughly 4.1:1. Spectral spends that token on 10px
+      mono labels across every module, which is exactly the failing case,
+      so --store-ink-mute is held at #86868B (~5.6:1, passes AA at small
+      sizes) and #6E6E73 is kept as --store-ink-faint for genuinely large
+      or decorative text.
+ * ------------------------------------------------------------------ */
 :root {
   /* Legacy aliases — map to store tokens for backward compat */
-  --bg: #080808;
-  --surf1: #0f0f10;
-  --surf2: #161618;
-  --border: rgba(255, 255, 255, 0.08);
-  --t-primary: rgba(244, 244, 245, 0.92);
-  --t-secondary: rgba(244, 244, 245, 0.62);
-  --t-muted: rgba(244, 244, 245, 0.38);
+  --bg: #000000;
+  --surf1: #1D1D1F;
+  --surf2: #262628;
+  --border: rgba(255, 255, 255, 0.10);
+  --t-primary: #F5F5F7;
+  --t-secondary: #A1A1A6;
+  --t-muted: #86868B;
   --red: #EF4444;
-  --blue: #3B82F6;
+  --blue: #2997FF;
   --orange: #F97316;
-  --green: #10B981;
+  --green: #4ADE80;
   --purple: #A855F7;
   --cyan: #06B6D4;
 
-  /* A3DM zinc canvas + orange accent (canonical) */
-  --store-bg:             #080808;
-  --store-surface:        #0f0f10;
-  --store-surface-2:      #161618;
-  --store-line:           rgba(255, 255, 255, 0.08);
-  --store-ink:            rgba(244, 244, 245, 0.92);
-  --store-ink-soft:       rgba(244, 244, 245, 0.62);
-  --store-ink-mute:       rgba(244, 244, 245, 0.38);
-  --store-accent:         #f97316;
+  /* ---- Elevation ladder. Height is lightness; shadows do not read on
+         black. The #000 -> #1D1D1F jump is deliberately large: it is the
+         only step that has to be obvious. Above it, keep steps small. ---- */
+  --store-bg:             #000000;
+  --store-surface:        #1D1D1F;
+  --store-surface-2:      #262628;
+  --store-surface-3:      #2E2E30;
+
+  /* Alpha white, never a hex. A fixed grey hairline is correct on exactly
+     one surface and wrong on the other three. */
+  --store-line:           rgba(255, 255, 255, 0.10);
+  --store-line-strong:    rgba(255, 255, 255, 0.18);
+
+  /* Text stops short of #FFF — pure white blooms on true black. */
+  --store-ink:            #F5F5F7;
+  --store-ink-soft:       #A1A1A6;
+  --store-ink-mute:       #86868B;
+  --store-ink-faint:      #6E6E73;  /* ~4.1:1 — large text only */
+
+  --store-accent:         #F97316;
   --store-accent-glow:    rgba(249, 115, 22, 0.12);
   --store-accent-border:  rgba(249, 115, 22, 0.35);
-  --store-success:        #4ade80;
+  --store-link:           #2997FF;
+  --store-success:        #4ADE80;
 
   --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
   --store-material: var(--store-surface);
-  --store-material-float: var(--store-surface);
-  --store-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-  --store-status-ok: #4ade80;
-  --store-status-warn: #fbbf24;
-  --store-status-ok-bg: rgba(22, 163, 74, 0.18);
-  --store-status-warn-bg: rgba(217, 119, 6, 0.16);
+  --store-material-float: var(--store-surface-2);
+  /* Shadows are near-invisible on black; separation comes from the ladder.
+     Kept shallow so floating chrome still reads without a grey halo. */
+  --store-shadow: 0 8px 28px rgba(0, 0, 0, 0.65);
+
+  --store-status-ok: #4ADE80;
+  --store-status-warn: #FBBF24;
+  --store-status-ok-bg: rgba(74, 222, 128, 0.14);
+  --store-status-warn-bg: rgba(251, 191, 36, 0.14);
+
+  /* Grain flattens true black into matte paper. Off, deliberately. */
+  --store-grain: 0;
+
   color-scheme: dark;
+}
+
+/* ---- The rationed gloss ------------------------------------------------
+   Three layers: a diagonal gradient fill, a bright hairline border that is
+   itself a gradient, and an outer glow tinted to match. The glow is what
+   sells it — it implies the object emits light rather than reflects it.
+   Two or three per screen. Everything around them stays matte.
+   ---------------------------------------------------------------------- */
+.gloss-tile {
+  --gloss-a: #6E2C9E;
+  --gloss-b: #17151C;
+  --gloss-glow: rgba(140, 70, 210, 0.55);
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background:
+    radial-gradient(125% 125% at 50% 135%, rgba(255, 255, 255, 0.20) 0%, transparent 55%),
+    linear-gradient(152deg, var(--gloss-a) 0%, var(--gloss-b) 72%);
+  box-shadow: 0 0 70px -22px var(--gloss-glow);
+}
+.gloss-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(152deg,
+    rgba(255, 255, 255, 0.70) 0%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(255, 255, 255, 0.45) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+}
+.gloss-tile.accent { --gloss-a: #B45309; --gloss-b: #1A1512; --gloss-glow: rgba(249, 115, 22, 0.45); }
+.gloss-tile.cyan   { --gloss-a: #1B6FB8; --gloss-b: #121418; --gloss-glow: rgba(41, 151, 255, 0.45); }
+
+/* Scrims ramp to the ground, not to a mid surface. Ramping to #1D1D1F
+   leaves the base of an image reading lighter than the page — a visible band. */
+.scrim-to-ground {
+  background: linear-gradient(to top,
+    rgba(0, 0, 0, 0.98) 0%,
+    rgba(0, 0, 0, 0.82) 26%,
+    rgba(0, 0, 0, 0.36) 52%,
+    transparent 84%);
 }
 
 /* Daylight briefing-room paper. Default remains dark ops floor. */
@@ -220,11 +313,14 @@ body {
   overflow: hidden; /* App shell handles scroll */
 }
 
-/* ── Hub / main shell — zinc canvas + orange glow ─────────────────────── */
+/* ── Hub / main shell ────────────────────────────────────────────────────
+   No wash. The orange radial that used to sit here lifted the ground off
+   true black and spent the accent as decoration — the two things this
+   system most needs not to happen. Separation comes from the elevation
+   ladder, and the accent is reserved for signal.
+   ---------------------------------------------------------------------- */
 .hub-page-canvas {
-  background:
-    radial-gradient(80rem 50rem at 0% 100%, rgba(249, 115, 22, 0.09), transparent 60%),
-    var(--store-bg);
+  background: var(--store-bg);
   color: var(--store-ink-soft);
 }
 

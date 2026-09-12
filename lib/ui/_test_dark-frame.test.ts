@@ -115,6 +115,19 @@ describe('Dark Frame — material', () => {
     expect(scrim).not.toContain('29, 29, 31')
   })
 
+  it('compensates light-on-dark type', () => {
+    // Both briefs agree: reversed type set with light-mode metrics reads thin.
+    const body = css.match(/\nbody \{([^}]*)\}/)
+    expect(body).not.toBeNull()
+    expect(body![1]).toMatch(/letter-spacing:\s*0\.0/)
+  })
+
+  it('balances headings and sets tabular figures', () => {
+    expect(css).toContain('text-wrap: balance')
+    expect(css).toContain('text-wrap: pretty')
+    expect(css).toContain('font-variant-numeric: tabular-nums')
+  })
+
   it('respects reduced motion', () => {
     expect(css).toContain('prefers-reduced-motion')
   })

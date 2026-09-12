@@ -129,6 +129,11 @@
           mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
           mask-composite: exclude;
 }
+/* Purple is the only tone not already spoken for: red and blue are force
+   sides, orange is the accent, cyan is data, green is nominal. Spending a
+   semantic colour on a surface treatment would make the treatment read as
+   data. */
+.gloss-tile.purple { --gloss-a: #6E2C9E; --gloss-b: #17151C; --gloss-glow: rgba(140, 70, 210, 0.55); }
 .gloss-tile.accent { --gloss-a: #B45309; --gloss-b: #1A1512; --gloss-glow: rgba(249, 115, 22, 0.45); }
 .gloss-tile.cyan   { --gloss-a: #1B6FB8; --gloss-b: #121418; --gloss-glow: rgba(41, 151, 255, 0.45); }
 
@@ -341,6 +346,28 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow: hidden; /* App shell handles scroll */
+  /* Light text on a dark ground needs optical compensation or it reads thin and
+     blurry — the same reason Dark Frame pushes heading weight up. A touch of
+     tracking is the safe axis to apply globally; line height is left to the
+     component classes, since this app is deliberately dense and a global change
+     would shift every table. */
+  letter-spacing: 0.006em;
+}
+
+/* Free wins, and they remove the orphan word that makes a heading look
+   accidental. Applied here rather than per-component so nothing is missed. */
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
+/* Tabular figures everywhere a number can be compared. Columns of digits that
+   do not line up read as amateur, and this app is mostly columns of digits. */
+.font-mono,
+[class*="tabular"] {
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Hub / main shell ────────────────────────────────────────────────────

@@ -1,28 +1,43 @@
 import 'server-only'
+import { PLATFORMS } from '@/data/seed-platforms'
 import { createClient } from '@/lib/supabase/server'
 import { toMapCuasAsset, toMapUasAsset } from '@/lib/map/asset-mappers'
 import { getSpectraMapAssets } from '@/lib/map/spectra-assets'
+import { OFFLINE_DEFEAT_SYSTEMS } from '@/lib/pcm/defeat-matrix-offline-data'
 import type { MapAssetsPayload } from '@/lib/map/types'
 import type { AntiDroneSystem, DefeatEffectiveness, Platform } from '@/lib/types'
 
-export async function getMapAssets(): Promise<MapAssetsPayload> {
-  const supabase = await createClient()
-
-  const [platformsRes, systemsRes] = await Promise.all([
-    supabase.from('platforms').select('*').order('name'),
-    supabase.from('anti_drone_systems').select('*').order('name'),
-  ])
-
-  if (platformsRes.error) throw new Error(platformsRes.error.message)
-  if (systemsRes.error) throw new Error(systemsRes.error.message)
-
+function offlineMapAssets(): MapAssetsPayload {
   const spectra = getSpectraMapAssets()
-
   return {
-    uas: (platformsRes.data as Platform[]).map(toMapUasAsset),
-    cuas: (systemsRes.data as AntiDroneSystem[]).map(toMapCuasAsset),
+    uas: PLATFORMS.map(toMapUasAsset),
+    cuas: OFFLINE_DEFEAT_SYSTEMS.map(toMapCuasAsset),
     radars: spectra.radars,
     effectors: spectra.effectors,
+  }
+}
+
+export async function getMapAssets(): Promise<MapAssetsPayload> {
+  try {
+    const supabase = await createClient()
+
+    const [platformsRes, systemsRes] = await Promise.all([
+      supabase.from('platforms').select('*').order('name'),
+      supabase.from('anti_drone_systems').select('*').order('name'),
+    ])
+
+    if (platformsRes.error || systemsRes.error) return offlineMapAssets()
+
+    const spectra = getSpectraMapAssets()
+
+    return {
+      uas: (platformsRes.data as Platform[]).map(toMapUasAsset),
+      cuas: (systemsRes.data as AntiDroneSystem[]).map(toMapCuasAsset),
+      radars: spectra.radars,
+      effectors: spectra.effectors,
+    }
+  } catch {
+    return offlineMapAssets()
   }
 }
 

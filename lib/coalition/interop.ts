@@ -28,9 +28,12 @@ import {
   tierForKind,
   type ConnTier,
 } from '@/lib/coalition/datalink-matrix'
+import { variantGroup } from '@/lib/coalition/link-variants'
 
 export interface InteropBearer {
   standard: string | null
+  /** Terminal/leg variant; absent = unknown, assumed compatible. */
+  variant?: string | null
   kind: string
   gatewayCapable: boolean
   pntDependent: boolean
@@ -118,7 +121,12 @@ function netKeyFor(b: InteropBearer, nationCode: string): { key: string; label: 
     if (spec.nationScoped) {
       return { key: `national:${nationCode}`, label: `${spec.label} (${nationCode})`, scope: nationCode }
     }
-    return { key: `std:${spec.standard}`, label: spec.label, scope: null }
+    // Variants that cannot hear each other (Link 22 HF-only vs UHF-only) are
+    // separate nets. Unknown variants stay on the common net.
+    const grp = variantGroup(spec.standard, b.variant)
+    return grp
+      ? { key: `std:${spec.standard}/${grp}`, label: `${spec.label} · ${grp.toUpperCase()}`, scope: null }
+      : { key: `std:${spec.standard}`, label: spec.label, scope: null }
   }
 
   if (tier === 'data') return { key: 'data:satcom', label: 'SATCOM data', scope: null }
@@ -156,10 +164,11 @@ function buildTier(platforms: InteropPlatform[], tier: ConnTier): TierResult {
 
   if (tier === 'track') {
     // Standards specified to interwork join with no relay present.
+    const keysFor = (std: string) => [...nets.keys()].filter((k) => k === `std:${std}` || k.startsWith(`std:${std}/`))
     for (const br of nativeBridges()) {
-      const ka = `std:${br.a}`
-      const kb = `std:${br.b}`
-      if (nets.has(ka) && nets.has(kb)) uf.union(ka, kb)
+      // A native bridge joins every variant of A to every variant of B: the
+      // interworking is specified at the standard level, not per terminal.
+      for (const ka of keysFor(br.a)) for (const kb of keysFor(br.b)) uf.union(ka, kb)
     }
     // Bridges needing a relay apply only where a fitted platform carries both.
     for (const p of platforms) {
@@ -170,9 +179,9 @@ function buildTier(platforms: InteropPlatform[], tier: ConnTier): TierResult {
       if (!canRelay) continue
       for (const br of gatewayBridges()) {
         if (held.has(br.a) && held.has(br.b)) {
-          const ka = specFor(br.a)?.nationScoped ? `national:${p.nationCode}` : `std:${br.a}`
-          const kb = specFor(br.b)?.nationScoped ? `national:${p.nationCode}` : `std:${br.b}`
-          if (nets.has(ka) && nets.has(kb)) uf.union(ka, kb)
+          const kas = specFor(br.a)?.nationScoped ? [`national:${p.nationCode}`] : keysFor(br.a)
+          const kbs = specFor(br.b)?.nationScoped ? [`national:${p.nationCode}`] : keysFor(br.b)
+          for (const ka of kas) for (const kb of kbs) if (nets.has(ka) && nets.has(kb)) uf.union(ka, kb)
         }
       }
     }

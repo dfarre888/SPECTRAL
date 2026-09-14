@@ -68,6 +68,8 @@ export interface PlatformSensor {
   kind: SensorKind
   label: string
   band: string | null
+  /** Multi-band sensors (e.g. MWIR + VIS). Falls back to `band` when absent. OSINT only. */
+  bands?: string[]
   antenna: string | null
   role: string | null
   can_detect: string[]
@@ -115,6 +117,8 @@ export interface CommsBearer {
   platform_id: string
   kind: BearerKind
   standard: DatalinkStandard | null
+  /** Terminal/leg variant (`link22-hf`, `mids-jtrs`, …). Absent = unknown, assumed compatible. */
+  variant?: string | null
   band: FreqBand
   label: string
   gateway_capable: boolean

@@ -13,6 +13,7 @@ interface CatalogLike {
   nation_code?: string
   comms?: {
     standard?: string | null
+    variant?: string | null
     kind?: string
     gateway_capable?: boolean
     pnt_dependent?: boolean
@@ -27,6 +28,7 @@ export function toInteropPlatforms(rows: CatalogLike[]): InteropPlatform[] {
     nationCode: r.nation_code ?? '?',
     bearers: (r.comms ?? []).map((c) => ({
       standard: c.standard ?? null,
+      variant: c.variant ?? null,
       kind: c.kind ?? 'datalink',
       gatewayCapable: !!c.gateway_capable,
       pntDependent: !!c.pnt_dependent,

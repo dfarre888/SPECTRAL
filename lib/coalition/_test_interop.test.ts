@@ -176,3 +176,33 @@ describe('reach versus cohesion', () => {
     expect(d.lostTrackIds).toEqual(['a', 'b', 'c', 'd'])
   })
 })
+
+describe('coalition connectivity — link variants', () => {
+  it('splits Link 22 HF-only and UHF-only fits into separate islands', () => {
+    const r = analyseInterop([
+      p('A', 'AUS', [{ ...dl('link22'), variant: 'link22-hf' }]),
+      p('B', 'AUS', [{ ...dl('link22'), variant: 'link22-uhf' }]),
+    ])
+    expect(r.track.islands.length).toBe(2)
+    expect(r.track.nets.map((n) => n.key).sort()).toEqual(['std:link22/hf', 'std:link22/uhf'])
+  })
+  it('keeps unknown-variant Link 22 on the common net', () => {
+    const r = analyseInterop([p('A', 'AUS', [dl('link22')]), p('B', 'GBR', [dl('link22')])])
+    expect(r.track.islands.length).toBe(1)
+  })
+  it('native Link 22 ↔ Link 11 bridge still joins a variant-split Link 22 leg', () => {
+    const r = analyseInterop([
+      p('A', 'AUS', [dl('link11')]),
+      p('B', 'AUS', [{ ...dl('link22'), variant: 'link22-uhf' }]),
+    ])
+    expect(r.track.islands.length).toBe(1)
+  })
+  it('a gateway unit fitted for both joins a variant-split leg to Link 16', () => {
+    const r = analyseInterop([
+      p('A', 'AUS', [dl('link16')]),
+      p('B', 'AUS', [{ ...dl('link22'), variant: 'link22-hf' }]),
+      p('GW', 'AUS', [dl('link16', true), { ...dl('link22', true), variant: 'link22-hf' }]),
+    ])
+    expect(r.track.islands.length).toBe(1)
+  })
+})

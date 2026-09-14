@@ -22,7 +22,7 @@ export function ThemeToggle({ labeled = false }: { labeled?: boolean }) {
       onClick={() => setTheme((current) => toggleTheme(current))}
       className={
         labeled
-          ? 'map-press h-7 px-2 rounded-lg inline-flex items-center gap-1.5 text-[10px] font-mono font-semibold border border-[var(--store-line)] store-text-body hover:border-[var(--store-accent-border)] hover:text-[var(--store-ink)]'
+          ? 'map-press h-7 px-2 rounded-lg inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold border border-[var(--store-line)] store-text-body hover:border-[rgba(41,151,255,0.5)] hover:text-[var(--store-ink)]'
           : 'map-press w-7 h-7 rounded-lg flex items-center justify-center store-text-muted hover:text-[var(--store-ink)] hover:bg-[var(--store-surface-2)]'
       }
     >

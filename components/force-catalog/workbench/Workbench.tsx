@@ -133,7 +133,7 @@ export function Workbench({
           <span className="inline-flex items-center gap-1 text-[11px] font-mono px-2 min-h-8 rounded border store-accent-border store-accent">
             Battle scope · {platforms.length}
             {onClearScope ? (
-              <button type="button" onClick={onClearScope} aria-label="Clear battle drill scope" className="ml-1 inline-flex items-center justify-center h-6 w-6 rounded hover:bg-[var(--store-accent-glow)]">
+              <button type="button" onClick={onClearScope} aria-label="Clear battle drill scope" className="ml-1 inline-flex items-center justify-center h-6 w-6 rounded hover:bg-[rgba(41,151,255,0.14)]">
                 <X className="h-3 w-3" aria-hidden />
               </button>
             ) : null}

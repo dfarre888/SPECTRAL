@@ -59,23 +59,23 @@ export function TurnControlPanel({ exerciseId, currentTurn, status, readOnly, on
 
   return (
     <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] px-3 py-2">
-      <span className="text-[10px] font-mono store-text-muted">
+      <span className="text-[11px] font-mono store-text-muted">
         Turn <span className="text-white tabular-nums">{turnLabel}</span> · {status}
       </span>
       {status === "setup" && !readOnly && (
-        <button type="button" disabled={busy} onClick={startExercise} className="rounded border border-[var(--store-accent-border)] px-2 py-1 text-[10px] font-mono text-[var(--store-accent)]">
+        <button type="button" disabled={busy} onClick={startExercise} className="rounded border border-[rgba(41,151,255,0.5)] px-2 py-1 text-[11px] font-mono text-[var(--wb-blue)]">
           Start exercise
         </button>
       )}
       {!readOnly && (
-        <button type="button" disabled={busy} onClick={advanceTurn} className="rounded border border-[var(--store-line)] px-2 py-1 text-[10px] font-mono text-white hover:border-[var(--store-accent-border)]">
+        <button type="button" disabled={busy} onClick={advanceTurn} className="rounded border border-[var(--store-line)] px-2 py-1 text-[11px] font-mono text-white hover:border-[rgba(41,151,255,0.5)]">
           Advance turn
         </button>
       )}
-      <Link href={`/pcm/exercise/${exerciseId}/aar`} className="text-[10px] font-mono text-[var(--store-accent)] hover:underline ml-auto">
+      <Link href={`/pcm/exercise/${exerciseId}/aar`} className="text-[11px] font-mono text-[var(--wb-blue)] hover:underline ml-auto">
         View AAR
       </Link>
-      {msg && <span className="text-[10px] font-mono text-cyan w-full">{msg}</span>}
+      {msg && <span className="text-[11px] font-mono text-cyan w-full">{msg}</span>}
     </div>
   );
 }

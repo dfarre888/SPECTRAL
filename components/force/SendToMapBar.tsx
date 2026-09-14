@@ -30,10 +30,10 @@ export function SendToMapBar({ blue, red, selectedIds, theatreId = 'north-aus' }
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] p-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-2 rounded-2xl border border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] p-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p className="text-xs font-medium text-white">Send package to map</p>
-        <p className="text-[10px] font-mono store-text-muted">
+        <p className="text-[11px] font-mono store-text-muted">
           {selectedIds.length} selected · {blue} vs {red} · unmapped types list as ORBAT-only
         </p>
       </div>
@@ -46,7 +46,7 @@ export function SendToMapBar({ blue, red, selectedIds, theatreId = 'north-aus' }
             className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] ${
               t.id === theatre.id
                 ? 'bg-[var(--store-accent)] font-medium text-black'
-                : 'border border-[var(--store-accent-border)] bg-[var(--store-surface)] text-white hover:bg-[var(--store-surface-2)]'
+                : 'border border-[rgba(41,151,255,0.5)] bg-[var(--store-surface)] text-white hover:bg-[var(--store-surface-2)]'
             }`}
           >
             <Map className="h-3 w-3" />

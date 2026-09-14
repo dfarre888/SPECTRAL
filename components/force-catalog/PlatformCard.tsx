@@ -4,15 +4,27 @@
  * Callers: ForceCatalogGrid
  * Purpose: Platform card with optional selection (native button for a11y)
  * API/schema: ForceCatalogPlatformFull
- * User: Force Catalogue UI polish v2 — React review HIGH fixes
+ *
+ * Black-canvas language: one hairline, no chip walls. Comms read as a single
+ * line with tier dots; sensors as a short list with a coloured band mark.
  */
 
 import type { ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
 import { ConfidenceBadge } from '@/components/platforms/ConfidenceBadge'
-import { StorePanel } from '@/components/ui/store-surface'
-import { CommsChip, SensorChip, sideEdgeClass } from '@/components/force-catalog/force-catalog-ui'
+import { tierForKind } from '@/lib/coalition/datalink-matrix'
+import { BAND_KIND, sensorBands } from '@/lib/force-catalog/spectrum-bands'
 
 export type CatalogDensity = 'grid' | 'compact'
+
+const SIDE: Record<ForceCatalogPlatformFull['force_side'], string> = {
+  blue: 'var(--wb-blue)', red: 'var(--wb-red)', neutral: 'var(--wb-neutral)',
+}
+const TIER: Record<string, string> = { track: 'var(--wb-track)', data: 'var(--wb-data)', voice: 'var(--wb-voice)', none: 'var(--store-ink-faint)' }
+const KIND: Record<string, string> = { rf: 'var(--wb-rf)', ir: 'var(--wb-ir)', optical: 'var(--wb-optical)' }
+
+function statusLabel(s: string): string {
+  return s.replace(/_/g, ' ')
+}
 
 export function PlatformCard({
   p,
@@ -28,73 +40,86 @@ export function PlatformCard({
   buttonRef?: (el: HTMLButtonElement | null) => void
 }) {
   const compact = density === 'compact'
-  const panel = (
-    <StorePanel
+  const comms = p.comms.slice(0, compact ? 3 : 6)
+  const sensors = p.sensors.slice(0, compact ? 0 : 3)
+
+  const body = (
+    <div
       className={[
-        compact ? 'p-2 space-y-1' : 'p-3 space-y-2',
-        'hover-lift',
-        'transition-[border-color,background-color] duration-150 ease-out',
-        'hover:border-[var(--store-accent-border)]',
+        'h-full rounded-xl border transition-[border-color,background-color] duration-150 ease-out',
+        compact ? 'px-3 py-2.5 space-y-1.5' : 'px-4 py-3.5 space-y-2.5',
         selected
-          ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] ring-1 ring-[var(--store-accent-border)]'
-          : '',
-        sideEdgeClass(p.force_side),
+          ? 'border-[rgba(41,151,255,0.6)] bg-[rgba(41,151,255,0.06)]'
+          : 'border-[var(--store-line)] hover:border-[var(--btn-line)]',
       ].join(' ')}
     >
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p
-            className={`${compact ? 'text-xs' : 'text-sm'} font-semibold store-display store-text-body truncate text-balance`}
-          >
+      <div className="flex items-start gap-2.5">
+        <span className="mt-[7px] h-1.5 w-1.5 rounded-full shrink-0" style={{ background: SIDE[p.force_side] }} aria-hidden />
+        <div className="min-w-0 flex-1">
+          <p className={`${compact ? 'text-[13px]' : 'text-[15px]'} store-display font-semibold tracking-[-0.01em] text-[var(--store-ink)] truncate`}>
             {p.short_name}
           </p>
-          <p className="text-[10px] font-mono store-text-muted truncate">
-            {p.designation} · {p.nation_code} · {p.domain} · {p.role}
+          <p className="text-[11px] font-mono store-text-muted truncate">
+            {p.designation} · {p.nation_code} · {p.domain} · {p.role.replace(/_/g, ' ')}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded border store-line store-panel-inner">
-            {p.service_status}
-          </span>
+          <span className="text-[11px] store-text-muted capitalize">{statusLabel(p.service_status)}</span>
           <ConfidenceBadge confidence={p.data_confidence} />
         </div>
       </div>
+
       {!compact ? (
-        <p className="text-[11px] store-text-muted leading-snug line-clamp-3 text-pretty">
-          {p.open_source_summary}
+        <p className="text-[12px] store-text-body leading-snug line-clamp-2 text-pretty pl-4">{p.open_source_summary}</p>
+      ) : null}
+
+      {comms.length ? (
+        <p className="text-[11px] font-mono store-text-muted pl-4 flex flex-wrap gap-x-3 gap-y-1">
+          {comms.map((c) => {
+            const tier = tierForKind(c.kind, c.standard)
+            return (
+              <span key={c.id} className="inline-flex items-center gap-1.5" title={`${c.label} · ${tier} tier`}>
+                <i className="h-1.5 w-1.5 rounded-full" style={{ background: TIER[tier] }} />
+                {c.standard && c.standard !== 'none' ? c.standard : c.label}
+              </span>
+            )
+          })}
+          {p.comms.length > comms.length ? <span>+{p.comms.length - comms.length}</span> : null}
         </p>
       ) : null}
-      {p.comms.length > 0 ? (
-        <div className="flex flex-wrap gap-1">
-          {p.comms.slice(0, compact ? 3 : 6).map((c) => (
-            <CommsChip key={c.id} label={c.standard ?? c.label} />
-          ))}
-        </div>
+
+      {sensors.length ? (
+        <ul className="pl-4 space-y-0.5">
+          {sensors.map((s) => {
+            const bands = sensorBands(s)
+            const kind = bands[0] ? BAND_KIND[bands[0]] ?? 'rf' : 'rf'
+            return (
+              <li key={s.id} className="text-[11px] store-text-muted flex items-center gap-2 min-w-0">
+                <span className="text-[11px] font-mono shrink-0" style={{ color: KIND[kind] }}>{bands.join('/') || '—'}</span>
+                <span className="truncate">{s.label}</span>
+              </li>
+            )
+          })}
+          {p.sensors.length > sensors.length ? <li className="text-[11px] store-text-muted">+{p.sensors.length - sensors.length} more</li> : null}
+        </ul>
+      ) : !compact && p.sensors.length === 0 ? (
+        <p className="text-[11px] store-text-muted pl-4">No sensors listed (OSINT gap)</p>
       ) : null}
-      {!compact && p.sensors.length > 0 ? (
-        <div className="flex flex-wrap gap-1">
-          {p.sensors.slice(0, 4).map((s) => (
-            <SensorChip key={s.id} sensor={s} />
-          ))}
-        </div>
-      ) : null}
-    </StorePanel>
+    </div>
   )
 
-  if (!onSelect) return panel
+  if (!onSelect) return body
 
   return (
     <button
       type="button"
       ref={buttonRef}
       aria-pressed={Boolean(selected)}
-      aria-label={
-        selected ? `Close detail for ${p.short_name}` : `Open detail for ${p.short_name}`
-      }
+      aria-label={selected ? `Close detail for ${p.short_name}` : `Open detail for ${p.short_name}`}
       onClick={() => onSelect(p)}
-      className="w-full text-left cursor-pointer rounded-2xl border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--store-accent)] focus-visible:outline-offset-2"
+      className="w-full h-full text-left cursor-pointer rounded-xl border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--wb-blue)] focus-visible:outline-offset-2"
     >
-      {panel}
+      {body}
     </button>
   )
 }

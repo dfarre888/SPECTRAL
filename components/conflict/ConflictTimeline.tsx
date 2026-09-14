@@ -23,16 +23,16 @@ export function ConflictTimeline({
               onClick={() => onSelect(inc.id)}
               className={`text-left w-full rounded-lg p-3 border transition-colors ${
                 active
-                  ? 'border-[var(--store-accent)] bg-[var(--store-surface-2)]'
+                  ? 'border-[var(--wb-blue)] bg-[var(--store-surface-2)]'
                   : 'border-transparent hover:border-[var(--store-line)]'
               }`}
             >
-              <p className="text-[10px] font-mono store-text-muted flex items-center gap-1.5 flex-wrap">
+              <p className="text-[11px] font-mono store-text-muted flex items-center gap-1.5 flex-wrap">
                 <span>{inc.occurred_at.slice(0, 10)}</span>
                 <span>·</span>
                 <span>{inc.conflict_name}</span>
                 <span
-                  className="px-1 py-0.5 rounded text-[9px] uppercase tracking-wide"
+                  className="px-1 py-0.5 rounded text-[11px] uppercase tracking-wide"
                   style={{
                     color: INCIDENT_TYPE_COLOR[normalizeIncidentType(inc.incident_type)],
                     background: 'rgba(255,255,255,0.06)',

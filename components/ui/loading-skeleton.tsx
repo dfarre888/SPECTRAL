@@ -31,7 +31,7 @@ export function GlobeSkeleton({ className }: { className?: string }) {
         className,
       )}
     >
-      <p className="text-[10px] font-mono store-text-muted">Initialising globe…</p>
+      <p className="text-[11px] font-mono store-text-muted">Initialising globe…</p>
     </div>
   )
 }

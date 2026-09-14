@@ -35,7 +35,7 @@ interface StoreFilterSectionProps {
 export function StoreFilterSection({ label, children, className }: StoreFilterSectionProps) {
   return (
     <div className={cn('mb-5 last:mb-0', className)}>
-      <div className="text-[10px] font-semibold tracking-widest uppercase mb-2.5 store-text-muted">
+      <div className="text-[11px] font-semibold tracking-widest uppercase mb-2.5 store-text-muted">
         {label}
       </div>
       {children}

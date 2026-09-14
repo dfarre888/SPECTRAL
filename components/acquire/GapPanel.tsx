@@ -12,7 +12,7 @@ interface GapPanelProps {
 
 const SEVERITY_STYLE: Record<GapAnalysisResult['severity'], string> = {
   critical: 'text-red border-red/30 bg-red/10',
-  high: 'text-[var(--store-accent)] border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]',
+  high: 'text-[var(--wb-blue)] border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]',
   moderate: 'text-amber border-amber/30 bg-amber/10',
 }
 
@@ -22,7 +22,7 @@ export function GapPanel({ gap, templateTitle }: GapPanelProps) {
       <StorePanel className="p-4">
         <div className="flex items-start gap-3 mb-4">
           <AlertTriangle
-            className="w-5 h-5 text-[var(--store-accent)] shrink-0 mt-0.5"
+            className="w-5 h-5 text-[var(--wb-blue)] shrink-0 mt-0.5"
             aria-hidden
           />
           <div>
@@ -32,7 +32,7 @@ export function GapPanel({ gap, templateTitle }: GapPanelProps) {
         </div>
 
         <span
-          className={`inline-flex text-[10px] font-mono uppercase tracking-widest px-2 py-1 rounded border ${SEVERITY_STYLE[gap.severity]}`}
+          className={`inline-flex text-[11px] font-mono uppercase tracking-widest px-2 py-1 rounded border ${SEVERITY_STYLE[gap.severity]}`}
         >
           {gap.severity} gap
         </span>
@@ -68,7 +68,7 @@ export function GapPanel({ gap, templateTitle }: GapPanelProps) {
         <ul className="space-y-2 text-sm store-text-body">
           {gap.coverage_gaps.map((item) => (
             <li key={item} className="flex gap-2">
-              <span className="text-[var(--store-accent)]">—</span>
+              <span className="text-[var(--wb-blue)]">—</span>
               <span>{item}</span>
             </li>
           ))}

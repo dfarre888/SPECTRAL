@@ -41,7 +41,7 @@ export function InteropMatrix({
     <div className="space-y-4">
       {gateways.length > 0 ? (
         <div className="ring-gradient glass rounded-xl p-3 border border-[var(--store-gold-border)]">
-          <p className="eyebrow text-[10px] text-[var(--store-gold)] mb-2">
+          <p className="eyebrow text-[11px] text-[var(--store-gold)] mb-2">
             Critical gateway nodes
           </p>
           <p className="text-xs store-text-muted mb-2">
@@ -64,7 +64,7 @@ export function InteropMatrix({
       ) : null}
 
       <div className="overflow-x-auto ring-gradient glass rounded-xl p-3">
-        <table className="text-[10px] font-mono border-collapse min-w-full">
+        <table className="text-[11px] font-mono border-collapse min-w-full">
           <thead>
             <tr>
               <th className="p-1 store-text-muted" />
@@ -106,7 +106,7 @@ export function InteropMatrix({
                         title={link?.note ?? method}
                         onClick={() => onSelectCell?.(a, b)}
                         className={`w-4 h-4 rounded transition-shadow hover:brightness-125 ${style.bg} ${
-                          selected ? 'ring-2 ring-[var(--store-accent)] shadow-[0_0_8px_rgba(99,102,241,0.45)]' : ''
+                          selected ? 'ring-2 ring-[var(--wb-blue)] shadow-[0_0_8px_rgba(99,102,241,0.45)]' : ''
                         }`}
                       />
                     </td>
@@ -118,7 +118,7 @@ export function InteropMatrix({
         </table>
       </div>
 
-      <div className="flex flex-wrap gap-3 text-[10px] store-text-muted">
+      <div className="flex flex-wrap gap-3 text-[11px] store-text-muted">
         {Object.entries(METHOD_STYLE).map(([k, v]) => (
           <span key={k} className="flex items-center gap-1">
             <span className={`w-3 h-3 rounded ${v.bg}`} />

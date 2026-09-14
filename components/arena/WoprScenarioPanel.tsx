@@ -209,7 +209,7 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
     return (
       <StorePanel className="p-4 space-y-4">
         <div className="flex items-center gap-3">
-          <Swords className="w-5 h-5 text-[var(--store-accent)]" />
+          <Swords className="w-5 h-5 text-[var(--wb-blue)]" />
           <EditionBadge />
         </div>
         <p className="store-text-body text-xs max-w-lg">
@@ -225,11 +225,11 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
                   'w-full text-left rounded-xl px-3 py-2 text-xs border transition-colors',
                   selectedId === s.id
                     ? 'nav-item-active'
-                    : 'store-panel-inner store-text-body hover:border-[var(--store-accent-border)]',
+                    : 'store-panel-inner store-text-body hover:border-[rgba(41,151,255,0.5)]',
                 )}
               >
                 <p className="font-semibold text-white truncate">{s.name}</p>
-                <p className="font-mono text-[10px] store-text-muted mt-0.5">{s.classification}</p>
+                <p className="font-mono text-[11px] store-text-muted mt-0.5">{s.classification}</p>
               </button>
             </li>
           ))}
@@ -262,7 +262,7 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Scenario name"
-            className="w-full store-panel-inner rounded-xl px-3 py-2 text-xs text-white placeholder:store-text-muted focus:outline-none focus:border-[var(--store-accent-border)]"
+            className="w-full store-panel-inner rounded-xl px-3 py-2 text-xs text-white placeholder:store-text-muted focus:outline-none focus:border-[rgba(41,151,255,0.5)]"
           />
           <select
             value={templates.length === 0 ? '' : templateId}
@@ -308,11 +308,11 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
                     'w-full text-left rounded-xl px-3 py-2 text-xs border transition-colors',
                     selectedId === s.id
                       ? 'nav-item-active'
-                      : 'store-panel-inner store-text-body hover:border-[var(--store-accent-border)]',
+                      : 'store-panel-inner store-text-body hover:border-[rgba(41,151,255,0.5)]',
                   )}
                 >
                   <p className="font-semibold text-white truncate">{s.name}</p>
-                  <p className="font-mono text-[10px] store-text-muted mt-0.5">
+                  <p className="font-mono text-[11px] store-text-muted mt-0.5">
                     {s.status} · T+{s.elapsed_min} min
                   </p>
                 </button>
@@ -331,10 +331,10 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
           <StorePanel inner className="p-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-sm font-semibold text-white">{selected.name}</p>
-              <p className="text-[10px] font-mono store-text-muted mt-0.5">
+              <p className="text-[11px] font-mono store-text-muted mt-0.5">
                 {selected.classification} · {selected.status} · SSE {sseConnected ? 'connected' : '—'}
               </p>
-              <p className="text-[10px] font-mono store-text-body mt-1">
+              <p className="text-[11px] font-mono store-text-body mt-1">
                 ORBAT{' '}
                 <span className="text-red-400">{orbatCounts.red} red</span>
                 {' · '}
@@ -358,7 +358,7 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
           </div>
 
           <StorePanel inner className="p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider store-text-muted mb-2 flex items-center gap-2">
+            <p className="text-[11px] font-semibold uppercase tracking-wider store-text-muted mb-2 flex items-center gap-2">
               <Radio className="w-3.5 h-3.5 text-cyan" />
               Tick events
             </p>
@@ -367,14 +367,14 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
             ) : (
               <ul className="space-y-1 max-h-40 overflow-y-auto">
                 {events.map((ev, i) => (
-                  <li key={`${ev}-${i}`} className="text-[10px] font-mono store-text-body">
+                  <li key={`${ev}-${i}`} className="text-[11px] font-mono store-text-body">
                     {ev}
                   </li>
                 ))}
               </ul>
             )}
             {tick && (
-              <p className="text-[9px] font-mono store-text-muted mt-3">
+              <p className="text-[11px] font-mono store-text-muted mt-3">
                 Turn {tick.turn} · T+{tick.elapsed_min} min
                 {tick.propagation_refreshed ? ' · propagation flag set' : ''}
               </p>
@@ -399,7 +399,7 @@ function CopPicture({
 
   return (
     <StorePanel inner className={clsx('p-4 border', accent)}>
-      <p className={clsx('text-[10px] font-semibold uppercase tracking-wider mb-3', accent.split(' ')[0])}>
+      <p className={clsx('text-[11px] font-semibold uppercase tracking-wider mb-3', accent.split(' ')[0])}>
         {title}
       </p>
       {tracks.length === 0 ? (
@@ -407,7 +407,7 @@ function CopPicture({
       ) : (
         <ul className="space-y-2">
           {tracks.map((t) => (
-            <li key={t.id} className="text-[10px] font-mono store-text-body flex justify-between gap-2">
+            <li key={t.id} className="text-[11px] font-mono store-text-body flex justify-between gap-2">
               <span className="truncate">{t.name}</span>
               <span className="store-text-muted shrink-0">
                 {t.lat.toFixed(2)}°, {t.lon.toFixed(2)}° · {t.confidence}

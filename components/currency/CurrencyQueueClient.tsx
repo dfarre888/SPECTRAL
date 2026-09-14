@@ -48,7 +48,7 @@ export function CurrencyQueueClient({
             onClick={() => setFilter(s)}
             className={`px-3 py-1.5 rounded-lg text-xs font-mono border ${
               filter === s
-                ? 'border-[var(--store-accent)] text-[var(--store-accent)]'
+                ? 'border-[var(--wb-blue)] text-[var(--wb-blue)]'
                 : 'border-[var(--store-line)] store-text-muted'
             }`}
           >
@@ -64,11 +64,11 @@ export function CurrencyQueueClient({
           <article key={u.id} className="store-panel rounded-xl p-5 border border-[var(--store-line)]">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] font-mono store-text-muted uppercase">{u.type.replace(/_/g, ' ')}</p>
+                <p className="text-[11px] font-mono store-text-muted uppercase">{u.type.replace(/_/g, ' ')}</p>
                 <h2 className="text-base font-semibold text-white mt-1">{u.title}</h2>
                 <p className="text-xs store-text-muted mt-1 font-mono">{u.detected_at.slice(0, 10)} · {u.source_type}</p>
               </div>
-              <span className="text-[10px] font-mono px-2 py-1 rounded border border-[var(--store-line)]">{u.status}</span>
+              <span className="text-[11px] font-mono px-2 py-1 rounded border border-[var(--store-line)]">{u.status}</span>
             </div>
             <p className="text-sm store-text-body mt-3 leading-relaxed">{u.summary}</p>
             <p className="text-xs store-text-muted mt-2 font-mono">Proposed effect: {u.proposed_effect}</p>
@@ -79,7 +79,7 @@ export function CurrencyQueueClient({
                   type="button"
                   disabled={pending}
                   onClick={() => act(u.id, 'approved')}
-                  className="px-3 py-1.5 rounded-lg text-xs bg-[var(--store-accent)] text-black font-semibold"
+                  className="px-3 py-1.5 rounded-lg text-xs bg-[var(--wb-blue)] text-white font-semibold"
                 >
                   Approve
                 </button>

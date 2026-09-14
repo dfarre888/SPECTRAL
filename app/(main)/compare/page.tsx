@@ -62,7 +62,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                 </div>
                 <Link
                   href={`/platforms/${p.id}`}
-                  className="text-[var(--store-accent)] text-xs hover:opacity-80 inline-block pt-2"
+                  className="text-[var(--wb-blue)] text-xs hover:opacity-80 inline-block pt-2"
                 >
                   View full spec →
                 </Link>

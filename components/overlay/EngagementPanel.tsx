@@ -141,7 +141,7 @@ export function EngagementPanel({
         <input type="range" min={-0.2} max={0.2} step={0.005} value={scenario.uas_lat - scenario.sam_lat} onChange={(e) => update({ uas_lat: scenario.sam_lat + Number(e.target.value) })} className="w-full" />
       </label>
       <div className="flex flex-wrap gap-1">{ECM_LEVELS.map((level) => (
-        <button key={level} type="button" onClick={() => update({ ecm_level: level })} className={cn('rounded px-2 py-1 text-[10px] font-mono border', scenario.ecm_level===level ? 'bg-[#F97316] text-white border-[#F97316]' : 'border-[var(--store-line)] store-text-muted')}>{level}</button>
+        <button key={level} type="button" onClick={() => update({ ecm_level: level })} className={cn('rounded px-2 py-1 text-[11px] font-mono border', scenario.ecm_level===level ? 'bg-[#F97316] text-white border-[#F97316]' : 'border-[var(--store-line)] store-text-muted')}>{level}</button>
       ))}</div>
       <div className="flex gap-1">{[1,2,3,4].map((n) => (
         <button key={n} type="button" onClick={() => update({ salvo_count: n })} className={cn('flex-1 rounded border py-1 font-mono text-[11px]', scenario.salvo_count===n ? 'border-orange bg-orange/20' : 'border-[var(--store-line)] store-text-muted')}>Salvo ×{n}</button>
@@ -155,7 +155,7 @@ export function EngagementResultView({ result }: { result: EngagementResult }) {
   const intercept = result.intercept
   return (
     <div className="rounded-xl border border-[var(--store-line)] bg-[var(--store-surface)] p-3 space-y-3 text-xs font-mono">
-      <div className={cn('text-center uppercase text-[10px] font-semibold py-2 rounded', PHASE_STYLE[result.phase])}>
+      <div className={cn('text-center uppercase text-[11px] font-semibold py-2 rounded', PHASE_STYLE[result.phase])}>
         {result.phase.replace(/_/g, ' ')}
       </div>
       <div className="grid grid-cols-2 gap-2 store-text-body">
@@ -169,14 +169,14 @@ export function EngagementResultView({ result }: { result: EngagementResult }) {
           <p>Pk salvo (×{intercept.salvo_count}) <span className="text-white text-lg">{intercept.pk_salvo.toFixed(2)}</span></p>
         </div>
       )}
-      <div className="border-t border-[var(--store-line)] pt-2 space-y-1 text-[10px] store-text-muted">
+      <div className="border-t border-[var(--store-line)] pt-2 space-y-1 text-[11px] store-text-muted">
         <p>Detect {Math.round(result.detect_range_m).toLocaleString()} m</p>
         <p>Track {Math.round(result.track_range_m).toLocaleString()} m</p>
         <p>Launch {Math.round(result.launch_range_m).toLocaleString()} m</p>
         <p>Lethal {Math.round(result.lethal_range_m).toLocaleString()} m</p>
       </div>
       {intercept?.engagement_notes?.slice(0, 3).map((n) => (
-        <p key={n} className="text-[10px] store-text-muted">• {n}</p>
+        <p key={n} className="text-[11px] store-text-muted">• {n}</p>
       ))}
     </div>
   )

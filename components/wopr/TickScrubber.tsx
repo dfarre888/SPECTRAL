@@ -54,7 +54,7 @@ export function TickScrubber({
         className="flex-1 min-w-0 accent-[var(--store-accent)] h-1 disabled:opacity-30"
       />
 
-      <span className="text-[10px] font-mono store-text-muted tabular-nums shrink-0 w-[128px] text-right">
+      <span className="text-[11px] font-mono store-text-muted tabular-nums shrink-0 w-[128px] text-right">
         {disabled ? 'awaiting ticks…' : frameLabel(current)}
       </span>
 
@@ -64,10 +64,10 @@ export function TickScrubber({
         disabled={following}
         title={following ? 'Following the live stream' : 'Jump back to the latest tick'}
         className={clsx(
-          'shrink-0 px-2 py-0.5 rounded text-[9px] font-mono font-bold border transition-colors',
+          'shrink-0 px-2 py-0.5 rounded text-[11px] font-mono font-bold border transition-colors',
           following
             ? 'border-[rgba(74,222,128,0.35)] text-[var(--store-success)] bg-[rgba(74,222,128,0.10)] cursor-default'
-            : 'border-[var(--store-accent-border)] text-[var(--store-accent)] bg-[var(--store-accent)]/10 hover:bg-[var(--store-accent)]/20',
+            : 'border-[rgba(41,151,255,0.5)] text-[var(--wb-blue)] bg-[rgba(41,151,255,0.14)] hover:bg-[var(--store-accent)]/20',
         )}
       >
         {following ? '● LIVE' : 'REPLAY → live'}

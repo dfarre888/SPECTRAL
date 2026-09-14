@@ -77,7 +77,7 @@ export function BriefPanel({ brief }: BriefPanelProps) {
               <span className="font-mono tabular-nums store-text-body">
                 ${opt.cost_per_kill_usd.toLocaleString('en-US')}/kill
               </span>
-              <span className="text-[10px] font-mono store-panel-inner px-2 py-0.5 rounded border border-[var(--store-line)]">
+              <span className="text-[11px] font-mono store-panel-inner px-2 py-0.5 rounded border border-[var(--store-line)]">
                 {opt.confidence}
               </span>
             </div>

@@ -39,7 +39,7 @@ export function HubLinkCard({
             borderColor: 'var(--store-accent-border)',
           }}
         >
-          <Icon className="w-7 h-7 text-[var(--store-accent)]" aria-hidden />
+          <Icon className="w-7 h-7 text-[var(--wb-blue)]" aria-hidden />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap mb-2">
@@ -47,7 +47,7 @@ export function HubLinkCard({
               {title}
             </h2>
             {badge ? (
-              <span className="text-xs font-medium px-2.5 py-0.5 rounded-full border border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]">
+              <span className="text-xs font-medium px-2.5 py-0.5 rounded-full border border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]">
                 {badge}
               </span>
             ) : null}

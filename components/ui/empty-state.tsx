@@ -25,7 +25,7 @@ export function EmptyState({
   return (
     <StorePanel className={cn('p-10 flex flex-col items-center text-center', className)}>
       <div className="w-12 h-12 rounded-2xl border border-[var(--store-line)] bg-[var(--store-surface-2)] flex items-center justify-center mb-4">
-        <Icon className="h-6 w-6 text-[var(--store-accent)]" aria-hidden />
+        <Icon className="h-6 w-6 text-[var(--wb-blue)]" aria-hidden />
       </div>
       <h2 className="store-display text-lg font-semibold text-white">{title}</h2>
       <p className="text-sm store-text-body mt-2 max-w-md font-mono">{description}</p>

@@ -19,7 +19,7 @@ export default function ConflictIncidentDetailPage({ params }: ConflictDetailPag
         <p className="text-sm store-text-body leading-relaxed">
           Full conflict timeline — coming in next release.
         </p>
-        <p className="text-[10px] font-mono store-text-muted">
+        <p className="text-[11px] font-mono store-text-muted">
           Incident ID: {params.id}
         </p>
         <Link

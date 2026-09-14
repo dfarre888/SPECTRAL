@@ -36,7 +36,7 @@ export function OverviewDashboard({
   return (
     <section aria-label="Command center overview">
       <div className="mb-6">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--store-accent)] mb-1">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)] mb-1">
           {copy.commandEyebrow}
         </p>
         <h2 className="text-lg font-semibold text-white">{copy.commandTitle}</h2>
@@ -74,19 +74,19 @@ export function OverviewDashboard({
                   onClick={() => onSelectAsset?.(a.id)}
                   className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
                     isActive
-                      ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
-                      : 'border-[var(--store-line)] bg-[var(--store-surface-2)] hover:border-[var(--store-accent-border)]/50'
+                      ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
+                      : 'border-[var(--store-line)] bg-[var(--store-surface-2)] hover:border-[rgba(41,151,255,0.5)]/50'
                   }`}
                 >
                   <div className="min-w-0">
                     <p
-                      className={`text-[11px] font-medium truncate ${isActive ? 'text-[var(--store-accent)]' : 'text-white'}`}
+                      className={`text-[11px] font-medium truncate ${isActive ? 'text-[var(--wb-blue)]' : 'text-white'}`}
                     >
                       {a.designation}
                     </p>
-                    <p className="text-[9px] font-mono store-text-muted truncate">{a.serialNumber}</p>
+                    <p className="text-[11px] font-mono store-text-muted truncate">{a.serialNumber}</p>
                   </div>
-                  <span className={`text-[10px] font-mono font-semibold shrink-0 ${batteryColor}`}>
+                  <span className={`text-[11px] font-mono font-semibold shrink-0 ${batteryColor}`}>
                     {a.batteryHealthPct}%
                   </span>
                 </button>

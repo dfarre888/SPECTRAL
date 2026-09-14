@@ -62,7 +62,7 @@ export function MfaEnroll({ onEnrolled, onCancelled }: MfaEnrollProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--store-accent)]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--wb-blue)]" />
       </div>
     )
   }
@@ -70,8 +70,8 @@ export function MfaEnroll({ onEnrolled, onCancelled }: MfaEnrollProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <div className="p-3 rounded-xl bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)]">
-          <Shield className="w-6 h-6 text-[var(--store-accent)]" />
+        <div className="p-3 rounded-xl bg-[rgba(41,151,255,0.14)] border border-[rgba(41,151,255,0.5)]">
+          <Shield className="w-6 h-6 text-[var(--wb-blue)]" />
         </div>
         <div>
           <h2 className="text-lg font-bold text-white">Set up 2FA</h2>
@@ -85,7 +85,7 @@ export function MfaEnroll({ onEnrolled, onCancelled }: MfaEnrollProps) {
             <img src={qrCode} alt="TOTP QR code for Google Authenticator" className="w-48 h-48" />
           </div>
           {secret && (
-            <p className="text-[10px] font-mono store-text-muted text-center break-all max-w-xs">
+            <p className="text-[11px] font-mono store-text-muted text-center break-all max-w-xs">
               Manual key: {secret.replace(/(.{4})/g, '$1 ').trim()}
             </p>
           )}

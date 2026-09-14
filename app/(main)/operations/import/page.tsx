@@ -158,7 +158,7 @@ export default function OperationsImportPage() {
       title="Customer Import"
       subtitle="Tenant-scoped platform, Pd/Pk defeat matrix, and document ingestion with human approval"
       headerAction={
-        <p className="text-[10px] font-mono store-text-muted">Date of information: Jul 2026</p>
+        <p className="text-[11px] font-mono store-text-muted">Date of information: Jul 2026</p>
       }
     >
       <div className="grid gap-6 max-w-3xl">
@@ -172,7 +172,7 @@ export default function OperationsImportPage() {
         <StorePanel inner className="p-5 space-y-4">
           <form onSubmit={queuePlatform} className="space-y-3">
             <div className="flex items-center gap-2 text-sm text-white font-medium">
-              <Upload className="w-4 h-4 text-[var(--store-accent)]" />
+              <Upload className="w-4 h-4 text-[var(--wb-blue)]" />
               Queue platform import
             </div>
             <Input
@@ -244,7 +244,7 @@ export default function OperationsImportPage() {
               onChange={(e) =>
                 setConfidence(e.target.value as (typeof CONFIDENCE_OPTIONS)[number])
               }
-              className="flex h-9 w-full rounded-xl store-panel-inner px-3 py-1 text-sm text-white shadow-sm transition-colors focus-visible:outline-none focus-visible:border-[var(--store-accent-border)] font-mono"
+              className="flex h-9 w-full rounded-xl store-panel-inner px-3 py-1 text-sm text-white shadow-sm transition-colors focus-visible:outline-none focus-visible:border-[rgba(41,151,255,0.5)] font-mono"
             >
               {CONFIDENCE_OPTIONS.map((opt) => (
                 <option key={opt} value={opt}>
@@ -266,7 +266,7 @@ export default function OperationsImportPage() {
         <StorePanel inner className="p-5 space-y-4">
           <form onSubmit={queueDocument} className="space-y-3">
             <div className="flex items-center gap-2 text-sm text-white font-medium">
-              <FileUp className="w-4 h-4 text-[var(--store-accent)]" />
+              <FileUp className="w-4 h-4 text-[var(--wb-blue)]" />
               Queue document import
             </div>
             <Input
@@ -292,7 +292,7 @@ export default function OperationsImportPage() {
                 <li key={gap.id} className="store-panel-inner rounded-xl px-3 py-2.5 text-xs space-y-1">
                   <p className="store-text-body font-medium">{gap.label}</p>
                   <p className="store-text-muted leading-relaxed">{gap.reason}</p>
-                  <p className="font-mono text-cyan text-[10px]">{resolutionHint(gap.resolution_path)}</p>
+                  <p className="font-mono text-cyan text-[11px]">{resolutionHint(gap.resolution_path)}</p>
                 </li>
               ))}
             </ul>

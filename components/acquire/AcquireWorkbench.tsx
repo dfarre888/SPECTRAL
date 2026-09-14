@@ -45,7 +45,7 @@ export function AcquireWorkbench({ initialSession }: AcquireWorkbenchProps) {
               className={cn(
                 'rounded-lg px-4 py-2 text-xs font-mono font-semibold tracking-widest transition-colors border',
                 selected
-                  ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
+                  ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]'
                   : 'border-transparent store-text-muted hover:text-white hover:bg-[var(--store-surface-2)]',
               )}
             >

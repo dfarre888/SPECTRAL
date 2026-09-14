@@ -98,7 +98,7 @@ export function ThreatRoutePanel({ start, objective, placed, speedMps = 250 }: T
     <div className="store-panel rounded-2xl p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
         <div>
-          <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--store-accent)]">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)]">
             Threat-aware routing
           </p>
           <h3 className="store-display text-sm font-semibold text-white mt-0.5">Minimum-exposure path</h3>
@@ -107,9 +107,9 @@ export function ThreatRoutePanel({ start, objective, placed, speedMps = 250 }: T
           {POSTURES.map((p) => (
             <button key={p} type="button" onClick={() => setPosture(p)}
               className={clsx(
-                'px-2 py-1 rounded-lg text-[10px] font-mono border transition-colors capitalize',
+                'px-2 py-1 rounded-lg text-[11px] font-mono border transition-colors capitalize',
                 posture === p ? 'nav-item-active'
-                  : 'store-panel-inner store-text-muted hover:border-[var(--store-accent-border)]',
+                  : 'store-panel-inner store-text-muted hover:border-[rgba(41,151,255,0.5)]',
               )}>
               {p}
             </button>
@@ -161,31 +161,31 @@ export function ThreatRoutePanel({ start, objective, placed, speedMps = 250 }: T
 
       <div className="grid grid-cols-3 gap-2 mt-3">
         <div className="store-panel-inner rounded-xl p-2.5">
-          <p className="text-[10px] font-mono uppercase store-text-muted">Direct</p>
+          <p className="text-[11px] font-mono uppercase store-text-muted">Direct</p>
           <p className="text-lg font-bold font-mono tabular-nums" style={{ color: '#f87171' }}>
             {pct(direct.survivalProbability)}
           </p>
-          <p className="text-[10px] store-text-muted font-mono">{(direct.lengthM / 1000).toFixed(0)} km</p>
+          <p className="text-[11px] store-text-muted font-mono">{(direct.lengthM / 1000).toFixed(0)} km</p>
         </div>
         <div className="store-panel-inner rounded-xl p-2.5">
-          <p className="text-[10px] font-mono uppercase store-text-muted">Planned</p>
+          <p className="text-[11px] font-mono uppercase store-text-muted">Planned</p>
           <p className="text-lg font-bold font-mono tabular-nums"
             style={{ color: improved ? 'var(--store-success)' : '#f87171' }}>
             {pct(planned.survivalProbability)}
           </p>
-          <p className="text-[10px] store-text-muted font-mono">
+          <p className="text-[11px] store-text-muted font-mono">
             {(planned.lengthM / 1000).toFixed(0)} km · +{((planned.detourFactor - 1) * 100).toFixed(0)}%
           </p>
         </div>
         <div className="store-panel-inner rounded-xl p-2.5">
-          <p className="text-[10px] font-mono uppercase store-text-muted">Waypoints</p>
+          <p className="text-[11px] font-mono uppercase store-text-muted">Waypoints</p>
           <p className="text-lg font-bold text-white font-mono tabular-nums">{planned.waypoints.length}</p>
-          <p className="text-[10px] store-text-muted font-mono">{planned.confidence ?? 'no threat contact'}</p>
+          <p className="text-[11px] store-text-muted font-mono">{planned.confidence ?? 'no threat contact'}</p>
         </div>
       </div>
 
       <label className="flex items-center gap-2 mt-3">
-        <span className="text-[10px] font-mono store-text-muted whitespace-nowrap">
+        <span className="text-[11px] font-mono store-text-muted whitespace-nowrap">
           Detour allowance {((detour - 1) * 100).toFixed(0)}%
         </span>
         <input type="range" min={1.05} max={2.5} step={0.05} value={detour}
@@ -194,13 +194,13 @@ export function ThreatRoutePanel({ start, objective, placed, speedMps = 250 }: T
       </label>
 
       {planned.penetratedThreatIds.length > 0 && (
-        <p className="mt-2 text-[10px] font-mono text-red-300">
+        <p className="mt-2 text-[11px] font-mono text-red-300">
           No clear route inside the allowance — must penetrate {planned.penetratedThreatIds.length} threat
           {planned.penetratedThreatIds.length === 1 ? '' : 's'}.
         </p>
       )}
 
-      <p className="mt-2 text-[10px] store-text-muted leading-relaxed">
+      <p className="mt-2 text-[11px] store-text-muted leading-relaxed">
         Rings use effective engagement range under the selected posture, not kinematic missile range.
         Solid ring is engagement, dashed is detection. Without an accredited Pk the route is marked estimated.
       </p>

@@ -49,7 +49,7 @@ export function ForceCatalogFuture({
 
   return (
     <div className="space-y-2">
-      <h2 className="text-[10px] font-mono uppercase tracking-widest store-text-muted tabular-nums">
+      <h2 className="text-[11px] font-mono uppercase tracking-widest store-text-muted tabular-nums">
         Future programs · {sorted.length}
       </h2>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -64,13 +64,13 @@ export function ForceCatalogFuture({
               aria-pressed={selected}
               aria-label={selected ? `Close detail for ${name}` : `Open detail for ${name}`}
               onClick={() => onSelect(p)}
-              className="w-full text-left cursor-pointer rounded-2xl border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--store-accent)] focus-visible:outline-offset-2"
+              className="w-full text-left cursor-pointer rounded-2xl border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--wb-blue)] focus-visible:outline-offset-2"
             >
               <StorePanel
                 className={[
                   'p-3 space-y-1 transition-[border-color,background-color] duration-150 ease-out',
-                  'hover:border-[var(--store-accent-border)]',
-                  selected ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]' : '',
+                  'hover:border-[rgba(41,151,255,0.5)]',
+                  selected ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]' : '',
                   sideEdgeClass(p.force_side),
                 ].join(' ')}
               >
@@ -80,11 +80,11 @@ export function ForceCatalogFuture({
                   </p>
                   <ConfidenceBadge confidence={p.future?.data_confidence ?? p.data_confidence} />
                 </div>
-                <p className="text-[10px] font-mono store-text-muted">
+                <p className="text-[11px] font-mono store-text-muted">
                   {`${p.designation} · ${p.nation_code} · ${p.future?.lead_contractor ?? p.manufacturer ?? '—'} · IOC ${p.future?.ioc_est ?? 'TBD'}`}
                 </p>
                 {p.future?.partner_nations?.length ? (
-                  <p className="text-[10px] font-mono store-text-muted">
+                  <p className="text-[11px] font-mono store-text-muted">
                     Partners: {p.future.partner_nations.join(', ')}
                   </p>
                 ) : null}

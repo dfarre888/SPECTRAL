@@ -23,7 +23,7 @@ export function StatusBadge({ status, className }: { status: OperationalStatus; 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-wide',
+        'inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-mono font-semibold uppercase tracking-wide',
         STATUS_STYLES[status],
         className,
       )}

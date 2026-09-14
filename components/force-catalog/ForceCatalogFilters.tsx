@@ -200,7 +200,7 @@ export function ForceCatalogFilters(props: ForceCatalogFilterState) {
             value={search}
             onChange={(e) => onSearch(e.target.value)}
             placeholder="Name, designation, nation, id"
-            className="w-full rounded-lg border store-line bg-[var(--store-surface-2)] px-2.5 py-2 text-[12px] font-mono store-text-body placeholder:text-[var(--store-ink-mute)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--store-accent)]"
+            className="w-full rounded-lg border store-line bg-[var(--store-surface-2)] px-2.5 py-2 text-[12px] font-mono store-text-body placeholder:text-[var(--store-ink-mute)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--wb-blue)]"
           />
         </label>
 

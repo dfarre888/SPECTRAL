@@ -82,7 +82,7 @@ export function SwarmSaturationPanel() {
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
-        <h3 className="text-[10px] font-semibold text-white uppercase tracking-widest">
+        <h3 className="text-[11px] font-semibold text-white uppercase tracking-widest">
           Swarm Saturation
         </h3>
         <span className="text-[8px] font-mono store-text-muted">
@@ -92,7 +92,7 @@ export function SwarmSaturationPanel() {
 
       {/* ── Defeat system selector ─────────────────────────────────── */}
       <div>
-        <label className="text-[9px] font-mono uppercase store-text-muted mb-1 block">
+        <label className="text-[11px] font-mono uppercase store-text-muted mb-1 block">
           Defeat system
         </label>
         <select
@@ -111,7 +111,7 @@ export function SwarmSaturationPanel() {
             </optgroup>
           ))}
         </select>
-        <p className="text-[9px] font-mono store-text-muted mt-0.5 leading-relaxed">
+        <p className="text-[11px] font-mono store-text-muted mt-0.5 leading-relaxed">
           <span
             className={cn(
               'mr-1.5 font-semibold uppercase',
@@ -131,7 +131,7 @@ export function SwarmSaturationPanel() {
       {/* ── Inbound count slider ───────────────────────────────────── */}
       <div>
         <div className="flex items-center justify-between mb-0.5">
-          <label className="text-[9px] font-mono uppercase store-text-muted">
+          <label className="text-[11px] font-mono uppercase store-text-muted">
             Inbound count
           </label>
           <span className="text-[15px] font-mono font-bold text-white tabular-nums leading-none">
@@ -157,7 +157,7 @@ export function SwarmSaturationPanel() {
       <div className="flex gap-3 items-end">
         {/* Shots per target */}
         <div className="shrink-0">
-          <label className="text-[9px] font-mono uppercase store-text-muted mb-1 block">
+          <label className="text-[11px] font-mono uppercase store-text-muted mb-1 block">
             Shots/tgt
           </label>
           <div className="flex rounded-lg overflow-hidden border border-[var(--store-line)]">
@@ -182,7 +182,7 @@ export function SwarmSaturationPanel() {
         {/* Pk override */}
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
-            <label className="text-[9px] font-mono uppercase store-text-muted">
+            <label className="text-[11px] font-mono uppercase store-text-muted">
               Pk/shot
             </label>
             <button
@@ -217,17 +217,17 @@ export function SwarmSaturationPanel() {
       {/* ── Saturation curve chart ─────────────────────────────────── */}
       <div>
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[9px] font-mono uppercase store-text-muted">
+          <span className="text-[11px] font-mono uppercase store-text-muted">
             Saturation curve
           </span>
           {curve.threshold ? (
-            <span className="text-[9px] font-mono">
+            <span className="text-[11px] font-mono">
               <span className="text-orange-400">⚠ </span>
               <span className="store-text-muted">threshold @ </span>
               <span className="font-bold text-orange-400">{curve.threshold}</span>
             </span>
           ) : (
-            <span className="text-[9px] font-mono text-emerald-400">
+            <span className="text-[11px] font-mono text-emerald-400">
               sufficient 1–{MAX_INBOUND}
             </span>
           )}
@@ -389,13 +389,13 @@ export function SwarmSaturationPanel() {
           <div>
             <p
               className={cn(
-                'text-[10px] font-mono font-semibold leading-none mb-0.5',
+                'text-[11px] font-mono font-semibold leading-none mb-0.5',
                 current.exhausted ? 'text-red-400' : 'text-emerald-400',
               )}
             >
               {current.exhausted ? 'MAGAZINE EXHAUSTED' : 'MAGAZINE ADEQUATE'}
             </p>
-            <p className="text-[9px] font-mono store-text-muted leading-relaxed">
+            <p className="text-[11px] font-mono store-text-muted leading-relaxed">
               {current.exhausted
                 ? `Add point-defence or RF layer before ${inbound}+ inbound.`
                 : `${magLabel} rounds sufficient for ${inbound}× inbound at ${Math.round(effectivePk * 100)}% Pk.`}
@@ -410,7 +410,7 @@ export function SwarmSaturationPanel() {
           <p className="text-[8px] font-mono uppercase text-orange-400 mb-0.5 tracking-wider">
             Doctrine
           </p>
-          <p className="text-[9px] font-mono text-orange-200/75 leading-relaxed">
+          <p className="text-[11px] font-mono text-orange-200/75 leading-relaxed">
             {current.exhausted
               ? 'Magazine exhausted before swarm neutralised — shift lowest-cost effector (RF/HPM) to lead layer, preserve kinetic for terminal-phase threats.'
               : `${current.leakers} leaker(s) at ${inbound} inbound — tighten cueing geometry or add RF suppression layer uprange of the engagement zone.`}

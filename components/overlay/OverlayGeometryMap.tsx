@@ -286,7 +286,7 @@ export default function OverlayGeometryMap({
       />
       {placementBanner ? (
         <div
-          className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-lg border border-[var(--store-accent-border)] bg-[var(--store-bg)]/90 px-3 py-1.5 text-[11px] font-mono text-[var(--store-accent)] shadow-lg"
+          className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-lg border border-[rgba(41,151,255,0.5)] bg-[var(--store-bg)]/90 px-3 py-1.5 text-[11px] font-mono text-[var(--wb-blue)] shadow-lg"
           role="status"
         >
           {placementBanner}

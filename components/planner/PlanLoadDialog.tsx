@@ -52,7 +52,7 @@ export function PlanLoadDialog({ open, onClose, onSelect }: PlanLoadDialogProps)
               onClick={() => onSelect(p.id)}
             >
               <span className="block text-sm text-white font-medium">{p.name}</span>
-              <span className="block text-[10px] font-mono store-text-muted mt-0.5">
+              <span className="block text-[11px] font-mono store-text-muted mt-0.5">
                 {p.phase.toUpperCase()} · updated {new Date(p.updated_at).toLocaleDateString()}
               </span>
             </button>

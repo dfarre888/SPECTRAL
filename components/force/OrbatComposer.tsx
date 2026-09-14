@@ -67,7 +67,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
       <div className="store-panel rounded-2xl p-4">
         <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--store-accent)]">
+            <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)]">
               Package composition
             </p>
             <h3 className="store-display text-sm font-semibold text-white mt-0.5">
@@ -76,11 +76,11 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
           </div>
           <div className="flex gap-1.5">
             <button type="button" onClick={() => setSelected(new Set(allIds))}
-              className="px-2 py-1 rounded-lg text-[10px] font-mono store-panel-inner text-[var(--store-ink)] hover:border-[var(--store-accent-border)] border border-transparent">
+              className="px-2 py-1 rounded-lg text-[11px] font-mono store-panel-inner text-[var(--store-ink)] hover:border-[rgba(41,151,255,0.5)] border border-transparent">
               All
             </button>
             <button type="button" onClick={() => setSelected(new Set())}
-              className="px-2 py-1 rounded-lg text-[10px] font-mono store-panel-inner text-[var(--store-ink)] hover:border-[var(--store-accent-border)] border border-transparent">
+              className="px-2 py-1 rounded-lg text-[11px] font-mono store-panel-inner text-[var(--store-ink)] hover:border-[rgba(41,151,255,0.5)] border border-transparent">
               None
             </button>
           </div>
@@ -89,7 +89,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
         <div className="max-h-[520px] overflow-y-auto pr-1 space-y-3">
           {byDomain.map(([domain, list]) => (
             <div key={domain}>
-              <p className="text-[10px] font-mono uppercase tracking-wider store-text-muted mb-1 sticky top-0 bg-[var(--store-surface)] py-1">
+              <p className="text-[11px] font-mono uppercase tracking-wider store-text-muted mb-1 sticky top-0 bg-[var(--store-surface)] py-1">
                 {domain} · {list.filter((p) => selected.has(p.id)).length}/{list.length}
               </p>
               <div className="space-y-1">
@@ -111,15 +111,15 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                       className={clsx(
                         'w-full flex items-center gap-2.5 rounded-lg px-2.5 py-2 border text-left transition-colors',
                         on
-                          ? 'border-[var(--store-accent-border)] bg-[var(--store-accent)]/10'
+                          ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
                           : 'border-[var(--store-line)] opacity-45 hover:opacity-70',
                       )}
                     >
                       <span
                         className={clsx(
-                          'w-3.5 h-3.5 rounded-[3px] border shrink-0 flex items-center justify-center text-[9px]',
+                          'w-3.5 h-3.5 rounded-[3px] border shrink-0 flex items-center justify-center text-[11px]',
                           on
-                            ? 'bg-[var(--store-accent)] border-[var(--store-accent)] text-black'
+                            ? 'bg-[var(--store-accent)] border-[var(--wb-blue)] text-black'
                             : 'border-slate-500',
                         )}
                       >
@@ -130,7 +130,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                         <span className="block text-[13px] text-[var(--store-ink)] font-medium truncate" title={p.label}>
                           {p.label}
                         </span>
-                        <span className="block text-[10px] font-mono store-text-muted truncate">
+                        <span className="block text-[11px] font-mono store-text-muted truncate">
                           {p.role} · {p.comms.length} comms · {p.sensors.length} sensors
                         </span>
                       </span>
@@ -158,7 +158,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
       {/* ── Live rollup ───────────────────────────────────────────────────── */}
       <div className="space-y-4">
         <div className="store-panel rounded-2xl p-4">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--store-accent)] mb-2">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)] mb-2">
             Connectivity
           </p>
           <p className="text-2xl font-bold text-white font-mono tabular-nums">
@@ -171,14 +171,14 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                 <p className="text-base font-bold font-mono tabular-nums" style={{ color: t.color }}>
                   {current.tiers[t.key]}
                 </p>
-                <p className="text-[9px] font-mono store-text-muted">{t.label}</p>
+                <p className="text-[11px] font-mono store-text-muted">{t.label}</p>
               </div>
             ))}
           </div>
         </div>
 
         <div className="store-panel rounded-2xl p-4">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--store-accent)] mb-2">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)] mb-2">
             Platforms per comms band
           </p>
           {current.commsBands.length === 0 ? (
@@ -208,21 +208,21 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                       }} />
                     </div>
                     <span className="w-7 text-right text-[11px] font-mono text-[var(--store-ink)]">{b.platformCount}</span>
-                    {spof && <span className="text-[9px] font-mono text-amber-400" title="Only one platform holds this band">⚠</span>}
+                    {spof && <span className="text-[11px] font-mono text-amber-400" title="Only one platform holds this band">⚠</span>}
                   </div>
                 )
               })}
             </div>
           )}
           {current.singlePointBands.length > 0 && (
-            <p className="mt-2 text-[10px] text-amber-300 leading-snug">
+            <p className="mt-2 text-[11px] text-amber-300 leading-snug">
               ⚠ {current.singlePointBands.join(', ')} held by a single platform — losing it removes the band.
             </p>
           )}
         </div>
 
         <div className="store-panel rounded-2xl p-4">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--store-accent)] mb-2">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)] mb-2">
             Sensor bands covered
           </p>
           {current.sensorBands.length === 0 ? (
@@ -258,7 +258,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
 
         {(delta.bandsLost.length > 0 || delta.trackDelta !== 0) && (
           <div className="store-panel rounded-2xl p-4 border border-red-500/25">
-            <p className="text-[10px] font-mono uppercase tracking-wider text-red-300 mb-1.5">
+            <p className="text-[11px] font-mono uppercase tracking-wider text-red-300 mb-1.5">
               Versus full ORBAT
             </p>
             {delta.bandsLost.length > 0 && (
@@ -275,7 +275,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
         )}
 
         {(current.noCommsIds.length > 0 || current.noSensorIds.length > 0) && (
-          <p className="text-[10px] font-mono store-text-muted leading-relaxed">
+          <p className="text-[11px] font-mono store-text-muted leading-relaxed">
             {current.noCommsIds.length} selected with no comms fit ·{' '}
             {current.noSensorIds.length} with no sensor fit. Absent data, not absent capability.
           </p>

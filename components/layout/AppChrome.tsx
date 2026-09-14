@@ -34,7 +34,7 @@ export function AppChrome({
           <Topbar />
           {moduleLabel ? (
             <div className="h-8 shrink-0 flex items-center px-4 border-b border-[var(--store-line)] bg-[var(--store-surface)]">
-              <span className="text-[10px] font-mono store-text-muted uppercase tracking-wider">
+              <span className="text-[11px] font-mono store-text-muted uppercase tracking-wider">
                 SPECTRAL · {moduleLabel} · {CLASSIFICATION_STRIP}
               </span>
             </div>

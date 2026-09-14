@@ -83,7 +83,7 @@ export function PcmExerciseWorkspace({ exerciseId }: { exerciseId: string }) {
         meta ? (
           <Link
             href={`/pcm/exercise/${exerciseId}/aar`}
-            className="text-xs font-mono text-[var(--store-accent)] hover:underline"
+            className="text-xs font-mono text-[var(--wb-blue)] hover:underline"
           >
             View AAR
           </Link>

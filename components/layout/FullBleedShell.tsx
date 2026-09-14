@@ -29,7 +29,7 @@ export function FullBleedShell({ children, title }: FullBleedShellProps) {
           </span>
         </div>
         <div className="flex-1" />
-        <span className="text-[9px] font-mono store-text-muted opacity-70">
+        <span className="text-[11px] font-mono store-text-muted opacity-70">
           Powered by A3DM
         </span>
       </header>

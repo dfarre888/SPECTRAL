@@ -33,7 +33,7 @@ export function NationCompareClient({ compare, theatreId = 'scs' }: NationCompar
 
       <div className="overflow-x-auto rounded-2xl border border-[var(--store-line)]">
         <table className="w-full min-w-[860px] text-left text-xs">
-          <thead className="bg-[var(--store-surface-2)] font-mono text-[10px] uppercase store-text-muted">
+          <thead className="bg-[var(--store-surface-2)] font-mono text-[11px] uppercase store-text-muted">
             <tr>
               <th className="px-3 py-2">Effect</th>
               <th className="px-3 py-2">{compare.a.nation.shortName}</th>

@@ -89,20 +89,20 @@ export function ScenarioGeneratorPanel() {
       </div>
       {config && (
         <div className="store-panel rounded-xl border p-4 text-sm space-y-3">
-          <h3 className="font-mono text-[var(--store-accent)]">{config.title}</h3>
+          <h3 className="font-mono text-[var(--wb-blue)]">{config.title}</h3>
           <p className="text-xs store-text-muted">{config.generation_rationale}</p>
-          <p className="font-mono text-[10px] text-cyan">Pd: {config.estimated_pd_envelope.under_trigger_pd.toFixed(3)} under trigger</p>
+          <p className="font-mono text-[11px] text-cyan">Pd: {config.estimated_pd_envelope.under_trigger_pd.toFixed(3)} under trigger</p>
           {scenarioCode && (
-            <p className="font-mono text-[10px] text-white">Scenario code: <span className="text-cyan">{scenarioCode}</span></p>
+            <p className="font-mono text-[11px] text-white">Scenario code: <span className="text-cyan">{scenarioCode}</span></p>
           )}
           {scenarioRowId && (
-            <p className="font-mono text-[10px] store-text-muted">Row ID: <span className="text-white">{scenarioRowId}</span></p>
+            <p className="font-mono text-[11px] store-text-muted">Row ID: <span className="text-white">{scenarioRowId}</span></p>
           )}
           {exerciseError && (
-            <p className="text-[10px] font-mono text-red">{exerciseError}</p>
+            <p className="text-[11px] font-mono text-red">{exerciseError}</p>
           )}
           <div className="border-t border-[var(--store-line)] pt-3 space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wider store-text-muted">Next steps</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider store-text-muted">Next steps</p>
             <div className="flex flex-wrap gap-2 text-xs font-mono">
               <button
                 type="button"
@@ -112,9 +112,9 @@ export function ScenarioGeneratorPanel() {
               >
                 {startingExercise ? 'Starting…' : 'Start PCM Exercise'}
               </button>
-              <Link href="/arena" className="rounded border border-[var(--store-line)] px-2 py-1 hover:border-[var(--store-accent)]/40">WOPR Arena</Link>
-              <Link href="/map" className="rounded border border-[var(--store-line)] px-2 py-1 hover:border-[var(--store-accent)]/40">Map Intel</Link>
-              <Link href="/pcm" className="rounded border border-[var(--store-line)] px-2 py-1 hover:border-[var(--store-accent)]/40">PCM hub</Link>
+              <Link href="/arena" className="rounded border border-[var(--store-line)] px-2 py-1 hover:border-[var(--wb-blue)]/40">WOPR Arena</Link>
+              <Link href="/map" className="rounded border border-[var(--store-line)] px-2 py-1 hover:border-[var(--wb-blue)]/40">Map Intel</Link>
+              <Link href="/pcm" className="rounded border border-[var(--store-line)] px-2 py-1 hover:border-[var(--wb-blue)]/40">PCM hub</Link>
             </div>
           </div>
         </div>

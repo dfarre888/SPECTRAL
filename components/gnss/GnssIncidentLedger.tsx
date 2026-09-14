@@ -36,7 +36,7 @@ export function GnssIncidentLedger({ incidents }: GnssIncidentLedgerProps) {
           <h2 className="text-xs store-text-muted uppercase tracking-wider font-semibold">
             Incident ledger ({filtered.length})
           </h2>
-          <p className="text-[10px] store-text-muted mt-0.5">
+          <p className="text-[11px] store-text-muted mt-0.5">
             OSINT RPAS show failures — evidence-graded, not every loss is jamming
           </p>
         </div>
@@ -45,9 +45,9 @@ export function GnssIncidentLedger({ incidents }: GnssIncidentLedgerProps) {
             type="button"
             onClick={() => setFilter('all')}
             className={cn(
-              'px-2.5 py-1 rounded-lg text-[10px] font-mono border transition-colors',
+              'px-2.5 py-1 rounded-lg text-[11px] font-mono border transition-colors',
               filter === 'all'
-                ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
+                ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]'
                 : 'border-[var(--store-line)] store-text-muted hover:text-white',
             )}
           >
@@ -57,9 +57,9 @@ export function GnssIncidentLedger({ incidents }: GnssIncidentLedgerProps) {
             type="button"
             onClick={() => setFilter('gnss_denial')}
             className={cn(
-              'px-2.5 py-1 rounded-lg text-[10px] font-mono border transition-colors',
+              'px-2.5 py-1 rounded-lg text-[11px] font-mono border transition-colors',
               filter === 'gnss_denial'
-                ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
+                ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]'
                 : 'border-[var(--store-line)] store-text-muted hover:text-white',
             )}
           >
@@ -80,7 +80,7 @@ export function GnssIncidentLedger({ incidents }: GnssIncidentLedgerProps) {
                 className={cn(
                   'w-full text-left px-3 py-2.5 rounded-xl border transition-colors',
                   selected?.id === inc.id
-                    ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
+                    ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
                     : 'border-[var(--store-line)] bg-[var(--store-surface-2)] hover:border-cyan/30',
                 )}
               >
@@ -90,7 +90,7 @@ export function GnssIncidentLedger({ incidents }: GnssIncidentLedgerProps) {
                     {EVIDENCE_GRADE_LABEL[inc.overall_confidence]}
                   </Badge>
                 </div>
-                <p className="text-[10px] font-mono store-text-muted mt-1">
+                <p className="text-[11px] font-mono store-text-muted mt-1">
                   {inc.date} · {family.label}
                 </p>
               </button>

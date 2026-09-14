@@ -17,7 +17,7 @@ export function OperatorReadinessPanel({
   return (
     <StorePanel className="p-6 h-full flex flex-col border-[var(--store-line)]">
       <div className="mb-4">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--store-accent)]">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)]">
           {copy.crewPanelTitle}
         </p>
         <p className="text-xs store-text-body mt-1">{copy.crewPanelSubtitle}</p>
@@ -32,9 +32,9 @@ export function OperatorReadinessPanel({
           <li key={op.id}>
             <Link
               href={op.href ?? '#'}
-              className="group flex gap-3 rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] p-3 hover:border-[var(--store-accent-border)] transition-colors"
+              className="group flex gap-3 rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] p-3 hover:border-[rgba(41,151,255,0.5)] transition-colors"
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] text-[11px] font-bold text-[var(--store-accent)] font-mono">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[rgba(41,151,255,0.14)] border border-[rgba(41,151,255,0.5)] text-[11px] font-bold text-[var(--wb-blue)] font-mono">
                 {op.initials}
               </div>
               <div className="min-w-0 flex-1">
@@ -45,8 +45,8 @@ export function OperatorReadinessPanel({
                     <CurrencyDot status={op.medicalCurrency} title={`Medical: ${op.medicalCurrency}`} />
                   </div>
                 </div>
-                <p className="text-[10px] font-mono store-text-muted mt-0.5">{op.role}</p>
-                <p className="text-[10px] store-text-body mt-1.5 line-clamp-2 group-hover:text-white transition-colors">
+                <p className="text-[11px] font-mono store-text-muted mt-0.5">{op.role}</p>
+                <p className="text-[11px] store-text-body mt-1.5 line-clamp-2 group-hover:text-white transition-colors">
                   {op.currentTask}
                 </p>
               </div>
@@ -57,7 +57,7 @@ export function OperatorReadinessPanel({
       </ul>
       <Link
         href="/currency"
-        className="mt-4 inline-flex items-center gap-1.5 text-[10px] font-mono text-cyan hover:opacity-80"
+        className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-mono text-cyan hover:opacity-80"
       >
         <CheckCircle2 className="w-3 h-3" />
         Open currency queue

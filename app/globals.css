@@ -394,12 +394,15 @@ p {
 }
 
 .store-panel {
-  background: var(--store-surface);
+  /* Black canvas: panels are hairline outlines on the ground, not raised cards.
+     Nested panels step up to a matte surface so depth still reads. */
+  background: var(--store-bg);
   border: 1px solid var(--store-line);
 }
+.store-panel .store-panel { background: var(--store-surface); }
 
 .store-panel-inner {
-  background: var(--store-surface-2);
+  background: var(--store-surface);
   border: 1px solid var(--store-line);
 }
 
@@ -642,3 +645,6 @@ p {
 .wb-pane { container-type: inline-size; }
 .wb-pane-tools { display: none; }
 @container (min-width: 300px) { .wb-pane-tools { display: flex; } }
+
+.store-accent { color: var(--wb-blue); }
+.store-accent-border { border-color: rgba(41, 151, 255, 0.5); }

@@ -171,14 +171,14 @@ export function GuidedTour({ tour, open, onClose, onAction }: GuidedTourProps) {
 
       <div
         ref={calloutRef}
-        className="absolute store-panel rounded-2xl border border-[var(--store-accent-border)] shadow-2xl p-4"
+        className="absolute store-panel rounded-2xl border border-[rgba(41,151,255,0.5)] shadow-2xl p-4"
         style={{ top: pos.top, left: pos.left, width: CALLOUT_W }}
       >
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--store-accent)]">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)]">
             {tour.label}
           </p>
-          <p className="text-[10px] font-mono store-text-muted tabular-nums">
+          <p className="text-[11px] font-mono store-text-muted tabular-nums">
             {index + 1} / {tour.steps.length}
           </p>
         </div>
@@ -187,13 +187,13 @@ export function GuidedTour({ tour, open, onClose, onAction }: GuidedTourProps) {
         <p className="text-xs store-text-body leading-relaxed mt-1.5">{step.body}</p>
 
         {step.say && (
-          <p className="mt-3 pl-3 border-l-2 border-[var(--store-accent)] text-[11px] italic store-text-body">
+          <p className="mt-3 pl-3 border-l-2 border-[var(--wb-blue)] text-[11px] italic store-text-body">
             “{step.say}”
           </p>
         )}
 
         {settling && (
-          <p className="mt-3 text-[10px] font-mono store-text-muted flex items-center gap-1.5">
+          <p className="mt-3 text-[11px] font-mono store-text-muted flex items-center gap-1.5">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--store-accent)] animate-pulse" />
             rendering view…
           </p>
@@ -203,7 +203,7 @@ export function GuidedTour({ tour, open, onClose, onAction }: GuidedTourProps) {
           <button
             type="button"
             onClick={onClose}
-            className="text-[10px] font-mono store-text-muted hover:text-white"
+            className="text-[11px] font-mono store-text-muted hover:text-white"
           >
             Exit
           </button>
@@ -213,10 +213,10 @@ export function GuidedTour({ tour, open, onClose, onAction }: GuidedTourProps) {
               onClick={back}
               disabled={index === 0}
               className={clsx(
-                'px-2.5 py-1 rounded-lg text-[10px] font-mono border store-panel-inner',
+                'px-2.5 py-1 rounded-lg text-[11px] font-mono border store-panel-inner',
                 index === 0
                   ? 'opacity-40 cursor-not-allowed store-text-muted'
-                  : 'store-text-body hover:border-[var(--store-accent-border)]',
+                  : 'store-text-body hover:border-[rgba(41,151,255,0.5)]',
               )}
             >
               Back
@@ -224,7 +224,7 @@ export function GuidedTour({ tour, open, onClose, onAction }: GuidedTourProps) {
             <button
               type="button"
               onClick={next}
-              className="px-3 py-1 rounded-lg text-[10px] font-mono font-semibold bg-[var(--store-accent)] text-black hover:opacity-90"
+              className="px-3 py-1 rounded-lg text-[11px] font-mono font-semibold bg-[var(--wb-blue)] text-white hover:opacity-90"
             >
               {isLast ? 'Done' : 'Next'}
             </button>

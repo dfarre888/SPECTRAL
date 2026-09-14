@@ -96,17 +96,17 @@ export function BmiDashboard({ bundle }: BmiDashboardProps) {
       {/* Filter rail */}
       <aside className="w-full lg:w-[260px] shrink-0 space-y-3">
         <StorePanel className="p-3 space-y-3 ring-gradient glass">
-          <p className="eyebrow text-[10px]">Filters</p>
+          <p className="eyebrow text-[11px]">Filters</p>
 
           <div>
-            <p className="text-[10px] store-text-muted mb-1">Force</p>
+            <p className="text-[11px] store-text-muted mb-1">Force</p>
             <div className="flex gap-1">
               <button
                 type="button"
                 onClick={() => setForceSide('blue')}
                 className={`text-xs px-2 py-1 rounded-lg border transition-colors ${
                   forceSide === 'blue'
-                    ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
+                    ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]'
                     : 'store-btn-secondary px-2 py-1 store-text-muted'
                 }`}
               >
@@ -149,7 +149,7 @@ export function BmiDashboard({ bundle }: BmiDashboardProps) {
               <button
                 key={`${c.type}-${c.value}`}
                 type="button"
-                className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-[var(--store-gold-border)] bg-[var(--store-gold-glow)] text-[var(--store-gold)] hover:brightness-110 transition-colors"
+                className="text-[11px] font-mono px-2 py-0.5 rounded-full border border-[var(--store-gold-border)] bg-[var(--store-gold-glow)] text-[var(--store-gold)] hover:brightness-110 transition-colors"
                 onClick={() => {
                   if (c.type === 'nation') toggleFilter(c.value, nations, setNations)
                   if (c.type === 'domain') toggleFilter(c.value as Domain, domains, setDomains)
@@ -176,15 +176,15 @@ export function BmiDashboard({ bundle }: BmiDashboardProps) {
             <div key={stat.label} className="flex items-center">
               <div className="text-center px-2">
                 <div className="hero-number text-sm text-[#F7F9FC] tabular-nums">{stat.value}</div>
-                <div className="text-[9px] uppercase tracking-wider store-text-muted">{stat.label}</div>
+                <div className="text-[11px] uppercase tracking-wider store-text-muted">{stat.label}</div>
               </div>
               {i < arr.length - 1 ? <div className="w-px h-8 bg-[var(--store-line)]" /> : null}
             </div>
           ))}
           <div className="w-px h-8 bg-[var(--store-line)]" />
           <div className="text-center px-2">
-            <div className="hero-number text-xs text-[var(--store-accent)] tabular-nums">ap-southeast-2</div>
-            <div className="text-[9px] uppercase tracking-wider store-text-muted">Region</div>
+            <div className="hero-number text-xs text-[var(--wb-blue)] tabular-nums">ap-southeast-2</div>
+            <div className="text-[11px] uppercase tracking-wider store-text-muted">Region</div>
           </div>
         </div>
 
@@ -279,16 +279,16 @@ function FilterSection<T extends string>({
 }) {
   return (
     <div>
-      <p className="text-[10px] store-text-muted mb-1">{label}</p>
+      <p className="text-[11px] store-text-muted mb-1">{label}</p>
       <div className="flex flex-wrap gap-1">
         {options.map((o) => (
           <button
             key={o}
             type="button"
             onClick={() => onToggle(o)}
-            className={`text-[10px] font-mono px-1.5 py-0.5 rounded-lg border transition-colors ${
+            className={`text-[11px] font-mono px-1.5 py-0.5 rounded-lg border transition-colors ${
               selected.includes(o)
-                ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
+                ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]'
                 : 'border-transparent store-text-muted hover:bg-[var(--store-surface-2)] hover:text-[var(--store-ink-soft)]'
             }`}
           >
@@ -330,20 +330,20 @@ function ForceGrid({
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="text-sm font-semibold text-[#F7F9FC]">{p.short_name}</p>
-                    <p className="text-[10px] store-text-muted">{p.designation}</p>
+                    <p className="text-[11px] store-text-muted">{p.designation}</p>
                   </div>
                   <ConfidenceBadge confidence={p.data_confidence} />
                 </div>
                 <p className="text-xs store-text-body line-clamp-2">{p.open_source_summary}</p>
                 <div className="flex flex-wrap gap-1">
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-lg store-panel-inner store-text-muted">
+                  <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-lg store-panel-inner store-text-muted">
                     {p.domain}
                   </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-lg store-panel-inner store-text-muted">
+                  <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-lg store-panel-inner store-text-muted">
                     {p.role}
                   </span>
                   {p.qty ? (
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-lg store-panel-inner hero-number text-[var(--store-gold)]">
+                    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-lg store-panel-inner hero-number text-[var(--store-gold)]">
                       ×{p.qty}
                     </span>
                   ) : null}
@@ -353,13 +353,13 @@ function ForceGrid({
                     {p.comms.slice(0, 4).map((c) => (
                       <span
                         key={c.id}
-                        className="text-[9px] font-mono px-1 py-0.5 rounded-lg border border-[var(--cyan)]/25 text-[var(--cyan)] bg-[var(--cyan)]/5"
+                        className="text-[11px] font-mono px-1 py-0.5 rounded-lg border border-[var(--cyan)]/25 text-[var(--cyan)] bg-[var(--cyan)]/5"
                       >
                         {c.label.split(' ')[0]}
                       </span>
                     ))}
                     {p.comms.length > 4 ? (
-                      <span className="text-[9px] store-text-muted">+{p.comms.length - 4}</span>
+                      <span className="text-[11px] store-text-muted">+{p.comms.length - 4}</span>
                     ) : null}
                   </div>
                 ) : null}
@@ -368,7 +368,7 @@ function ForceGrid({
                     {p.sensors.map((s) => (
                       <span
                         key={s.id}
-                        className="text-[9px] px-1 py-0.5 rounded border border-[var(--store-line)] store-text-muted"
+                        className="text-[11px] px-1 py-0.5 rounded border border-[var(--store-line)] store-text-muted"
                         title={s.intel_note ?? s.label}
                       >
                         {s.kind}: {s.label.split(' ')[0]}

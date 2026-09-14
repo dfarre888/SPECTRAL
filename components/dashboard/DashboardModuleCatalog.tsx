@@ -62,24 +62,24 @@ export function DashboardModuleCatalog({ stats }: DashboardModuleCatalogProps) {
             {sidebarStats.map(({ label, value, sub, icon: Icon, trend }) => (
               <StorePanel key={label} className="p-3 mb-2 last:mb-0">
                 <div className="flex items-start justify-between mb-2">
-                  <Icon className="w-4 h-4 text-[var(--store-accent)]" />
-                  <span className="text-[9px] font-mono text-[var(--store-success)] flex items-center gap-1">
+                  <Icon className="w-4 h-4 text-[var(--wb-blue)]" />
+                  <span className="text-[11px] font-mono text-[var(--store-success)] flex items-center gap-1">
                     <TrendingUp className="w-2.5 h-2.5" />
                     {trend}
                   </span>
                 </div>
                 <p className="text-xl font-bold text-white font-mono tabular-nums">{value}</p>
                 <p className="text-[11px] store-text-body">{label}</p>
-                <p className="text-[10px] store-text-muted font-mono">{sub}</p>
+                <p className="text-[11px] store-text-muted font-mono">{sub}</p>
               </StorePanel>
             ))}
           </StoreFilterSection>
 
           <StoreFilterSection label="Threat alert">
-            <StorePanel className="p-3 border-[var(--store-accent-border)]">
+            <StorePanel className="p-3 border-[rgba(41,151,255,0.5)]">
               <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="w-3.5 h-3.5 text-[var(--store-accent)]" />
-                <span className="text-[10px] font-semibold text-[var(--store-accent)] uppercase tracking-wider">
+                <AlertTriangle className="w-3.5 h-3.5 text-[var(--wb-blue)]" />
+                <span className="text-[11px] font-semibold text-[var(--wb-blue)] uppercase tracking-wider">
                   COTS jammer risk
                 </span>
               </div>
@@ -88,7 +88,7 @@ export function DashboardModuleCatalog({ stats }: DashboardModuleCatalogProps) {
               </p>
               <Link
                 href="/gnss"
-                className="mt-2 block text-[10px] font-mono text-cyan hover:opacity-80"
+                className="mt-2 block text-[11px] font-mono text-cyan hover:opacity-80"
               >
                 → GNSS jammer database
               </Link>
@@ -131,12 +131,12 @@ export function DashboardModuleCatalog({ stats }: DashboardModuleCatalogProps) {
               className="flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--store-surface-2)] transition-colors group"
             >
               {status === 'ongoing' ? (
-                <AlertTriangle className="w-3.5 h-3.5 text-[var(--store-accent)] shrink-0" />
+                <AlertTriangle className="w-3.5 h-3.5 text-[var(--wb-blue)] shrink-0" />
               ) : (
                 <CheckCircle className="w-3.5 h-3.5 text-[var(--store-success)] shrink-0" />
               )}
               <p className="text-xs store-text-body group-hover:text-white flex-1">{label}</p>
-              <span className="text-[10px] font-mono store-text-muted store-panel-inner px-2 py-0.5 rounded">
+              <span className="text-[11px] font-mono store-text-muted store-panel-inner px-2 py-0.5 rounded">
                 {type}
               </span>
             </Link>

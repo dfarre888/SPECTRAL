@@ -99,26 +99,26 @@ export function JammingIncidentsPanel({ incidents }: JammingIncidentsPanelProps)
               className={`w-full text-left rounded-xl border p-3 transition-colors ${
                 selectedId === inc.id
                   ? 'border-orange-500/50 bg-orange-500/5'
-                  : 'border-[var(--store-line)] bg-[var(--store-surface)] hover:border-[var(--store-accent-border)]'
+                  : 'border-[var(--store-line)] bg-[var(--store-surface)] hover:border-[rgba(41,151,255,0.5)]'
               }`}
             >
               <p className="text-sm font-medium text-white">{inc.incident_name}</p>
-              <p className="text-[10px] font-mono store-text-muted mt-1">
+              <p className="text-[11px] font-mono store-text-muted mt-1">
                 {new Date(inc.detected_at).toISOString().slice(0, 10)}
               </p>
               <div className="flex flex-wrap gap-1 mt-2">
-                <span className={`text-[9px] uppercase px-1.5 py-0.5 rounded ${TYPE_BADGE[inc.jamming_type] ?? ''}`}>
+                <span className={`text-[11px] uppercase px-1.5 py-0.5 rounded ${TYPE_BADGE[inc.jamming_type] ?? ''}`}>
                   {inc.jamming_type}
                 </span>
                 <span
-                  className={`text-[9px] uppercase px-1.5 py-0.5 rounded ${
+                  className={`text-[11px] uppercase px-1.5 py-0.5 rounded ${
                     inc.confirmed ? 'text-orange-400 bg-orange-500/10' : 'store-text-muted bg-[var(--store-surface-2)]'
                   }`}
                 >
                   {inc.confirmed ? 'confirmed' : 'unconfirmed'}
                 </span>
                 {inc.affected_constellations.map((c) => (
-                  <span key={c} className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400">
+                  <span key={c} className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400">
                     {c}
                   </span>
                 ))}
@@ -135,7 +135,7 @@ export function JammingIncidentsPanel({ incidents }: JammingIncidentsPanelProps)
           <div className="rounded-xl border border-[var(--store-line)] bg-[var(--store-surface)] p-4 text-xs space-y-2">
             <p className="store-text-body leading-relaxed">{selected.source_ref}</p>
             {selected.platform_impacts.length > 0 ? (
-              <ul className="font-mono text-[10px] text-cyan-400 space-y-1">
+              <ul className="font-mono text-[11px] text-cyan-400 space-y-1">
                 {selected.platform_impacts.map((p) => (
                   <li key={`${p.platform_id}-${p.observed_effect}`}>
                     {p.platform_id} → {p.observed_effect}
@@ -143,7 +143,7 @@ export function JammingIncidentsPanel({ incidents }: JammingIncidentsPanelProps)
                 ))}
               </ul>
             ) : (
-              <p className="store-text-muted font-mono text-[10px]">No platform impacts recorded</p>
+              <p className="store-text-muted font-mono text-[11px]">No platform impacts recorded</p>
             )}
           </div>
         ) : null}

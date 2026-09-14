@@ -78,13 +78,13 @@ export function SpectralAAR({ exerciseId }: { exerciseId: string }) {
       ) : (
         <div className="grid gap-4 lg:grid-cols-3">
           {archiveSource ? (
-            <p className="lg:col-span-3 text-[10px] font-mono text-[var(--store-accent)]">
+            <p className="lg:col-span-3 text-[11px] font-mono text-[var(--wb-blue)]">
               {AAR_ARCHIVE_SUBTITLE}
             </p>
           ) : null}
           <OpsPanel title="Grade" kicker="Overall">
             <p className="font-mono text-2xl text-cyan capitalize">{doc.overall_grade}</p>
-            <p className="text-[10px] font-mono store-text-muted mt-2">
+            <p className="text-[11px] font-mono store-text-muted mt-2">
               Accreditation: {doc.accreditation_eligible ? 'eligible' : 'not yet'}
             </p>
           </OpsPanel>
@@ -99,7 +99,7 @@ export function SpectralAAR({ exerciseId }: { exerciseId: string }) {
             <SpecGrid doc={doc} />
           </OpsPanel>
           <OpsPanel title="Debrief narrative" kicker="Instructor" className="lg:col-span-3" bodyClassName="p-0">
-            <pre className="whitespace-pre-wrap text-[10px] font-mono store-text-body p-4 max-h-96 overflow-y-auto">
+            <pre className="whitespace-pre-wrap text-[11px] font-mono store-text-body p-4 max-h-96 overflow-y-auto">
               {doc.report.debrief_text}
             </pre>
           </OpsPanel>
@@ -111,7 +111,7 @@ export function SpectralAAR({ exerciseId }: { exerciseId: string }) {
 
 function SpecGrid({ doc }: { doc: AARDocument }) {
   return (
-    <div className="space-y-1 font-mono text-[10px] tabular-nums">
+    <div className="space-y-1 font-mono text-[11px] tabular-nums">
       <p>Turns: {doc.report.total_turns}</p>
       <p>Leakers: {doc.report.leaker_count_total}</p>
       <p>Blue P(win): {(doc.report.blue_win_probability_final * 100).toFixed(0)}%</p>

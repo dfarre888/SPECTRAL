@@ -45,7 +45,7 @@ export function ForceCatalogDetail({
             <p className="text-sm font-semibold store-display store-text-body text-balance">
               {platform.short_name}
             </p>
-            <p className="text-[10px] font-mono store-text-muted">{platform.designation}</p>
+            <p className="text-[11px] font-mono store-text-muted">{platform.designation}</p>
           </div>
           <button
             ref={closeRef}
@@ -59,10 +59,10 @@ export function ForceCatalogDetail({
         </div>
 
         <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded border store-line store-panel-inner">
+          <span className="text-[11px] font-mono uppercase px-1.5 py-0.5 rounded border store-line store-panel-inner">
             {platform.service_status}
           </span>
-          <span className="text-[9px] font-mono store-text-muted">
+          <span className="text-[11px] font-mono store-text-muted">
             {platform.nation_code} · {platform.domain} · {platform.role} · {platform.force_side}
           </span>
           <ConfidenceBadge confidence={platform.data_confidence} />
@@ -73,40 +73,40 @@ export function ForceCatalogDetail({
         </p>
 
         {platform.manufacturer ? (
-          <p className="text-[10px] font-mono store-text-muted">OEM · {platform.manufacturer}</p>
+          <p className="text-[11px] font-mono store-text-muted">OEM · {platform.manufacturer}</p>
         ) : null}
         {platform.ioc_year != null ? (
-          <p className="text-[10px] font-mono store-text-muted tabular-nums">IOC · {platform.ioc_year}</p>
+          <p className="text-[11px] font-mono store-text-muted tabular-nums">IOC · {platform.ioc_year}</p>
         ) : null}
 
         <div className="space-y-1">
-          <h2 className="text-[10px] font-mono uppercase tracking-widest store-text-muted">Comms</h2>
+          <h2 className="text-[11px] font-mono uppercase tracking-widest store-text-muted">Comms</h2>
           <div className="flex flex-wrap gap-1">
             {platform.comms.length ? (
               platform.comms.map((c) => <CommsChip key={c.id} label={c.standard ?? c.label} />)
             ) : (
-              <span className="text-[10px] font-mono store-text-muted">None listed</span>
+              <span className="text-[11px] font-mono store-text-muted">None listed</span>
             )}
           </div>
         </div>
 
         <div className="space-y-1">
-          <h2 className="text-[10px] font-mono uppercase tracking-widest store-text-muted">Sensors</h2>
+          <h2 className="text-[11px] font-mono uppercase tracking-widest store-text-muted">Sensors</h2>
           <div className="flex flex-wrap gap-1">
             {platform.sensors.length ? (
               platform.sensors.map((s) => <SensorChip key={s.id} sensor={s} />)
             ) : (
-              <span className="text-[10px] font-mono store-text-muted">None listed</span>
+              <span className="text-[11px] font-mono store-text-muted">None listed</span>
             )}
           </div>
         </div>
 
         {platform.sources?.length ? (
           <div className="space-y-1">
-            <h2 className="text-[10px] font-mono uppercase tracking-widest store-text-muted">Sources</h2>
+            <h2 className="text-[11px] font-mono uppercase tracking-widest store-text-muted">Sources</h2>
             <ul className="space-y-1">
               {platform.sources.map((s) => (
-                <li key={s} className="text-[10px] font-mono store-text-muted text-pretty">
+                <li key={s} className="text-[11px] font-mono store-text-muted text-pretty">
                   {s}
                 </li>
               ))}
@@ -116,17 +116,17 @@ export function ForceCatalogDetail({
 
         {platform.future ? (
           <div className="space-y-1 border-t store-line pt-3">
-            <h2 className="text-[10px] font-mono uppercase tracking-widest store-text-muted">
+            <h2 className="text-[11px] font-mono uppercase tracking-widest store-text-muted">
               Future program
             </h2>
             <p className="text-sm store-display store-text-body text-balance">
               {platform.future.program_name}
             </p>
-            <p className="text-[10px] font-mono store-text-muted">
+            <p className="text-[11px] font-mono store-text-muted">
               {platform.future.lead_contractor ?? '—'} · IOC {platform.future.ioc_est ?? 'TBD'}
             </p>
             {platform.future.partner_nations?.length ? (
-              <p className="text-[10px] font-mono store-text-muted">
+              <p className="text-[11px] font-mono store-text-muted">
                 Partners: {platform.future.partner_nations.join(', ')}
               </p>
             ) : null}
@@ -136,7 +136,7 @@ export function ForceCatalogDetail({
           </div>
         ) : null}
 
-        <p className="text-[9px] font-mono store-text-muted break-all">{platform.id}</p>
+        <p className="text-[11px] font-mono store-text-muted break-all">{platform.id}</p>
       </StorePanel>
     </aside>
   )

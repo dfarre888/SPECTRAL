@@ -22,16 +22,16 @@ export function AssetIntelligenceCard({ asset, copy }: { asset: TrackedAsset; co
     <StorePanel className="p-6 h-full flex flex-col border-[var(--store-line)]">
       <div className="flex items-start justify-between gap-2 mb-4">
         <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--store-accent)]">{copy.assetPanelTitle}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)]">{copy.assetPanelTitle}</p>
           <h3 className="text-sm font-semibold text-white mt-1 leading-snug">{asset.designation}</h3>
-          <p className="text-[10px] font-mono store-text-muted mt-0.5">{asset.serialNumber}</p>
+          <p className="text-[11px] font-mono store-text-muted mt-0.5">{asset.serialNumber}</p>
         </div>
         <StatusBadge status={asset.status} />
       </div>
 
       <div className="space-y-4 flex-1">
         <div>
-          <div className="flex items-center justify-between text-[10px] font-mono store-text-muted mb-1.5">
+          <div className="flex items-center justify-between text-[11px] font-mono store-text-muted mb-1.5">
             <span className="inline-flex items-center gap-1">
               <Battery className="w-3 h-3" />
               {copy.batteryLabel}
@@ -41,15 +41,15 @@ export function AssetIntelligenceCard({ asset, copy }: { asset: TrackedAsset; co
           <div className="h-2 rounded-full bg-[var(--store-surface-2)] overflow-hidden">
             <div className={cn('h-full rounded-full transition-all', batteryTone)} style={{ width: `${asset.batteryHealthPct}%` }} />
           </div>
-          <p className="text-[9px] font-mono store-text-muted mt-1">{asset.batteryCycles} cycles logged</p>
+          <p className="text-[11px] font-mono store-text-muted mt-1">{asset.batteryCycles} cycles logged</p>
         </div>
 
         <div className="rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] p-3">
-          <p className="text-[10px] font-mono store-text-muted uppercase tracking-wider mb-2">{copy.payloadLabel}</p>
+          <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider mb-2">{copy.payloadLabel}</p>
           <p className="text-xs text-white">{asset.payloadProfile}</p>
           <span
             className={cn(
-              'mt-2 inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-mono font-semibold',
+              'mt-2 inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-mono font-semibold',
               asset.payloadActive
                 ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
                 : 'border-slate-500/40 bg-slate-500/10 store-text-muted',
@@ -66,7 +66,7 @@ export function AssetIntelligenceCard({ asset, copy }: { asset: TrackedAsset; co
 
         <div
           className={cn(
-            'flex items-center gap-2 rounded-lg border px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-wide',
+            'flex items-center gap-2 rounded-lg border px-3 py-2 text-[11px] font-mono font-semibold uppercase tracking-wide',
             JSA_STYLES[asset.jsaStatus],
           )}
         >
@@ -78,7 +78,7 @@ export function AssetIntelligenceCard({ asset, copy }: { asset: TrackedAsset; co
       {asset.platformHref && (
         <Link
           href={asset.platformHref}
-          className="mt-4 inline-flex items-center gap-1.5 text-[10px] font-mono text-[var(--store-accent)] hover:opacity-80"
+          className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-mono text-[var(--wb-blue)] hover:opacity-80"
         >
           <ExternalLink className="w-3 h-3" />
           Open platform dossier

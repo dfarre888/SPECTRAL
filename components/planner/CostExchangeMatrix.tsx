@@ -40,7 +40,7 @@ export function CostExchangeMatrix() {
       <div className="store-panel rounded-2xl p-4">
         <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--store-accent)]">
+            <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)]">
               Layering
             </p>
             <h3 className="store-display text-sm font-semibold text-white mt-0.5">
@@ -54,10 +54,10 @@ export function CostExchangeMatrix() {
                 type="button"
                 onClick={() => setThreatId(t.id)}
                 className={clsx(
-                  'px-2 py-1 rounded-lg text-[10px] font-mono border transition-colors',
+                  'px-2 py-1 rounded-lg text-[11px] font-mono border transition-colors',
                   threatId === t.id
                     ? 'nav-item-active'
-                    : 'store-panel-inner store-text-body hover:border-[var(--store-accent-border)]',
+                    : 'store-panel-inner store-text-body hover:border-[rgba(41,151,255,0.5)]',
                 )}
               >
                 {t.label}
@@ -87,7 +87,7 @@ export function CostExchangeMatrix() {
                 <span className="text-[12px] text-[var(--store-ink)] font-medium min-w-[210px] flex-1">
                   {x.effector.label}
                   {x.effector.reusable && (
-                    <span className="ml-1.5 text-[9px] font-mono store-text-muted">reusable</span>
+                    <span className="ml-1.5 text-[11px] font-mono store-text-muted">reusable</span>
                   )}
                 </span>
                 <span className="text-[11px] font-mono store-text-muted w-[110px]">
@@ -97,7 +97,7 @@ export function CostExchangeMatrix() {
                 <span className="text-[12px] font-mono font-semibold w-[150px]" style={{ color: tone.text }}>
                   {formatRatio(x.loRatio)} – {formatRatio(x.hiRatio)}
                 </span>
-                <span className="text-[10px] font-mono uppercase" style={{ color: tone.text }}>
+                <span className="text-[11px] font-mono uppercase" style={{ color: tone.text }}>
                   {x.verdict}
                 </span>
               </div>
@@ -105,7 +105,7 @@ export function CostExchangeMatrix() {
           })}
         </div>
 
-        <p className="mt-3 text-[10px] store-text-muted leading-relaxed">
+        <p className="mt-3 text-[11px] store-text-muted leading-relaxed">
           Ratio is cost per shot over cost per threat, shown as a band because published costs
           disagree. Reusable effects are priced at marginal cost per engagement, not acquisition —
           that asymmetry is the whole argument for putting them first against cheap mass. The verdict
@@ -117,7 +117,7 @@ export function CostExchangeMatrix() {
       <div className="store-panel rounded-2xl p-4">
         <div className="flex items-baseline justify-between gap-2 mb-3">
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--store-accent)]">
+            <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)]">
               Full matrix
             </p>
             <h3 className="store-display text-sm font-semibold text-white mt-0.5">
@@ -127,7 +127,7 @@ export function CostExchangeMatrix() {
           <button
             type="button"
             onClick={() => setShowAll((v) => !v)}
-            className="px-2.5 py-1 rounded-lg text-[10px] font-mono store-panel-inner store-text-body border border-transparent hover:border-[var(--store-accent-border)]"
+            className="px-2.5 py-1 rounded-lg text-[11px] font-mono store-panel-inner store-text-body border border-transparent hover:border-[rgba(41,151,255,0.5)]"
           >
             {showAll ? 'Show worst 12' : `Show all ${everything.length}`}
           </button>
@@ -144,7 +144,7 @@ export function CostExchangeMatrix() {
             <thead>
               <tr className="border-b border-[var(--store-line)]">
                 {['Effector', 'Threat', 'Exchange band', 'Verdict'].map((h) => (
-                  <th key={h} className="py-1.5 text-[10px] font-mono uppercase tracking-wider store-text-muted">
+                  <th key={h} className="py-1.5 text-[11px] font-mono uppercase tracking-wider store-text-muted">
                     {h}
                   </th>
                 ))}
@@ -164,7 +164,7 @@ export function CostExchangeMatrix() {
                     <td className="py-1.5 pr-2 text-[11px] font-mono" style={{ color: tone.text }}>
                       {formatRatio(x.loRatio)} – {formatRatio(x.hiRatio)}
                     </td>
-                    <td className="py-1.5 text-[10px] font-mono uppercase" style={{ color: tone.text }}>
+                    <td className="py-1.5 text-[11px] font-mono uppercase" style={{ color: tone.text }}>
                       {x.verdict}
                       <span className="ml-1.5 store-text-muted normal-case">
                         {x.confidence === 'consensus' ? '' : '·'}
@@ -177,7 +177,7 @@ export function CostExchangeMatrix() {
           </table>
         </div>
 
-        <p className="mt-3 text-[10px] store-text-muted leading-relaxed">
+        <p className="mt-3 text-[11px] store-text-muted leading-relaxed">
           Costs are OSINT: US budget documents where published, press reporting and manufacturer
           statements otherwise. Hover a row for the basis. No cost here is a procurement figure and
           none should be quoted as one.

@@ -14,13 +14,13 @@ interface AdjudicationProvenancePanelProps {
 function PkSourceBadge({ source }: { source?: 'accredited' | 'osint' }) {
   if (source === 'accredited') {
     return (
-      <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold tracking-wider bg-orange-500/20 text-orange-400 border border-orange-500/40">
+      <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-mono font-semibold tracking-wider bg-orange-500/20 text-orange-400 border border-orange-500/40">
         ACCREDITED
       </span>
     );
   }
   return (
-    <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold tracking-wider bg-[var(--store-surface-2)] store-text-muted border border-[var(--store-line)]">
+    <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-mono font-semibold tracking-wider bg-[var(--store-surface-2)] store-text-muted border border-[var(--store-line)]">
       OSINT EST
     </span>
   );
@@ -52,7 +52,7 @@ export function AdjudicationProvenancePanel({
 
       {pd && (
         <div className="space-y-1">
-          <p className="text-[10px] font-mono text-cyan uppercase">Detection Pd components</p>
+          <p className="text-[11px] font-mono text-cyan uppercase">Detection Pd components</p>
           <Row label="Sensor" value={pd.sensor_type} />
           <Row label="Base Pd" value={pd.base_pd.toFixed(3)} />
           <Row label="Weather mod" value={pd.weather_modifier.toFixed(2)} />
@@ -67,7 +67,7 @@ export function AdjudicationProvenancePanel({
 
       {pair && (
         <div className="space-y-1">
-          <p className="text-[10px] font-mono text-cyan uppercase">Pair adjudication</p>
+          <p className="text-[11px] font-mono text-cyan uppercase">Pair adjudication</p>
           <Row
             label="Combined Pk"
             value={pair.combinedBlueSuccessPct + '%'}

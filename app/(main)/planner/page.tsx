@@ -11,7 +11,7 @@ export default function PlannerPage() {
       title="Battlespace plan library"
       subtitle="Persisted laydowns, vignette launcher, publish to WOPR/PCM."
       headerAction={
-        <p className="text-[10px] font-mono store-text-muted">
+        <p className="text-[11px] font-mono store-text-muted">
           Date of information: Jul 2026 · {PLANNER_VIGNETTES.length} OSINT vignettes
         </p>
       }
@@ -21,12 +21,12 @@ export default function PlannerPage() {
           <Link
             key={v.id}
             href={`/map?planVignette=${v.id}`}
-            className="block store-panel rounded-xl border border-[var(--store-line)] p-4 hover:border-[var(--store-accent-border)] transition-colors"
+            className="block store-panel rounded-xl border border-[var(--store-line)] p-4 hover:border-[rgba(41,151,255,0.5)] transition-colors"
           >
             <h3 className="text-sm font-semibold text-white store-display">{v.name}</h3>
             <p className="text-xs store-text-body mt-1">{v.description}</p>
             {v.swarmCount && (
-              <p className="text-[10px] font-mono text-[var(--store-accent)] mt-2">
+              <p className="text-[11px] font-mono text-[var(--wb-blue)] mt-2">
                 {v.swarmCount}× threat swarm preset
               </p>
             )}

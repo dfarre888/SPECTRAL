@@ -32,12 +32,12 @@ export function LiveOperationsMap({
     <StorePanel className="p-6 h-full flex flex-col border-[var(--store-line)] overflow-hidden">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-cyan">{copy.mapPanelTitle}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-cyan">{copy.mapPanelTitle}</p>
           <p className="text-xs store-text-body mt-1">{copy.mapPanelSubtitle}</p>
         </div>
         <Link
           href={mapHref}
-          className="inline-flex items-center gap-1 rounded-lg border border-cyan/30 bg-cyan/10 px-2 py-1 text-[10px] font-mono text-cyan hover:bg-cyan/15 transition-colors"
+          className="inline-flex items-center gap-1 rounded-lg border border-cyan/30 bg-cyan/10 px-2 py-1 text-[11px] font-mono text-cyan hover:bg-cyan/15 transition-colors"
         >
           <Maximize2 className="w-3 h-3" />
           Open Map Intel
@@ -70,12 +70,12 @@ export function LiveOperationsMap({
         )}
         <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-2 z-10">
           <StatusBadge status="in-flight" />
-          <span className="inline-flex items-center gap-1 rounded-md border border-[var(--store-line)] bg-black/50 px-2 py-0.5 text-[10px] font-mono store-text-muted">
+          <span className="inline-flex items-center gap-1 rounded-md border border-[var(--store-line)] bg-black/50 px-2 py-0.5 text-[11px] font-mono store-text-muted">
             <MapPin className="w-3 h-3 text-cyan" />
             {context.geofenceCount} geofences
           </span>
           {recentPlanId && (
-            <span className="text-[9px] font-mono store-text-muted bg-black/40 px-2 py-0.5 rounded border border-[var(--store-line)]">
+            <span className="text-[11px] font-mono store-text-muted bg-black/40 px-2 py-0.5 rounded border border-[var(--store-line)]">
               Plan linked
             </span>
           )}
@@ -94,7 +94,7 @@ export function LiveOperationsMap({
           >
             <p className="text-lg font-bold font-mono text-white">{value}</p>
             <StatusBadge status={status} className="mt-1 mx-auto" />
-            <p className="text-[9px] font-mono store-text-muted mt-1">{label}</p>
+            <p className="text-[11px] font-mono store-text-muted mt-1">{label}</p>
           </div>
         ))}
       </div>

@@ -57,7 +57,7 @@ export function DashboardHomeTabs({
             className={cn(
               'px-4 py-2 rounded-lg text-xs font-mono font-semibold transition-colors',
               tab === id
-                ? 'bg-[var(--store-accent-glow)] text-[var(--store-accent)] border border-[var(--store-accent-border)]'
+                ? 'bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)] border border-[rgba(41,151,255,0.5)]'
                 : 'store-text-muted hover:text-white border border-transparent',
             )}
           >

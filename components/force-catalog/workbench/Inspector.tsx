@@ -181,7 +181,7 @@ export function Inspector({
                 <p className="text-[11px] font-mono store-text-muted">{tier} tier · {net?.memberIds.length ?? 0} active members · {isl.length} island{isl.length === 1 ? '' : 's'}</p>
               </div>
               <label className="flex items-center gap-2 text-[11px] font-mono store-text-muted cursor-pointer">
-                <input type="checkbox" checked={gnssDenied} onChange={(e) => setGnssDenied(e.target.checked)} className="accent-[var(--store-accent)]" />
+                <input type="checkbox" checked={gnssDenied} onChange={(e) => setGnssDenied(e.target.checked)} className="accent-[var(--wb-blue)]" />
                 GNSS denied (pessimistic bound: every PNT-dependent bearer lost)
               </label>
               {net && ghostNet ? (

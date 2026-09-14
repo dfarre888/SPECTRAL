@@ -62,7 +62,7 @@ export function CompareEngagement({ platforms }: CompareEngagementProps) {
       <h3 className="text-sm font-semibold text-white">
         Spectrum engagement — {redName} vs {blueName}
       </h3>
-      <p className="text-lg font-mono text-[var(--store-accent)]">{engagement.headline}</p>
+      <p className="text-lg font-mono text-[var(--wb-blue)]">{engagement.headline}</p>
       <p className="text-sm store-text-body">{engagement.detail}</p>
       <p className="text-xs store-text-muted font-mono uppercase">
         Verdict: {engagement.verdict.replace(/_/g, ' ')}

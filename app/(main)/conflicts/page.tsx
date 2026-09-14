@@ -21,22 +21,22 @@ export default function ConflictsPage() {
       title="Conflict Intel"
       subtitle="Named engagements and operational lessons — OSINT case studies"
       headerAction={
-        <p className="text-[10px] font-mono store-text-muted">Date of information: Jul 2026</p>
+        <p className="text-[11px] font-mono store-text-muted">Date of information: Jul 2026</p>
       }
     >
       <div className="flex gap-2 mb-4">
-        <button type="button" onClick={() => setTab('cases')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'cases' ? 'border-[var(--store-accent)] text-[var(--store-accent)]' : 'border-[var(--store-line)] store-text-muted')}>Case studies</button>
-        <button type="button" onClick={() => setTab('digest')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'digest' ? 'border-[var(--store-accent)] text-[var(--store-accent)]' : 'border-[var(--store-line)] store-text-muted')}>OSINT digest</button>
+        <button type="button" onClick={() => setTab('cases')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'cases' ? 'border-[var(--wb-blue)] text-[var(--wb-blue)]' : 'border-[var(--store-line)] store-text-muted')}>Case studies</button>
+        <button type="button" onClick={() => setTab('digest')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'digest' ? 'border-[var(--wb-blue)] text-[var(--wb-blue)]' : 'border-[var(--store-line)] store-text-muted')}>OSINT digest</button>
       </div>
       {tab === 'digest' ? (
         <div className="space-y-3">
           {CONFLICT_DIGEST.map((d) => (
             <StorePanel key={d.id} className="p-4">
-              <p className="text-[10px] font-mono store-text-muted">{d.sourceDate} · {d.confidence}</p>
+              <p className="text-[11px] font-mono store-text-muted">{d.sourceDate} · {d.confidence}</p>
               <h3 className="text-sm font-semibold text-white mt-1">{d.title}</h3>
               <p className="text-xs store-text-body mt-2"><strong>Employment:</strong> {d.employmentPattern}</p>
               <p className="text-xs store-text-body mt-1"><strong>Countermeasure:</strong> {d.countermeasure}</p>
-              <p className="text-[10px] font-mono text-[var(--store-accent)] mt-2">THREAT: {d.threatLevel}</p>
+              <p className="text-[11px] font-mono text-[var(--wb-blue)] mt-2">THREAT: {d.threatLevel}</p>
             </StorePanel>
           ))}
         </div>
@@ -44,7 +44,7 @@ export default function ConflictsPage() {
       <div className="space-y-4">
         {selected ? (
           <StorePanel className="p-3">
-            <p className="text-[10px] font-mono store-text-muted uppercase tracking-wider mb-2">
+            <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider mb-2">
               Incident map · {selected.name}
             </p>
             <ConflictCaseStudyMap key={selected.id} study={selected} />
@@ -64,12 +64,12 @@ export default function ConflictsPage() {
                   className={cn(
                     'w-full text-left px-3 py-2 rounded-xl border text-sm font-mono transition-colors',
                     selectedId === c.id
-                      ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
+                      ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]'
                       : 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-body hover:border-cyan/30',
                   )}
                 >
                   <span className="block font-medium">{c.name}</span>
-                  <span className="block text-[10px] store-text-muted mt-0.5">
+                  <span className="block text-[11px] store-text-muted mt-0.5">
                     {c.region} · {c.period}
                   </span>
                 </button>
@@ -82,7 +82,7 @@ export default function ConflictsPage() {
           {selected ? (
             <div className="space-y-4">
               <div>
-                <p className="text-[10px] font-mono store-text-muted">{selected.classification}</p>
+                <p className="text-[11px] font-mono store-text-muted">{selected.classification}</p>
                 <h2 className="text-lg font-semibold text-white mt-1">{selected.name}</h2>
                 <p className="text-xs font-mono text-cyan mt-1">
                   {selected.region} · {selected.period} · Source date: {selected.source_date}
@@ -108,7 +108,7 @@ export default function ConflictsPage() {
                     <Link
                       key={id}
                       href={`/platforms/${id}`}
-                      className="px-2 py-0.5 rounded-lg store-panel-inner text-[11px] font-mono text-cyan hover:border-[var(--store-accent-border)]"
+                      className="px-2 py-0.5 rounded-lg store-panel-inner text-[11px] font-mono text-cyan hover:border-[rgba(41,151,255,0.5)]"
                     >
                       {id}
                     </Link>
@@ -128,8 +128,8 @@ export default function ConflictsPage() {
                         <span className="store-text-muted font-mono text-xs">({inc.date})</span>
                       </p>
                       <p className="text-xs store-text-body mt-1">{inc.summary}</p>
-                      <p className="text-xs font-mono text-[var(--store-accent)] mt-2">So what: {inc.lesson}</p>
-                      <p className="text-[10px] store-text-muted mt-1">
+                      <p className="text-xs font-mono text-[var(--wb-blue)] mt-2">So what: {inc.lesson}</p>
+                      <p className="text-[11px] store-text-muted mt-1">
                         Confidence: {inc.confidence} · {inc.sources.join('; ')}
                       </p>
                     </div>

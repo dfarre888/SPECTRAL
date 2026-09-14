@@ -31,7 +31,7 @@ export function ConflictIntelClient({ incidents }: { incidents: ConflictIncident
         <ConflictCesiumMap incidents={incidents} selectedId={selectedId} onSelect={setSelectedId} />
         {selected && (
           <article className="store-panel rounded-xl p-5 border border-[var(--store-line)]">
-            <p className="text-[10px] font-mono store-text-muted uppercase">{selected.conflict_name} · {selected.incident_type.replace(/_/g, ' ')}</p>
+            <p className="text-[11px] font-mono store-text-muted uppercase">{selected.conflict_name} · {selected.incident_type.replace(/_/g, ' ')}</p>
             <h2 className="text-lg font-semibold text-white mt-1">{selected.incident_title}</h2>
             <p className="text-sm store-text-body mt-3 leading-relaxed">{selected.summary}</p>
             <p className="text-xs font-mono store-text-muted mt-3">Confidence: {selected.confidence}</p>
@@ -50,7 +50,7 @@ export function ConflictIntelClient({ incidents }: { incidents: ConflictIncident
         )}
       </div>
       <div>
-        <p className="text-[10px] font-mono store-text-muted uppercase tracking-wider mb-3">Timeline</p>
+        <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider mb-3">Timeline</p>
         <ConflictTimeline incidents={incidents} selectedId={selectedId} onSelect={setSelectedId} />
       </div>
     </div>

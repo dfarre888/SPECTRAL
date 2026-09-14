@@ -25,7 +25,7 @@ export function MoatAcquireSuggestions({ suggestions }: MoatAcquireSuggestionsPr
 
   return (
     <StorePanel className="p-4 mb-4 border-cyan/30" data-testid="moat-acquire-suggestions">
-      <p className="text-[10px] font-mono uppercase tracking-widest text-cyan mb-2">
+      <p className="text-[11px] font-mono uppercase tracking-widest text-cyan mb-2">
         MOAT → Acquire (read-only)
       </p>
       <p className="text-[11px] store-text-muted mb-3">
@@ -34,7 +34,7 @@ export function MoatAcquireSuggestions({ suggestions }: MoatAcquireSuggestionsPr
       <ul className="space-y-2">
         {visible.map((s) => (
           <li key={s.id} className="text-sm store-text-body">
-            <span className="font-mono text-[10px] text-amber uppercase mr-2">{s.severity}</span>
+            <span className="font-mono text-[11px] text-amber uppercase mr-2">{s.severity}</span>
             {s.narrative}
             {s.suggested_template_id ? (
               <Link

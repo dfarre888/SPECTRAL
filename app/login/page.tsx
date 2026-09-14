@@ -77,16 +77,16 @@ export default function LoginPage() {
         {step === 'credentials' && (
           <>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] flex items-center justify-center">
-                <Radio className="w-5 h-5 text-[var(--store-accent)]" />
+              <div className="w-10 h-10 rounded-xl bg-[rgba(41,151,255,0.14)] border border-[rgba(41,151,255,0.5)] flex items-center justify-center">
+                <Radio className="w-5 h-5 text-[var(--wb-blue)]" />
               </div>
               <div>
                 <h1 className="store-display text-xl font-bold text-white">SPECTRAL</h1>
-                <p className="text-[10px] font-mono store-text-muted">Drone Threat Intelligence Platform</p>
+                <p className="text-[11px] font-mono store-text-muted">Drone Threat Intelligence Platform</p>
               </div>
             </div>
 
-            <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--store-accent)] mb-1">
+            <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)] mb-1">
               Enterprise access
             </p>
             <p className="text-sm store-text-body mb-6">
@@ -104,7 +104,7 @@ export default function LoginPage() {
                 </a>
                 <div className="mb-4 flex items-center gap-3">
                   <div className="flex-1 h-px bg-[var(--store-line)]" />
-                  <span className="text-[10px] store-text-muted font-mono">LOCAL ACCOUNT</span>
+                  <span className="text-[11px] store-text-muted font-mono">LOCAL ACCOUNT</span>
                   <div className="flex-1 h-px bg-[var(--store-line)]" />
                 </div>
               </>
@@ -118,7 +118,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full store-panel-inner rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--store-accent-border)]"
+                  className="w-full store-panel-inner rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[rgba(41,151,255,0.5)]"
                 />
               </div>
               <div>
@@ -129,7 +129,7 @@ export default function LoginPage() {
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full store-panel-inner rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--store-accent-border)]"
+                  className="w-full store-panel-inner rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[rgba(41,151,255,0.5)]"
                 />
               </div>
 
@@ -138,7 +138,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 rounded-xl border border-[var(--store-line)] text-sm font-medium text-white hover:border-[var(--store-accent-border)] disabled:opacity-50"
+                className="w-full py-2.5 rounded-xl border border-[var(--store-line)] text-sm font-medium text-white hover:border-[rgba(41,151,255,0.5)] disabled:opacity-50"
               >
                 {loading ? 'Please wait…' : mode === 'login' ? 'Sign in with email' : 'Create account'}
               </button>
@@ -177,7 +177,7 @@ export default function LoginPage() {
           />
         )}
 
-        <p className="mt-8 text-center text-[9px] font-mono store-text-muted opacity-70">
+        <p className="mt-8 text-center text-[11px] font-mono store-text-muted opacity-70">
           UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
         </p>
       </StorePanel>

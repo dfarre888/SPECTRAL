@@ -43,7 +43,7 @@ export function PaceCard({ plan, fromLabel, toLabel }: PaceCardProps) {
     <StorePanel className="p-4 space-y-4 ring-gradient glass">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="eyebrow text-[10px]">PACE Comms Plan</p>
+          <p className="eyebrow text-[11px]">PACE Comms Plan</p>
           <p className="text-sm font-mono text-[#F7F9FC] mt-1">
             {fromLabel ?? plan.from_id} → {toLabel ?? plan.to_id}
           </p>
@@ -70,7 +70,7 @@ export function PaceCard({ plan, fromLabel, toLabel }: PaceCardProps) {
               key={tier}
               className="store-panel-inner rounded-xl p-3 flex flex-col sm:flex-row sm:items-center gap-2 hover-lift"
             >
-              <span className="text-[10px] uppercase tracking-widest text-[var(--store-accent)] w-24 shrink-0 font-semibold">
+              <span className="text-[11px] uppercase tracking-widest text-[var(--wb-blue)] w-24 shrink-0 font-semibold">
                 {tier}
               </span>
               {entry ? (
@@ -78,7 +78,7 @@ export function PaceCard({ plan, fromLabel, toLabel }: PaceCardProps) {
                   <span className="text-sm font-mono text-[#F7F9FC] flex-1">{entry.bearer_label}</span>
                   <span className="text-xs font-mono store-text-muted">{entry.band}</span>
                   {entry.caveat ? (
-                    <span className="text-[10px] px-2 py-0.5 rounded-lg border border-[var(--store-gold-border)] bg-[var(--store-gold-glow)] text-[var(--store-gold)]">
+                    <span className="text-[11px] px-2 py-0.5 rounded-lg border border-[var(--store-gold-border)] bg-[var(--store-gold-glow)] text-[var(--store-gold)]">
                       {entry.caveat}
                     </span>
                   ) : null}
@@ -97,7 +97,7 @@ export function PaceCard({ plan, fromLabel, toLabel }: PaceCardProps) {
 
       {plan.warnings.length > 0 ? (
         <div className="border-t border-[var(--store-line)] pt-3">
-          <p className="text-[10px] uppercase tracking-widest store-text-muted mb-2">Warnings</p>
+          <p className="text-[11px] uppercase tracking-widest store-text-muted mb-2">Warnings</p>
           <ul className="text-xs store-text-body space-y-1">
             {plan.warnings.map((w) => (
               <li key={w}>• {w}</li>

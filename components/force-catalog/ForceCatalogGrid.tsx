@@ -48,7 +48,7 @@ export function ForceCatalogGrid({
               >
                 {meta?.name ?? code}
               </h2>
-              <p className="text-[10px] font-mono uppercase tracking-widest store-text-muted tabular-nums">
+              <p className="text-[11px] font-mono uppercase tracking-widest store-text-muted tabular-nums">
                 {code} · {meta?.force_side}
                 {showRegion && meta?.region ? ` · ${meta.region}` : ''} · {plats.length}
               </p>

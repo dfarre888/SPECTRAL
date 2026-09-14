@@ -68,7 +68,7 @@ export function ForceDesignWorkbench() {
         {report && !loading ? (
           <div className="space-y-4">
             {archiveRun ? (
-              <p className="text-[10px] font-mono text-[var(--store-accent)]">
+              <p className="text-[11px] font-mono text-[var(--wb-blue)]">
                 {FORCE_DESIGN_ARCHIVE_NOTE}
               </p>
             ) : null}
@@ -76,7 +76,7 @@ export function ForceDesignWorkbench() {
             {report.findings.map((f) => (
               <div key={f.option_label} className="border-t border-[var(--store-line)] pt-3">
                 <p className="font-mono text-sm text-cyan">{f.option_label}</p>
-                <p className="font-mono text-[10px] tabular-nums store-text-body mt-1">
+                <p className="font-mono text-[11px] tabular-nums store-text-body mt-1">
                   Success {(f.success_rate * 100).toFixed(0)}% · marginal {(f.marginal_rate * 100).toFixed(0)}% — {f.assessment}
                 </p>
               </div>

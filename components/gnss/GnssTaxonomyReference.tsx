@@ -20,7 +20,7 @@ export function GnssTaxonomyReference({ defaultOpen = false }: GnssTaxonomyRefer
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between px-3 py-2.5 text-left store-panel-inner hover:bg-[var(--store-surface-2)] transition-colors"
       >
-        <span className="text-[10px] font-semibold store-text-muted uppercase tracking-wider">
+        <span className="text-[11px] font-semibold store-text-muted uppercase tracking-wider">
           Failure families &amp; spectrum reference
         </span>
         {open ? (
@@ -35,7 +35,7 @@ export function GnssTaxonomyReference({ defaultOpen = false }: GnssTaxonomyRefer
             Not every swarm loss is jamming. Docklands 2023 (427 drones) was wind exceedance —
             ATSB confirmed GNSS healthy after a pre-show spectrum survey.
           </p>
-          <table className="w-full text-[10px]">
+          <table className="w-full text-[11px]">
             <thead>
               <tr className="store-text-muted text-left border-b border-[var(--store-line)]">
                 <th className="py-1 pr-2">Family</th>
@@ -55,7 +55,7 @@ export function GnssTaxonomyReference({ defaultOpen = false }: GnssTaxonomyRefer
             Spectrum dimension records bands a platform <em>depends on</em> (defensive survey map) —
             not a targeting catalogue. Typical show drone: GPS L1, RTK link, 2.4 GHz swarm network.
           </p>
-          <ul className="font-mono text-[10px] text-cyan space-y-0.5">
+          <ul className="font-mono text-[11px] text-cyan space-y-0.5">
             <li>GPS L1 — {BAND_REFERENCE.GPS_L1.centre_mhz} MHz</li>
             <li>RTK correction link — datalink</li>
             <li>C2 / swarm 2.4 GHz — {BAND_REFERENCE.control_link_2_4ghz.centre_mhz} MHz</li>

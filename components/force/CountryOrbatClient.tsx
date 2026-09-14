@@ -46,13 +46,13 @@ export function CountryOrbatClient({ force, compareDefault }: CountryOrbatClient
               onClick={() => setDomain(domain === d.domain ? 'all' : d.domain)}
               className="text-left"
             >
-              <StorePanel className={`p-4 ${domain === d.domain ? 'border-[var(--store-accent-border)]' : ''}`}>
+              <StorePanel className={`p-4 ${domain === d.domain ? 'border-[rgba(41,151,255,0.5)]' : ''}`}>
                 <div className="mb-2 flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-[var(--store-accent)]" />
-                  <p className="text-[10px] font-mono uppercase store-text-muted">{d.domain}</p>
+                  <Icon className="h-4 w-4 text-[var(--wb-blue)]" />
+                  <p className="text-[11px] font-mono uppercase store-text-muted">{d.domain}</p>
                 </div>
                 <p className="font-mono text-2xl font-bold text-white tabular-nums">{d.count}</p>
-                <p className="text-[10px] font-mono store-text-muted">
+                <p className="text-[11px] font-mono store-text-muted">
                   {d.high} high · {d.medium} med · {d.estimated} est
                 </p>
               </StorePanel>
@@ -62,7 +62,7 @@ export function CountryOrbatClient({ force, compareDefault }: CountryOrbatClient
       </div>
 
       <StorePanel className="p-4">
-        <p className="mb-2 text-[10px] font-mono uppercase tracking-wider store-text-muted">Effects</p>
+        <p className="mb-2 text-[11px] font-mono uppercase tracking-wider store-text-muted">Effects</p>
         <div className="grid gap-2 md:grid-cols-2">
           {force.effects.map((e) => (
             <div key={e.effect} className="flex justify-between gap-3 text-xs">
@@ -71,14 +71,14 @@ export function CountryOrbatClient({ force, compareDefault }: CountryOrbatClient
             </div>
           ))}
         </div>
-        <p className="mt-3 text-[10px] store-text-muted">
+        <p className="mt-3 text-[11px] store-text-muted">
           {force.comms_count} comms rows · {force.sensors_count} sensors · type count is catalog depth, not ORBAT strength.
         </p>
       </StorePanel>
 
       {force.linked_uas.length > 0 && (
         <StorePanel className="p-4">
-          <p className="mb-2 text-[10px] font-mono uppercase tracking-wider store-text-muted">Linked UAS (Spectral library)</p>
+          <p className="mb-2 text-[11px] font-mono uppercase tracking-wider store-text-muted">Linked UAS (Spectral library)</p>
           <div className="flex flex-wrap gap-2">
             {force.linked_uas.slice(0, 16).map((u) => (
               <Link
@@ -95,7 +95,7 @@ export function CountryOrbatClient({ force, compareDefault }: CountryOrbatClient
 
       {force.linked_cuas.length > 0 && (
         <StorePanel className="p-4">
-          <p className="mb-2 text-[10px] font-mono uppercase tracking-wider store-text-muted">Linked C-UAS</p>
+          <p className="mb-2 text-[11px] font-mono uppercase tracking-wider store-text-muted">Linked C-UAS</p>
           <div className="flex flex-wrap gap-2">
             {force.linked_cuas.slice(0, 12).map((u) => (
               <Link
@@ -114,7 +114,7 @@ export function CountryOrbatClient({ force, compareDefault }: CountryOrbatClient
 
       <div className="overflow-x-auto rounded-2xl border border-[var(--store-line)]">
         <table className="w-full min-w-[720px] text-left text-xs">
-          <thead className="bg-[var(--store-surface-2)] font-mono text-[10px] uppercase store-text-muted">
+          <thead className="bg-[var(--store-surface-2)] font-mono text-[11px] uppercase store-text-muted">
             <tr>
               <th className="px-3 py-2">Pkg</th>
               <th className="px-3 py-2">Type</th>
@@ -151,7 +151,7 @@ function PlatformRow({
       </td>
       <td className="px-3 py-2">
         <p className="font-medium text-white">{platform.designation}</p>
-        <p className="font-mono text-[10px] store-text-muted">
+        <p className="font-mono text-[11px] store-text-muted">
           {platform.short_name}
           {platform.ioc_year ? ` · IOC ${platform.ioc_year}` : ''}
           {platform.program_stage ? ` · ${platform.program_stage}` : ''}

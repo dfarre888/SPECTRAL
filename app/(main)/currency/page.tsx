@@ -24,7 +24,7 @@ export default async function CurrencyPage() {
       title="Currency Updates"
       subtitle="Tactical currency proposals require DS review before publication. Operators see approved updates only."
       headerAction={
-        <p className="text-[10px] font-mono store-text-muted">
+        <p className="text-[11px] font-mono store-text-muted">
           Date of information: Jul 2026 · {updates.length} records
         </p>
       }

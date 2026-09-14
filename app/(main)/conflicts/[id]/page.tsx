@@ -26,7 +26,7 @@ export default function ConflictDetailPage({ params }: ConflictDetailPageProps) 
       <div className="space-y-4 max-w-4xl">
         {mapIncidents.length > 0 ? (
           <StorePanel className="p-3">
-            <p className="text-[10px] font-mono store-text-muted uppercase tracking-wider mb-2">
+            <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider mb-2">
               Incident map
             </p>
             <ConflictCaseStudyMap key={study.id} study={study} />
@@ -54,7 +54,7 @@ export default function ConflictDetailPage({ params }: ConflictDetailPageProps) 
               <Link
                 key={id}
                 href={`/platforms/${id}`}
-                className="px-2 py-0.5 rounded-lg store-panel-inner text-[11px] font-mono text-cyan hover:border-[var(--store-accent-border)]"
+                className="px-2 py-0.5 rounded-lg store-panel-inner text-[11px] font-mono text-cyan hover:border-[rgba(41,151,255,0.5)]"
               >
                 {id}
               </Link>
@@ -71,8 +71,8 @@ export default function ConflictDetailPage({ params }: ConflictDetailPageProps) 
                   <span className="store-text-muted font-mono text-xs">({inc.date})</span>
                 </p>
                 <p className="text-xs store-text-body mt-1">{inc.summary}</p>
-                <p className="text-xs font-mono text-[var(--store-accent)] mt-2">So what: {inc.lesson}</p>
-                <p className="text-[10px] store-text-muted mt-1">
+                <p className="text-xs font-mono text-[var(--wb-blue)] mt-2">So what: {inc.lesson}</p>
+                <p className="text-[11px] store-text-muted mt-1">
                   Confidence: {inc.confidence} · {inc.sources.join('; ')}
                 </p>
               </div>

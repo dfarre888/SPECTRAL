@@ -90,7 +90,7 @@ export function StatChip({
   return (
     <span
       className={`px-2.5 py-1.5 rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] text-[11px] font-mono tabular-nums ${
-        accent ? 'text-[var(--store-accent)] border-[var(--store-accent-border)]' : 'store-text-muted'
+        accent ? 'text-[var(--wb-blue)] border-[rgba(41,151,255,0.5)]' : 'store-text-muted'
       }`}
     >
       <span className="hero-number text-[#F7F9FC]">{value}</span> {label}

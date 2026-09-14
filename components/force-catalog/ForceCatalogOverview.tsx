@@ -86,7 +86,7 @@ export function ForceCatalogOverview({
                 return (
                   <tr key={d} className="border-t store-line">
                     <td className="py-2 pr-3 store-text-body capitalize">{d}</td>
-                    <td className="py-2 pr-3 text-[var(--store-accent)]">{row.blue}</td>
+                    <td className="py-2 pr-3 text-[var(--wb-blue)]">{row.blue}</td>
                     <td className="py-2 pr-3 store-text-body">{row.red}</td>
                     <td className="py-2 store-text-muted">{row.blue + row.red}</td>
                   </tr>

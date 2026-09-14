@@ -7,8 +7,8 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border-[var(--store-accent-border)] text-[var(--store-accent)] bg-[var(--store-accent-glow)]',
-        outline: 'border-[var(--store-line)] text-[var(--store-accent)] bg-transparent',
+        default: 'border-[rgba(41,151,255,0.5)] text-[var(--wb-blue)] bg-[rgba(41,151,255,0.14)]',
+        outline: 'border-[var(--store-line)] text-[var(--wb-blue)] bg-transparent',
         confirmed: 'border-[rgba(74,222,128,0.25)] text-[var(--store-success)] bg-[rgba(74,222,128,0.10)]',
         assessed: 'border-amber/40 text-amber bg-amber/10',
         estimated: 'border-[var(--store-line)] store-text-muted store-panel-inner',

@@ -11,9 +11,9 @@ interface GnssAnalyticsPanelProps {
 function StatBlock({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
     <div className="store-panel-inner rounded-xl px-3 py-2">
-      <p className="text-[10px] store-text-muted uppercase tracking-wider">{label}</p>
+      <p className="text-[11px] store-text-muted uppercase tracking-wider">{label}</p>
       <p className="text-lg font-mono text-white mt-0.5">{value}</p>
-      {sub && <p className="text-[9px] store-text-muted mt-0.5">{sub}</p>}
+      {sub && <p className="text-[11px] store-text-muted mt-0.5">{sub}</p>}
     </div>
   )
 }
@@ -25,7 +25,7 @@ export function GnssAnalyticsPanel({ analytics }: GnssAnalyticsPanelProps) {
         <h2 className="text-xs store-text-muted uppercase tracking-wider font-semibold">
           Analytics
         </h2>
-        <p className="text-[10px] store-text-muted mt-0.5">
+        <p className="text-[11px] store-text-muted mt-0.5">
           Headlines use evidenced counts only — inferred shown separately
         </p>
       </div>
@@ -42,7 +42,7 @@ export function GnssAnalyticsPanel({ analytics }: GnssAnalyticsPanelProps) {
       </div>
 
       <div>
-        <h3 className="text-[10px] font-semibold store-text-muted uppercase mb-2">
+        <h3 className="text-[11px] font-semibold store-text-muted uppercase mb-2">
           Failure families
         </h3>
         <ul className="space-y-1 text-[11px]">
@@ -61,11 +61,11 @@ export function GnssAnalyticsPanel({ analytics }: GnssAnalyticsPanelProps) {
       </div>
 
       <div>
-        <h3 className="text-[10px] font-semibold store-text-muted uppercase mb-2">
+        <h3 className="text-[11px] font-semibold store-text-muted uppercase mb-2">
           Band mentions (by grade)
         </h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-[10px]">
+          <table className="w-full text-[11px]">
             <thead>
               <tr className="store-text-muted text-left">
                 <th className="pb-1">Band</th>
@@ -89,7 +89,7 @@ export function GnssAnalyticsPanel({ analytics }: GnssAnalyticsPanelProps) {
       </div>
 
       <div>
-        <h3 className="text-[10px] font-semibold store-text-muted uppercase mb-2">
+        <h3 className="text-[11px] font-semibold store-text-muted uppercase mb-2">
           Spectrum surveys
         </h3>
         <p className="text-[11px] font-mono text-white">
@@ -99,10 +99,10 @@ export function GnssAnalyticsPanel({ analytics }: GnssAnalyticsPanelProps) {
       </div>
 
       <div>
-        <h3 className="text-[10px] font-semibold store-text-muted uppercase mb-2">Key findings</h3>
+        <h3 className="text-[11px] font-semibold store-text-muted uppercase mb-2">Key findings</h3>
         <ul className="space-y-2 max-h-48 overflow-y-auto">
           {analytics.key_findings.map((f, i) => (
-            <li key={i} className="text-[10px] store-text-body leading-relaxed store-panel-inner rounded-lg p-2">
+            <li key={i} className="text-[11px] store-text-body leading-relaxed store-panel-inner rounded-lg p-2">
               {f}
             </li>
           ))}

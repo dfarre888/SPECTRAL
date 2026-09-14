@@ -17,10 +17,10 @@ interface PlannerToolbarProps {
 }
 
 export function PlannerToolbar(props: PlannerToolbarProps) {
-  const btn = 'map-press px-2 py-1 rounded border text-[10px] font-mono font-semibold';
+  const btn = 'map-press px-2 py-1 rounded border text-[11px] font-mono font-semibold';
   return (
     <div className="flex flex-wrap items-center gap-1.5 px-2 py-1.5 min-h-8">
-      <span className="text-[10px] font-mono text-cyan truncate max-w-[140px]" title={props.planName}>
+      <span className="text-[11px] font-mono text-cyan truncate max-w-[140px]" title={props.planName}>
         {props.planId ? props.planName : 'Unsaved laydown'}
       </span>
       <button type="button" className={cn(btn, 'border-[var(--store-line)] hover:border-cyan store-text-body')} onClick={props.onSave} disabled={props.saving}>
@@ -32,9 +32,9 @@ export function PlannerToolbar(props: PlannerToolbarProps) {
       <button type="button" className={cn(btn, 'border-purple-500/50 text-purple hover:bg-purple/10')} onClick={props.onPublishPcm}>PCM</button>
       <Link href="/planner" className={cn(btn, 'border-cyan/40 text-cyan')}>Library</Link>
       {props.lastSaved && (
-        <span className="text-[9px] font-mono store-text-muted">saved {props.lastSaved.toLocaleTimeString()}</span>
+        <span className="text-[11px] font-mono store-text-muted">saved {props.lastSaved.toLocaleTimeString()}</span>
       )}
-      {props.error && <span className="text-[9px] font-mono text-red">{props.error}</span>}
+      {props.error && <span className="text-[11px] font-mono text-red">{props.error}</span>}
     </div>
   );
 }

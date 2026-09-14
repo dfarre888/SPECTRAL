@@ -79,7 +79,7 @@ export function OtpInput({ onComplete, loading = false, error = false }: OtpInpu
             onKeyDown={(e) => handleKeyDown(i, e)}
             className={cn(
               'w-10 h-12 text-center text-lg font-mono rounded-xl border bg-black/40 text-white',
-              'focus:outline-none focus:border-[var(--store-accent-border)]',
+              'focus:outline-none focus:border-[rgba(41,151,255,0.5)]',
               error ? 'border-red/60' : 'border-[var(--store-line)]',
             )}
           />
@@ -87,7 +87,7 @@ export function OtpInput({ onComplete, loading = false, error = false }: OtpInpu
       </div>
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-[var(--store-bg)]/60 rounded-xl">
-          <Loader2 className="w-5 h-5 animate-spin text-[var(--store-accent)]" />
+          <Loader2 className="w-5 h-5 animate-spin text-[var(--wb-blue)]" />
         </div>
       )}
     </div>

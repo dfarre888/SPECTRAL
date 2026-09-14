@@ -177,7 +177,7 @@ export function ArenaWorkspace() {
       <StorePanel className="p-2 min-h-[520px] flex flex-col">
         {/* ── Control bar ──────────────────────────────────────────────────── */}
         <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-1 mb-1">
-          <p className="text-[10px] store-text-muted font-mono uppercase">3D battlespace COP</p>
+          <p className="text-[11px] store-text-muted font-mono uppercase">3D battlespace COP</p>
 
           <div className="flex flex-wrap items-center gap-1">
             {/* COP view mode tabs */}
@@ -190,10 +190,10 @@ export function ArenaWorkspace() {
                   aria-selected={copMode === mode.id}
                   onClick={() => setCopMode(mode.id)}
                   className={clsx(
-                    'px-2 py-1 rounded-lg text-[10px] font-mono border transition-colors',
+                    'px-2 py-1 rounded-lg text-[11px] font-mono border transition-colors',
                     copMode === mode.id
                       ? 'nav-item-active'
-                      : 'store-panel-inner store-text-muted hover:border-[var(--store-accent-border)]',
+                      : 'store-panel-inner store-text-muted hover:border-[rgba(41,151,255,0.5)]',
                   )}
                 >
                   {mode.label}
@@ -209,9 +209,9 @@ export function ArenaWorkspace() {
               disabled={!scenario}
               title={scenario ? 'Generate a printable brief for this scenario' : 'Select a scenario first'}
               className={clsx(
-                'flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-mono border transition-colors',
+                'flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-mono border transition-colors',
                 scenario
-                  ? 'store-panel-inner store-text-body hover:border-[var(--store-accent-border)]'
+                  ? 'store-panel-inner store-text-body hover:border-[rgba(41,151,255,0.5)]'
                   : 'store-panel-inner store-text-muted opacity-40 cursor-not-allowed',
               )}
             >
@@ -231,10 +231,10 @@ export function ArenaWorkspace() {
               onClick={() => setTourOpen(true)}
               title="Walk through the fog-of-war demo"
               className={clsx(
-                'flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-mono border transition-colors',
+                'flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-mono border transition-colors',
                 tourSeen
-                  ? 'store-panel-inner store-text-muted hover:border-[var(--store-accent-border)]'
-                  : 'border-[var(--store-accent-border)] text-[var(--store-accent)] bg-[var(--store-accent)]/10',
+                  ? 'store-panel-inner store-text-muted hover:border-[rgba(41,151,255,0.5)]'
+                  : 'border-[rgba(41,151,255,0.5)] text-[var(--wb-blue)] bg-[rgba(41,151,255,0.14)]',
               )}
             >
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -258,12 +258,12 @@ export function ArenaWorkspace() {
               }
               onClick={() => setShowAisLayer((v) => !v)}
               className={clsx(
-                'flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-mono border transition-colors',
+                'flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-mono border transition-colors',
                 aisError
                   ? 'border-red-500/40 text-red-400 bg-red-500/10'
                   : showAisLayer
-                  ? 'border-[var(--store-accent-border)] text-[var(--store-accent)] bg-[var(--store-accent)]/10'
-                  : 'store-panel-inner store-text-muted hover:border-[var(--store-accent-border)]',
+                  ? 'border-[rgba(41,151,255,0.5)] text-[var(--wb-blue)] bg-[rgba(41,151,255,0.14)]'
+                  : 'store-panel-inner store-text-muted hover:border-[rgba(41,151,255,0.5)]',
               )}
             >
               {/* Anchor icon */}
@@ -287,7 +287,7 @@ export function ArenaWorkspace() {
 
         {/* ── AIS error banner ─────────────────────────────────────────────── */}
         {showAisLayer && aisError && (
-          <div className="mx-2 mb-1 px-2 py-1 rounded text-[10px] font-mono text-red-400 bg-red-500/10 border border-red-500/30">
+          <div className="mx-2 mb-1 px-2 py-1 rounded text-[11px] font-mono text-red-400 bg-red-500/10 border border-red-500/30">
             ⚠ AIS: {aisError}
           </div>
         )}

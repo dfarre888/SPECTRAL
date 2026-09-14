@@ -55,7 +55,7 @@ export function OverlayWorkspace({ platforms }: OverlayWorkspaceProps) {
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-6 min-h-[480px]">
       <StorePanel className="p-2 min-h-[520px] flex flex-col">
         <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-1 mb-1">
-          <p className="text-[10px] store-text-muted font-mono uppercase">
+          <p className="text-[11px] store-text-muted font-mono uppercase">
             SAM engagement geometry
           </p>
           <div className="flex flex-wrap items-center gap-1">
@@ -63,9 +63,9 @@ export function OverlayWorkspace({ platforms }: OverlayWorkspaceProps) {
               type="button"
               onClick={() => setPlacementMode((m) => (m === 'sam' ? null : 'sam'))}
               className={cn(
-                'rounded border px-2 py-0.5 text-[10px] font-mono',
+                'rounded border px-2 py-0.5 text-[11px] font-mono',
                 placementMode === 'sam'
-                  ? 'border-[var(--store-accent)] bg-[var(--store-accent)] text-black'
+                  ? 'border-[var(--wb-blue)] bg-[var(--wb-blue)] text-white'
                   : 'border-[var(--store-line)] text-cyan hover:border-cyan/40',
               )}
             >
@@ -75,15 +75,15 @@ export function OverlayWorkspace({ platforms }: OverlayWorkspaceProps) {
               type="button"
               onClick={() => setPlacementMode((m) => (m === 'uas' ? null : 'uas'))}
               className={cn(
-                'rounded border px-2 py-0.5 text-[10px] font-mono',
+                'rounded border px-2 py-0.5 text-[11px] font-mono',
                 placementMode === 'uas'
-                  ? 'border-[var(--store-accent)] bg-[var(--store-accent)] text-black'
+                  ? 'border-[var(--wb-blue)] bg-[var(--wb-blue)] text-white'
                   : 'border-[var(--store-line)] text-red hover:border-red/40',
               )}
             >
               Place UAS
             </button>
-            <p className="text-[10px] font-mono text-cyan ml-1">
+            <p className="text-[11px] font-mono text-cyan ml-1">
               {result.phase.replace(/_/g, ' ')}
             </p>
           </div>

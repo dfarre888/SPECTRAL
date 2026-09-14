@@ -17,7 +17,7 @@ export function OptionCards({ options, threatId }: OptionCardsProps) {
         <StorePanel key={option.defeat_system_id} className="p-4 flex flex-col gap-3">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="text-[10px] font-mono store-text-muted">OPTION {option.rank}</p>
+              <p className="text-[11px] font-mono store-text-muted">OPTION {option.rank}</p>
               <h3 className="text-sm font-semibold text-white mt-1">{option.defeat_system_name}</h3>
             </div>
             <ConfidenceBadge confidence={option.effectiveness_confidence} />
@@ -37,7 +37,7 @@ export function OptionCards({ options, threatId }: OptionCardsProps) {
 
           <p className="text-[11px] store-text-body leading-relaxed flex-1">{option.rationale}</p>
 
-          <p className="text-[10px] font-mono store-text-muted border-t border-[var(--store-line)] pt-2">
+          <p className="text-[11px] font-mono store-text-muted border-t border-[var(--store-line)] pt-2">
             {option.source_ref}
           </p>
 
@@ -48,19 +48,19 @@ export function OptionCards({ options, threatId }: OptionCardsProps) {
             */}
             <Link
               href={`/compare?ids=${encodeURIComponent(threatId)},mq-9-reaper`}
-              className="text-[10px] font-mono text-cyan hover:opacity-80"
+              className="text-[11px] font-mono text-cyan hover:opacity-80"
             >
               Compare threat dossier
             </Link>
-            <Link href="/defeat" className="text-[10px] font-mono text-cyan hover:opacity-80">
+            <Link href="/defeat" className="text-[11px] font-mono text-cyan hover:opacity-80">
               Defeat matrix
             </Link>
             {option.is_sam ? (
-              <Link href="/overlay" className="text-[10px] font-mono text-cyan hover:opacity-80">
+              <Link href="/overlay" className="text-[11px] font-mono text-cyan hover:opacity-80">
                 SAM overlay
               </Link>
             ) : null}
-            <span className="text-[10px] font-mono store-text-muted ml-auto">
+            <span className="text-[11px] font-mono store-text-muted ml-auto">
               {option.cost_confidence}
             </span>
           </div>

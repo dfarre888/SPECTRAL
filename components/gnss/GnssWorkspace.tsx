@@ -33,7 +33,7 @@ export function GnssWorkspace({
             {constellations.map((c) => (
               <li key={c.id} className="store-panel-inner rounded-xl px-3 py-2">
                 <p className="font-medium text-white">{c.name}</p>
-                <p className="text-[10px] store-text-muted font-mono">
+                <p className="text-[11px] store-text-muted font-mono">
                   {c.operator_country ?? '—'}
                   {c.jamming_vulnerability ? ` · jam: ${c.jamming_vulnerability}` : ''}
                 </p>
@@ -50,7 +50,7 @@ export function GnssWorkspace({
             {jammers.map((j) => (
               <li key={j.id} className="store-panel-inner rounded-xl px-3 py-2">
                 <p className="font-medium text-white">{j.name}</p>
-                <p className="text-[10px] font-mono text-cyan">
+                <p className="text-[11px] font-mono text-cyan">
                   {j.freq_summary ?? '—'} · {j.country ?? '—'}
                 </p>
               </li>
@@ -58,7 +58,7 @@ export function GnssWorkspace({
           </ul>
           <Link
             href="/spectrum"
-            className="mt-4 inline-block text-xs text-[var(--store-accent)] hover:underline"
+            className="mt-4 inline-block text-xs text-[var(--wb-blue)] hover:underline"
           >
             Overlay bands in Spectrum View →
           </Link>
@@ -72,14 +72,14 @@ export function GnssWorkspace({
             {countermeasures.map((n) => (
               <li key={n.id} className="store-panel-inner rounded-xl px-3 py-2">
                 <p className="font-medium text-white">{n.name}</p>
-                <p className="text-[10px] store-text-body">{n.type ?? '—'}</p>
-                <p className="text-[10px] store-text-muted mt-1">{n.notes ?? '—'}</p>
+                <p className="text-[11px] store-text-body">{n.type ?? '—'}</p>
+                <p className="text-[11px] store-text-muted mt-1">{n.notes ?? '—'}</p>
               </li>
             ))}
           </ul>
           <Link
             href="/map"
-            className="mt-4 inline-block text-xs text-[var(--store-accent)] hover:underline"
+            className="mt-4 inline-block text-xs text-[var(--wb-blue)] hover:underline"
           >
             Plan laydown in Map Intel →
           </Link>

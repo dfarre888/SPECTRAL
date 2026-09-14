@@ -45,8 +45,8 @@ export function MfaChallenge({ onSuccess, onCancel }: MfaChallengeProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <div className="p-3 rounded-xl bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)]">
-          <Shield className="w-6 h-6 text-[var(--store-accent)]" />
+        <div className="p-3 rounded-xl bg-[rgba(41,151,255,0.14)] border border-[rgba(41,151,255,0.5)]">
+          <Shield className="w-6 h-6 text-[var(--wb-blue)]" />
         </div>
         <div>
           <h2 className="text-lg font-bold text-white">Two-factor authentication</h2>

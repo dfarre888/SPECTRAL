@@ -59,16 +59,16 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
             </div>
             <div className="flex flex-col items-end gap-1">
               {LEO_COMMS_IDS.has(c.id) ? (
-                <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border font-medium bg-violet-500/15 text-violet-300 border-violet-500/30">
+                <span className="text-[11px] uppercase tracking-wider px-2 py-0.5 rounded border font-medium bg-violet-500/15 text-violet-300 border-violet-500/30">
                   LEO SATCOM
                 </span>
               ) : null}
               <span
-                className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border font-medium ${STATUS_STYLES[c.status] ?? STATUS_STYLES.testing}`}
+                className={`text-[11px] uppercase tracking-wider px-2 py-0.5 rounded border font-medium ${STATUS_STYLES[c.status] ?? STATUS_STYLES.testing}`}
               >
                 {c.status}
               </span>
-              <span className="text-[9px] uppercase tracking-wider store-text-muted">
+              <span className="text-[11px] uppercase tracking-wider store-text-muted">
                 {CATEGORY_LABEL[c.system_category]}
               </span>
             </div>
@@ -95,7 +95,7 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
               })}
             </tbody>
           </table>
-          {c.notes ? <p className="text-[10px] store-text-muted leading-relaxed">{c.notes}</p> : null}
+          {c.notes ? <p className="text-[11px] store-text-muted leading-relaxed">{c.notes}</p> : null}
         </div>
       ))}
     </div>

@@ -90,15 +90,9 @@ const MapBottomBar = dynamic(
 )
 
 function mapToolbarBtn(active: boolean, accent: 'orange' | 'cyan'): string {
-  // Variant E: outline at rest, filled with glow when active. Cyan is kept for
-  // EW tools so a jam-mode button reads as data, not chrome.
-  const base = 'map-press px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-colors duration-150'
-  if (active) {
-    return accent === 'orange'
-      ? `${base} bg-[var(--wb-blue)] border-[var(--wb-blue)] text-white shadow-[0_0_22px_-6px_rgba(41,151,255,0.9)]`
-      : `${base} bg-[#06B6D4] border-[#06B6D4] text-[var(--store-bg)] shadow-[0_0_22px_-6px_rgba(6,182,212,0.9)]`
-  }
-  return `${base} bg-[rgba(255,255,255,0.03)] border-[var(--btn-line)] text-[var(--store-ink-soft)] hover:text-white hover:border-white`
+  // Glass-layer buttons: transparent at rest, blue (or cyan for EW tools) with
+  // a glow when active. See .lg-btn in globals.css.
+  return `lg-btn map-press${accent === 'cyan' ? ' cyan' : ''}${active ? ' on' : ''}`
 }
 
 interface MapIntelViewProps {
@@ -932,8 +926,20 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
       />
 
       <div className="relative flex-1 flex flex-col min-w-0">
-        <div className="shrink-0 border-b border-[var(--store-line)] bg-[var(--store-bg)]">
-          <div className="flex flex-wrap items-center justify-between gap-2">
+        <PlanLoadDialog
+          open={loadPlanOpen}
+          onClose={() => setLoadPlanOpen(false)}
+          onSelect={(id) => {
+            void planner.loadPlan(id).then((ok) => {
+              if (ok) setLoadPlanOpen(false)
+              else toast.error('Could not load plan')
+            })
+          }}
+        />
+        <div className="relative flex-1 min-h-0">
+        {/* Liquid-glass control layer: plan on the left, tools on the right, both floating over the globe. */}
+        <div className="absolute top-3 inset-x-3 z-20 flex items-start justify-between gap-3 pointer-events-none">
+        <div className="lg-glass pointer-events-auto flex flex-wrap items-center gap-0.5 px-1.5 py-1 shrink-0">
             <PlannerToolbar
               planName={planner.planName}
               planId={planner.planId}
@@ -967,11 +973,11 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
                   .catch((e) => toast.error(e instanceof Error ? e.message : 'PCM publish failed'))
               }}
             />
-            <div className="px-2 py-1">
-              <ThemeToggle labeled />
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5 px-2 pb-1.5">
+          <span className="lg-sep" aria-hidden />
+          <ThemeToggle labeled />
+        </div>
+        <div className="lg-glass pointer-events-auto flex flex-wrap items-center justify-end gap-0.5 px-1.5 py-1 min-w-0" role="toolbar" aria-label="Map tools">
+
             <button type="button" onClick={activateBlastRisk} className={mapToolbarBtn(riskMode === 'blast', 'orange')}>Blast</button>
             <button type="button" onClick={activateJammingRisk} className={mapToolbarBtn(riskMode === 'jamming', 'cyan')}>EW Jam</button>
             <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'cuas-siting' ? 'none' : 'cuas-siting')) }} className={mapToolbarBtn(mapTool === 'cuas-siting', 'cyan')}>C-UAS Siting</button>
@@ -987,28 +993,18 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
               Edit flight path
             </button>
             {riskMode === 'blast' && (
-              <select className="text-[11px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
+              <select className="text-[11px] rounded-lg bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.14)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
                 {WARHEAD_DB.map((w) => (<option key={w.weapon_id} value={w.weapon_id}>{w.weapon_name}</option>))}
               </select>
             )}
             {riskMode === 'jamming' && (
-              <select className="text-[11px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
+              <select className="text-[11px] rounded-lg bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.14)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
                 {JAMMER_DB.map((j) => (<option key={j.jammer_id} value={j.jammer_id}>{j.jammer_name}</option>))}
               </select>
             )}
-          </div>
+
         </div>
-        <PlanLoadDialog
-          open={loadPlanOpen}
-          onClose={() => setLoadPlanOpen(false)}
-          onSelect={(id) => {
-            void planner.loadPlan(id).then((ok) => {
-              if (ok) setLoadPlanOpen(false)
-              else toast.error('Could not load plan')
-            })
-          }}
-        />
-        <div className="relative flex-1 min-h-0">
+        </div>
         {showIadsPanel && (
           <div className="map-material-float absolute bottom-16 left-3 z-20 w-72 max-h-64 overflow-y-auto rounded-xl">
             <div className="flex justify-between items-center px-2 py-1 border-b border-[var(--store-line)]">

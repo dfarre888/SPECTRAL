@@ -19,8 +19,8 @@ interface PlannerToolbarProps {
 export function PlannerToolbar(props: PlannerToolbarProps) {
   const btn = 'btn-e sm font-mono';
   return (
-    <div className="flex flex-wrap items-center gap-1.5 px-2 py-1.5 min-h-8">
-      <span className="text-[11px] font-mono store-text-muted truncate max-w-[160px]" title={props.planName}>
+    <div className="flex flex-wrap items-center gap-0.5 min-h-8">
+      <span className="text-[11px] font-mono store-text-muted truncate max-w-[160px] px-2" title={props.planName}>
         {props.planId ? props.planName : 'Unsaved laydown'}
       </span>
       <button type="button" className={cn(btn, '')} onClick={props.onSave} disabled={props.saving}>

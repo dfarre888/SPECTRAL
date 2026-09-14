@@ -252,9 +252,12 @@
 }
 
 .map-material-float {
-  background: var(--store-material-float);
-  border: 1px solid var(--store-line);
-  box-shadow: var(--store-shadow);
+  /* Floating panels over the globe share the glass control layer. */
+  background: rgba(16, 16, 18, 0.72);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 
 [data-theme="light"] .map-material {
@@ -648,3 +651,37 @@ p {
 
 .store-accent { color: var(--wb-blue); }
 .store-accent-border { border-color: rgba(41, 151, 255, 0.5); }
+
+/* ------------------------------------------------------------------ *
+   Liquid-glass control layer for the map. HIG: glass belongs to controls
+   floating above content, never to the content itself; regular variant
+   with a dimming layer because satellite imagery is bright.
+ * ------------------------------------------------------------------ */
+.lg-glass {
+  background: rgba(16, 16, 18, 0.62);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 10px 30px rgba(0, 0, 0, 0.45);
+}
+.lg-glass .btn-e, .lg-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 30px; padding: 0 10px; border-radius: 9px;
+  font-size: 12px; color: var(--store-ink);
+  border: 1px solid transparent; background: transparent;
+  transition: background-color 150ms ease-out, color 150ms ease-out, box-shadow 150ms ease-out;
+}
+.lg-glass .btn-e:hover, .lg-btn:hover { background: rgba(255, 255, 255, 0.08); }
+.lg-glass .btn-e[aria-pressed="true"], .lg-btn.on, .lg-btn[aria-pressed="true"] {
+  background: var(--wb-blue); color: #fff;
+  box-shadow: 0 0 22px -6px rgba(41, 151, 255, 0.9);
+}
+.lg-btn.cyan.on { background: #06B6D4; color: #000; box-shadow: 0 0 22px -6px rgba(6, 182, 212, 0.9); }
+.lg-btn:disabled { opacity: 0.4; }
+.lg-sep { width: 1px; height: 18px; background: rgba(255, 255, 255, 0.16); margin: 0 4px; }
+@media (prefers-reduced-transparency: reduce) {
+  .lg-glass { background: var(--store-surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

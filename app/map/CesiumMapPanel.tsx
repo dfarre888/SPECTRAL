@@ -584,18 +584,18 @@ export function MapBottomBar({
   onClearAll: () => void
 }) {
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-10 flex items-center justify-between gap-3 px-3 py-2 bg-[var(--store-surface)]/90 border-t border-[var(--store-line)] backdrop-blur">
+    <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center justify-between gap-3 px-2 py-1 lg-glass">
       <div className="flex items-center gap-2">
         <WindToggleInline nilWind={nilWind} loading={windLoading} onChange={onNilWindChange} />
         <button
           type="button"
           onClick={onClearAll}
-          className="px-3 py-1.5 rounded-xl store-panel-inner store-text-muted text-xs font-mono hover:text-[var(--wb-blue)] hover:border-[rgba(41,151,255,0.5)] transition-colors"
+          className="lg-btn font-mono"
         >
           Clear All
         </button>
       </div>
-      <p className="text-xs font-mono text-cyan">
+      <p className="text-[11px] font-mono store-text-soft px-2">
         {cursor.terrainAMSL !== null
           ? `${formatCoord(cursor.lon, cursor.lat)} · ${Math.round(cursor.terrainAMSL)} m terrain`
           : '—'}
@@ -617,11 +617,9 @@ function WindToggleInline({
     <button
       type="button"
       onClick={() => onChange(!nilWind)}
-      className={`px-3 py-1.5 rounded-xl border text-xs font-mono transition-colors ${
-        nilWind
+      className={`lg-btn font-mono ${nilWind
           ? 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-body'
-          : 'border-cyan/40 bg-cyan/10 text-cyan'
-      }`}
+          : 'border-cyan/40 bg-cyan/10 text-cyan'}`}
     >
       {loading ? 'Fetching wind…' : nilWind ? 'Nil-Wind' : 'Live Wind'}
     </button>

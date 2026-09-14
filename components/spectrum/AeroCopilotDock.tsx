@@ -112,8 +112,8 @@ export function AeroCopilotDock({ platforms, radars, effectors = [], onAction }:
             borderRadius: 20,
             pointerEvents: 'auto',
             overflow: 'hidden',
-            border: '1px solid rgba(249,115,22,0.25)',
-            boxShadow: '0 -10px 60px -20px rgba(0,0,0,0.9), 0 0 80px -40px rgba(249,115,22,0.4)',
+            border: '1px solid rgba(41,151,255,0.25)',
+            boxShadow: '0 -10px 60px -20px rgba(0,0,0,0.9), 0 0 80px -40px rgba(41,151,255,0.4)',
           }}
         >
           {/* transcript (collapsible) */}
@@ -150,7 +150,7 @@ export function AeroCopilotDock({ platforms, radars, effectors = [], onAction }:
                 width: 30,
                 height: 30,
                 borderRadius: 9,
-                background: 'linear-gradient(135deg, var(--sx-orange), #c2410c)',
+                background: 'linear-gradient(135deg, var(--sx-orange), #1B6FB8)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -235,7 +235,7 @@ function Bubble({ turn, onFollowup }: { turn: Turn; onFollowup: (q: string) => v
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
         <div
           className="sx-glass"
-          style={{ padding: '9px 14px', borderRadius: '14px 14px 4px 14px', fontSize: 12.5, maxWidth: '78%', background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.2)' }}
+          style={{ padding: '9px 14px', borderRadius: '14px 14px 4px 14px', fontSize: 12.5, maxWidth: '78%', background: 'rgba(41,151,255,0.1)', border: '1px solid rgba(41,151,255,0.2)' }}
         >
           {turn.text}
         </div>

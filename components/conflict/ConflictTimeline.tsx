@@ -13,36 +13,27 @@ export function ConflictTimeline({
   onSelect: (id: string) => void;
 }) {
   return (
-    <ol className="relative border-l border-[var(--store-line)] ml-2 space-y-4">
+    <ol className="relative">
       {incidents.map((inc) => {
         const active = inc.id === selectedId;
         return (
-          <li key={inc.id} className="ml-4">
+          <li key={inc.id}>
             <button
               type="button"
               onClick={() => onSelect(inc.id)}
-              className={`text-left w-full rounded-lg p-3 border transition-colors ${
-                active
-                  ? 'border-[var(--wb-blue)] bg-[var(--store-surface-2)]'
-                  : 'border-transparent hover:border-[var(--store-line)]'
+              aria-pressed={active}
+              className={`text-left w-full px-3 py-3 border-b fc-hair grid grid-cols-[6px_minmax(0,1fr)] gap-x-3 transition-colors duration-150 ${
+                active ? 'bg-[rgba(41,151,255,0.08)]' : 'hover:bg-[var(--store-surface)]'
               }`}
             >
-              <p className="text-[11px] font-mono store-text-muted flex items-center gap-1.5 flex-wrap">
-                <span>{inc.occurred_at.slice(0, 10)}</span>
-                <span>·</span>
-                <span>{inc.conflict_name}</span>
-                <span
-                  className="px-1 py-0.5 rounded text-[11px] uppercase tracking-wide"
-                  style={{
-                    color: INCIDENT_TYPE_COLOR[normalizeIncidentType(inc.incident_type)],
-                    background: 'rgba(255,255,255,0.06)',
-                  }}
-                >
-                  {INCIDENT_TYPE_LABEL[normalizeIncidentType(inc.incident_type)]}
+              <i className="mt-[6px] h-1.5 w-1.5 rounded-full" style={{ background: INCIDENT_TYPE_COLOR[normalizeIncidentType(inc.incident_type)] }} aria-hidden />
+              <span className="min-w-0">
+                <span className="block text-[11px] font-mono store-text-muted">
+                  {inc.occurred_at.slice(0, 10)} · {inc.conflict_name} · <span style={{ color: INCIDENT_TYPE_COLOR[normalizeIncidentType(inc.incident_type)] }}>{INCIDENT_TYPE_LABEL[normalizeIncidentType(inc.incident_type)]}</span>
                 </span>
-              </p>
-              <p className="text-sm font-medium text-white mt-1">{inc.incident_title}</p>
-              <p className="text-xs store-text-muted mt-1 line-clamp-2">{inc.summary}</p>
+                <span className="block text-[13px] text-[var(--store-ink)] mt-0.5">{inc.incident_title}</span>
+                <span className="block text-[12px] store-text-muted mt-0.5 line-clamp-2">{inc.summary}</span>
+              </span>
             </button>
           </li>
         );

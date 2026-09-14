@@ -5,14 +5,15 @@
  */
 
 export const TOKENS = {
-  bg: '#060708',
-  bg2: '#0a0c0e',
-  ink: '#f4f6f8',
-  inkDim: '#8b939c',
-  inkFaint: '#525a63',
-  orange: '#F97316',
-  orangeSoft: '#fb923c',
-  blue: '#4a9eff',
+  bg: '#000000',
+  bg2: '#1D1D1F',
+  ink: '#F5F5F7',
+  inkDim: '#A1A1A6',
+  inkFaint: '#86868B',
+  // Chrome accent is blue app-wide; orange survives only as a data colour (IR, jam).
+  orange: '#2997FF',
+  orangeSoft: '#5BB0FF',
+  blue: '#2997FF',
   green: '#4ade80',
   amber: '#fbbf24',
   red: '#f87171',
@@ -20,35 +21,29 @@ export const TOKENS = {
   purple: '#a78bfa',
   magenta: '#e879f9',
   slate: '#94a3b8',
-  glass: 'rgba(255,255,255,0.04)',
-  glassHi: 'rgba(255,255,255,0.07)',
-  glassLine: 'rgba(255,255,255,0.09)',
-  glassLineHi: 'rgba(255,255,255,0.14)',
+  glass: '#000000',
+  glassHi: '#1D1D1F',
+  glassLine: 'rgba(255,255,255,0.10)',
+  glassLineHi: 'rgba(255,255,255,0.34)',
   mono: "'JetBrains Mono', monospace",
   display: "'Space Grotesk', sans-serif",
-  ui: "'Inter', sans-serif",
+  ui: "var(--font-geist-sans), system-ui, sans-serif",
 } as const;
 
 export const SPECTRUM_CSS = `
 :root{
-  --sx-bg:#060708; --sx-bg2:#0a0c0e;
-  --sx-ink:#f4f6f8; --sx-ink-dim:#8b939c; --sx-ink-faint:#525a63;
-  --sx-orange:#F97316; --sx-orange-soft:#fb923c;
-  --sx-blue:#4a9eff; --sx-green:#4ade80; --sx-amber:#fbbf24;
+  --sx-bg:#000000; --sx-bg2:#1D1D1F;
+  --sx-ink:#F5F5F7; --sx-ink-dim:#A1A1A6; --sx-ink-faint:#86868B;
+  --sx-orange:#2997FF; --sx-orange-soft:#5BB0FF;
+  --sx-blue:#2997FF; --sx-green:#4ade80; --sx-amber:#fbbf24;
   --sx-red:#f87171; --sx-cyan:#22d3ee; --sx-purple:#a78bfa; --sx-magenta:#e879f9; --sx-slate:#94a3b8;
-  --sx-glass:rgba(255,255,255,0.04); --sx-glass-hi:rgba(255,255,255,0.07);
-  --sx-glass-line:rgba(255,255,255,0.09); --sx-glass-line-hi:rgba(255,255,255,0.14);
-  --sx-mono:'JetBrains Mono',monospace; --sx-display:'Space Grotesk',sans-serif; --sx-ui:'Inter',sans-serif;
+  --sx-glass:#000000; --sx-glass-hi:#1D1D1F;
+  --sx-glass-line:rgba(255,255,255,0.10); --sx-glass-line-hi:rgba(255,255,255,0.34);
+  --sx-mono:'JetBrains Mono',monospace; --sx-display:'Space Grotesk',sans-serif; --sx-ui:var(--font-geist-sans),system-ui,sans-serif;
 }
 .sx-root{background:var(--sx-bg);color:var(--sx-ink);font-family:var(--sx-ui);-webkit-font-smoothing:antialiased;position:relative}
-.sx-root::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(900px 600px at 12% -5%, rgba(249,115,22,0.09), transparent 60%),
-    radial-gradient(1100px 700px at 95% 8%, rgba(74,158,255,0.09), transparent 55%),
-    radial-gradient(800px 800px at 70% 100%, rgba(167,139,250,0.07), transparent 60%);}
-.sx-glass{background:var(--sx-glass);border:1px solid var(--sx-glass-line);border-radius:20px;
-  backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06), 0 24px 50px -30px rgba(0,0,0,0.8);}
+/* Content layer stays matte: hairline panels on the black ground, no glass (HIG). */
+.sx-glass{background:var(--sx-glass);border:1px solid var(--sx-glass-line);border-radius:14px;}
 .sx-glass-hi{background:var(--sx-glass-hi);border-color:var(--sx-glass-line-hi);}
 .sx-mono{font-family:var(--sx-mono);font-variant-numeric:tabular-nums;}
 .sx-display{font-family:var(--sx-display);}

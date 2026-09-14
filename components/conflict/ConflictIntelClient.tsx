@@ -30,9 +30,9 @@ export function ConflictIntelClient({ incidents }: { incidents: ConflictIncident
       <div className="space-y-4">
         <ConflictCesiumMap incidents={incidents} selectedId={selectedId} onSelect={setSelectedId} />
         {selected && (
-          <article className="store-panel rounded-xl p-5 border border-[var(--store-line)]">
-            <p className="text-[11px] font-mono store-text-muted uppercase">{selected.conflict_name} · {selected.incident_type.replace(/_/g, ' ')}</p>
-            <h2 className="text-lg font-semibold text-white mt-1">{selected.incident_title}</h2>
+          <article className="pt-4 border-t fc-hair">
+            <p className="text-[11px] font-mono store-text-muted">{selected.conflict_name} · {selected.incident_type.replace(/_/g, ' ')}</p>
+            <h2 className="text-[18px] store-display font-semibold tracking-[-0.01em] text-[var(--store-ink)] mt-1">{selected.incident_title}</h2>
             <p className="text-sm store-text-body mt-3 leading-relaxed">{selected.summary}</p>
             <p className="text-xs font-mono store-text-muted mt-3">Confidence: {selected.confidence}</p>
             <p className="text-xs font-mono store-text-muted mt-1">Source: {selected.source_ref}</p>

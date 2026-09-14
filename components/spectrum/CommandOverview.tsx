@@ -45,7 +45,7 @@ export function CommandOverview({
       {/* top bar */}
       <GlassCard style={{ padding: '15px 20px', borderRadius: 18, display: 'flex', alignItems: 'center', gap: 18 }}>
         <div>
-          <div className="sx-mono sx-faint" style={{ fontSize: 10, letterSpacing: '0.14em' }}>
+          <div className="sx-mono sx-faint" style={{ fontSize: 11 }}>
             OPERATIONAL PICTURE
           </div>
           <div className="sx-display" style={{ fontWeight: 600, fontSize: 17, marginTop: 2 }}>
@@ -107,7 +107,7 @@ export function CommandOverview({
 
         <GlassCard style={{ padding: '18px 20px', borderRadius: 18 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-            <div style={{ width: 20, height: 20, borderRadius: 6, background: 'linear-gradient(135deg, var(--sx-orange), #c2410c)' }} />
+            <div style={{ width: 20, height: 20, borderRadius: 6, background: 'linear-gradient(135deg, var(--sx-orange), #1B6FB8)' }} />
             <div className="sx-display" style={{ fontWeight: 600, fontSize: 13.5 }}>
               Spectrum Advisor
             </div>

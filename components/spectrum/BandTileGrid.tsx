@@ -324,7 +324,7 @@ function Tooltip({ state, expanded }: { state: TooltipState; expanded: boolean }
         transform: 'translateY(-100%)',
         width: MAX_W,
         background: 'rgba(6,8,10,0.97)',
-        border: '1px solid rgba(249,115,22,0.35)',
+        border: '1px solid rgba(41,151,255,0.35)',
         borderRadius: 10,
         padding: '10px 13px',
         zIndex: 50,
@@ -337,7 +337,7 @@ function Tooltip({ state, expanded }: { state: TooltipState; expanded: boolean }
           fontFamily: 'var(--sx-mono, monospace)',
           fontSize: 11,
           fontWeight: 700,
-          color: '#F97316',
+          color: 'var(--sx-orange)',
           letterSpacing: '0.08em',
           marginBottom: 5,
         }}
@@ -447,7 +447,7 @@ export function TileCard({
         borderRadius: compact ? 8 : 12,
         overflow: 'hidden',
         border: expanded
-          ? '1px solid rgba(249,115,22,0.5)'
+          ? '1px solid rgba(41,151,255,0.5)'
           : '1px solid rgba(255,255,255,0.06)',
         background: 'radial-gradient(ellipse at 30% 40%, var(--store-surface-2) 0%, var(--store-bg) 70%)',
         cursor: 'pointer',
@@ -545,7 +545,7 @@ export function TileCard({
               fontFamily: 'var(--sx-mono, monospace)',
               fontWeight: 700,
               fontSize: compact ? 10 : expanded ? 15 : 12,
-              color: '#F97316',
+              color: 'var(--sx-orange)',
               letterSpacing: '0.06em',
               flexShrink: 0,
             }}
@@ -644,9 +644,9 @@ function SectionTabs({
               padding: '6px 12px',
               borderRadius: 7,
               border: isActive
-                ? '1px solid rgba(249,115,22,0.6)'
+                ? '1px solid rgba(41,151,255,0.6)'
                 : '1px solid rgba(255,255,255,0.08)',
-              background: isActive ? 'rgba(249,115,22,0.12)' : 'rgba(255,255,255,0.03)',
+              background: isActive ? 'rgba(41,151,255,0.12)' : 'rgba(255,255,255,0.03)',
               cursor: 'pointer',
               transition: 'border-color 0.12s, background 0.12s',
               outline: 'none',
@@ -658,7 +658,7 @@ function SectionTabs({
                 fontSize: 10,
                 fontWeight: isActive ? 700 : 400,
                 letterSpacing: '0.1em',
-                color: isActive ? '#F97316' : 'rgba(255,255,255,0.5)',
+                color: isActive ? 'var(--sx-orange)' : 'rgba(255,255,255,0.5)',
                 textTransform: 'uppercase',
               }}
             >
@@ -668,7 +668,7 @@ function SectionTabs({
               style={{
                 fontFamily: 'var(--sx-mono, monospace)',
                 fontSize: 9,
-                color: isActive ? 'rgba(249,115,22,0.6)' : 'rgba(255,255,255,0.2)',
+                color: isActive ? 'rgba(41,151,255,0.6)' : 'rgba(255,255,255,0.2)',
               }}
             >
               {count}

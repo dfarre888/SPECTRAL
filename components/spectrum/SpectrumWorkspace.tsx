@@ -182,7 +182,7 @@ export function SpectrumWorkspace({
                 color: mode === m ? 'var(--sx-orange-soft)' : 'var(--sx-ink-dim)',
                 border:
                   mode === m
-                    ? '1px solid rgba(249,115,22,0.35)'
+                    ? '1px solid rgba(41,151,255,0.35)'
                     : '1px solid var(--sx-glass-line)',
                 cursor: 'pointer',
               }}

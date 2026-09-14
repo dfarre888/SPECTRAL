@@ -17,21 +17,20 @@ export default function ConflictsPage() {
 
   return (
     <HubPageShell
-      eyebrow="Case Studies"
       title="Conflict Intel"
-      subtitle="Named engagements and operational lessons — OSINT case studies"
+      subtitle="Named engagements and the lessons they carry. OSINT case studies, date of information Jul 2026."
       headerAction={
         <p className="text-[11px] font-mono store-text-muted">Date of information: Jul 2026</p>
       }
     >
-      <div className="flex gap-2 mb-4">
-        <button type="button" onClick={() => setTab('cases')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'cases' ? 'border-[var(--wb-blue)] text-[var(--wb-blue)]' : 'border-[var(--store-line)] store-text-muted')}>Case studies</button>
-        <button type="button" onClick={() => setTab('digest')} className={cn('px-3 py-1 rounded-lg text-xs font-mono border', tab === 'digest' ? 'border-[var(--wb-blue)] text-[var(--wb-blue)]' : 'border-[var(--store-line)] store-text-muted')}>OSINT digest</button>
+      <div className="flex gap-2 mb-4 border-b fc-hair pb-3" role="tablist">
+        <button type="button" role="tab" aria-selected={tab === 'cases'} onClick={() => setTab('cases')} className="fc-tab">Case studies</button>
+        <button type="button" role="tab" aria-selected={tab === 'digest'} onClick={() => setTab('digest')} className="fc-tab">OSINT digest</button>
       </div>
       {tab === 'digest' ? (
         <div className="space-y-3">
           {CONFLICT_DIGEST.map((d) => (
-            <StorePanel key={d.id} className="p-4">
+            <StorePanel key={d.id} className="px-4 py-3">
               <p className="text-[11px] font-mono store-text-muted">{d.sourceDate} · {d.confidence}</p>
               <h3 className="text-sm font-semibold text-white mt-1">{d.title}</h3>
               <p className="text-xs store-text-body mt-2"><strong>Employment:</strong> {d.employmentPattern}</p>
@@ -55,21 +54,22 @@ export default function ConflictsPage() {
           <h2 className="text-xs font-semibold store-text-muted tracking-[0.02em] mb-3">
             Case studies ({cases.length})
           </h2>
-          <ul className="space-y-2">
+          <ul>
             {cases.map((c) => (
               <li key={c.id}>
                 <button
                   type="button"
                   onClick={() => setSelectedId(c.id)}
+                  aria-pressed={selectedId === c.id}
                   className={cn(
-                    'w-full text-left px-3 py-2 rounded-xl border text-sm font-mono transition-colors',
+                    'w-full text-left px-3 py-2.5 border-b fc-hair text-[13px] transition-colors duration-150',
                     selectedId === c.id
-                      ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]'
-                      : 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-body hover:border-cyan/30',
+                      ? 'bg-[rgba(41,151,255,0.08)] text-[var(--store-ink)] shadow-[inset_2px_0_0_var(--wb-blue)]'
+                      : 'store-text-body hover:bg-[var(--store-surface)]',
                   )}
                 >
-                  <span className="block font-medium">{c.name}</span>
-                  <span className="block text-[11px] store-text-muted mt-0.5">
+                  <span className="block">{c.name}</span>
+                  <span className="block text-[11px] font-mono store-text-muted mt-0.5">
                     {c.region} · {c.period}
                   </span>
                 </button>
@@ -90,11 +90,11 @@ export default function ConflictsPage() {
               </div>
               <p className="text-sm store-text-body leading-relaxed">{selected.summary}</p>
               <div>
-                <h3 className="text-xs font-semibold store-text-muted uppercase mb-2">ORBAT note</h3>
+                <h3 className="text-[11px] store-text-muted mb-2">ORBAT note</h3>
                 <p className="text-sm store-text-body font-mono">{selected.orbat_note}</p>
               </div>
               <div>
-                <h3 className="text-xs font-semibold store-text-muted uppercase mb-2">Key lessons</h3>
+                <h3 className="text-[11px] store-text-muted mb-2">Key lessons</h3>
                 <ul className="list-disc list-inside space-y-1 text-sm store-text-body">
                   {selected.key_lessons.map((l) => (
                     <li key={l}>{l}</li>
@@ -102,7 +102,7 @@ export default function ConflictsPage() {
                 </ul>
               </div>
               <div>
-                <h3 className="text-xs font-semibold store-text-muted uppercase mb-2">Related platforms</h3>
+                <h3 className="text-[11px] store-text-muted mb-2">Related platforms</h3>
                 <div className="flex flex-wrap gap-2">
                   {selected.related_platform_ids.map((id) => (
                     <Link
@@ -117,12 +117,9 @@ export default function ConflictsPage() {
               </div>
               {selected.incidents.length > 0 && (
                 <div>
-                  <h3 className="text-xs font-semibold store-text-muted uppercase mb-2">Incidents</h3>
+                  <h3 className="text-[11px] store-text-muted mb-2">Incidents</h3>
                   {selected.incidents.map((inc) => (
-                    <div
-                      key={inc.id}
-                      className="store-panel-inner rounded-xl p-3 mb-2"
-                    >
+                    <div key={inc.id} className="py-3 border-t fc-hair">
                       <p className="text-sm font-medium text-white">
                         {inc.title}{' '}
                         <span className="store-text-muted font-mono text-xs">({inc.date})</span>

@@ -81,7 +81,7 @@ export function OutcomePanel({
         <div style={{ flex: 1 }}>
           <div
             className="sx-mono"
-            style={{ fontSize: 10, letterSpacing: '0.14em', color: s.color }}
+            style={{ fontSize: 11, color: s.color }}
           >
             OUTCOME · {s.tag}
           </div>

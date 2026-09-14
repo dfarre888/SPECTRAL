@@ -287,7 +287,7 @@ export function ThreatLibrary({
                       {p.confidence === 'estimated' && (
                         <span
                           className="sx-mono"
-                          style={{ fontSize: 8, color: '#F97316', opacity: 0.6 }}
+                          style={{ fontSize: 8, color: 'var(--sx-orange)', opacity: 0.6 }}
                         >
                           · ESTIMATED
                         </span>

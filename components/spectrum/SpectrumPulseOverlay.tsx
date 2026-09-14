@@ -156,8 +156,8 @@ export function SpectrumPulseLegend({ compact = false }: { compact?: boolean }) 
       <span style={itemStyle}>
         <span
           style={swatch({
-            background: 'rgba(249,115,22,0.1)',
-            border: '1px dashed rgba(249,115,22,0.8)',
+            background: 'rgba(41,151,255,0.1)',
+            border: '1px dashed rgba(41,151,255,0.8)',
             animation: 'spectrum-zone-gap-pulse 2.5s ease-in-out infinite',
           })}
         />

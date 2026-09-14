@@ -81,7 +81,7 @@ export function EffectorMatrix({
         {groups.map((g) => (
           <div key={g.tier}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-              <div className="sx-mono" style={{ fontSize: 10, letterSpacing: '0.14em', color: 'var(--sx-orange-soft)', textTransform: 'uppercase' }}>{TIER_LABEL[g.tier]}</div>
+              <div className="sx-mono" style={{ fontSize: 11, color: 'var(--sx-orange-soft)', textTransform: 'uppercase' }}>{TIER_LABEL[g.tier]}</div>
               <div style={{ flex: 1, height: 1, background: 'var(--sx-glass-line)' }} />
               <div className="sx-faint sx-mono" style={{ fontSize: 10 }}>{g.effectors.length}</div>
             </div>

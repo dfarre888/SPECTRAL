@@ -3,17 +3,40 @@ import { ConflictIntelClient } from '@/components/conflict/ConflictIntelClient';
 import { IntelFreshnessBanner } from '@/components/conflict/IntelFreshnessBanner';
 import { OsintLeadsPanel } from '@/components/conflict/OsintLeadsPanel';
 import { loadLatestBundle } from '@/lib/conflicts/latest-bundle';
+import { buildEngagementBrief, type EngagementBrief } from '@/lib/conflicts/engagement-brief';
+import { getDefeatMatrixData } from '@/lib/defeat/queries';
 
 export default async function ConflictIntelPage() {
-  const incidents = await fetchConflictIncidents();
+  const [dbIncidents, defeat] = await Promise.all([
+    fetchConflictIncidents(),
+    getDefeatMatrixData().catch(() => null),
+  ]);
   const latest = loadLatestBundle();
+
+  // Curated rows plus the newest OSINT bundle on one timeline. Bundle leads keep
+  // their 'possible/unconfirmed' grades and theatre-level positions.
+  const seen = new Set(dbIncidents.map((i) => i.id));
+  const incidents = [...dbIncidents, ...(latest?.bundle.incidents ?? []).filter((i) => !seen.has(i.id))]
+    .sort((a, b) => b.occurred_at.localeCompare(a.occurred_at));
+
+  const briefs: Record<string, EngagementBrief> = {};
+  if (defeat) {
+    for (const inc of incidents) {
+      const b = buildEngagementBrief({ incident: inc, platforms: defeat.platforms, systems: defeat.systems, effectiveness: defeat.effectiveness });
+      if (b) briefs[inc.id] = b;
+    }
+  }
 
   // No egress on a deployed instance, so incidents arrive by operator import.
   // The newest row insertion is the last import — no separate table needed.
-  const lastImportAt = incidents.reduce<string | null>(
-    (latest, i) => (!latest || i.created_at > latest ? i.created_at : latest),
+  const lastDb = dbIncidents.reduce<string | null>(
+    (acc, i) => (!acc || i.created_at > acc ? i.created_at : acc),
     null,
   );
+  const lastImportAt = [lastDb, latest?.bundle.manifest.generatedAt ?? null]
+    .filter((x): x is string => Boolean(x))
+    .sort()
+    .pop() ?? null;
 
   return (
     <div className="max-w-[90rem] mx-auto space-y-6">
@@ -28,7 +51,7 @@ export default async function ConflictIntelPage() {
         </p>
       </div>
       <IntelFreshnessBanner lastImportAt={lastImportAt} incidentCount={incidents.length} />
-      <ConflictIntelClient incidents={incidents} />
+      <ConflictIntelClient incidents={incidents} briefs={briefs} />
 
       <section className="pt-8 border-t fc-hair">
         <h2 className="text-[18px] store-display font-semibold tracking-[-0.01em] text-[var(--store-ink)] m-0">Automated OSINT leads</h2>

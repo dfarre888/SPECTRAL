@@ -211,14 +211,6 @@ export function ConflictCesiumMap({
           Loading globe…
         </div>
       ) : null}
-      <div className="absolute bottom-2 left-2 flex flex-wrap gap-1.5 max-w-[70%] pointer-events-none">
-        {(['cruise_strike', 'ballistic_strike', 'swarm', 'naval', 'intercept', 'uas_strike'] as const).map((t) => (
-          <span key={t} className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-black/60 text-white/90 border border-[var(--store-line)]">
-            <span className="inline-block w-2 h-2 rounded-full mr-1" style={{ background: INCIDENT_TYPE_COLOR[t] }} />
-            {t.replace(/_/g, ' ')}
-          </span>
-        ))}
-      </div>
       {viewerReady && incidents.length === 0 ? (
         <p className="absolute top-2 right-2 text-[11px] font-mono store-text-muted bg-black/60 px-2 py-1 rounded">
           No geolocated incidents

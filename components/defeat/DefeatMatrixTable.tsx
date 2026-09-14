@@ -126,7 +126,7 @@ export function DefeatMatrixTable({
   const virtualRows = rowVirtualizer.getVirtualItems()
 
   return (
-    <div className="w-full store-panel rounded-xl overflow-hidden">
+    <div className="w-full overflow-hidden">
       <div
         ref={scrollRef}
         className="overflow-auto max-h-[min(70vh,720px)]"
@@ -151,32 +151,17 @@ export function DefeatMatrixTable({
           </colgroup>
           <thead>
             <tr>
-              <th className={`sticky left-0 top-0 z-30 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 text-left ${platformColMin}`}>
-                <span className="text-xs store-text-muted tracking-[0.02em] font-semibold">
-                  Platform
-                </span>
+              <th className={`sticky left-0 top-0 z-30 bg-[var(--store-bg)] border-b border-r border-[var(--store-line)] px-3 py-3 text-left ${platformColMin}`}>
+                <span className="text-[11px] store-text-muted">Platform</span>
               </th>
               {systems.map((system) => (
                 <th
                   key={system.id}
-                  className={`sticky top-0 z-20 bg-[var(--store-surface)] border border-[var(--store-line)] px-2 py-3 text-center overflow-hidden ${systemColMin}`}
+                  className={`sticky top-0 z-20 bg-[var(--store-bg)] border-b border-r border-[var(--store-line)] px-2 py-2.5 text-left align-bottom overflow-hidden ${systemColMin}`}
                 >
-                  <div className="flex flex-col items-center gap-1">
-                    <PlatformThumbnail
-                      id={system.id}
-                      name={system.name}
-                      size="sm"
-                      variant="cuas"
-                    />
-                    <span
-                      className="text-xs font-medium text-white leading-tight line-clamp-2 break-words w-full"
-                      title={system.name}
-                    >
-                      {system.name}
-                    </span>
-                    <span className="text-[11px] font-mono store-text-muted">
-                      {system.country}
-                    </span>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[12px] text-[var(--store-ink)] leading-tight line-clamp-2 break-words" title={system.name}>{system.name}</span>
+                    <span className="text-[11px] font-mono store-text-muted truncate">{system.country}</span>
                   </div>
                 </th>
               ))}
@@ -197,17 +182,11 @@ export function DefeatMatrixTable({
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  <td className={`sticky left-0 z-10 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 overflow-hidden ${platformColMin}`}>
-                    <div className="flex items-center gap-2 min-w-0">
-                      <PlatformThumbnail id={platform.id} name={platform.name} size="sm" />
-                      <p
-                        className="font-semibold text-white text-sm leading-tight truncate min-w-0"
-                        title={platform.name}
-                      >
-                        {platform.name}
-                      </p>
-                    </div>
-                    <p className="text-xs font-mono store-text-muted mt-0.5 truncate">
+                  <td className={`sticky left-0 z-10 bg-[var(--store-bg)] border-b border-r border-[var(--store-line)] px-3 py-2 overflow-hidden ${platformColMin}`}>
+                    <p className="text-[13px] text-[var(--store-ink)] leading-tight truncate min-w-0" title={platform.name}>
+                      {platform.name}
+                    </p>
+                    <p className="text-[11px] font-mono store-text-muted mt-0.5 truncate">
                       {platform.country_of_origin ?? '—'}
                     </p>
                   </td>

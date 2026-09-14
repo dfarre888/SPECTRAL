@@ -13,10 +13,12 @@ import type {
 import { cn } from '@/lib/utils'
 import { ImmuneBadge } from '@/components/defeat/ImmuneBadge'
 
+// Pk is data: colour the number, not the box. A 2px hairline under the value
+// carries the band so the grid scans as a field, not a wall of tiles.
 const COLOUR_CLASSES = {
-  red: 'text-red bg-red/15',
-  amber: 'text-amber bg-amber/15',
-  green: 'text-[#22C55E] bg-[#22C55E]/15',
+  red: 'text-[var(--wb-red)] shadow-[inset_0_-2px_0_var(--wb-red)]',
+  amber: 'text-[#FBBF24] shadow-[inset_0_-2px_0_#FBBF24]',
+  green: 'text-[#4ADE80] shadow-[inset_0_-2px_0_#4ADE80]',
 } as const
 
 interface MatrixCellProps {
@@ -57,7 +59,7 @@ export function MatrixCell({
   const accRow = accreditedPkMap?.[accKey]
 
   return (
-    <td className="border border-[var(--store-line)] p-0 min-w-[88px]">
+    <td className="border-b border-r border-[var(--store-line)] p-0 min-w-[88px]">
       <button
         ref={cellRef}
         type="button"
@@ -67,11 +69,11 @@ export function MatrixCell({
         onClick={() => onSelect(platform.id, system.id)}
         aria-label={`${platform.name} vs ${system.name}`}
         className={cn(
-          'w-full h-full min-h-[52px] flex items-center justify-center transition-all cursor-pointer hover:ring-1 hover:ring-[rgba(41,151,255,0.5)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--wb-blue)]',
-          isActive && 'ring-2 ring-[var(--wb-blue)] z-10 relative',
-          value.kind === 'immune' && 'border-2 border-red bg-red/5',
+          'w-full h-full min-h-[44px] flex items-center justify-center transition-colors duration-150 cursor-pointer hover:bg-[var(--store-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--wb-blue)]',
+          isActive && 'bg-[rgba(41,151,255,0.10)] ring-1 ring-[var(--wb-blue)] z-10 relative',
+          value.kind === 'immune' && 'shadow-[inset_0_-2px_0_var(--wb-red)]',
           value.kind === 'pct' && value.colour !== 'none' && value.colour !== 'immune' && COLOUR_CLASSES[value.colour],
-          value.kind === 'empty' && 'store-text-muted bg-[var(--store-surface-2)]/50'
+          value.kind === 'empty' && 'store-text-muted'
         )}
       >
         <CellContent value={value} accRow={accRow} system={system} />
@@ -90,20 +92,20 @@ function accreditedPkForSystem(row: AccreditedDefeatPkRow, system: AntiDroneSyst
 function CellContent({ value, accRow, system }: { value: CellValue; accRow?: AccreditedDefeatPkRow; system: AntiDroneSystem }) {
   if (accRow?.is_immune) {
     return (
-      <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-orange">IMMUNE</span>
+      <span className="font-mono text-[11px] font-medium tracking-[0.02em] text-[var(--wb-red)]">IMMUNE</span>
     )
   }
   if (value.kind === 'immune') return <ImmuneBadge />
   if (value.kind === 'empty') {
-    return <span className="font-mono text-sm store-text-muted">—</span>
+    return <span className="font-mono text-[13px] store-text-muted">—</span>
   }
   const colour = value.colour
   const accPk = accRow ? accreditedPkForSystem(accRow, system) : null
   if (accPk != null) {
     return (
       <div className="flex flex-col items-center gap-0.5 px-1">
-        <span className="font-mono text-sm font-medium text-[#F97316]">
-          {accPk}%<sup className="text-[11px] ml-0.5">A</sup>
+        <span className="font-mono text-[13px] text-[var(--store-ink)] tabular-nums">
+          {accPk}%<sup className="text-[11px] ml-0.5 text-[var(--wb-blue)]">A</sup>
         </span>
       </div>
     )
@@ -111,7 +113,7 @@ function CellContent({ value, accRow, system }: { value: CellValue; accRow?: Acc
   if (colour === 'red' || colour === 'amber' || colour === 'green') {
     return (
       <div className="flex flex-col items-center gap-0.5 px-1">
-        <span className={cn('font-mono text-sm font-medium', COLOUR_CLASSES[colour].split(' ')[0])}>
+        <span className={cn('font-mono text-[13px] tabular-nums', COLOUR_CLASSES[colour].split(' ')[0])}>
           {value.value}%
         </span>
         {value.laydown?.operationsPk != null && (
@@ -122,5 +124,5 @@ function CellContent({ value, accRow, system }: { value: CellValue; accRow?: Acc
       </div>
     )
   }
-  return <span className="font-mono text-sm">{value.value}%</span>
+  return <span className="font-mono text-[13px] tabular-nums">{value.value}%</span>
 }

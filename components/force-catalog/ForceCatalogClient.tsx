@@ -347,68 +347,8 @@ export function ForceCatalogClient({ bundle }: Props) {
 
       <div className="flex-1 min-w-0 space-y-3">
         {!isPopout ? <InstrumentRow inst={instruments} /> : null}
-        {!isPopout ? (
-          <div className="flex flex-wrap gap-2 items-center">
-            {activeTab === 'compare' ? (
-              <button
-                type="button"
-                onClick={openPopout}
-                className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-mono px-3 py-2 min-h-10 rounded border store-line store-text-muted hover:store-text-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-accent)]"
-                aria-label="Pop out current tab into a second window"
-                data-testid="pcm-popout"
-              >
-                <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-                Pop out
-              </button>
-            ) : (
-              <span className="ml-auto" />
-            )}
-            {activeTab === 'force' || activeTab === 'nation' ? (
-              <div className="flex items-center gap-1" role="group" aria-label="Card density">
-                <button
-                  type="button"
-                  aria-pressed={density === 'grid'}
-                  aria-label="Comfortable grid density"
-                  onClick={() => setDensity('grid')}
-                  className={`min-h-10 min-w-10 inline-flex items-center justify-center rounded border transition-[color,background-color,border-color] duration-150 ease-out ${
-                    density === 'grid'
-                      ? 'store-accent-border store-accent bg-[var(--store-accent-glow)]'
-                      : 'store-line store-text-muted hover:store-text-body'
-                  }`}
-                >
-                  <LayoutGrid className="h-4 w-4" aria-hidden />
-                </button>
-                <button
-                  type="button"
-                  aria-pressed={density === 'compact'}
-                  aria-label="Compact list density"
-                  onClick={() => setDensity('compact')}
-                  className={`min-h-10 min-w-10 inline-flex items-center justify-center rounded border transition-[color,background-color,border-color] duration-150 ease-out ${
-                    density === 'compact'
-                      ? 'store-accent-border store-accent bg-[var(--store-accent-glow)]'
-                      : 'store-line store-text-muted hover:store-text-body'
-                  }`}
-                >
-                  <List className="h-4 w-4" aria-hidden />
-                </button>
-              </div>
-            ) : null}
-          </div>
-        ) : (
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={openPopout}
-              className="inline-flex items-center gap-1.5 text-[11px] font-mono px-3 py-2 min-h-10 rounded border store-line store-text-muted"
-              aria-label="Re-open pop out window"
-            >
-              <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-              Pop out
-            </button>
-          </div>
-        )}
-
-        <nav className="fc-tabs border-b fc-hair" role="tablist" aria-label="Force catalogue sections">
+        <div className="flex items-end border-b fc-hair gap-6">
+        <nav className="fc-tabs" role="tablist" aria-label="Force catalogue sections">
           {TABS.filter((t) => t.visible !== false).map((t) => {
             const Icon = t.icon
             return (
@@ -430,6 +370,25 @@ export function ForceCatalogClient({ bundle }: Props) {
             )
           })}
         </nav>
+        <div className="ml-auto flex items-center gap-5 pb-2">
+          {activeTab === 'force' || activeTab === 'nation' ? (
+            <div className="flex items-center gap-3" role="group" aria-label="Card density">
+              <button type="button" aria-pressed={density === 'grid'} aria-label="Comfortable grid density" onClick={() => setDensity('grid')} className="fc-action">
+                <LayoutGrid className="h-3.5 w-3.5" aria-hidden />
+              </button>
+              <button type="button" aria-pressed={density === 'compact'} aria-label="Compact list density" onClick={() => setDensity('compact')} className="fc-action">
+                <List className="h-3.5 w-3.5" aria-hidden />
+              </button>
+            </div>
+          ) : null}
+          {activeTab === 'compare' || isPopout ? (
+            <button type="button" onClick={openPopout} className="fc-action" aria-label={isPopout ? 'Re-open pop out window' : 'Pop out current tab into a second window'} data-testid="pcm-popout">
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+              Pop out
+            </button>
+          ) : null}
+        </div>
+        </div>
 
         {activeChips.length > 0 && activeTab !== 'battle' ? (
           <div className="flex flex-wrap gap-1 items-center">

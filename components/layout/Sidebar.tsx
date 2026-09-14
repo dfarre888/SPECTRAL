@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ChevronDown, ChevronRight, Radio } from 'lucide-react'
+import { ChevronDown, Radio } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import { useMobileNav } from '@/components/layout/MobileNavContext'
@@ -76,16 +76,16 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
         onClick={() => close()}
         aria-current={active ? 'page' : undefined}
         className={cn(
-          'flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl mb-0.5 group transition-all border',
+          'flex items-center gap-3 pl-5 pr-4 py-2 group transition-colors duration-150 border-l-2',
           active
             ? 'nav-item-active'
-            : 'border-transparent store-text-body hover:bg-[var(--store-surface-2)] hover:text-white',
+            : 'border-transparent store-text-body hover:text-white',
         )}
       >
         <Icon
           className={cn(
             'nav-icon w-4 h-4 flex-shrink-0',
-            active ? 'text-[var(--store-accent)]' : 'store-text-muted group-hover:store-text-body',
+            active ? 'text-[var(--wb-blue)]' : 'store-text-muted group-hover:store-text-body',
           )}
         />
         <div className="flex-1 min-w-0">
@@ -93,11 +93,8 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
           <p className="text-[11px] store-text-muted truncate font-mono">{subFor(module)}</p>
         </div>
         {badge != null && badge > 0 && (
-          <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-[var(--store-accent)] text-[11px] font-mono font-bold text-black flex items-center justify-center">
-            {badge}
-          </span>
+          <span className="text-[11px] font-mono tabular-nums store-text-muted">{badge}</span>
         )}
-        {active && <ChevronRight className="w-3 h-3 text-[var(--store-accent)] flex-shrink-0" />}
       </Link>
     )
   }
@@ -121,15 +118,15 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
       >
         <div className="px-5 py-4 border-b border-[var(--store-line)]">
           <Link href="/" onClick={() => close()} className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] flex items-center justify-center">
-              <Radio className="w-4 h-4 text-[var(--store-accent)]" />
+            <div className="w-8 h-8 rounded-lg bg-[var(--store-surface)] border border-[var(--store-line)] flex items-center justify-center">
+              <Radio className="w-4 h-4 text-[var(--store-ink)]" />
             </div>
             <div>
-              <p className="store-display font-bold text-white tracking-widest text-sm uppercase">
+              <p className="store-display font-semibold text-[var(--store-ink)] tracking-[-0.01em] text-[15px]">
                 Spectral
               </p>
-              <p className="store-text-muted text-[11px] font-mono tracking-wider">
-                Drone Threat Intel
+              <p className="store-text-muted text-[11px]">
+                Drone threat intelligence
               </p>
             </div>
           </Link>
@@ -152,7 +149,7 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
                   type="button"
                   onClick={() => toggleGroup(group.id)}
                   aria-expanded={!isCollapsed}
-                  className="w-full flex items-center gap-1.5 px-5 py-1 mb-1 store-text-muted hover:text-white transition-colors"
+                  className="w-full flex items-center gap-1.5 px-5 pt-3 pb-1 mb-1 store-text-muted hover:text-white transition-colors"
                 >
                   <ChevronDown
                     className={cn(
@@ -160,7 +157,7 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
                       isCollapsed && '-rotate-90',
                     )}
                   />
-                  <span className="text-[11px] font-mono uppercase tracking-wider">
+                  <span className="text-[11px] tracking-[0.02em]">
                     {group.label}
                   </span>
                   <span className="ml-auto text-[11px] font-mono tabular-nums opacity-60">

@@ -415,13 +415,13 @@ p {
 }
 
 .nav-item-active {
-  background: var(--store-accent-glow);
-  border-color: var(--store-accent-border);
-  color: rgba(244, 244, 245, 0.92);
+  border-left-color: var(--wb-blue);
+  color: var(--store-ink);
+  background: linear-gradient(90deg, rgba(41, 151, 255, 0.10), transparent 70%);
 }
 
 .nav-item-active .nav-icon {
-  color: var(--store-accent);
+  color: var(--wb-blue);
 }
 
 .hub-tab-bar {
@@ -621,3 +621,12 @@ p {
 .fc-chip:hover { color: var(--store-ink-soft); }
 .fc-chip[aria-pressed="true"] { color: var(--store-ink); border-bottom-color: var(--wb-blue); }
 @media (prefers-reduced-motion: reduce) { .fc-bar > i, .fc-stack > i { transition: none; } }
+
+/* Quiet text actions that sit on the tab rule (Pop out, density). */
+.fc-action {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--store-ink-mute); padding: 4px 0;
+  transition: color 150ms ease-out;
+}
+.fc-action:hover { color: var(--store-ink); }
+.fc-action[aria-pressed="true"] { color: var(--store-ink); }

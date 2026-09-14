@@ -33,7 +33,7 @@ export function Coverage({
     : result.sections
 
   return (
-    <section className="border-r fc-hair last:border-r-0 flex flex-col min-h-0" aria-label="Coverage">
+    <section className="border-r fc-hair last:border-r-0 flex flex-col min-h-0 wb-pane" aria-label="Coverage">
       <header className="flex items-center gap-3 px-3 py-2 border-b store-line whitespace-nowrap overflow-hidden">
         <span className="wb-pane-title">Coverage</span>
         <span className="text-[11px] font-mono tabular-nums store-text-muted truncate" title="Share of rows with at least one active holder">
@@ -41,7 +41,7 @@ export function Coverage({
           {result.benchedCount ? <> · <span className="text-[var(--wb-ir)]">{result.benchedCount} benched</span></> : null}
           {result.sensorGapCount ? <> · {result.sensorGapCount} without sensor data</> : null}
         </span>
-        <div className="ml-auto flex gap-1 shrink-0" role="group" aria-label="Sort rows">
+        <div className="ml-auto gap-1 shrink-0 wb-pane-tools" role="group" aria-label="Sort rows">
           {([['coverage', 'Coverage'], ['rarest', 'Rarest'], ['az', 'A–Z']] as const).map(([k, label]) => (
             <button key={k} type="button" aria-pressed={sort === k} onClick={() => onSort(k)}
               className="btn-e xs font-mono">

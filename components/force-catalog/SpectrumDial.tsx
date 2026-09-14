@@ -116,6 +116,16 @@ export function SpectrumDial({
         {[...activeBands].map((b) => (
           <rect key={b} x={bandX(b)} y={16} width={bandW(b)} height={BASE + DOWN - 10} fill="rgba(255,255,255,0.05)" rx={4} />
         ))}
+        {/* comms */}
+        {bars.map((b) => (
+          <g key={b.key} opacity={dim(bandAt(b.x + 1) ?? '')} style={{ transition: 'opacity 150ms ease-out' }}>
+            <rect x={b.x} y={BASE - UP} width={b.w} height={UP} fill="rgba(255,255,255,0.05)" rx={3} />
+            {b.h > 0 && b.tier === 'track' ? <rect x={b.x} y={BASE - b.h} width={b.w} height={b.h} fill={TIER_COLOR[b.tier]} opacity={0.6} rx={3} filter="url(#fc-glow)" /> : null}
+            <rect x={b.x} y={BASE - b.h} width={b.w} height={b.h} fill={TIER_COLOR[b.tier]} opacity={0.92} rx={3} style={{ transition: 'y 250ms cubic-bezier(.22,1,.36,1), height 250ms cubic-bezier(.22,1,.36,1)' }}>
+              <title>{`${b.label} · ${b.tier}`}</title>
+            </rect>
+          </g>
+        ))}
         {/* contention: more than one active net on the same stretch */}
         {contention.map((c) => {
           const x = xOf(c.loMhz)
@@ -127,16 +137,6 @@ export function SpectrumDial({
             </g>
           )
         })}
-        {/* comms */}
-        {bars.map((b) => (
-          <g key={b.key} opacity={dim(bandAt(b.x + 1) ?? '')} style={{ transition: 'opacity 150ms ease-out' }}>
-            <rect x={b.x} y={BASE - UP} width={b.w} height={UP} fill="rgba(255,255,255,0.05)" rx={3} />
-            {b.h > 0 && b.tier === 'track' ? <rect x={b.x} y={BASE - b.h} width={b.w} height={b.h} fill={TIER_COLOR[b.tier]} opacity={0.6} rx={3} filter="url(#fc-glow)" /> : null}
-            <rect x={b.x} y={BASE - b.h} width={b.w} height={b.h} fill={TIER_COLOR[b.tier]} opacity={0.92} rx={3} style={{ transition: 'y 250ms cubic-bezier(.22,1,.36,1), height 250ms cubic-bezier(.22,1,.36,1)' }}>
-              <title>{`${b.label} · ${b.tier}`}</title>
-            </rect>
-          </g>
-        ))}
         {/* rule */}
         <line x1={0} x2={W} y1={BASE} y2={BASE} stroke="rgba(255,255,255,0.16)" />
         {/* sensing pins */}

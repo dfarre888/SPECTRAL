@@ -637,3 +637,8 @@ p {
 }
 .fc-action:hover { color: var(--store-ink); }
 .fc-action[aria-pressed="true"] { color: var(--store-ink); }
+
+/* Pane header tools hide when the pane is too narrow to hold them. */
+.wb-pane { container-type: inline-size; }
+.wb-pane-tools { display: none; }
+@container (min-width: 300px) { .wb-pane-tools { display: flex; } }

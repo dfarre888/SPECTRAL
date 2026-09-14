@@ -27,6 +27,7 @@ type MatrixView = 'table' | 'heatmap'
 export function DefeatMatrix({ data }: DefeatMatrixProps) {
   const searchParams = useSearchParams()
   const initialView = searchParams.get('view') === 'heatmap' ? 'heatmap' : 'table'
+  const isPopout = searchParams.get('popout') === '1'
   const operations = isOperationsEditionClient()
   const [categoryPill, setCategoryPill] = useState<CategoryPill>('all')
   const [defeatType, setDefeatType] = useState<DefeatTypeFilter>('all')
@@ -77,6 +78,10 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
       ) ?? null
     : null
 
+  const openPopout = () => {
+    window.open(`/defeat?popout=1&view=${view}`, 'spectral-defeat-popout', 'noopener,noreferrer,width=1400,height=900')
+  }
+
   const handleExport = () => {
     exportMatrixCsv(
       filteredPlatforms,
@@ -98,7 +103,7 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
         }
         accreditedPkMap={data.accreditedPkMap}
         computedSamPkMap={data.computedSamPkMap}
-        variant={fullscreen ? 'fullscreen' : 'default'}
+        variant={fullscreen || isPopout ? 'fullscreen' : 'default'}
         focusRow={focusRow}
         focusCol={focusCol}
         onFocusChange={(row, col) => {
@@ -122,6 +127,7 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
 
   return (
     <div className="relative pb-8">
+      {!isPopout ? (<>
       <header className="mb-1">
         <h1 className="store-display text-[30px] font-semibold tracking-[-0.02em] text-[var(--store-ink)] leading-none m-0">Defeat Matrix</h1>
         <p className="text-[13px] store-text-muted mt-2 mb-0 max-w-[80ch] text-pretty">
@@ -137,9 +143,10 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
         <div><div className="k">Accredited Pk</div><div className="v">{accreditedCount}</div><div className="d">operations tier · marked A in the grid</div></div>
         <div><div className="k">Immune pairings</div><div className="v red">{immuneCount}</div><div className="d">fibre-optic or otherwise unaffected</div></div>
       </div>
+      </>) : null}
 
       <StoreCatalogLayout
-        sidebar={
+        sidebar={isPopout ? null : (
           <DefeatFilterSidebar
             platforms={data.platforms}
             systems={data.systems}
@@ -148,7 +155,7 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
             defeatType={defeatType}
             onDefeatTypeChange={setDefeatType}
           />
-        }
+        )}
       >
         <div className="flex flex-wrap items-center gap-2 border-b fc-hair pb-3 mb-3">
           <div className="flex gap-2" role="group" aria-label="Matrix view">
@@ -161,6 +168,7 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
             <Link href="/economics" className="fc-action">Economics</Link>
             <button type="button" onClick={handleExport} className="fc-action">Export CSV</button>
             <button type="button" onClick={() => setFullscreen(true)} className="fc-action" aria-label="Expand defeat matrix to full screen">Expand</button>
+            <button type="button" onClick={openPopout} className="fc-action" aria-label={isPopout ? 'Open another pop-out window' : 'Pop out the matrix into a second window'}>Pop out</button>
           </div>
         </div>
 

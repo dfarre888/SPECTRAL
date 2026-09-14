@@ -55,10 +55,8 @@ export function DefeatMatrixTable({
   // normal table layout — so each row would size its own columns and nothing
   // would line up. Fixed layout plus an explicit colgroup forces identical
   // widths on every row. These are exact px, not minimums, for that reason.
-  const platformColPx = variant === 'fullscreen' ? 220 : 180
-  const systemColPx = variant === 'fullscreen' ? 120 : 100
-  const platformColMin = variant === 'fullscreen' ? 'w-[320px] min-w-[320px] max-w-[320px]' : 'w-[260px] min-w-[260px] max-w-[260px]'
-  const systemColMin = 'w-[112px] min-w-[112px] max-w-[112px]'
+  const platformColPx = variant === 'fullscreen' ? 320 : 260
+  const systemColPx = 112
   const scrollRef = useRef<HTMLDivElement>(null)
   const cellRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
@@ -129,7 +127,7 @@ export function DefeatMatrixTable({
     <div className="w-full overflow-hidden">
       <div
         ref={scrollRef}
-        className="overflow-auto max-h-[min(70vh,720px)]"
+        className={variant === 'fullscreen' ? 'overflow-auto h-[calc(100vh-150px)]' : 'overflow-auto max-h-[min(70vh,720px)]'}
         role="grid"
         aria-label="Defeat matrix platform by effector grid"
         aria-rowcount={platforms.length}
@@ -150,14 +148,15 @@ export function DefeatMatrixTable({
             ))}
           </colgroup>
           <thead>
-            <tr>
-              <th className={`sticky left-0 top-0 z-30 bg-[var(--store-bg)] border-b border-r border-[var(--store-line)] px-3 py-3 text-left ${platformColMin}`}>
+            <tr style={{ display: 'flex' }}>
+              <th style={{ width: platformColPx, flex: 'none', display: 'block' }} className="sticky left-0 top-0 z-30 bg-[var(--store-bg)] border-b border-r border-[var(--store-line)] px-3 py-3 text-left">
                 <span className="text-[11px] store-text-muted">Platform</span>
               </th>
               {systems.map((system) => (
                 <th
                   key={system.id}
-                  className={`sticky top-0 z-20 bg-[var(--store-bg)] border-b border-r border-[var(--store-line)] px-2 py-2.5 text-left align-bottom overflow-hidden ${systemColMin}`}
+                  style={{ width: systemColPx, flex: 'none', display: 'block' }}
+                  className="sticky top-0 z-20 bg-[var(--store-bg)] border-b border-r border-[var(--store-line)] px-2 py-2.5 text-left overflow-hidden flex flex-col justify-end"
                 >
                   <div className="flex flex-col gap-0.5">
                     <span className="text-[12px] text-[var(--store-ink)] leading-tight line-clamp-2 break-words" title={system.name}>{system.name}</span>
@@ -180,9 +179,10 @@ export function DefeatMatrixTable({
                     width: '100%',
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
+                    display: 'flex',
                   }}
                 >
-                  <td className={`sticky left-0 z-10 bg-[var(--store-bg)] border-b border-r border-[var(--store-line)] px-3 py-2 overflow-hidden ${platformColMin}`}>
+                  <td style={{ width: platformColPx, flex: 'none', display: 'block' }} className="sticky left-0 z-10 bg-[var(--store-bg)] border-b border-r border-[var(--store-line)] px-3 py-2 overflow-hidden">
                     <p className="text-[13px] text-[var(--store-ink)] leading-tight truncate min-w-0" title={platform.name}>
                       {platform.name}
                     </p>
@@ -195,6 +195,7 @@ export function DefeatMatrixTable({
                       key={`${platform.id}-${system.id}`}
                       platform={platform}
                       system={system}
+                      widthPx={systemColPx}
                       row={findRow(effectiveness, platform.id, system.id)}
                       defeatTypeFilter={defeatTypeFilter}
                       onSelect={onCellSelect}

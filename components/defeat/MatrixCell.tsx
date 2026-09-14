@@ -34,6 +34,8 @@ interface MatrixCellProps {
   tabIndex?: number
   cellRef?: (el: HTMLButtonElement | null) => void
   onFocus?: () => void
+  /** Fixed width so virtualised rows keep the same columns as the header. */
+  widthPx?: number
 }
 
 export function MatrixCell({
@@ -49,6 +51,7 @@ export function MatrixCell({
   tabIndex = -1,
   cellRef,
   onFocus,
+  widthPx,
 }: MatrixCellProps) {
   const isActive = focused || isFocused
   const session = readLaydownSession()
@@ -59,7 +62,7 @@ export function MatrixCell({
   const accRow = accreditedPkMap?.[accKey]
 
   return (
-    <td className="border-b border-r border-[var(--store-line)] p-0 w-[112px] min-w-[112px] max-w-[112px]">
+    <td style={{ width: widthPx, flex: 'none', display: 'block' }} className="border-b border-r border-[var(--store-line)] p-0">
       <button
         ref={cellRef}
         type="button"

@@ -57,18 +57,18 @@ export function ConflictIntelClient({ incidents, briefs = {} }: { incidents: Con
         <div className="relative">
           <ConflictCesiumMap incidents={visible} selectedId={selected?.id ?? null} onSelect={setSelectedId} />
           {/* Glass control layer over the globe: incident-type filters. */}
-          <div className="absolute bottom-3 left-3 z-20 lg-glass flex flex-wrap items-center gap-0.5 px-1.5 py-1 max-w-[calc(100%-1.5rem)]" role="group" aria-label="Incident types">
+          <div className="absolute bottom-3 left-3 z-20 flex flex-wrap items-center gap-1.5 max-w-[calc(100%-1.5rem)]" role="group" aria-label="Incident types">
             {types.map(([t, n]) => {
               const on = !hidden.has(t);
               return (
-                <button key={t} type="button" data-on={on} aria-label={`${on ? "Hide" : "Show"} ${INCIDENT_TYPE_LABEL[t as keyof typeof INCIDENT_TYPE_LABEL]}`} onClick={() => toggleType(t)} className="lg-btn font-mono text-[11px]" style={{ opacity: on ? 1 : 0.45, textDecoration: on ? "none" : "line-through" }}>
+                <button key={t} type="button" data-on={on} aria-label={`${on ? "Hide" : "Show"} ${INCIDENT_TYPE_LABEL[t as keyof typeof INCIDENT_TYPE_LABEL]}`} onClick={() => toggleType(t)} className="lg-glass lg-pill font-mono text-[11px]" style={{ opacity: on ? 1 : 0.5 }}>
                   <i className="h-1.5 w-1.5 rounded-full" style={{ background: INCIDENT_TYPE_COLOR[t as keyof typeof INCIDENT_TYPE_COLOR] }} aria-hidden />
                   {INCIDENT_TYPE_LABEL[t as keyof typeof INCIDENT_TYPE_LABEL]}
                   <span className="store-text-muted">{n}</span>
                 </button>
               );
             })}
-            {hidden.size ? <button type="button" onClick={() => setHidden(new Set())} className="lg-btn text-[11px]">All</button> : null}
+            {hidden.size ? <button type="button" onClick={() => setHidden(new Set())} className="lg-glass lg-pill text-[11px]">All</button> : null}
           </div>
         </div>
         {selected && (

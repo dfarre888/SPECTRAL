@@ -685,3 +685,13 @@ p {
 @media (prefers-reduced-transparency: reduce) {
   .lg-glass { background: var(--store-surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
+
+/* Individual glass pills (one control per capsule). */
+.lg-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  min-height: 30px; padding: 0 12px; border-radius: 999px;
+  color: var(--store-ink); cursor: pointer;
+  transition: background-color 150ms ease-out, opacity 150ms ease-out, box-shadow 150ms ease-out;
+}
+.lg-pill:hover { background: rgba(28, 28, 30, 0.78); }
+.lg-pill[data-on="false"] { text-decoration: line-through; text-decoration-color: rgba(255,255,255,0.4); }

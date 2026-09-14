@@ -9,6 +9,7 @@ import { useMobileNav } from '@/components/layout/MobileNavContext'
 import { moduleIcon } from '@/components/navigation/module-presentation'
 import {
   moduleByHref,
+  pinnedModules,
   sidebarGroups,
   type ModuleGroupId,
   type SpectralModule,
@@ -135,6 +136,12 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
         </div>
 
         <nav className="flex-1 py-3 overflow-y-auto" aria-label="Modules">
+          {/* Pinned: the product's front door, never a scroll away. */}
+          {pinnedModules({ operationsEdition: isOperationsEditionClient() }).length > 0 && (
+            <section className="mb-3 pt-1">
+              {pinnedModules({ operationsEdition: isOperationsEditionClient() }).map(renderNavItem)}
+            </section>
+          )}
           {groups.map(({ group, modules }) => {
             // Never hide the group the user is currently inside.
             const holdsActive = modules.some((m) => m.href === activeModule?.href)

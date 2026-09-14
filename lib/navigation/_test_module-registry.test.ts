@@ -6,6 +6,7 @@ import {
   SPECTRAL_MODULES,
   catalogModules,
   moduleByHref,
+  pinnedModules,
   sidebarGroups,
 } from '@/lib/navigation/modules'
 
@@ -69,7 +70,8 @@ describe('spectral module registry', () => {
   })
 
   it('groups the sidebar so no module is unreachable', () => {
-    const grouped = sidebarGroups({ operationsEdition: true }).flatMap((g) => g.modules)
+    const ctx = { operationsEdition: true }
+    const grouped = [...pinnedModules(ctx), ...sidebarGroups(ctx).flatMap((g) => g.modules)]
     const sidebarHrefs = new Set(grouped.map((m) => m.href))
     for (const m of SPECTRAL_MODULES) {
       expect(sidebarHrefs.has(m.href), `${m.href} missing from sidebar`).toBe(true)
@@ -84,6 +86,14 @@ describe('spectral module registry', () => {
   it('orders catalog modules by priority', () => {
     const priorities = catalogModules().map((m) => m.priority)
     expect(priorities).toEqual([...priorities].sort((a, b) => a - b))
+  })
+
+  it('pins the map above the groups and lists it only once', () => {
+    const ctx = { operationsEdition: false }
+    const pinned = pinnedModules(ctx)
+    expect(pinned.map((m) => m.href)).toContain('/map')
+    const inGroups = sidebarGroups(ctx).flatMap((g) => g.modules).map((m) => m.href)
+    expect(inGroups).not.toContain('/map')
   })
 
   it('resolves the active module for nested paths', () => {

@@ -67,6 +67,12 @@ export interface SpectralModule {
   hideFromCatalog?: boolean
   /** Gated to the operations edition. */
   edition?: 'operations'
+  /**
+   * Lifted above every group in the sidebar. For the one or two modules that
+   * are the product's front door — a commander opens the map first, not a
+   * catalogue — and must never be a scroll away.
+   */
+  pinned?: boolean
 }
 
 export interface ModuleGroup {
@@ -232,6 +238,7 @@ export const SPECTRAL_MODULES: readonly SpectralModule[] = [
     href: '/map',
     label: 'Map Intel',
     sub: 'Terrain & envelopes',
+    pinned: true,
     kicker: 'COP',
     blurb: 'Cesium laydown, mission paths, and force evaluation',
     icon: 'map',
@@ -401,12 +408,22 @@ function isVisible(module: SpectralModule, ctx: EditionContext): boolean {
   return true
 }
 
-/** Sidebar navigation, grouped, with edition-gated modules filtered out. */
+/** Modules lifted above the groups. Rendered first, ungrouped. */
+export function pinnedModules(ctx: EditionContext): SpectralModule[] {
+  return SPECTRAL_MODULES.filter((m) => m.pinned && isVisible(m, ctx)).sort(
+    (a, b) => a.priority - b.priority,
+  )
+}
+
+/**
+ * Sidebar navigation, grouped, with edition-gated modules filtered out.
+ * Pinned modules are excluded here so they are not listed twice.
+ */
 export function sidebarGroups(ctx: EditionContext): SidebarGroup[] {
   return MODULE_GROUPS.map((group) => ({
     group,
     modules: SPECTRAL_MODULES.filter(
-      (m) => m.group === group.id && isVisible(m, ctx),
+      (m) => m.group === group.id && !m.pinned && isVisible(m, ctx),
     ).sort((a, b) => a.priority - b.priority),
   })).filter((g) => g.modules.length > 0)
 }

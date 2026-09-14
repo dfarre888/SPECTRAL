@@ -146,6 +146,7 @@ export function DefeatMatrix({ data }: DefeatMatrixProps) {
       </>) : null}
 
       <StoreCatalogLayout
+        className={isPopout ? 'lg:grid-cols-1' : undefined}
         sidebar={isPopout ? null : (
           <DefeatFilterSidebar
             platforms={data.platforms}

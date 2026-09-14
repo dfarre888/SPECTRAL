@@ -57,8 +57,8 @@ export function DefeatMatrixTable({
   // widths on every row. These are exact px, not minimums, for that reason.
   const platformColPx = variant === 'fullscreen' ? 220 : 180
   const systemColPx = variant === 'fullscreen' ? 120 : 100
-  const platformColMin = variant === 'fullscreen' ? 'w-[220px]' : 'w-[180px]'
-  const systemColMin = variant === 'fullscreen' ? 'w-[120px]' : 'w-[100px]'
+  const platformColMin = variant === 'fullscreen' ? 'w-[320px] min-w-[320px] max-w-[320px]' : 'w-[260px] min-w-[260px] max-w-[260px]'
+  const systemColMin = 'w-[112px] min-w-[112px] max-w-[112px]'
   const scrollRef = useRef<HTMLDivElement>(null)
   const cellRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 

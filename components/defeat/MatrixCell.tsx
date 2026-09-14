@@ -59,7 +59,7 @@ export function MatrixCell({
   const accRow = accreditedPkMap?.[accKey]
 
   return (
-    <td className="border-b border-r border-[var(--store-line)] p-0 min-w-[88px]">
+    <td className="border-b border-r border-[var(--store-line)] p-0 w-[112px] min-w-[112px] max-w-[112px]">
       <button
         ref={cellRef}
         type="button"

@@ -172,7 +172,7 @@ export default function OverlayGeometryMap({
         color: Color.fromCssColorString('#3B82F6').withAlpha(0.95),
         outlineColor: Color.WHITE.withAlpha(0.85),
         outlineWidth: 2,
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        disableDepthTestDistance: 0,
       },
       label: {
         text: 'SAM',
@@ -185,7 +185,7 @@ export default function OverlayGeometryMap({
         pixelOffset: { x: 0, y: -22 },
         showBackground: true,
         backgroundColor: Color.fromCssColorString(SCENE_GROUND).withAlpha(0.85),
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        disableDepthTestDistance: 0,
       },
     })
 
@@ -218,7 +218,7 @@ export default function OverlayGeometryMap({
         color: Color.fromCssColorString('#EF4444').withAlpha(0.95),
         outlineColor: Color.WHITE.withAlpha(0.85),
         outlineWidth: 2,
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        disableDepthTestDistance: 0,
       },
       label: {
         text: scenario.platform_id,
@@ -231,7 +231,7 @@ export default function OverlayGeometryMap({
         pixelOffset: { x: 0, y: -20 },
         showBackground: true,
         backgroundColor: Color.fromCssColorString(SCENE_GROUND).withAlpha(0.85),
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        disableDepthTestDistance: 0,
       },
     })
 

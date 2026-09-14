@@ -76,6 +76,17 @@ export const pinnedSensor = (
   sources: ['OSINT descriptive'], performance_ref: 'SOVEREIGN_CORE_BOUNDARY', radar_catalog_id: null,
 })
 
+/**
+ * Attach stated sensing bands to a sensor. OSINT only: every call must cite the
+ * public page that states the band, or the sensor keeps its generic `IR`.
+ */
+export const withBands = (sensor: PlatformSensor, bands: string[], sources: string[]): PlatformSensor => ({
+  ...sensor,
+  bands,
+  sources: [...sensor.sources.filter((x) => x !== 'OSINT descriptive'), ...sources],
+  confidence: 'curated',
+})
+
 // ── Nation platform factory ────────────────────────────────────────────────────
 export type CatalogEntry = Omit<
   ForceCatalogPlatformFull, 'is_catalog' | 'nation_code' | 'nation_name'

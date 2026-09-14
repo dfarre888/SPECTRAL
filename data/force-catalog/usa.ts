@@ -8,7 +8,7 @@
 
 import type { ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
 import {
-  hfVoice, ifdl, link11, link16, madl, nationFactory, pinnedSensor, satcom, uhfVoice,
+  hfVoice, ifdl, link11, link16, madl, nationFactory, pinnedSensor, withBands, satcom, uhfVoice,
 } from '@/data/force-catalog/_helpers'
 
 const SRC_USAF = 'Wikipedia — List of active USAF aircraft (2026); CRS USAF primer'
@@ -31,8 +31,8 @@ export const USA_CATALOG: ForceCatalogPlatformFull[] = [
     sensors: [
       pinnedSensor('USA-CAT-F35A', 'radar', 'AN/APG-81 AESA', 'X', 'fire-control / SAR',
         ['aircraft', 'cruise_missile', 'surface_contacts'], [], 'X-band AESA — descriptive'),
-      pinnedSensor('USA-CAT-F35A', 'eo_ir', 'AN/AAQ-40 EOTS + AN/AAQ-37 DAS', 'IR',
-        'targeting / missile warning', ['aircraft', 'ground_targets'], [], 'EO/IR suite — descriptive'),
+      withBands(pinnedSensor('USA-CAT-F35A', 'eo_ir', 'AN/AAQ-40 EOTS + AN/AAQ-37 DAS', 'IR',
+        'targeting / missile warning', ['aircraft', 'ground_targets'], [], 'EO/IR suite — descriptive'), ['MWIR'], ['https://www.lockheedmartin.com/en-us/products/f-35-lightning-ii-eots.html', 'https://www.northropgrumman.com/what-we-do/air/f-35-distributed-aperture-system']),
     ],
   }),
   P({

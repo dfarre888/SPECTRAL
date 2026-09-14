@@ -6,7 +6,7 @@
 
 import type { ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
 import {
-  hfVoice, link16, nationFactory, nationalDatalink, pinnedSensor, satcom, uhfVoice,
+  hfVoice, link16, nationFactory, nationalDatalink, pinnedSensor, withBands, satcom, uhfVoice,
 } from '@/data/force-catalog/_helpers'
 
 
@@ -77,8 +77,8 @@ export const INDONESIA_CATALOG: ForceCatalogPlatformFull[] = [
     open_source_summary: 'Attack helicopters.',
     data_confidence: 'high', sources: ['Wikipedia — Indonesian Armed Forces (2026)', 'defence press'],
     comms: [link16('IDN-CAT-AH64'), uhfVoice('IDN-CAT-AH64')],
-    sensors: [pinnedSensor('IDN-CAT-AH64', 'eo_ir', 'EO/IR', 'IR', 'ISR/targeting',
-      ['ground_targets'], [], 'EO/IR — descriptive')],
+    sensors: [withBands(pinnedSensor('IDN-CAT-AH64', 'eo_ir', 'EO/IR', 'IR', 'ISR/targeting',
+      ['ground_targets'], [], 'EO/IR — descriptive'), ['LWIR', 'VIS'], ['https://www.lockheedmartin.com/en-us/products/modernized-target-acquisition-designation-sight-pilot-night-vision-sensor.html'])],
   }),
   P({
     id: 'IDN-CAT-LEOPARD', designation: 'Leopard 2RI / Marder', short_name: 'Leopard 2RI',

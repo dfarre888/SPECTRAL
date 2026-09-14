@@ -6,7 +6,7 @@
 
 import type { ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
 import {
-  hfVoice, link16, nationFactory, nationalDatalink, pinnedSensor, satcom, uhfVoice,
+  hfVoice, link16, nationFactory, nationalDatalink, pinnedSensor, withBands, satcom, uhfVoice,
 } from '@/data/force-catalog/_helpers'
 
 
@@ -117,8 +117,8 @@ export const INDIA_CATALOG: ForceCatalogPlatformFull[] = [
     open_source_summary: 'Army/IAF attack helicopters.',
     data_confidence: 'high', sources: ['Wikipedia — IAF aircraft (2026)', 'defence press'],
     comms: [link16('IND-CAT-APACHE'), uhfVoice('IND-CAT-APACHE')],
-    sensors: [pinnedSensor('IND-CAT-APACHE', 'eo_ir', 'EO/IR', 'IR', 'ISR/targeting',
-      ['ground_targets', 'surface_contacts'], [], 'EO/IR — descriptive')],
+    sensors: [withBands(pinnedSensor('IND-CAT-APACHE', 'eo_ir', 'EO/IR', 'IR', 'ISR/targeting',
+      ['ground_targets', 'surface_contacts'], [], 'EO/IR — descriptive'), ['LWIR', 'VIS'], ['https://www.lockheedmartin.com/en-us/products/modernized-target-acquisition-designation-sight-pilot-night-vision-sensor.html'])],
   }),
   P({
     id: 'IND-CAT-ARJUN', designation: 'Arjun Mk1/Mk1A MBT', short_name: 'Arjun',

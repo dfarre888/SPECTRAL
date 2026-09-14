@@ -6,7 +6,7 @@
 
 import type { ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
 import {
-  hfVoice, link16, nationFactory, nationalDatalink, pinnedSensor, satcom, uhfVoice,
+  hfVoice, link16, nationFactory, nationalDatalink, pinnedSensor, withBands, satcom, uhfVoice,
 } from '@/data/force-catalog/_helpers'
 
 
@@ -79,8 +79,8 @@ export const EGYPT_CATALOG: ForceCatalogPlatformFull[] = [
     open_source_summary: 'Attack helicopter force.',
     data_confidence: 'high', sources: ['Wikipedia — Egyptian Air Force (2026)', 'defence press'],
     comms: [link16('EGY-CAT-AH64'), uhfVoice('EGY-CAT-AH64')],
-    sensors: [pinnedSensor('EGY-CAT-AH64', 'eo_ir', 'EO/IR', 'IR', 'ISR/targeting',
-      ['ground_targets', 'surface_contacts'], [], 'EO/IR — descriptive')],
+    sensors: [withBands(pinnedSensor('EGY-CAT-AH64', 'eo_ir', 'EO/IR', 'IR', 'ISR/targeting',
+      ['ground_targets', 'surface_contacts'], [], 'EO/IR — descriptive'), ['LWIR', 'VIS'], ['https://www.lockheedmartin.com/en-us/products/modernized-target-acquisition-designation-sight-pilot-night-vision-sensor.html'])],
   }),
   P({
     id: 'EGY-CAT-M1A1', designation: 'M1A1 Abrams', short_name: 'M1A1',

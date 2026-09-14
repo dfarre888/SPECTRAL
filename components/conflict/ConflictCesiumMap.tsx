@@ -60,7 +60,8 @@ export function ConflictCesiumMap({
         outlineColor: active ? color : Cesium.Color.BLACK,
         outlineWidth: active ? 3 : 1.5,
         heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        // Depth-tested against the globe so pins on the far side are occluded.
+        disableDepthTestDistance: 0,
       })
       entity.label = active
         ? new Cesium.LabelGraphics({
@@ -72,7 +73,7 @@ export function ConflictCesiumMap({
             style: Cesium.LabelStyle.FILL_AND_OUTLINE,
             pixelOffset: new Cesium.Cartesian2(0, -18),
             heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+            disableDepthTestDistance: 0,
             showBackground: true,
             backgroundColor: Cesium.Color.fromCssColorString(SCENE_GROUND).withAlpha(0.85),
           })

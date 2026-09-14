@@ -347,10 +347,9 @@ export function ForceCatalogClient({ bundle }: Props) {
 
       <div className="flex-1 min-w-0 space-y-3">
         {!isPopout ? <InstrumentRow inst={instruments} /> : null}
-        <div className="flex items-end border-b fc-hair gap-6">
+        <div className="flex items-center border-b fc-hair gap-6 pb-3">
         <nav className="fc-tabs" role="tablist" aria-label="Force catalogue sections">
           {TABS.filter((t) => t.visible !== false).map((t) => {
-            const Icon = t.icon
             return (
               <button
                 key={t.key}
@@ -364,13 +363,12 @@ export function ForceCatalogClient({ bundle }: Props) {
                 }}
                 className="fc-tab"
               >
-                {Icon ? <Icon className="h-3.5 w-3.5" aria-hidden /> : null}
                 {t.label}
               </button>
             )
           })}
         </nav>
-        <div className="ml-auto flex items-center gap-5 pb-2">
+        <div className="ml-auto flex items-center gap-5">
           {activeTab === 'force' || activeTab === 'nation' ? (
             <div className="flex items-center gap-3" role="group" aria-label="Card density">
               <button type="button" aria-pressed={density === 'grid'} aria-label="Comfortable grid density" onClick={() => setDensity('grid')} className="fc-action">

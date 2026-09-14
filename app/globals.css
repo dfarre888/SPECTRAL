@@ -571,14 +571,15 @@ p {
    Force Catalogue shell: one black canvas, hairlines instead of cards.
  * ------------------------------------------------------------------ */
 .fc-hair { border-color: var(--store-line); }
-.fc-tabs { display: flex; gap: 26px; }
+.fc-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
 .fc-tab {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 13px; color: var(--store-ink-mute); padding: 6px 0 10px;
-  border-bottom: 1px solid transparent; transition: color 150ms ease-out, border-color 150ms ease-out;
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px;
+  font-size: 13px; color: var(--store-ink-soft); border-radius: 8px;
+  border: 1px solid var(--store-line); background: transparent;
+  transition: color 150ms ease-out, background-color 150ms ease-out, border-color 150ms ease-out;
 }
-.fc-tab:hover { color: var(--store-ink-soft); }
-.fc-tab[aria-selected="true"] { color: var(--store-ink); border-bottom-color: var(--store-ink); }
+.fc-tab:hover { color: var(--store-ink); border-color: var(--store-line-strong); }
+.fc-tab[aria-selected="true"] { color: #000; background: var(--store-ink); border-color: var(--store-ink); }
 .fc-inst { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .fc-inst > div { padding: 20px 22px 18px 0; border-right: 1px solid var(--store-line); min-width: 0; }
 .fc-inst > div + div { padding-left: 22px; }

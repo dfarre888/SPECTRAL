@@ -16,6 +16,7 @@ import {
   Grid3x3,
   Rocket,
   Shield,
+  SlidersHorizontal,
 } from 'lucide-react'
 import type {
   Bloc,
@@ -276,10 +277,26 @@ export function ForceCatalogClient({ bundle }: Props) {
     else cardRefs.current.delete(id)
   }, [])
 
-  const hideFilterRail = activeTab === 'battle' || isPopout
+  // Compare needs the width for three panes; the rail collapses to a strip there.
+  const [railOpen, setRailOpen] = useState(false)
+  const hideFilterRail = activeTab === 'battle' || isPopout || (activeTab === 'compare' && !railOpen)
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 min-h-0" data-testid="force-catalog-client">
+      {activeTab === 'compare' && !isPopout ? (
+        <button
+          type="button"
+          onClick={() => setRailOpen((v) => !v)}
+          aria-expanded={railOpen}
+          aria-controls="force-catalog-filter-rail"
+          className="hidden lg:flex shrink-0 w-9 self-start sticky top-4 flex-col items-center gap-2 py-3 rounded-2xl store-panel store-text-muted hover:store-text-body transition-colors duration-150"
+          title={railOpen ? 'Hide filters' : 'Show filters'}
+        >
+          <SlidersHorizontal className="h-4 w-4" aria-hidden />
+          {activeChips.length > 0 ? <span className="text-[11px] font-mono tabular-nums store-accent">{activeChips.length}</span> : null}
+          <span className="text-[11px] font-mono [writing-mode:vertical-rl] rotate-180">Filters</span>
+        </button>
+      ) : null}
       {!hideFilterRail ? (
         <ForceCatalogFilters
           search={search}

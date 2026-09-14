@@ -105,8 +105,15 @@ export function Workbench({
     ro.observe(el)
     return () => ro.disconnect()
   }, [])
-  const cols = hostW >= 1180 ? 3 : hostW >= 720 ? 2 : 1
-  const gridCols = cols === 3 ? '280px minmax(0,1fr) 360px' : cols === 2 ? '260px minmax(0,1fr)' : 'minmax(0,1fr)'
+  const cols = hostW >= 1000 ? 3 : hostW >= 680 ? 2 : 1
+  const gridCols =
+    cols === 3
+      ? hostW >= 1240
+        ? '280px minmax(0,1fr) 360px'
+        : '232px minmax(0,1fr) 316px'
+      : cols === 2
+        ? '240px minmax(0,1fr)'
+        : 'minmax(0,1fr)'
 
   const selectedId = mode?.type === 'platform' ? mode.platform.id : null
   const selectedRowId = mode?.type === 'net' || mode?.type === 'capability' ? mode.row.id : null

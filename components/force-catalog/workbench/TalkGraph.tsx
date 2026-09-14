@@ -24,7 +24,7 @@ interface Link extends SimulationLinkDatum<Node> {
 
 const TIER_FILL: Record<ConnTier, string> = { track: 'var(--store-accent)', data: '#2997FF', voice: '#8A8A8E', none: 'transparent' }
 const W = 340
-const H = 260
+const H = 300
 
 export function TalkGraph({
   net,
@@ -65,9 +65,9 @@ export function TalkGraph({
 
   useEffect(() => {
     const sim = forceSimulation<Node>(nodes)
-      .force('charge', forceManyBody().strength(-55))
-      .force('link', forceLink<Node, Link>(links).id((d) => d.id).distance(34).strength(0.6))
-      .force('collide', forceCollide(13))
+      .force('charge', forceManyBody().strength(nodes.length > 120 ? -12 : -55))
+      .force('link', forceLink<Node, Link>(links).id((d) => d.id).distance(nodes.length > 120 ? 14 : 34).strength(0.6))
+      .force('collide', forceCollide(nodes.length > 120 ? 6 : 13))
       .force('center', forceCenter(W / 2, H / 2))
       .alphaDecay(0.08)
     simRef.current = sim
@@ -84,8 +84,11 @@ export function TalkGraph({
     }
   }, [nodes, links])
 
+  const dense = nodes.length > 40
+  const r = nodes.length > 120 ? 3.5 : 5
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[260px] block rounded-lg bg-[var(--store-bg)] border store-line" role="img" aria-label={`Talk graph for ${net.label}`}>
+    <div className="space-y-1">
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[300px] block rounded-lg bg-[var(--store-bg)] border store-line" role="img" aria-label={`Talk graph for ${net.label}`}>
       {links.map((l, i) => {
         const s = l.source as Node
         const t = l.target as Node
@@ -100,12 +103,16 @@ export function TalkGraph({
         return (
           <g key={n.id} transform={`translate(${x},${y})`} opacity={faded ? 0.3 : 1} style={{ transition: 'opacity 250ms ease-out' }} className="cursor-pointer" onClick={() => { const p = byId.get(n.id); if (p) onSelect(p) }}>
             {n.gateway ? <circle r={9} fill="none" stroke="var(--store-ink-soft)" strokeDasharray="2 2" strokeWidth={1} /> : null}
-            <circle r={5} fill={TIER_FILL[tier]} stroke={n.side === 'red' ? '#8A8A8E' : 'var(--store-bg)'} strokeWidth={1.5} />
+            <circle r={r} fill={n.side === 'red' ? '#8A8A8E' : TIER_FILL[tier]} stroke="var(--store-bg)" strokeWidth={1} />
             <title>{`${n.label}${n.gateway ? ' · gateway' : ''}${faded ? ' · drops out under GNSS denial' : ''}`}</title>
-            <text y={16} textAnchor="middle" fontSize={10} fontFamily="JetBrains Mono, monospace" fill="var(--store-ink-mute)">{n.label.length > 10 ? `${n.label.slice(0, 9)}…` : n.label}</text>
+            {!dense ? <text y={16} textAnchor="middle" fontSize={10} fontFamily="JetBrains Mono, monospace" fill="var(--store-ink-mute)">{n.label.length > 10 ? `${n.label.slice(0, 9)}…` : n.label}</text> : null}
           </g>
         )
       })}
     </svg>
+    <p className="text-[11px] font-mono store-text-muted">
+      {nodes.length} nodes{dense ? ', hover for names' : ''} · orange blue, grey red · dashed ring = gateway
+    </p>
+    </div>
   )
 }

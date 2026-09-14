@@ -70,7 +70,7 @@ export function Coverage({
                       onClick={() => onSelectRow(row)}
                       disabled={row.noData}
                       aria-pressed={sel}
-                      className={`w-full text-left grid grid-cols-[minmax(150px,1fr)_minmax(180px,3fr)_60px] items-center gap-3 px-2 rounded-lg min-h-10 transition-colors duration-150 ${
+                      className={`w-full text-left grid grid-cols-[minmax(140px,1fr)_minmax(160px,3fr)_76px] items-center gap-3 px-2 rounded-lg min-h-10 transition-colors duration-150 ${
                         lost ? 'gloss-tile purple' : sel ? 'bg-[var(--store-accent-glow)]' : row.noData ? 'cursor-default' : 'hover:bg-[var(--store-surface-2)]'
                       }`}
                     >

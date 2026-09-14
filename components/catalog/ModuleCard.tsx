@@ -73,7 +73,7 @@ export function ModuleCard({
       </div>
 
       <div className="p-4 flex flex-col flex-1 gap-2">
-        <div className="text-[10.5px] font-semibold tracking-widest uppercase store-text-muted">
+        <div className="text-[10.5px] font-semibold tracking-[0.02em] store-text-muted">
           {kicker}
         </div>
         <h3 className="font-semibold text-[15px] leading-snug text-white">

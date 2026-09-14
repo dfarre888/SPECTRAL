@@ -17,7 +17,7 @@ export function OperatorReadinessPanel({
   return (
     <StorePanel className="p-6 h-full flex flex-col border-[var(--store-line)]">
       <div className="mb-4">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)]">
+        <p className="text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)]">
           {copy.crewPanelTitle}
         </p>
         <p className="text-xs store-text-body mt-1">{copy.crewPanelSubtitle}</p>

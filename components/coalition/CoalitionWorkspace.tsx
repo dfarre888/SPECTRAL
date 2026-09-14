@@ -85,7 +85,7 @@ export function CoalitionWorkspace({ platforms, nations }: CoalitionWorkspacePro
         </div>
 
         {/* Presets */}
-        <p className="text-[11px] font-mono uppercase tracking-wider store-text-muted mb-1.5">Coalition</p>
+        <p className="text-[11px] font-mono tracking-[0.02em] store-text-muted mb-1.5">Coalition</p>
         <div className="flex flex-wrap gap-1.5 mb-3">
           {sidePresets.map((p) => (
             <button
@@ -105,7 +105,7 @@ export function CoalitionWorkspace({ platforms, nations }: CoalitionWorkspacePro
         </div>
 
         {/* Nation picker */}
-        <p className="text-[11px] font-mono uppercase tracking-wider store-text-muted mb-1.5">
+        <p className="text-[11px] font-mono tracking-[0.02em] store-text-muted mb-1.5">
           Nations {custom ? '(custom)' : ''}
         </p>
         <div className="flex flex-wrap gap-1">

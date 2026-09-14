@@ -80,7 +80,7 @@ export function ForceCatalogDetail({
         ) : null}
 
         <div className="space-y-1">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest store-text-muted">Comms</h2>
+          <h2 className="text-[11px] font-mono tracking-[0.02em] store-text-muted">Comms</h2>
           <div className="flex flex-wrap gap-1">
             {platform.comms.length ? (
               platform.comms.map((c) => <CommsChip key={c.id} label={c.standard ?? c.label} />)
@@ -91,7 +91,7 @@ export function ForceCatalogDetail({
         </div>
 
         <div className="space-y-1">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest store-text-muted">Sensors</h2>
+          <h2 className="text-[11px] font-mono tracking-[0.02em] store-text-muted">Sensors</h2>
           <div className="flex flex-wrap gap-1">
             {platform.sensors.length ? (
               platform.sensors.map((s) => <SensorChip key={s.id} sensor={s} />)
@@ -103,7 +103,7 @@ export function ForceCatalogDetail({
 
         {platform.sources?.length ? (
           <div className="space-y-1">
-            <h2 className="text-[11px] font-mono uppercase tracking-widest store-text-muted">Sources</h2>
+            <h2 className="text-[11px] font-mono tracking-[0.02em] store-text-muted">Sources</h2>
             <ul className="space-y-1">
               {platform.sources.map((s) => (
                 <li key={s} className="text-[11px] font-mono store-text-muted text-pretty">
@@ -116,7 +116,7 @@ export function ForceCatalogDetail({
 
         {platform.future ? (
           <div className="space-y-1 border-t store-line pt-3">
-            <h2 className="text-[11px] font-mono uppercase tracking-widest store-text-muted">
+            <h2 className="text-[11px] font-mono tracking-[0.02em] store-text-muted">
               Future program
             </h2>
             <p className="text-sm store-display store-text-body text-balance">

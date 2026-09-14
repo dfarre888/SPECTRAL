@@ -176,7 +176,7 @@ export function BmiDashboard({ bundle }: BmiDashboardProps) {
             <div key={stat.label} className="flex items-center">
               <div className="text-center px-2">
                 <div className="hero-number text-sm text-[#F7F9FC] tabular-nums">{stat.value}</div>
-                <div className="text-[11px] uppercase tracking-wider store-text-muted">{stat.label}</div>
+                <div className="text-[11px] tracking-[0.02em] store-text-muted">{stat.label}</div>
               </div>
               {i < arr.length - 1 ? <div className="w-px h-8 bg-[var(--store-line)]" /> : null}
             </div>
@@ -184,7 +184,7 @@ export function BmiDashboard({ bundle }: BmiDashboardProps) {
           <div className="w-px h-8 bg-[var(--store-line)]" />
           <div className="text-center px-2">
             <div className="hero-number text-xs text-[var(--wb-blue)] tabular-nums">ap-southeast-2</div>
-            <div className="text-[11px] uppercase tracking-wider store-text-muted">Region</div>
+            <div className="text-[11px] tracking-[0.02em] store-text-muted">Region</div>
           </div>
         </div>
 

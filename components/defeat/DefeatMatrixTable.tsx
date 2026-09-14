@@ -152,7 +152,7 @@ export function DefeatMatrixTable({
           <thead>
             <tr>
               <th className={`sticky left-0 top-0 z-30 bg-[var(--store-surface)] border border-[var(--store-line)] px-4 py-3 text-left ${platformColMin}`}>
-                <span className="text-xs store-text-muted uppercase tracking-wider font-semibold">
+                <span className="text-xs store-text-muted tracking-[0.02em] font-semibold">
                   Platform
                 </span>
               </th>

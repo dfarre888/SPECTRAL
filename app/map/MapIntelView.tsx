@@ -932,7 +932,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
       />
 
       <div className="relative flex-1 flex flex-col min-w-0">
-        <div className="shrink-0 border-b border-[var(--store-line)] bg-[var(--store-surface)]">
+        <div className="shrink-0 border-b border-[var(--store-line)] bg-[var(--store-bg)]">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <PlannerToolbar
               planName={planner.planName}

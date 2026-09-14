@@ -46,7 +46,7 @@ export function CuasSitingPlanner({ placedUas, placedCuas, onClose }: CuasSiting
     >
       <div className="p-3 space-y-3 text-[11px] store-text-body">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#06B6D4]">C-UAS siting planner</p>
+          <p className="text-[11px] font-semibold tracking-[0.02em] text-[#06B6D4]">C-UAS siting planner</p>
           <button type="button" onClick={onClose} className="store-text-muted hover:text-white text-xs" aria-label="Close">✕</button>
         </div>
         <p className="text-[11px] store-text-muted">{analysis.notes}</p>

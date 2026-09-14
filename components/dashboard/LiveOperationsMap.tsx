@@ -32,7 +32,7 @@ export function LiveOperationsMap({
     <StorePanel className="p-6 h-full flex flex-col border-[var(--store-line)] overflow-hidden">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-cyan">{copy.mapPanelTitle}</p>
+          <p className="text-[11px] font-semibold tracking-[0.02em] text-cyan">{copy.mapPanelTitle}</p>
           <p className="text-xs store-text-body mt-1">{copy.mapPanelSubtitle}</p>
         </div>
         <Link

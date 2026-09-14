@@ -86,7 +86,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)] mb-1">
+            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)] mb-1">
               Enterprise access
             </p>
             <p className="text-sm store-text-body mb-6">

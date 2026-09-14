@@ -49,7 +49,7 @@ export function ForceCatalogFuture({
 
   return (
     <div className="space-y-2">
-      <h2 className="text-[11px] font-mono uppercase tracking-widest store-text-muted tabular-nums">
+      <h2 className="text-[11px] font-mono tracking-[0.02em] store-text-muted tabular-nums">
         Future programs · {sorted.length}
       </h2>
       <div className="grid gap-3 sm:grid-cols-2">

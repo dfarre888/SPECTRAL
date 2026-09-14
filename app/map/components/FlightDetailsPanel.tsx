@@ -53,7 +53,7 @@ export function FlightDetailsPanel({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
             <Route className="w-3.5 h-3.5 text-[var(--wb-blue)] shrink-0" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)]">
+            <span className="text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)]">
               Flight details
             </span>
           </div>

@@ -33,7 +33,7 @@ export function GnssIncidentLedger({ incidents }: GnssIncidentLedgerProps) {
     <StorePanel className="p-4 lg:col-span-2 flex flex-col min-h-[420px]">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
         <div>
-          <h2 className="text-xs store-text-muted uppercase tracking-wider font-semibold">
+          <h2 className="text-xs store-text-muted tracking-[0.02em] font-semibold">
             Incident ledger ({filtered.length})
           </h2>
           <p className="text-[11px] store-text-muted mt-0.5">

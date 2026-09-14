@@ -50,7 +50,7 @@ export function ConflictIntelClient({ incidents }: { incidents: ConflictIncident
         )}
       </div>
       <div>
-        <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider mb-3">Timeline</p>
+        <p className="text-[11px] font-mono store-text-muted tracking-[0.02em] mb-3">Timeline</p>
         <ConflictTimeline incidents={incidents} selectedId={selectedId} onSelect={setSelectedId} />
       </div>
     </div>

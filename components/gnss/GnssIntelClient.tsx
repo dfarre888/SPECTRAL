@@ -35,7 +35,7 @@ export function GnssIntelClient({ constellations, dependencies, incidents }: Gns
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-md ${
+            className={`text-[11px] tracking-[0.02em] px-3 py-1.5 rounded-md ${
               tab === t.id
                 ? 'bg-orange-500/15 text-orange-400 border border-orange-500/40'
                 : 'store-text-muted hover:text-[var(--store-ink-soft)]'

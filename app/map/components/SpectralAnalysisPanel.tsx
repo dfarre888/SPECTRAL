@@ -190,7 +190,7 @@ export function SpectralAnalysisPanel({
         ) : (
           <div className="mt-4 space-y-6 pb-8">
             <section className="rounded-xl border border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] p-3 space-y-2">
-              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)]">
+              <div className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)]">
                 <Sparkles className="w-3.5 h-3.5" />
                 AeroCopilot assessment
               </div>
@@ -214,7 +214,7 @@ export function SpectralAnalysisPanel({
 
             <section className="space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <h3 className="text-[11px] font-semibold uppercase tracking-widest store-text-muted flex items-center gap-2">
+                <h3 className="text-[11px] font-semibold tracking-[0.02em] store-text-muted flex items-center gap-2">
                   Laydown EW bands
                   {activeBandCount > 0 && (
                     <span className="font-mono text-[var(--wb-blue)] normal-case tracking-normal">
@@ -258,7 +258,7 @@ export function SpectralAnalysisPanel({
             />
 
             <section className="space-y-3">
-              <h3 className="text-[11px] font-semibold uppercase tracking-widest store-text-muted">
+              <h3 className="text-[11px] font-semibold tracking-[0.02em] store-text-muted">
                 Platform bands
               </h3>
               {analysis.uasProfiles.map((p) => (
@@ -271,7 +271,7 @@ export function SpectralAnalysisPanel({
 
             {analysis.pairs.length > 0 && (
               <section className="space-y-3">
-                <h3 className="text-[11px] font-semibold uppercase tracking-widest store-text-muted">
+                <h3 className="text-[11px] font-semibold tracking-[0.02em] store-text-muted">
                   Engagement pairs — gaps, overlaps &amp; tactics
                 </h3>
                 {analysis.pairs.map((pair) => (
@@ -360,7 +360,7 @@ function PairAssessmentCard({
 
       {operations && pair.propagation && (
         <div className="rounded-lg store-panel px-2.5 py-2 space-y-1.5">
-          <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider">
+          <p className="text-[11px] font-mono store-text-muted tracking-[0.02em]">
             RF link budget (server)
           </p>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] font-mono">
@@ -396,7 +396,7 @@ function PairAssessmentCard({
       )}
 
       <div>
-        <p className="text-[11px] font-mono text-orange uppercase tracking-wider mb-1">
+        <p className="text-[11px] font-mono text-orange tracking-[0.02em] mb-1">
           Blue defeat tactic
         </p>
         <p className="text-[11px] store-text-body leading-snug">{pair.blueTactic}</p>
@@ -405,7 +405,7 @@ function PairAssessmentCard({
 
       {pair.bandOverlaps.length > 0 ? (
         <div>
-          <p className="text-[11px] font-mono text-cyan uppercase tracking-wider mb-1">
+          <p className="text-[11px] font-mono text-cyan tracking-[0.02em] mb-1">
             Band overlaps ({pair.bandOverlaps.length})
           </p>
           <ul className="space-y-1">
@@ -428,7 +428,7 @@ function PairAssessmentCard({
 
       {pair.uncoveredGaps.length > 0 && (
         <div>
-          <p className="text-[11px] font-mono text-amber uppercase tracking-wider mb-1">
+          <p className="text-[11px] font-mono text-amber tracking-[0.02em] mb-1">
             Gaps — threat bands not jammed
           </p>
           <ul className="space-y-0.5">
@@ -442,7 +442,7 @@ function PairAssessmentCard({
       )}
 
       <div>
-        <p className="text-[11px] font-mono text-green uppercase tracking-wider mb-1">
+        <p className="text-[11px] font-mono text-green tracking-[0.02em] mb-1">
           UAS survival tactics
         </p>
         <ul className="space-y-0.5">

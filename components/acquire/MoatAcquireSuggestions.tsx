@@ -25,7 +25,7 @@ export function MoatAcquireSuggestions({ suggestions }: MoatAcquireSuggestionsPr
 
   return (
     <StorePanel className="p-4 mb-4 border-cyan/30" data-testid="moat-acquire-suggestions">
-      <p className="text-[11px] font-mono uppercase tracking-widest text-cyan mb-2">
+      <p className="text-[11px] font-mono tracking-[0.02em] text-cyan mb-2">
         MOAT → Acquire (read-only)
       </p>
       <p className="text-[11px] store-text-muted mb-3">

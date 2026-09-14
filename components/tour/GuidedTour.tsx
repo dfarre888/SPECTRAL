@@ -175,7 +175,7 @@ export function GuidedTour({ tour, open, onClose, onAction }: GuidedTourProps) {
         style={{ top: pos.top, left: pos.left, width: CALLOUT_W }}
       >
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)]">
+          <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
             {tour.label}
           </p>
           <p className="text-[11px] font-mono store-text-muted tabular-nums">

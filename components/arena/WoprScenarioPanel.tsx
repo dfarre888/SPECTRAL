@@ -242,7 +242,7 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
     <div className="space-y-4">
       <StorePanel inner className="p-4 space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold uppercase tracking-wider store-text-muted">Scenarios</p>
+          <p className="text-xs font-semibold tracking-[0.02em] store-text-muted">Scenarios</p>
           <EditionBadge />
         </div>
 
@@ -358,7 +358,7 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange }: WoprScenar
           </div>
 
           <StorePanel inner className="p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-wider store-text-muted mb-2 flex items-center gap-2">
+            <p className="text-[11px] font-semibold tracking-[0.02em] store-text-muted mb-2 flex items-center gap-2">
               <Radio className="w-3.5 h-3.5 text-cyan" />
               Tick events
             </p>
@@ -399,7 +399,7 @@ function CopPicture({
 
   return (
     <StorePanel inner className={clsx('p-4 border', accent)}>
-      <p className={clsx('text-[11px] font-semibold uppercase tracking-wider mb-3', accent.split(' ')[0])}>
+      <p className={clsx('text-[11px] font-semibold tracking-[0.02em] mb-3', accent.split(' ')[0])}>
         {title}
       </p>
       {tracks.length === 0 ? (

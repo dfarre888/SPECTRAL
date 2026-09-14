@@ -36,7 +36,7 @@ export function MissionPathControls({
   return (
     <div className="p-2.5 rounded-xl store-panel-inner border border-[var(--store-line)] text-[11px] space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-[var(--wb-blue)] font-semibold text-[11px] tracking-wider uppercase">Mission path</span>
+        <span className="text-[var(--wb-blue)] font-semibold text-[11px] tracking-[0.02em]">Mission path</span>
         <button type="button" onClick={onClear} className="store-text-muted hover:text-[var(--wb-blue)]" title="Clear mission">
           <Trash2 className="w-3 h-3" />
         </button>

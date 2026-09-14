@@ -35,7 +35,7 @@ export function PlanLoadDialog({ open, onClose, onSelect }: PlanLoadDialogProps)
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--store-line)]">
-          <span className="text-xs font-mono text-cyan uppercase tracking-wider">Load plan</span>
+          <span className="text-xs font-mono text-cyan tracking-[0.02em]">Load plan</span>
           <button type="button" className="store-text-muted hover:text-white text-sm" onClick={onClose}>✕</button>
         </div>
         <div className="max-h-72 overflow-y-auto p-2">

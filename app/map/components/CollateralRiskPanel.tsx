@@ -67,7 +67,7 @@ export function CollateralRiskPanel({
     >
       <div className="p-3 space-y-3 text-[11px] store-text-body">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: mode === 'blast' ? '#F97316' : '#06B6D4' }}>
+          <p className="text-[11px] font-semibold tracking-[0.02em]" style={{ color: mode === 'blast' ? '#F97316' : '#06B6D4' }}>
             {mode === 'blast' ? 'Collateral damage estimate' : 'EW jamming footprint'}
           </p>
           <button type="button" onClick={onClose} className="store-text-muted hover:text-white text-xs" aria-label="Close">✕</button>

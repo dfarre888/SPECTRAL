@@ -55,7 +55,7 @@ export function RoutePlanner({ uas, rcsOverride, onRcsChange }: RoutePlannerProp
   return (
     <div className="mt-2 p-2 rounded-lg border border-[var(--store-line)] bg-black/20 space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)]">
+        <span className="text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)]">
           RCS — OSINT planning nominal
         </span>
         {rcsOverride && (

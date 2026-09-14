@@ -22,7 +22,7 @@ export function LoiterControls({
     return (
       <div className="p-2.5 rounded-xl store-panel-inner border border-[var(--store-line)] text-[11px] space-y-1">
         <div className="flex items-center justify-between store-text-body">
-          <span className="text-[var(--wb-blue)] font-semibold text-[11px] tracking-wider uppercase">
+          <span className="text-[var(--wb-blue)] font-semibold text-[11px] tracking-[0.02em]">
             Loiter active
           </span>
           <button

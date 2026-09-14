@@ -62,7 +62,7 @@ export function CountryOrbatClient({ force, compareDefault }: CountryOrbatClient
       </div>
 
       <StorePanel className="p-4">
-        <p className="mb-2 text-[11px] font-mono uppercase tracking-wider store-text-muted">Effects</p>
+        <p className="mb-2 text-[11px] font-mono tracking-[0.02em] store-text-muted">Effects</p>
         <div className="grid gap-2 md:grid-cols-2">
           {force.effects.map((e) => (
             <div key={e.effect} className="flex justify-between gap-3 text-xs">
@@ -78,7 +78,7 @@ export function CountryOrbatClient({ force, compareDefault }: CountryOrbatClient
 
       {force.linked_uas.length > 0 && (
         <StorePanel className="p-4">
-          <p className="mb-2 text-[11px] font-mono uppercase tracking-wider store-text-muted">Linked UAS (Spectral library)</p>
+          <p className="mb-2 text-[11px] font-mono tracking-[0.02em] store-text-muted">Linked UAS (Spectral library)</p>
           <div className="flex flex-wrap gap-2">
             {force.linked_uas.slice(0, 16).map((u) => (
               <Link
@@ -95,7 +95,7 @@ export function CountryOrbatClient({ force, compareDefault }: CountryOrbatClient
 
       {force.linked_cuas.length > 0 && (
         <StorePanel className="p-4">
-          <p className="mb-2 text-[11px] font-mono uppercase tracking-wider store-text-muted">Linked C-UAS</p>
+          <p className="mb-2 text-[11px] font-mono tracking-[0.02em] store-text-muted">Linked C-UAS</p>
           <div className="flex flex-wrap gap-2">
             {force.linked_cuas.slice(0, 12).map((u) => (
               <Link

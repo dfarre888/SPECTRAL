@@ -26,7 +26,7 @@ export function SovereignPlatformCard({ platform }: { platform: SovereignPlatfor
     <article className="store-panel rounded-2xl p-5 flex flex-col gap-4 border border-[var(--store-line)]">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider">
+          <p className="text-[11px] font-mono store-text-muted tracking-[0.02em]">
             {COUNTRY_FLAG[platform.origin_country]} {platform.origin_country}
           </p>
           <h3 className="text-base font-semibold text-white mt-1">{platform.display_name}</h3>

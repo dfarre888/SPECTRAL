@@ -63,7 +63,7 @@ export function BriefPanel({ brief }: BriefPanelProps) {
       </div>
 
       <StorePanel className="p-4">
-        <h3 className="text-xs font-mono uppercase tracking-widest store-text-muted mb-3">
+        <h3 className="text-xs font-mono tracking-[0.02em] store-text-muted mb-3">
           Structured summary
         </h3>
         <div className="space-y-3">

@@ -17,20 +17,20 @@ interface PlannerToolbarProps {
 }
 
 export function PlannerToolbar(props: PlannerToolbarProps) {
-  const btn = 'map-press px-2 py-1 rounded border text-[11px] font-mono font-semibold';
+  const btn = 'btn-e sm font-mono';
   return (
     <div className="flex flex-wrap items-center gap-1.5 px-2 py-1.5 min-h-8">
-      <span className="text-[11px] font-mono text-cyan truncate max-w-[140px]" title={props.planName}>
+      <span className="text-[11px] font-mono store-text-muted truncate max-w-[160px]" title={props.planName}>
         {props.planId ? props.planName : 'Unsaved laydown'}
       </span>
-      <button type="button" className={cn(btn, 'border-[var(--store-line)] hover:border-cyan store-text-body')} onClick={props.onSave} disabled={props.saving}>
+      <button type="button" className={cn(btn, '')} onClick={props.onSave} disabled={props.saving}>
         {props.saving ? 'Saving…' : 'Save'}
       </button>
-      <button type="button" className={cn(btn, 'border-[var(--store-line)] hover:border-cyan store-text-body')} onClick={props.onNew}>New</button>
-      <button type="button" className={cn(btn, 'border-[var(--store-line)] hover:border-cyan store-text-body')} onClick={props.onLoadClick}>Load</button>
-      <button type="button" className={cn(btn, 'border-orange-500/50 text-orange hover:bg-orange/10')} onClick={props.onPublishWopr}>WOPR</button>
-      <button type="button" className={cn(btn, 'border-purple-500/50 text-purple hover:bg-purple/10')} onClick={props.onPublishPcm}>PCM</button>
-      <Link href="/planner" className={cn(btn, 'border-cyan/40 text-cyan')}>Library</Link>
+      <button type="button" className={cn(btn, '')} onClick={props.onNew}>New</button>
+      <button type="button" className={cn(btn, '')} onClick={props.onLoadClick}>Load</button>
+      <button type="button" className={cn(btn, '')} onClick={props.onPublishWopr}>WOPR</button>
+      <button type="button" className={cn(btn, '')} onClick={props.onPublishPcm}>PCM</button>
+      <Link href="/planner" className={cn(btn, '')}>Library</Link>
       {props.lastSaved && (
         <span className="text-[11px] font-mono store-text-muted">saved {props.lastSaved.toLocaleTimeString()}</span>
       )}

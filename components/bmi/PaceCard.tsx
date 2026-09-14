@@ -70,7 +70,7 @@ export function PaceCard({ plan, fromLabel, toLabel }: PaceCardProps) {
               key={tier}
               className="store-panel-inner rounded-xl p-3 flex flex-col sm:flex-row sm:items-center gap-2 hover-lift"
             >
-              <span className="text-[11px] uppercase tracking-widest text-[var(--wb-blue)] w-24 shrink-0 font-semibold">
+              <span className="text-[11px] tracking-[0.02em] text-[var(--wb-blue)] w-24 shrink-0 font-semibold">
                 {tier}
               </span>
               {entry ? (
@@ -97,7 +97,7 @@ export function PaceCard({ plan, fromLabel, toLabel }: PaceCardProps) {
 
       {plan.warnings.length > 0 ? (
         <div className="border-t border-[var(--store-line)] pt-3">
-          <p className="text-[11px] uppercase tracking-widest store-text-muted mb-2">Warnings</p>
+          <p className="text-[11px] tracking-[0.02em] store-text-muted mb-2">Warnings</p>
           <ul className="text-xs store-text-body space-y-1">
             {plan.warnings.map((w) => (
               <li key={w}>• {w}</li>

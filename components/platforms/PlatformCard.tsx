@@ -101,7 +101,7 @@ export function PlatformCard({ platform, index = 0 }: PlatformCardProps) {
           className="relative h-full w-full border-0 rounded-none store-panel-inner"
         />
         {featured ? (
-          <span className="absolute top-2.5 left-2.5 text-[11px] font-bold font-mono tracking-wider uppercase px-2 py-1 rounded-md bg-[var(--wb-blue)] text-white">
+          <span className="absolute top-2.5 left-2.5 text-[11px] font-bold font-mono tracking-[0.02em] px-2 py-1 rounded-md bg-[var(--wb-blue)] text-white">
             Combat
           </span>
         ) : null}
@@ -121,7 +121,7 @@ export function PlatformCard({ platform, index = 0 }: PlatformCardProps) {
       </div>
 
       <div className="p-4 flex flex-col flex-1 gap-2">
-        <div className="text-[10.5px] font-semibold tracking-widest uppercase store-text-muted">
+        <div className="text-[10.5px] font-semibold tracking-[0.02em] store-text-muted">
           {kicker}
         </div>
         <h3 className="font-semibold text-[15px] leading-snug text-white">

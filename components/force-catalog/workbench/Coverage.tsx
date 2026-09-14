@@ -54,7 +54,7 @@ export function Coverage({
       <div className="flex-1 overflow-y-auto min-h-0">
         {sections.map((s) => (
           <div key={s.kind}>
-            <div className="sticky top-0 z-[1] bg-[var(--store-surface)] px-3 pt-3 pb-1 text-[11px] uppercase tracking-wider store-text-muted flex items-baseline gap-2">
+            <div className="sticky top-0 z-[1] bg-[var(--store-surface)] px-3 pt-3 pb-1 text-[11px] tracking-[0.02em] store-text-muted flex items-baseline gap-2">
               {s.label}
               <span className="font-mono tabular-nums normal-case tracking-normal">{s.rows.filter((r) => !r.noData).length}</span>
             </div>

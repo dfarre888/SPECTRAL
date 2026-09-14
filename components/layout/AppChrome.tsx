@@ -32,13 +32,8 @@ export function AppChrome({
         <Sidebar proposedCurrencyCount={proposedCurrencyCount} platformCount={platformCount} />
         <div className="flex flex-col flex-1 min-w-0 overflow-hidden md:ml-0">
           <Topbar />
-          {moduleLabel ? (
-            <div className="h-8 shrink-0 flex items-center px-4 border-b border-[var(--store-line)] bg-[var(--store-surface)]">
-              <span className="text-[11px] font-mono store-text-muted uppercase tracking-wider">
-                SPECTRAL · {moduleLabel} · {CLASSIFICATION_STRIP}
-              </span>
-            </div>
-          ) : null}
+          {/* The classification banner at the top of every page already carries
+              the marking; a second strip here only duplicated it. */}
           <main
             className={cn(
               'flex-1 min-h-0 overflow-hidden',

@@ -57,12 +57,12 @@ export default async function AcquirePage({ searchParams }: AcquirePageProps) {
         <div className="ring-gradient glass flex flex-wrap gap-2 rounded-xl px-3 py-2">
           <div className="text-center px-2">
             <div className="hero-number text-sm text-[#F7F9FC] font-mono uppercase">{session.template.id}</div>
-            <div className="text-[11px] uppercase tracking-wider store-text-muted">Template</div>
+            <div className="text-[11px] tracking-[0.02em] store-text-muted">Template</div>
           </div>
           <div className="w-px bg-[var(--store-line)]" />
           <div className="text-center px-2">
             <div className="hero-number text-lg text-[#F7F9FC] tabular-nums">{session.defeatCoverage?.length ?? 0}</div>
-            <div className="text-[11px] uppercase tracking-wider store-text-muted">Defeat rows</div>
+            <div className="text-[11px] tracking-[0.02em] store-text-muted">Defeat rows</div>
           </div>
         </div>
       }

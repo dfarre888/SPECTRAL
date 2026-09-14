@@ -20,7 +20,7 @@ export function GnssTaxonomyReference({ defaultOpen = false }: GnssTaxonomyRefer
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between px-3 py-2.5 text-left store-panel-inner hover:bg-[var(--store-surface-2)] transition-colors"
       >
-        <span className="text-[11px] font-semibold store-text-muted uppercase tracking-wider">
+        <span className="text-[11px] font-semibold store-text-muted tracking-[0.02em]">
           Failure families &amp; spectrum reference
         </span>
         {open ? (

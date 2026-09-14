@@ -75,7 +75,7 @@ export function BandTileFullscreenModal({
       <div className="relative z-10 flex flex-col flex-1 min-h-0 p-3 pt-4">
         <div className="flex items-center justify-between gap-2 mb-2 shrink-0 flex-wrap">
           <div className="min-w-0">
-            <p className="text-[11px] font-mono uppercase tracking-widest text-[var(--wb-blue)]">
+            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
               {title}
             </p>
             {variant === 'catalog' && (

@@ -40,7 +40,7 @@ export function CostExchangeMatrix() {
       <div className="store-panel rounded-2xl p-4">
         <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
           <div>
-            <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)]">
+            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
               Layering
             </p>
             <h3 className="store-display text-sm font-semibold text-white mt-0.5">
@@ -117,7 +117,7 @@ export function CostExchangeMatrix() {
       <div className="store-panel rounded-2xl p-4">
         <div className="flex items-baseline justify-between gap-2 mb-3">
           <div>
-            <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)]">
+            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
               Full matrix
             </p>
             <h3 className="store-display text-sm font-semibold text-white mt-0.5">
@@ -144,7 +144,7 @@ export function CostExchangeMatrix() {
             <thead>
               <tr className="border-b border-[var(--store-line)]">
                 {['Effector', 'Threat', 'Exchange band', 'Verdict'].map((h) => (
-                  <th key={h} className="py-1.5 text-[11px] font-mono uppercase tracking-wider store-text-muted">
+                  <th key={h} className="py-1.5 text-[11px] font-mono tracking-[0.02em] store-text-muted">
                     {h}
                   </th>
                 ))}

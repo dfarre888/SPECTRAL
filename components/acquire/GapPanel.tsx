@@ -32,7 +32,7 @@ export function GapPanel({ gap, templateTitle }: GapPanelProps) {
         </div>
 
         <span
-          className={`inline-flex text-[11px] font-mono uppercase tracking-widest px-2 py-1 rounded border ${SEVERITY_STYLE[gap.severity]}`}
+          className={`inline-flex text-[11px] font-mono tracking-[0.02em] px-2 py-1 rounded border ${SEVERITY_STYLE[gap.severity]}`}
         >
           {gap.severity} gap
         </span>
@@ -40,7 +40,7 @@ export function GapPanel({ gap, templateTitle }: GapPanelProps) {
 
       <div className="grid gap-4 md:grid-cols-2">
         <StorePanel className="p-4">
-          <h3 className="text-xs font-mono uppercase tracking-widest store-text-muted mb-3">
+          <h3 className="text-xs font-mono tracking-[0.02em] store-text-muted mb-3">
             Required effect
           </h3>
           <p className="text-sm store-text-body">{gap.required_effect}</p>
@@ -50,7 +50,7 @@ export function GapPanel({ gap, templateTitle }: GapPanelProps) {
         </StorePanel>
 
         <StorePanel className="p-4">
-          <h3 className="text-xs font-mono uppercase tracking-widest store-text-muted mb-3">
+          <h3 className="text-xs font-mono tracking-[0.02em] store-text-muted mb-3">
             OrBat context ({gap.orbat_platform_count} platforms)
           </h3>
           <ul className="space-y-1 text-xs store-text-body">
@@ -62,7 +62,7 @@ export function GapPanel({ gap, templateTitle }: GapPanelProps) {
       </div>
 
       <StorePanel className="p-4">
-        <h3 className="text-xs font-mono uppercase tracking-widest store-text-muted mb-3">
+        <h3 className="text-xs font-mono tracking-[0.02em] store-text-muted mb-3">
           Coverage gaps
         </h3>
         <ul className="space-y-2 text-sm store-text-body">

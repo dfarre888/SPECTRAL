@@ -22,7 +22,7 @@ export function AssetIntelligenceCard({ asset, copy }: { asset: TrackedAsset; co
     <StorePanel className="p-6 h-full flex flex-col border-[var(--store-line)]">
       <div className="flex items-start justify-between gap-2 mb-4">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)]">{copy.assetPanelTitle}</p>
+          <p className="text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)]">{copy.assetPanelTitle}</p>
           <h3 className="text-sm font-semibold text-white mt-1 leading-snug">{asset.designation}</h3>
           <p className="text-[11px] font-mono store-text-muted mt-0.5">{asset.serialNumber}</p>
         </div>
@@ -45,7 +45,7 @@ export function AssetIntelligenceCard({ asset, copy }: { asset: TrackedAsset; co
         </div>
 
         <div className="rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] p-3">
-          <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider mb-2">{copy.payloadLabel}</p>
+          <p className="text-[11px] font-mono store-text-muted tracking-[0.02em] mb-2">{copy.payloadLabel}</p>
           <p className="text-xs text-white">{asset.payloadProfile}</p>
           <span
             className={cn(

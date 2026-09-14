@@ -25,7 +25,7 @@ export function DefeatFilters({
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <p className="text-xs font-semibold store-text-muted uppercase tracking-wider mb-2">
+        <p className="text-xs font-semibold store-text-muted tracking-[0.02em] mb-2">
           Platform category (rows)
         </p>
         <div className="flex flex-wrap gap-2">
@@ -48,7 +48,7 @@ export function DefeatFilters({
       </div>
 
       <div>
-        <p className="text-xs font-semibold store-text-muted uppercase tracking-wider mb-2">
+        <p className="text-xs font-semibold store-text-muted tracking-[0.02em] mb-2">
           Defeat type (columns)
         </p>
         <div className="flex flex-wrap gap-2">

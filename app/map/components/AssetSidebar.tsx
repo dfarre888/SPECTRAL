@@ -6,7 +6,6 @@ import {
   ChevronDown,
   ChevronRight,
   Crosshair,
-  Map,
   Radio,
   Search,
   Shield,
@@ -22,7 +21,7 @@ import { EditionBadge } from '@/components/operations/EditionBadge'
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import { StoreFilterSection } from '@/components/catalog/StoreFilterSidebar'
-import { StoreEyebrow, StorePanel } from '@/components/ui/store-surface'
+import { StorePanel } from '@/components/ui/store-surface'
 import {
   applyForceFilter,
   matchesForceFilter,
@@ -223,20 +222,11 @@ export function AssetSidebar({
         >
           ← Dashboard
         </Link>
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[rgba(41,151,255,0.14)] border border-[rgba(41,151,255,0.5)] flex items-center justify-center shrink-0">
-            <Map className="w-4 h-4 text-[var(--wb-blue)]" />
-          </div>
-          <div className="min-w-0">
-            <p className="store-display font-bold text-white tracking-wide text-sm">Map Intel</p>
-            <p className="text-[11px] store-text-muted">Terrain laydown & envelopes</p>
-          </div>
+        <div className="min-w-0">
+          <p className="store-display font-semibold text-[var(--store-ink)] tracking-[-0.01em] text-[15px]">Map Intel</p>
+          <p className="text-[12px] store-text-muted">Terrain laydown and envelopes. Place assets on the globe.</p>
         </div>
-        <div className="mt-3 flex items-center justify-between gap-2">
-          <StoreEyebrow icon={<Crosshair size={12} />}>Place assets on globe</StoreEyebrow>
-          <EditionBadge />
-        </div>
-        <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="mt-3 flex gap-2" role="group" aria-label="Force filter">
           <ForceFilterButton
             label="RED"
             active={forceFilter === 'red'}
@@ -712,7 +702,7 @@ export function AssetSidebar({
         <button
           type="button"
           onClick={() => setLegendOpen(!legendOpen)}
-          className="w-full flex items-center justify-between text-[11px] font-semibold tracking-widest uppercase store-text-muted mb-2"
+          className="w-full flex items-center justify-between text-[11px] font-semibold tracking-[0.02em] store-text-muted mb-2"
         >
           <span>Map legend</span>
           {legendOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
@@ -768,14 +758,10 @@ function ForceFilterButton({
     <button
       type="button"
       onClick={onClick}
-      className={cn(
-        'map-press rounded-xl border px-2 py-2 text-[11px] font-semibold tracking-widest uppercase',
-        active
-          ? activeClassName
-          : 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-muted hover:text-white',
-      )}
+      aria-pressed={active}
+      className={cn('btn-e xs font-mono capitalize', activeClassName && '')}
     >
-      {label}
+      {label.toLowerCase()}
     </button>
   )
 }
@@ -934,39 +920,23 @@ function MapAssetPickCard({
       type="button"
       onClick={onClick}
       className={cn(
-        'w-full text-left rounded-xl overflow-hidden transition-all border',
+        'w-full text-left rounded-lg border transition-colors duration-150',
         active
-          ? 'nav-item-active'
+          ? 'border-[rgba(41,151,255,0.6)] bg-[rgba(41,151,255,0.10)]'
           : highlighted
-            ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
-            : 'store-panel-inner border-[var(--store-line)] hover:border-[rgba(41,151,255,0.5)]',
+            ? 'border-[rgba(41,151,255,0.4)] bg-[rgba(41,151,255,0.06)]'
+            : 'border-transparent hover:bg-[var(--store-surface)]',
       )}
     >
-      <div className="flex gap-3 p-2.5">
-        <div
-          className={cn(
-            'relative w-14 h-14 rounded-lg overflow-hidden shrink-0 store-panel-inner border border-[var(--store-line)]',
-            accent === 'threat' || accent === 'radar'
-              ? 'shadow-[inset_0_-12px_24px_rgba(6,182,212,0.12)]'
-              : accent === 'hostile'
-                ? 'shadow-[inset_0_-12px_24px_rgba(239,68,68,0.15)]'
-                : 'shadow-[inset_0_-12px_24px_rgba(249,115,22,0.12)]',
-          )}
-        >
-          <PlatformThumbnail
-            id={id}
-            name={name}
-            size="fill"
-            variant={thumbnailVariant}
-            className="w-full h-full"
-          />
-        </div>
-        <div className="min-w-0 flex-1 py-0.5">
-          <p className="text-[11px] font-semibold tracking-widest uppercase store-text-muted truncate">
-            {kicker}
-          </p>
-          <p className="text-[13px] font-semibold text-white leading-snug truncate">{name}</p>
-          <p className="text-[11px] store-text-body mt-0.5 line-clamp-2">{sub}</p>
+      <div className="flex items-center gap-2.5 px-2.5 py-2">
+        <span
+          className="h-1.5 w-1.5 rounded-full shrink-0"
+          style={{ background: accent === 'hostile' ? 'var(--wb-red)' : accent === 'threat' || accent === 'radar' ? 'var(--wb-data)' : 'var(--wb-blue)' }}
+          aria-hidden
+        />
+        <div className="min-w-0 flex-1">
+          <p className="text-[13px] text-[var(--store-ink)] leading-snug truncate">{name}</p>
+          <p className="text-[11px] font-mono store-text-muted truncate">{kicker} · {sub}</p>
         </div>
       </div>
     </button>

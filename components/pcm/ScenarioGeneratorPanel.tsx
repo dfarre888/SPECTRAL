@@ -102,7 +102,7 @@ export function ScenarioGeneratorPanel() {
             <p className="text-[11px] font-mono text-red">{exerciseError}</p>
           )}
           <div className="border-t border-[var(--store-line)] pt-3 space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-wider store-text-muted">Next steps</p>
+            <p className="text-[11px] font-semibold tracking-[0.02em] store-text-muted">Next steps</p>
             <div className="flex flex-wrap gap-2 text-xs font-mono">
               <button
                 type="button"

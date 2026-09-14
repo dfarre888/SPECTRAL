@@ -37,7 +37,7 @@ export function StartHereWizard() {
     <StorePanel className="p-4 mb-6 border-[rgba(41,151,255,0.5)]">
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)] mb-1">
+          <p className="text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)] mb-1">
             Start here
           </p>
           <p className="text-xs store-text-body max-w-xl">

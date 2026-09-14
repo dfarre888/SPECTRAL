@@ -14,7 +14,7 @@ export function MissionGoalDialog({ uas, onSelect, onDismiss }: MissionGoalDialo
     <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/50 pointer-events-auto">
       <div className="w-full max-w-sm rounded-2xl store-panel shadow-xl border border-[var(--store-line)] p-5 space-y-4">
         <div>
-          <p className="text-[11px] store-text-muted uppercase tracking-wider">Mission planning</p>
+          <p className="text-[11px] store-text-muted tracking-[0.02em]">Mission planning</p>
           <p className="text-sm font-semibold text-white mt-1">{uas.asset.name} placed</p>
           <p className="text-[11px] store-text-body mt-1">Select mission objective type, then click the map.</p>
         </div>

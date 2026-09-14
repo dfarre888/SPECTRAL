@@ -82,7 +82,7 @@ export function SwarmSaturationPanel() {
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
-        <h3 className="text-[11px] font-semibold text-white uppercase tracking-widest">
+        <h3 className="text-[11px] font-semibold text-white tracking-[0.02em]">
           Swarm Saturation
         </h3>
         <span className="text-[8px] font-mono store-text-muted">

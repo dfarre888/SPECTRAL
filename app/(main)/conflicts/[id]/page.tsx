@@ -26,7 +26,7 @@ export default function ConflictDetailPage({ params }: ConflictDetailPageProps) 
       <div className="space-y-4 max-w-4xl">
         {mapIncidents.length > 0 ? (
           <StorePanel className="p-3">
-            <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider mb-2">
+            <p className="text-[11px] font-mono store-text-muted tracking-[0.02em] mb-2">
               Incident map
             </p>
             <ConflictCaseStudyMap key={study.id} study={study} />

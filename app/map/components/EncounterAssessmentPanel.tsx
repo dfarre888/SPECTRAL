@@ -102,7 +102,7 @@ export function EncounterAssessmentPanel({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
             <Crosshair className="w-3.5 h-3.5 text-cyan shrink-0" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-cyan">
+            <span className="text-[11px] font-semibold tracking-[0.02em] text-cyan">
               Encounter assessment
             </span>
           </div>

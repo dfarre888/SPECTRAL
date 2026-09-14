@@ -16,19 +16,19 @@ export default async function BmiPage() {
             <div className="hero-number text-sm text-[#F7F9FC] tabular-nums">
               {bundle.meta.start_date}
             </div>
-            <div className="text-[11px] uppercase tracking-wider store-text-muted">Start</div>
+            <div className="text-[11px] tracking-[0.02em] store-text-muted">Start</div>
           </div>
           <div className="w-px bg-[var(--store-line)]" />
           <div className="text-center px-2">
             <div className="hero-number text-sm text-[#F7F9FC] tabular-nums">
               {bundle.meta.end_date}
             </div>
-            <div className="text-[11px] uppercase tracking-wider store-text-muted">End</div>
+            <div className="text-[11px] tracking-[0.02em] store-text-muted">End</div>
           </div>
           <div className="w-px bg-[var(--store-line)]" />
           <div className="text-center px-2">
             <div className="hero-number text-lg text-[#F7F9FC]">{bundle.platforms.length}</div>
-            <div className="text-[11px] uppercase tracking-wider store-text-muted">Platforms</div>
+            <div className="text-[11px] tracking-[0.02em] store-text-muted">Platforms</div>
           </div>
         </div>
       }

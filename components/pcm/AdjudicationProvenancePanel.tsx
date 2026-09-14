@@ -46,7 +46,7 @@ export function AdjudicationProvenancePanel({
 
   return (
     <div className={cn('space-y-4 border-t border-[var(--store-line)] pt-4', className)}>
-      <p className="text-xs store-text-muted uppercase tracking-wider font-semibold">
+      <p className="text-xs store-text-muted tracking-[0.02em] font-semibold">
         PCM provenance
       </p>
 

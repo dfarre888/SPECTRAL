@@ -23,7 +23,7 @@ function PctBar({ label, pct, icon: Icon }: { label: string; pct: number; icon: 
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between gap-2">
-        <span className="flex items-center gap-1.5 text-[11px] store-text-muted uppercase tracking-wider">
+        <span className="flex items-center gap-1.5 text-[11px] store-text-muted tracking-[0.02em]">
           <Icon className="w-3 h-3" />
           {label}
         </span>
@@ -57,7 +57,7 @@ export function ThreatAssessmentPanel({
     <StorePanel className="map-material-float absolute top-3 right-3 z-20 w-[min(100%,22rem)] p-3 pointer-events-auto border-[rgba(41,151,255,0.5)]">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)] flex items-center gap-1.5">
+          <p className="text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)] flex items-center gap-1.5">
             <Target className="w-3.5 h-3.5" />
             Threat assessment
           </p>
@@ -108,7 +108,7 @@ export function ThreatAssessmentPanel({
       )}
 
       <div className="space-y-2 border-t border-[var(--store-line)] pt-3">
-        <p className="text-[11px] font-semibold store-text-muted uppercase tracking-wider flex items-center gap-1">
+        <p className="text-[11px] font-semibold store-text-muted tracking-[0.02em] flex items-center gap-1">
           <Crosshair className="w-3 h-3" />
           Recommended (catalog)
         </p>

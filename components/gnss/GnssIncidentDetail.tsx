@@ -34,7 +34,7 @@ function GradedClaimBlock<T extends string | string[] | boolean>({
   return (
     <div className="store-panel-inner rounded-xl p-3 space-y-1.5">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[11px] font-semibold store-text-muted uppercase tracking-wider">{label}</p>
+        <p className="text-[11px] font-semibold store-text-muted tracking-[0.02em]">{label}</p>
         <Badge variant={evidenceGradeVariant(claim.grade)}>{EVIDENCE_GRADE_LABEL[claim.grade]}</Badge>
       </div>
       <p className="text-sm text-white font-mono">{display}</p>

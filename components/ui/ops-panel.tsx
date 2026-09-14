@@ -27,7 +27,7 @@ export function OpsPanel({
       <div className="flex flex-col gap-3 border-b border-[var(--store-line)] px-4 py-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           {kicker ? (
-            <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)] mb-1">
+            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)] mb-1">
               {kicker}
             </p>
           ) : null}

@@ -44,8 +44,8 @@ export function MapNavHud({
     : 'flex flex-col items-center gap-1.5'
 
   const zoomLabelClass = isBlue
-    ? 'text-[8px] font-black text-white/40 uppercase tracking-widest'
-    : 'text-[8px] font-bold text-white/50 uppercase tracking-wider'
+    ? 'text-[8px] font-black text-white/40 tracking-[0.02em]'
+    : 'text-[8px] font-bold text-white/50 tracking-[0.02em]'
 
   const zoomTrackClass = isBlue
     ? 'h-36 w-6 flex items-center justify-center overflow-visible'

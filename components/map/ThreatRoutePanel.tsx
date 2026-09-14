@@ -98,7 +98,7 @@ export function ThreatRoutePanel({ start, objective, placed, speedMps = 250 }: T
     <div className="store-panel rounded-2xl p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
         <div>
-          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)]">
+          <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
             Threat-aware routing
           </p>
           <h3 className="store-display text-sm font-semibold text-white mt-0.5">Minimum-exposure path</h3>

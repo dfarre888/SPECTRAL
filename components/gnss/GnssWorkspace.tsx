@@ -26,7 +26,7 @@ export function GnssWorkspace({
     <div className="space-y-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <StorePanel className="p-4 lg:col-span-1">
-          <h2 className="text-xs store-text-muted uppercase tracking-wider font-semibold mb-3">
+          <h2 className="text-xs store-text-muted tracking-[0.02em] font-semibold mb-3">
             Constellations ({constellations.length})
           </h2>
           <ul className="space-y-2 text-sm max-h-80 overflow-y-auto">
@@ -43,7 +43,7 @@ export function GnssWorkspace({
         </StorePanel>
 
         <StorePanel className="p-4">
-          <h2 className="text-xs store-text-muted uppercase tracking-wider font-semibold mb-3">
+          <h2 className="text-xs store-text-muted tracking-[0.02em] font-semibold mb-3">
             GNSS jammers ({jammers.length})
           </h2>
           <ul className="space-y-2 text-sm max-h-80 overflow-y-auto">
@@ -65,7 +65,7 @@ export function GnssWorkspace({
         </StorePanel>
 
         <StorePanel className="p-4">
-          <h2 className="text-xs store-text-muted uppercase tracking-wider font-semibold mb-3">
+          <h2 className="text-xs store-text-muted tracking-[0.02em] font-semibold mb-3">
             Nav countermeasures ({countermeasures.length})
           </h2>
           <ul className="space-y-2 text-sm max-h-80 overflow-y-auto">

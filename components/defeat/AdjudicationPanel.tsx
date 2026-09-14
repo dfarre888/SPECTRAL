@@ -151,7 +151,7 @@ export function AdjudicationPanel({
               )}
 
               <div className="space-y-2">
-                <p className="text-xs store-text-muted uppercase tracking-wider font-semibold">
+                <p className="text-xs store-text-muted tracking-[0.02em] font-semibold">
                   Effectiveness
                 </p>
                 <PctRow
@@ -179,7 +179,7 @@ export function AdjudicationPanel({
 
               {(effectiveness.adjudication_rationale || effectiveness.special_notes) && (
                 <div>
-                  <p className="text-xs store-text-muted uppercase tracking-wider font-semibold mb-2">
+                  <p className="text-xs store-text-muted tracking-[0.02em] font-semibold mb-2">
                     Rationale
                   </p>
                   <p className="text-sm store-text-body leading-relaxed">
@@ -189,7 +189,7 @@ export function AdjudicationPanel({
               )}
 
               <div className="flex items-center gap-2">
-                <p className="text-xs store-text-muted uppercase tracking-wider font-semibold">
+                <p className="text-xs store-text-muted tracking-[0.02em] font-semibold">
                   Confidence
                 </p>
                 <ConfidenceBadge confidence={effectiveness.data_confidence} />
@@ -197,7 +197,7 @@ export function AdjudicationPanel({
 
               {effectiveness.modifiers && effectiveness.modifiers.length > 0 && (
                 <div>
-                  <p className="text-xs store-text-muted uppercase tracking-wider font-semibold mb-2">
+                  <p className="text-xs store-text-muted tracking-[0.02em] font-semibold mb-2">
                     Modifiers
                   </p>
                   <div className="space-y-2">
@@ -218,7 +218,7 @@ export function AdjudicationPanel({
 
               {effectiveness.recommended_response && (
                 <div>
-                  <p className="text-xs store-text-muted uppercase tracking-wider font-semibold mb-2">
+                  <p className="text-xs store-text-muted tracking-[0.02em] font-semibold mb-2">
                     Recommended Response
                   </p>
                   <p className="text-sm text-white leading-relaxed">
@@ -236,7 +236,7 @@ export function AdjudicationPanel({
           )}
           {platform && system && (
             <div className="store-panel-inner rounded-xl px-3 py-2">
-              <p className="text-xs store-text-muted uppercase tracking-wider font-semibold mb-2">Engagement economics</p>
+              <p className="text-xs store-text-muted tracking-[0.02em] font-semibold mb-2">Engagement economics</p>
               {(() => {
                 const threat = OSINT_THREAT_COSTS_USD[platform.id] ?? 50_000
                 const effector = 1_000_000

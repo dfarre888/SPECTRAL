@@ -75,7 +75,7 @@ export function MetricSummaryBar({ metrics, copy }: { metrics: DashboardMetrics;
               // outer glow. Text goes near-white because the fill is mid-tone.
               <div className="gloss-tile purple p-5 cursor-pointer transition-transform group-hover:-translate-y-0.5">
                 <div className="relative flex items-start justify-between gap-2 mb-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-white/70">{meta.label}</p>
+                  <p className="text-[11px] font-semibold tracking-[0.02em] text-white/70">{meta.label}</p>
                   <Icon className="w-3.5 h-3.5 shrink-0 mt-0.5 text-white/90" />
                 </div>
                 <p className="relative text-4xl font-bold font-mono tabular-nums leading-none text-white">
@@ -89,7 +89,7 @@ export function MetricSummaryBar({ metrics, copy }: { metrics: DashboardMetrics;
                 'group-hover:border-[rgba(41,151,255,0.5)]',
               )}>
                 <div className="flex items-start justify-between gap-2 mb-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider store-text-muted">{meta.label}</p>
+                  <p className="text-[11px] font-semibold tracking-[0.02em] store-text-muted">{meta.label}</p>
                   <Icon className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${accent}`} />
                 </div>
                 <p className={`text-4xl font-bold font-mono tabular-nums leading-none ${accent}`}>

@@ -14,7 +14,7 @@ export function EditionBadge({ className, size = 'sm' }: EditionBadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-lg border font-mono font-semibold uppercase tracking-wider',
+        'inline-flex items-center gap-1.5 rounded-lg border font-mono font-semibold tracking-[0.02em]',
         size === 'sm' ? 'px-2 py-0.5 text-[11px]' : 'px-2.5 py-1 text-[11px]',
         operations
           ? 'border-cyan/40 bg-cyan/10 text-cyan'

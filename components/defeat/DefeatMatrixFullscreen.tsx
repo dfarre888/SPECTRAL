@@ -60,7 +60,7 @@ export function DefeatMatrixFullscreen({
       <div className="shrink-0 border-b border-[var(--store-line)] bg-[var(--store-surface)] px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[11px] font-mono uppercase tracking-widest text-[var(--wb-blue)]">
+            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
               Effectiveness Matrix
             </p>
             <p className="text-xs font-mono store-text-muted mt-0.5">

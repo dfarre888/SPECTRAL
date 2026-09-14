@@ -67,7 +67,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
       <div className="store-panel rounded-2xl p-4">
         <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
           <div>
-            <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)]">
+            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
               Package composition
             </p>
             <h3 className="store-display text-sm font-semibold text-white mt-0.5">
@@ -89,7 +89,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
         <div className="max-h-[520px] overflow-y-auto pr-1 space-y-3">
           {byDomain.map(([domain, list]) => (
             <div key={domain}>
-              <p className="text-[11px] font-mono uppercase tracking-wider store-text-muted mb-1 sticky top-0 bg-[var(--store-surface)] py-1">
+              <p className="text-[11px] font-mono tracking-[0.02em] store-text-muted mb-1 sticky top-0 bg-[var(--store-surface)] py-1">
                 {domain} · {list.filter((p) => selected.has(p.id)).length}/{list.length}
               </p>
               <div className="space-y-1">
@@ -158,7 +158,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
       {/* ── Live rollup ───────────────────────────────────────────────────── */}
       <div className="space-y-4">
         <div className="store-panel rounded-2xl p-4">
-          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)] mb-2">
+          <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)] mb-2">
             Connectivity
           </p>
           <p className="text-2xl font-bold text-white font-mono tabular-nums">
@@ -178,7 +178,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
         </div>
 
         <div className="store-panel rounded-2xl p-4">
-          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)] mb-2">
+          <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)] mb-2">
             Platforms per comms band
           </p>
           {current.commsBands.length === 0 ? (
@@ -222,7 +222,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
         </div>
 
         <div className="store-panel rounded-2xl p-4">
-          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)] mb-2">
+          <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)] mb-2">
             Sensor bands covered
           </p>
           {current.sensorBands.length === 0 ? (
@@ -258,7 +258,7 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
 
         {(delta.bandsLost.length > 0 || delta.trackDelta !== 0) && (
           <div className="store-panel rounded-2xl p-4 border border-red-500/25">
-            <p className="text-[11px] font-mono uppercase tracking-wider text-red-300 mb-1.5">
+            <p className="text-[11px] font-mono tracking-[0.02em] text-red-300 mb-1.5">
               Versus full ORBAT
             </p>
             {delta.bandsLost.length > 0 && (

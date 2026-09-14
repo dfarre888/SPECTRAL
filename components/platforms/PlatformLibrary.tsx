@@ -133,7 +133,7 @@ export function PlatformLibrary({ platforms, countries, sovereignPlatforms = [] 
               if (!group.length) return null
               return (
                 <section key={country}>
-                  <h2 className="text-sm font-mono store-text-muted uppercase tracking-wider mb-4">{country}</h2>
+                  <h2 className="text-sm font-mono store-text-muted tracking-[0.02em] mb-4">{country}</h2>
                   <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {group.map((sp) => (
                       <SovereignPlatformCard key={sp.id} platform={sp} />

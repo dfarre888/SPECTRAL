@@ -44,7 +44,7 @@ export default function ConflictsPage() {
       <div className="space-y-4">
         {selected ? (
           <StorePanel className="p-3">
-            <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider mb-2">
+            <p className="text-[11px] font-mono store-text-muted tracking-[0.02em] mb-2">
               Incident map · {selected.name}
             </p>
             <ConflictCaseStudyMap key={selected.id} study={selected} />
@@ -52,7 +52,7 @@ export default function ConflictsPage() {
         ) : null}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <StorePanel className="p-4 lg:col-span-1">
-          <h2 className="text-xs font-semibold store-text-muted uppercase tracking-wider mb-3">
+          <h2 className="text-xs font-semibold store-text-muted tracking-[0.02em] mb-3">
             Case studies ({cases.length})
           </h2>
           <ul className="space-y-2">

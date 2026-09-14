@@ -15,7 +15,7 @@ export default async function ConflictIntelPage() {
   return (
     <div className="max-w-[90rem] mx-auto space-y-6">
       <div>
-        <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider">OSINT Layer</p>
+        <p className="text-[11px] font-mono store-text-muted tracking-[0.02em]">OSINT Layer</p>
         <h1 className="text-2xl font-semibold text-white mt-1">Conflict Incident Intel</h1>
         <p className="text-sm store-text-body mt-2 max-w-3xl">
           Database-backed incident timeline and map. For narrative case studies see{' '}

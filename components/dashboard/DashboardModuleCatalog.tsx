@@ -79,7 +79,7 @@ export function DashboardModuleCatalog({ stats }: DashboardModuleCatalogProps) {
             <StorePanel className="p-3 border-[rgba(41,151,255,0.5)]">
               <div className="flex items-center gap-2 mb-2">
                 <AlertTriangle className="w-3.5 h-3.5 text-[var(--wb-blue)]" />
-                <span className="text-[11px] font-semibold text-[var(--wb-blue)] uppercase tracking-wider">
+                <span className="text-[11px] font-semibold text-[var(--wb-blue)] tracking-[0.02em]">
                   COTS jammer risk
                 </span>
               </div>

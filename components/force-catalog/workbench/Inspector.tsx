@@ -20,7 +20,7 @@ export type InspectorMode =
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <h3 className="text-[11px] uppercase tracking-wider store-text-muted">{title}</h3>
+      <h3 className="text-[11px] tracking-[0.02em] store-text-muted">{title}</h3>
       {children}
     </div>
   )

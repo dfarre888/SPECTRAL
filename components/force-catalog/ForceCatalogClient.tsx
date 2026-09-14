@@ -34,7 +34,7 @@ import { ForceCatalogFilters } from '@/components/force-catalog/ForceCatalogFilt
 import { ForceCatalogOverview } from '@/components/force-catalog/ForceCatalogOverview'
 import { ForceCatalogGrid } from '@/components/force-catalog/ForceCatalogGrid'
 import { ForceCatalogFuture } from '@/components/force-catalog/ForceCatalogFuture'
-import { ForceCatalogMatrix, type MatrixMotion } from '@/components/force-catalog/ForceCatalogMatrix'
+import { Workbench } from '@/components/force-catalog/workbench/Workbench'
 import { ForceCatalogDetail } from '@/components/force-catalog/ForceCatalogDetail'
 import { ForceCatalogBattlePicture } from '@/components/force-catalog/ForceCatalogBattlePicture'
 import {
@@ -78,8 +78,6 @@ export function ForceCatalogClient({ bundle }: Props) {
   const [confidence, setConfidence] = useState<DataConfidence[]>([])
   const [activePreset, setActivePreset] = useState<ScenarioPresetId | null>(null)
   const [compareScopeIds, setCompareScopeIds] = useState<string[] | null>(null)
-  const [motion, setMotion] = useState<MatrixMotion>('quiet')
-  const [showAllColumns, setShowAllColumns] = useState(false)
 
   const nationByCode = useMemo(() => {
     return new Map(CATALOG_NATIONS.map((n) => [n.code, n]))
@@ -228,7 +226,6 @@ export function ForceCatalogClient({ bundle }: Props) {
     setConfidence([])
     setSearch(preset.searchHints[0] ?? '')
     setCompareScopeIds(null)
-    setShowAllColumns(false)
   }, [])
 
   const clearPreset = useCallback(() => {
@@ -239,8 +236,7 @@ export function ForceCatalogClient({ bundle }: Props) {
     (effectId: EffectId, platformIds: string[]) => {
       void effectId
       setCompareScopeIds(platformIds)
-      setShowAllColumns(false)
-      setTab('compare')
+        setTab('compare')
     },
     [setTab],
   )
@@ -343,40 +339,18 @@ export function ForceCatalogClient({ bundle }: Props) {
       <div className="flex-1 min-w-0 space-y-3">
         {!isPopout ? (
           <div className="flex flex-wrap gap-2 items-center">
+            {activeTab !== 'compare' ? (<>
             <StatChip label="nations" value={stats.nations} />
             <StatChip label="blue" value={stats.blue} accent />
             <StatChip label="red" value={stats.red} />
             <StatChip label="filtered" value={`${stats.filtered}/${stats.total}`} accent />
             <StatChip label="future" value={stats.future} />
-            {activeTab === 'compare' ? (
-              <div
-                className="ml-auto flex gap-1"
-                role="group"
-                aria-label="Motion preview (quiet or scroll-driven)"
-                title="Preview: pick a motion philosophy for dense pages"
-              >
-                {(['quiet', 'scroll'] as const).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    aria-pressed={motion === m}
-                    onClick={() => setMotion(m)}
-                    className={`text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border capitalize transition-colors duration-150 ${
-                      motion === m
-                        ? 'store-accent-border store-accent bg-[var(--store-accent-glow)]'
-                        : 'store-line store-text-muted hover:store-text-body'
-                    }`}
-                  >
-                    {m}
-                  </button>
-                ))}
-              </div>
-            ) : null}
+            </>) : null}
             {activeTab === 'compare' ? (
               <button
                 type="button"
                 onClick={openPopout}
-                className="inline-flex items-center gap-1.5 text-[11px] font-mono px-3 py-2 min-h-10 rounded border store-line store-text-muted hover:store-text-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-accent)]"
+                className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-mono px-3 py-2 min-h-10 rounded border store-line store-text-muted hover:store-text-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-accent)]"
                 aria-label="Pop out current tab into a second window"
                 data-testid="pcm-popout"
               >
@@ -501,17 +475,11 @@ export function ForceCatalogClient({ bundle }: Props) {
               />
             ) : null}
             {activeTab === 'compare' ? (
-              <ForceCatalogMatrix
+              <Workbench
                 platforms={comparePlatforms}
-                nations={bundle.nations}
                 onSelect={onSelect}
-                onClear={clearAll}
-                columnBudget={24}
-                showAllColumns={showAllColumns}
-                onShowAllColumns={setShowAllColumns}
                 scopedFromBattle={Boolean(compareScopeIds?.length)}
                 onClearScope={() => setCompareScopeIds(null)}
-                motion={motion}
               />
             ) : null}
             {activeTab === 'future' ? (

@@ -1,5 +1,5 @@
 /**
- * Callers: ForceCatalogMatrix.tsx, _test_matrix-model.test.ts
+ * Callers: coverage-model.ts (buildPossession), _test_matrix-model.test.ts
  * Purpose: Pure capability×platform matrix model — normalise keys, counters, OrBat impact
  * API/schema: ForceCatalogPlatformFull.comms / .sensors (read-only; no writes)
  * User instruction: execute PROMPT-CAPABILITY-MATRIX.md (industry-leader OrBat matrix tab)

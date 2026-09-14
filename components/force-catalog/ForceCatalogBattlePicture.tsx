@@ -2,14 +2,14 @@
 
 /**
  * Callers: ForceCatalogClient (battle tab)
- * Purpose: Commander effects board — presets, assessment, drill to Compare
- * Spec: PROMPT-BATTLE-PICTURE.md
+ * Purpose: Commander effects board — overmatch by capability class as a
+ * diverging chart, domain balance, commander's assessment with the three
+ * facts that matter. Rows drill into the workbench.
  */
 
 import { useMemo } from 'react'
 import type { ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
-import { StorePanel } from '@/components/ui/store-surface'
-import { StatChip } from '@/components/force-catalog/force-catalog-ui'
+import type { ForceInstruments } from '@/lib/force-catalog/force-instruments'
 import {
   SCENARIO_PRESETS,
   buildBattlePictureView,
@@ -18,29 +18,29 @@ import {
   type ScenarioPresetId,
 } from '@/lib/force-catalog/battle-picture-model'
 
-function bandClass(band: AssessmentBand): string {
-  switch (band) {
-    case 'OVERMATCH':
-      return 'store-accent'
-    case 'UNDERDOG':
-      return 'text-red-400'
-    case 'CONTESTED':
-      return 'text-amber-400'
-    default:
-      return 'store-text-muted'
-  }
+function tagClass(band: AssessmentBand): string {
+  if (band === 'OVERMATCH') return 'fc-tag over'
+  if (band === 'UNDERDOG') return 'fc-tag under'
+  if (band === 'CONTESTED') return 'fc-tag contested'
+  return 'fc-tag'
+}
+
+function splitLabel(label: string): [string, string | null] {
+  const i = label.indexOf(' / ')
+  return i < 0 ? [label, null] : [label.slice(0, i), label.slice(i + 3)]
 }
 
 export function ForceCatalogBattlePicture({
   platforms,
+  instruments,
   activePreset,
   customFiltersActive,
   onApplyPreset,
   onClearPreset,
   onDrillEffect,
-  onPopout,
 }: {
   platforms: ForceCatalogPlatformFull[]
+  instruments: ForceInstruments
   activePreset: ScenarioPresetId | null
   customFiltersActive: boolean
   onApplyPreset: (id: ScenarioPresetId) => void
@@ -48,138 +48,84 @@ export function ForceCatalogBattlePicture({
   onDrillEffect: (effectId: EffectId, platformIds: string[]) => void
   onPopout?: () => void
 }) {
-  const view = useMemo(
-    () => buildBattlePictureView(platforms, activePreset),
-    [platforms, activePreset],
-  )
+  const view = useMemo(() => buildBattlePictureView(platforms, activePreset), [platforms, activePreset])
+  const max = Math.max(1, ...view.effects.flatMap((r) => [r.blueCount, r.redCount]))
+  const gaps = platforms.filter((p) => p.sensors.length === 0).length
+  const thin = view.effects.filter((r) => r.thinOsint).length
 
   return (
-    <div className="space-y-4" data-testid="force-catalog-battle">
-      <div
-        className="flex flex-wrap gap-2 items-center"
-        role="group"
-        aria-labelledby="pcm-scenario-label"
-      >
-        <span
-          id="pcm-scenario-label"
-          className="text-[10px] font-mono store-text-muted uppercase tracking-wider"
-        >
-          Scenario
-        </span>
+    <div data-testid="force-catalog-battle">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1 py-3 border-b fc-hair" role="group" aria-label="Scenario">
+        <span className="text-[11px] store-text-muted mr-1">Scenario</span>
         {SCENARIO_PRESETS.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            aria-pressed={activePreset === p.id}
-            onClick={() => onApplyPreset(p.id)}
-            className={`text-[10px] font-mono px-3 py-2 min-h-10 rounded border transition-[color,background-color,border-color] duration-150 ease-out ${
-              activePreset === p.id
-                ? 'store-accent-border store-accent bg-[var(--store-accent-glow)]'
-                : 'store-line store-text-muted hover:store-text-body'
-            }`}
-          >
-            {p.label}
-          </button>
+          <button key={p.id} type="button" aria-pressed={activePreset === p.id} onClick={() => onApplyPreset(p.id)} className="fc-chip">{p.label}</button>
         ))}
-        {activePreset ? (
-          <button
-            type="button"
-            onClick={onClearPreset}
-            className="text-[10px] font-mono px-3 py-2 min-h-10 rounded border store-line store-text-muted"
-          >
-            Clear preset
-          </button>
-        ) : null}
-        {customFiltersActive ? (
-          <span className="text-[9px] font-mono store-text-muted">Custom filters active</span>
-        ) : null}
-        {onPopout ? (
-          <button
-            type="button"
-            onClick={onPopout}
-            className="ml-auto text-[10px] font-mono px-3 py-2 min-h-10 rounded border store-accent-border store-accent"
-          >
-            Pop out
-          </button>
-        ) : null}
+        {activePreset ? <button type="button" onClick={onClearPreset} className="fc-chip">Clear</button> : null}
+        {customFiltersActive ? <span className="text-[11px] font-mono store-text-muted ml-auto">custom filters active</span> : null}
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <StatChip label="blue" value={view.blueCount} accent />
-        <StatChip label="red" value={view.redCount} />
-        <StatChip label="neutral" value={view.neutralCount} />
-        <StatChip label="in scope" value={platforms.length} accent />
-      </div>
-
-      <StorePanel className="p-4 space-y-3 overflow-x-auto">
-        <h2 className="text-xs store-display store-text-body tracking-wide text-balance">
-          Effects balance — Blue vs Red
-        </h2>
-        <table className="w-full text-[11px] font-mono tabular-nums">
-          <thead>
-            <tr className="store-text-muted text-left">
-              <th className="py-2 pr-3 font-normal">Effect</th>
-              <th className="py-2 pr-3 font-normal">Blue</th>
-              <th className="py-2 pr-3 font-normal">Red</th>
-              <th className="py-2 pr-3 font-normal">Assessment</th>
-              <th className="py-2 font-normal">Drill</th>
-            </tr>
-          </thead>
-          <tbody>
-            {view.effects.map((row) => {
-              const ids = [...row.blueIds, ...row.redIds]
-              return (
-                <tr key={row.effect.id} className="border-t store-line">
-                  <td className="py-2 pr-3 store-text-body text-pretty">{row.effect.label}</td>
-                  <td className="py-2 pr-3 text-[var(--store-accent)]">{row.blueCount}</td>
-                  <td className="py-2 pr-3 store-text-body">{row.redCount}</td>
-                  <td className="py-2 pr-3">
-                    <span className={bandClass(row.band)}>{row.band}</span>
-                    {row.thinOsint ? (
-                      <span className="block text-[9px] store-text-muted">assessed / thin OSINT</span>
-                    ) : null}
-                  </td>
-                  <td className="py-2">
-                    <button
-                      type="button"
-                      disabled={!ids.length}
-                      onClick={() => onDrillEffect(row.effect.id, ids)}
-                      className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-accent-border store-accent disabled:opacity-40"
-                      aria-label={`Drill Compare for ${row.effect.label}`}
-                    >
-                      Compare
-                    </button>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </StorePanel>
-
-      <StorePanel className="p-4 space-y-3">
-        <h2 className="text-xs store-display store-text-body tracking-wide">Domain strip</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {view.domains.map((d) => (
-            <div key={d.domain} className="rounded border store-line p-3 space-y-1">
-              <p className="text-[9px] font-mono store-text-muted uppercase">{d.domain}</p>
-              <p className="text-[11px] font-mono tabular-nums">
-                <span className="store-accent">B {d.blue}</span>
-                <span className="store-text-muted"> · </span>
-                <span className="store-text-body">R {d.red}</span>
-              </p>
-            </div>
-          ))}
+      <section className="pt-7 pb-2">
+        <div className="flex items-baseline gap-4 mb-4">
+          <h2 className="text-[18px] store-display text-[var(--store-ink)] font-semibold tracking-[-0.01em] m-0">Overmatch by capability class</h2>
+          <span className="text-[12px] store-text-muted">Red left, Blue right · click a row to open it in the workbench</span>
         </div>
-      </StorePanel>
+        <div className="grid grid-cols-[minmax(180px,260px)_1fr_1fr_118px] items-center gap-x-4">
+          {view.effects.map((row) => {
+            const [main, sub] = splitLabel(row.effect.label)
+            const ids = [...row.blueIds, ...row.redIds]
+            const rw = `${(row.redCount / max) * 100}%`
+            const bw = `${(row.blueCount / max) * 100}%`
+            return (
+              <button key={row.effect.id} type="button" disabled={!ids.length} onClick={() => onDrillEffect(row.effect.id, ids)} className="fc-row fc-rowbtn text-left" aria-label={`Open ${row.effect.label} in the workbench`}>
+                <span className="min-w-0">
+                  <span className="block text-[13px] text-[var(--store-ink)] truncate">{main}</span>
+                  {sub || row.thinOsint ? <span className="block text-[11px] store-text-muted truncate">{[sub, row.thinOsint ? 'assessed · thin OSINT' : null].filter(Boolean).join(' · ')}</span> : null}
+                </span>
+                <span className="fc-bar red relative"><i style={{ width: rw }} /><b className="absolute -top-[7px] text-[12px] font-mono text-[var(--wb-red)]" style={{ right: `min(calc(${rw} + 8px), calc(100% - 22px))` }}>{row.redCount}</b></span>
+                <span className="fc-bar blue relative"><i style={{ width: bw }} /><b className="absolute -top-[7px] text-[12px] font-mono text-[var(--wb-blue)]" style={{ left: `min(calc(${bw} + 8px), calc(100% - 22px))` }}>{row.blueCount}</b></span>
+                <span className="justify-self-end"><span className={tagClass(row.band)}>{row.band}</span></span>
+              </button>
+            )
+          })}
+          <span />
+          <span className="col-span-2 flex justify-between text-[11px] font-mono store-text-muted pt-1.5"><span>Red {max}</span><span className="store-text-body">0</span><span>Blue {max}</span></span>
+          <span />
+        </div>
+      </section>
 
-      <StorePanel className="p-4 space-y-2">
-        <h2 className="text-xs store-display store-text-body tracking-wide">Commander assess</h2>
-        <p className="text-[11px] font-mono store-text-body text-pretty leading-relaxed whitespace-pre-wrap">
-          {view.assessText}
-        </p>
-      </StorePanel>
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-7 py-6 border-t border-b fc-hair mt-6">
+        {view.domains.map((d) => {
+          const tot = Math.max(1, d.blue + d.red)
+          return (
+            <div key={d.domain}>
+              <div className="text-[12px] store-text-muted capitalize">{d.domain === 'em' ? 'EM' : d.domain}</div>
+              <div className="text-[22px] store-display font-semibold tracking-[-0.01em] my-1.5 tabular-nums"><span className="text-[var(--wb-blue)]">{d.blue}</span><span className="store-text-muted"> · </span><span className="text-[var(--wb-red)]">{d.red}</span></div>
+              <div className="fc-stack"><i style={{ width: `${(d.blue / tot) * 100}%`, background: 'var(--wb-blue)' }} /><i style={{ width: `${(d.red / tot) * 100}%`, background: 'var(--wb-red)' }} /></div>
+            </div>
+          )
+        })}
+      </section>
+
+      <section className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-10 py-7">
+        <div>
+          <h2 className="text-[18px] store-display text-[var(--store-ink)] font-semibold tracking-[-0.01em] m-0 mb-3">Commander's assessment</h2>
+          <p className="text-[15px] leading-[1.55] text-[var(--store-ink)] max-w-[62ch] whitespace-pre-wrap text-pretty m-0">{view.assessText}</p>
+          <p className="text-[13px] store-text-body max-w-[62ch] text-pretty mt-3">
+            Track reach is {instruments.track.reachPct}% of Blue on one picture and {instruments.denied.reachPct}% once GNSS time is lost.
+            {instruments.spof ? ` Benching ${instruments.spof.short_name} alone costs ${instruments.spof.reachDropPct} points.` : ''} Open the workbench to test removals against these numbers.
+          </p>
+        </div>
+        <div className="lg:border-l fc-hair lg:pl-7">
+          <div className="text-[11px] store-text-muted">Biggest single point of failure</div>
+          <div className="text-[13px] text-[var(--store-ink)] mt-0.5 mb-3.5">{instruments.spof ? `${instruments.spof.short_name} · ${instruments.spof.strandedCount} units stranded without it` : 'No single gateway carries the picture'}</div>
+          <div className="text-[11px] store-text-muted">Nets that split on variant</div>
+          <div className="text-[13px] text-[var(--store-ink)] mt-0.5 mb-3.5">{instruments.variantSplits.length ? instruments.variantSplits.map((v) => `${v.standard} · ${v.islands} islands`).join(', ') : 'None recorded (variants unknown are assumed compatible)'}</div>
+          <div className="text-[11px] store-text-muted">Data gaps that distort this</div>
+          <div className="text-[13px] text-[var(--store-ink)] mt-0.5 mb-3.5">{gaps} platforms without sensor fit · {thin} classes on thin OSINT</div>
+          <div className="text-[11px] store-text-muted">Basis</div>
+          <div className="text-[11px] font-mono store-text-muted mt-0.5">Open-source OrBat · manufacturer pages · interop engine, not a forecast</div>
+        </div>
+      </section>
     </div>
   )
 }
-

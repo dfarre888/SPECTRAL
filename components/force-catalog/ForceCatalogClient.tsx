@@ -30,7 +30,9 @@ import type {
 } from '@/lib/bmi/bmi-types'
 import type { DataConfidence } from '@/lib/types'
 import { CATALOG_NATIONS, FUTURE_PROGRAMS } from '@/data/force-catalog'
-import { HubTabBar, useHubTab, type HubTabDef } from '@/components/hub/HubUrlTabBar'
+import { useHubTab, type HubTabDef } from '@/components/hub/HubUrlTabBar'
+import { InstrumentRow } from '@/components/force-catalog/InstrumentRow'
+import { buildForceInstruments } from '@/lib/force-catalog/force-instruments'
 import { ForceCatalogFilters } from '@/components/force-catalog/ForceCatalogFilters'
 import { ForceCatalogOverview } from '@/components/force-catalog/ForceCatalogOverview'
 import { ForceCatalogGrid } from '@/components/force-catalog/ForceCatalogGrid'
@@ -43,7 +45,7 @@ import {
   type EffectId,
   type ScenarioPresetId,
 } from '@/lib/force-catalog/battle-picture-model'
-import { StatChip, toggle } from '@/components/force-catalog/force-catalog-ui'
+import { toggle } from '@/components/force-catalog/force-catalog-ui'
 import type { CatalogDensity } from '@/components/force-catalog/PlatformCard'
 
 const TABS: HubTabDef[] = [
@@ -125,6 +127,8 @@ export function ForceCatalogClient({ bundle }: Props) {
     return filtered.filter((p) => allow.has(p.id))
   }, [filtered, compareScopeIds])
 
+  const instruments = useMemo(() => buildForceInstruments(filtered), [filtered])
+
   const filteredFuture = useMemo(() => {
     const ids = new Set(filtered.map((p) => p.id))
     return FUTURE_PROGRAMS.filter((p) => ids.has(p.id))
@@ -140,18 +144,6 @@ export function ForceCatalogClient({ bundle }: Props) {
     return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b))
   }, [filtered])
 
-  const stats = useMemo(() => {
-    const blue = filtered.filter((p) => p.force_side === 'blue').length
-    const red = filtered.filter((p) => p.force_side === 'red').length
-    return {
-      nations: bundle.nations.length,
-      blue,
-      red,
-      filtered: filtered.length,
-      future: filteredFuture.length,
-      total: bundle.platforms.length,
-    }
-  }, [bundle.nations.length, bundle.platforms.length, filtered, filteredFuture.length])
 
   const roleOptions = useMemo(
     () => [...new Set(bundle.platforms.map((p) => p.role))].sort(),
@@ -354,15 +346,9 @@ export function ForceCatalogClient({ bundle }: Props) {
       ) : null}
 
       <div className="flex-1 min-w-0 space-y-3">
+        {!isPopout ? <InstrumentRow inst={instruments} /> : null}
         {!isPopout ? (
           <div className="flex flex-wrap gap-2 items-center">
-            {activeTab !== 'compare' ? (<>
-            <StatChip label="nations" value={stats.nations} />
-            <StatChip label="blue" value={stats.blue} accent />
-            <StatChip label="red" value={stats.red} />
-            <StatChip label="filtered" value={`${stats.filtered}/${stats.total}`} accent />
-            <StatChip label="future" value={stats.future} />
-            </>) : null}
             {activeTab === 'compare' ? (
               <button
                 type="button"
@@ -422,15 +408,28 @@ export function ForceCatalogClient({ bundle }: Props) {
           </div>
         )}
 
-        <HubTabBar
-          tabs={TABS}
-          activeTab={activeTab}
-          onTabChange={(key) => {
-            if (key !== 'compare') setCompareScopeIds(null)
-            setTab(key)
-          }}
-          testIdPrefix="force-catalog-tab"
-        />
+        <nav className="fc-tabs border-b fc-hair" role="tablist" aria-label="Force catalogue sections">
+          {TABS.filter((t) => t.visible !== false).map((t) => {
+            const Icon = t.icon
+            return (
+              <button
+                key={t.key}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === t.key}
+                data-testid={`force-catalog-tab-${t.key}`}
+                onClick={() => {
+                  if (t.key !== 'compare') setCompareScopeIds(null)
+                  setTab(t.key)
+                }}
+                className="fc-tab"
+              >
+                {Icon ? <Icon className="h-3.5 w-3.5" aria-hidden /> : null}
+                {t.label}
+              </button>
+            )
+          })}
+        </nav>
 
         {activeChips.length > 0 && activeTab !== 'battle' ? (
           <div className="flex flex-wrap gap-1 items-center">
@@ -465,6 +464,7 @@ export function ForceCatalogClient({ bundle }: Props) {
             {activeTab === 'battle' ? (
               <ForceCatalogBattlePicture
                 platforms={filtered}
+                instruments={instruments}
                 activePreset={activePreset}
                 customFiltersActive={customFiltersActive}
                 onApplyPreset={applyPreset}

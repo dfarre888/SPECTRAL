@@ -70,7 +70,7 @@ export function Roster({
   }
 
   return (
-    <section className="store-panel rounded-2xl flex flex-col min-h-0" aria-label="Roster">
+    <section className="border-r fc-hair last:border-r-0 flex flex-col min-h-0" aria-label="Roster">
       <header className="flex items-center gap-2 px-3 py-2 border-b store-line">
         <span className="wb-pane-title">Roster</span>
         <span className="text-[11px] font-mono tabular-nums store-text-muted">{active.length}</span>

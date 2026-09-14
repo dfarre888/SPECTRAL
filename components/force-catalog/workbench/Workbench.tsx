@@ -18,7 +18,7 @@ import { bandFill, sensorsStatus, type SensorsStatus } from '@/lib/force-catalog
 import { Coverage } from './Coverage'
 import { Inspector, type InspectorMode } from './Inspector'
 import { Roster } from './Roster'
-import { SpectrumRibbon, type NetFill } from './SpectrumRibbon'
+import { SpectrumDial, type NetFill } from '@/components/force-catalog/SpectrumDial'
 
 export function Workbench({
   platforms,
@@ -141,7 +141,7 @@ export function Workbench({
         </div>
       ) : null}
 
-      <SpectrumRibbon nets={nets} sensing={sensing} focusBand={focusBand} activeBands={filterBands} onHoverBand={setFocusBand} onToggleBand={toggleBand} />
+      <SpectrumDial nets={nets} sensing={sensing} focusBand={focusBand} activeBands={filterBands} onHoverBand={setFocusBand} onToggleBand={toggleBand} />
 
       <div className="grid gap-3 items-stretch" style={{ gridTemplateColumns: gridCols, height: cols === 1 ? 'auto' : 'min(72vh, 820px)' }}>
         <Roster

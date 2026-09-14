@@ -33,7 +33,7 @@ export function Coverage({
     : result.sections
 
   return (
-    <section className="store-panel rounded-2xl flex flex-col min-h-0" aria-label="Coverage">
+    <section className="border-r fc-hair last:border-r-0 flex flex-col min-h-0" aria-label="Coverage">
       <header className="flex items-center gap-3 px-3 py-2 border-b store-line whitespace-nowrap overflow-hidden">
         <span className="wb-pane-title">Coverage</span>
         <span className="text-[11px] font-mono tabular-nums store-text-muted truncate" title="Share of rows with at least one active holder">

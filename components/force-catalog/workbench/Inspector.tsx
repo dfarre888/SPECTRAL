@@ -58,7 +58,7 @@ export function Inspector({
   const [gnssDenied, setGnssDenied] = useState(false)
 
   return (
-    <aside className="store-panel rounded-2xl flex flex-col min-h-0" aria-label="Inspector">
+    <aside className="bg-[var(--store-bg)] flex flex-col min-h-0" aria-label="Inspector">
       <header className="flex items-center gap-2 px-3 py-2 border-b store-line">
         <span className="wb-pane-title">
           {mode?.type === 'platform' ? 'Platform' : mode?.type === 'net' ? 'Comms net' : mode?.type === 'capability' ? 'Capability' : 'Inspector'}

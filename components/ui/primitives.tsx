@@ -59,19 +59,18 @@ export function StatPuck({
   glow?: string;
 }) {
   return (
-    <GlassCard glow={glow} style={{ padding: 20, borderRadius: 18 }}>
-      <div className="sx-mono sx-faint" style={{ fontSize: 10, letterSpacing: '0.12em' }}>
-        {label}
-      </div>
+    <GlassCard style={{ padding: '18px 20px', borderRadius: 14 }}>
+      {/* Instrument tile: label, display numeral, one-line reading. No glow blob. */}
+      <div style={{ fontSize: 11, color: 'var(--sx-ink-faint)' }}>{label}</div>
       <div
-        className="sx-mono"
-        style={{ fontSize: 42, fontWeight: 600, lineHeight: 1.1, marginTop: 8 }}
+        className="sx-display"
+        style={{ fontSize: 40, fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1, marginTop: 8, color: glow ? '#C4B5FD' : 'var(--sx-ink)', textShadow: glow ? '0 0 22px rgba(139,92,246,0.55)' : undefined, fontVariantNumeric: 'tabular-nums' }}
       >
         {value}
-        {unit && <span style={{ fontSize: 18 }}>{unit}</span>}
+        {unit && <span style={{ fontSize: 17, color: 'var(--sx-ink-faint)', marginLeft: 3 }}>{unit}</span>}
       </div>
       {delta && (
-        <div style={{ fontSize: 11, marginTop: 2, color: deltaColor ?? 'var(--sx-ink-dim)' }}>
+        <div style={{ fontSize: 11, marginTop: 8, color: deltaColor ?? 'var(--sx-ink-dim)' }}>
           {delta}
         </div>
       )}

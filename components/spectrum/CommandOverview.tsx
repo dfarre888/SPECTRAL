@@ -64,25 +64,23 @@ export function CommandOverview({
       {/* KPI row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
         <StatPuck
-          label="THREAT PLATFORMS"
+          label="Threat platforms"
           value={String(stats.red).padStart(2, '0')}
           delta="Red library"
           deltaColor="var(--sx-red)"
-          glow="rgba(248,113,113,0.22)"
         />
         <StatPuck
-          label="BANDS CATALOGUED"
+          label="Bands catalogued"
           value={stats.bands}
           delta="RF · GNSS · EO/IR"
-          glow="rgba(34,211,238,0.18)"
         />
         <StatPuck
-          label="DEFEAT COVERAGE"
+          label="Defeat coverage"
           value={stats.coverage}
           unit="%"
           delta={`${stats.blue} effectors`}
           deltaColor="var(--sx-green)"
-          glow="rgba(74,222,128,0.18)"
+          glow="attention"
         />
       </div>
 

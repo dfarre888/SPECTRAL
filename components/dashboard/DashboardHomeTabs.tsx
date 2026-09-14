@@ -38,14 +38,14 @@ export function DashboardHomeTabs({
   return (
     <div className="mb-8">
       <div
-        className="inline-flex rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] p-1 mb-6"
+        className="flex gap-2 border-b fc-hair pb-3 mb-6"
         role="tablist"
         aria-label="Dashboard view"
       >
         {(
           [
-            { id: 'command' as const, label: 'Command Center' },
-            { id: 'modules' as const, label: 'Module Catalog' },
+            { id: 'command' as const, label: 'Command centre' },
+            { id: 'modules' as const, label: 'Module catalogue' },
           ] as const
         ).map(({ id, label }) => (
           <button
@@ -54,12 +54,7 @@ export function DashboardHomeTabs({
             role="tab"
             aria-selected={tab === id}
             onClick={() => handleTabChange(id)}
-            className={cn(
-              'px-4 py-2 rounded-lg text-xs font-mono font-semibold transition-colors',
-              tab === id
-                ? 'bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)] border border-[rgba(41,151,255,0.5)]'
-                : 'store-text-muted hover:text-white border border-transparent',
-            )}
+            className="fc-tab"
           >
             {label}
           </button>

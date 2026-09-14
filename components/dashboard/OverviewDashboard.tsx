@@ -36,10 +36,7 @@ export function OverviewDashboard({
   return (
     <section aria-label="Command center overview">
       <div className="mb-6">
-        <p className="text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)] mb-1">
-          {copy.commandEyebrow}
-        </p>
-        <h2 className="text-lg font-semibold text-white">{copy.commandTitle}</h2>
+        <h2 className="text-[18px] store-display font-semibold tracking-[-0.01em] text-[var(--store-ink)] m-0">{copy.commandTitle}</h2>
         <p className="text-xs store-text-body mt-1 max-w-2xl">{copy.commandSubtitle}</p>
       </div>
 

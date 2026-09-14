@@ -54,50 +54,18 @@ export function MetricSummaryBar({ metrics, copy }: { metrics: DashboardMetrics;
   )
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {KEYS.map((key, i) => {
-        const Icon = ICONS[i]
+    <div className="fc-inst border-b fc-hair" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }} aria-label="Operations instruments">
+      {KEYS.map((key) => {
         const meta = copy.metrics[key]
         const href = metricHref(key)
-        const accent =
-          key === 'activeRpa'
-            ? 'text-emerald-400'
-            : key === 'activeMissions'
-              ? 'text-cyan'
-              : key === 'pendingApprovals'
-                ? 'text-amber-400'
-                : 'text-red-400'
         const isGlossy = glossy.has(key)
+        const tone =
+          key === 'criticalAlerts' ? 'red' : key === 'activeRpa' || key === 'activeMissions' ? 'blue' : ''
         return (
           <Link key={key} href={href} className="block group">
-            {isGlossy ? (
-              // The rationed gloss: gradient fill, masked bright hairline, tinted
-              // outer glow. Text goes near-white because the fill is mid-tone.
-              <div className="gloss-tile purple p-5 cursor-pointer transition-transform group-hover:-translate-y-0.5">
-                <div className="relative flex items-start justify-between gap-2 mb-3">
-                  <p className="text-[11px] font-semibold tracking-[0.02em] text-white/70">{meta.label}</p>
-                  <Icon className="w-3.5 h-3.5 shrink-0 mt-0.5 text-white/90" />
-                </div>
-                <p className="relative text-4xl font-bold font-mono tabular-nums leading-none text-white">
-                  {metrics[key]}
-                </p>
-                <p className="relative text-[11px] font-mono text-white/60 mt-2">{meta.sub}</p>
-              </div>
-            ) : (
-              <StorePanel className={cn(
-                'p-5 border-[var(--store-line)] transition-colors cursor-pointer',
-                'group-hover:border-[rgba(41,151,255,0.5)]',
-              )}>
-                <div className="flex items-start justify-between gap-2 mb-3">
-                  <p className="text-[11px] font-semibold tracking-[0.02em] store-text-muted">{meta.label}</p>
-                  <Icon className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${accent}`} />
-                </div>
-                <p className={`text-4xl font-bold font-mono tabular-nums leading-none ${accent}`}>
-                  {metrics[key]}
-                </p>
-                <p className="text-[11px] font-mono store-text-muted mt-2">{meta.sub}</p>
-              </StorePanel>
-            )}
+            <div className="k">{meta.label}</div>
+            <div className={cn('v', isGlossy ? 'glow' : tone)}>{metrics[key]}</div>
+            <div className="d group-hover:text-[var(--store-ink-soft)] transition-colors">{meta.sub}</div>
           </Link>
         )
       })}

@@ -32,11 +32,9 @@ export function OperatorReadinessPanel({
           <li key={op.id}>
             <Link
               href={op.href ?? '#'}
-              className="group flex gap-3 rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] p-3 hover:border-[rgba(41,151,255,0.5)] transition-colors"
+              className="group flex gap-3 border-b fc-hair px-1 py-3 hover:bg-[var(--store-surface)] transition-colors"
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[rgba(41,151,255,0.14)] border border-[rgba(41,151,255,0.5)] text-[11px] font-bold text-[var(--wb-blue)] font-mono">
-                {op.initials}
-              </div>
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--wb-blue)]" aria-hidden />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-medium text-white truncate">{op.name}</p>

@@ -26,7 +26,7 @@ const PHASE_STYLE: Record<EngagementResult['phase'], string> = {
   outside_detect: 'bg-gray-700 text-gray-200',
   detect: 'bg-blue-900 text-blue-100',
   track: 'bg-amber-900 text-amber-100',
-  launch: 'bg-orange-900 text-orange-100',
+  launch: 'bg-[rgba(41,151,255,0.18)] text-[var(--wb-blue)]',
   intercept: 'bg-red-900 text-red-100',
   post_intercept: 'bg-green-900 text-green-100',
 }
@@ -90,7 +90,7 @@ export function EngagementPanel({
 
   return (
     <div className="w-full max-w-[420px] space-y-4 p-4 overflow-y-auto max-h-[calc(100vh-160px)]">
-      <h2 className="text-sm font-semibold text-[#F97316] uppercase tracking-wide">Engagement analysis</h2>
+      <h2 className="wb-pane-title">Engagement analysis</h2>
       <label className="block space-y-1 text-xs">
         <span className="store-text-muted">SAM system</span>
         <select

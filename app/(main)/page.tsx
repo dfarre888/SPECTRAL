@@ -1,6 +1,4 @@
 import { Suspense } from 'react'
-import { ShieldCheck } from 'lucide-react'
-import { CLASSIFICATION_BANNER } from '@/lib/operations/classification'
 import { StoreHero } from '@/components/catalog/StoreHero'
 import { DashboardHomeTabs } from '@/components/dashboard/DashboardHomeTabs'
 import { DashboardCommandCenter } from '@/components/dashboard/DashboardCommandCenter'
@@ -35,7 +33,7 @@ export default async function Dashboard() {
   const heroSubtitle =
     skin === 'a3dm'
       ? 'Fleet, crew and approval status across every RPAS operation you run.'
-      : 'Sovereign counter-UAS intelligence — platform library, spectrum, defeat matrix and live laydown in one picture.'
+      : 'Platform library, spectrum, defeat matrix and live laydown in one picture. OSINT, unclassified, sovereign.'
 
   return (
     <div className="pb-12">
@@ -48,23 +46,6 @@ export default async function Dashboard() {
               eyebrow={heroEyebrow}
               title={heroTitle}
               subtitle={heroSubtitle}
-              trustChip={
-                <>
-                  <span
-                    className="w-2 h-2 rounded-full shrink-0"
-                    style={{
-                      background: 'var(--store-success)',
-                      boxShadow: '0 0 8px var(--store-success)',
-                    }}
-                  />
-                  {skin === 'a3dm'
-                    ? 'CASA-aligned RPAS training'
-                    : 'OSINT · UNCLASSIFIED · sovereign threat intelligence'}
-                </>
-              }
-              trustItems={[
-                { icon: ShieldCheck, label: CLASSIFICATION_BANNER.UNCLASSIFIED },
-              ]}
             />
             <Suspense fallback={null}>
               <DashboardCommandCenter copy={copy} {...built} />

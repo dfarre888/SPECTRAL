@@ -77,7 +77,15 @@ export function ConflictIntelClient({ incidents, briefs = {} }: { incidents: Con
             <h2 className="text-[18px] store-display font-semibold tracking-[-0.01em] text-[var(--store-ink)] mt-1">{selected.incident_title}</h2>
             <p className="text-sm store-text-body mt-3 leading-relaxed">{selected.summary}</p>
             <p className="text-xs font-mono store-text-muted mt-3">Confidence: {selected.confidence}</p>
-            <p className="text-xs font-mono store-text-muted mt-1">Source: {selected.source_ref}</p>
+            <p className="text-xs font-mono store-text-muted mt-1 flex flex-wrap gap-x-3 gap-y-1">
+              <span>Source:</span>
+              {selected.source_ref.split(' | ').map((src, i) => {
+                if (!src.startsWith('http')) return <span key={i}>{src}</span>;
+                let host = src;
+                try { host = new URL(src).hostname.replace(/^www\./, ''); } catch { /* keep raw */ }
+                return <a key={i} href={src} target="_blank" rel="noopener noreferrer" className="text-[var(--wb-blue)] hover:underline">{host === 'news.google.com' ? `outlet ${i + 1}` : host}</a>;
+              })}
+            </p>
             {selected.platforms_involved.length > 0 && (
               <p className="text-xs font-mono store-text-muted mt-1">
                 Platforms: {selected.platforms_involved.join(', ')}

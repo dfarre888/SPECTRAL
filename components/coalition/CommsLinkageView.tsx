@@ -14,7 +14,7 @@ interface CommsLinkageViewProps {
 }
 
 const TIER_COLOR: Record<ConnTier, string> = {
-  track: 'var(--store-accent)',
+  track: 'var(--wb-track)',
   data: '#22d3ee',
   voice: '#4ade80',
   none: '#71717a',
@@ -79,7 +79,7 @@ export function CommsLinkageView({ platforms, title, side = 'blue' }: CommsLinka
     <div className="store-panel rounded-2xl p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
         <div>
-          <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--store-accent)]">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--wb-blue)]">
             Comms linkage · {side === 'red' ? 'Red' : 'Blue'} force
           </p>
           <h3 className="store-display text-sm font-semibold text-white mt-0.5">
@@ -90,10 +90,10 @@ export function CommsLinkageView({ platforms, title, side = 'blue' }: CommsLinka
           type="button"
           onClick={() => setDenied((v) => !v)}
           className={clsx(
-            'px-2.5 py-1 rounded-lg text-[10px] font-mono border transition-colors',
+            'px-2.5 py-1 rounded-lg text-[11px] font-mono border transition-colors',
             denied
               ? 'border-red-500/50 text-red-300 bg-red-500/10'
-              : 'store-panel-inner store-text-body hover:border-[var(--store-accent-border)]',
+              : 'store-panel-inner store-text-body hover:border-[rgba(41,151,255,0.5)]',
           )}
         >
           {denied ? '⚠ GNSS DENIED' : 'GNSS nominal'}
@@ -106,10 +106,10 @@ export function CommsLinkageView({ platforms, title, side = 'blue' }: CommsLinka
           <div key={t.tier} className="store-panel-inner rounded-xl p-2.5">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full" style={{ background: TIER_COLOR[t.tier] }} />
-              <span className="text-[10px] font-mono uppercase store-text-muted">{TIER_LABEL[t.tier]}</span>
+              <span className="text-[11px] font-mono uppercase store-text-muted">{TIER_LABEL[t.tier]}</span>
             </div>
             <p className="text-lg font-bold text-white font-mono tabular-nums mt-1">{t.reachPct}%</p>
-            <p className="text-[10px] store-text-muted font-mono">
+            <p className="text-[11px] store-text-muted font-mono">
               reach · {t.coveragePct}% fitted · {t.islands.length} net{t.islands.length === 1 ? '' : 's'}
             </p>
           </div>
@@ -140,7 +140,7 @@ export function CommsLinkageView({ platforms, title, side = 'blue' }: CommsLinka
           const island = islandOf.get(net.key) ?? 0
           return (
             <div key={net.key} className="absolute left-0 right-0" style={{ top: i * 26, height: 24 }}>
-              <span className="absolute left-0 top-1 text-[9px] font-mono store-text-muted truncate" style={{ width: `${PAD_L}%` }}>
+              <span className="absolute left-0 top-1 text-[11px] font-mono store-text-muted truncate" style={{ width: `${PAD_L}%` }}>
                 {island === 0 ? '' : `#${island + 1}`}
               </span>
               {spec!.spans.map((sp, j) => (
@@ -161,7 +161,7 @@ export function CommsLinkageView({ platforms, title, side = 'blue' }: CommsLinka
                   }}
                 />
               ))}
-              <span className="absolute top-0.5 text-[10px] font-mono text-white pointer-events-none"
+              <span className="absolute top-0.5 text-[11px] font-mono text-white pointer-events-none"
                 style={{ left: `${xPct(spec!.spans[0].loMhz) + 0.6}%` }}>
                 {spec!.label}
                 <span className="store-text-muted"> · {net.memberIds.length}</span>
@@ -173,7 +173,7 @@ export function CommsLinkageView({ platforms, title, side = 'blue' }: CommsLinka
         {/* Frequency axis */}
         <div className="absolute left-0 right-0 bottom-0 h-5 border-t border-[var(--store-line)]">
           {AXIS_TICKS.map((t) => (
-            <span key={t} className="absolute top-0.5 text-[9px] font-mono store-text-muted -translate-x-1/2"
+            <span key={t} className="absolute top-0.5 text-[11px] font-mono store-text-muted -translate-x-1/2"
               style={{ left: `${xPct(t)}%` }}>
               {formatMhz(t)}
             </span>
@@ -181,7 +181,7 @@ export function CommsLinkageView({ platforms, title, side = 'blue' }: CommsLinka
         </div>
       </div>
 
-      <p className="text-[10px] store-text-muted font-mono mb-3">
+      <p className="text-[11px] store-text-muted font-mono mb-3">
         Hatched stretches carry more than one net — shared spectrum is where friendly links contend,
         and where one jammer reaches several at once.
       </p>
@@ -191,18 +191,18 @@ export function CommsLinkageView({ platforms, title, side = 'blue' }: CommsLinka
         <div className="store-panel-inner rounded-xl p-3">
           <div className="flex items-baseline justify-between mb-2">
             <p className="text-xs font-semibold text-white">{spectrumForNet(selected.key)?.label}</p>
-            <p className="text-[10px] font-mono store-text-muted">{selected.memberIds.length} platforms</p>
+            <p className="text-[11px] font-mono store-text-muted">{selected.memberIds.length} platforms</p>
           </div>
-          <p className="text-[10px] store-text-body mb-2">{spectrumForNet(selected.key)?.note}</p>
+          <p className="text-[11px] store-text-body mb-2">{spectrumForNet(selected.key)?.note}</p>
           <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto">
             {selected.memberIds.slice(0, 80).map((id) => (
-              <span key={id} className="px-1.5 py-0.5 rounded text-[9px] font-mono store-panel border border-[var(--store-line)] store-text-body">
+              <span key={id} className="px-1.5 py-0.5 rounded text-[11px] font-mono store-panel border border-[var(--store-line)] store-text-body">
                 {byId.get(id)?.label ?? id}
                 <span className="store-text-muted"> {byId.get(id)?.nationCode}</span>
               </span>
             ))}
             {selected.memberIds.length > 80 && (
-              <span className="text-[9px] font-mono store-text-muted self-center">
+              <span className="text-[11px] font-mono store-text-muted self-center">
                 +{selected.memberIds.length - 80} more
               </span>
             )}
@@ -211,7 +211,7 @@ export function CommsLinkageView({ platforms, title, side = 'blue' }: CommsLinka
       )}
 
       {denied && (
-        <p className="mt-3 text-[10px] font-mono text-red-300">
+        <p className="mt-3 text-[11px] font-mono text-red-300">
           {delta.lostTrackIds.length} platforms lose machine tracks · track reach{' '}
           {delta.nominal.track.reachPct}% → {delta.denied.track.reachPct}%. Pessimistic bound:
           terminals hold net time for a period after GNSS loss.

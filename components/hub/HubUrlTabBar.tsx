@@ -70,7 +70,7 @@ export function HubTabBar({
       role="tablist"
       aria-label="Section navigation"
     >
-      {visibleTabs.map(({ key, label, icon: Icon }) => {
+      {visibleTabs.map(({ key, label }) => {
         const active = activeTab === key
         return (
           <button
@@ -80,12 +80,8 @@ export function HubTabBar({
             aria-selected={active}
             data-testid={`${testIdPrefix}-${key}`}
             onClick={() => onTabChange(key)}
-            className={cn(
-              'inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors',
-              active ? 'hub-tab-active' : 'hub-tab-inactive',
-            )}
+            className={cn('inline-flex items-center', active ? 'hub-tab-active' : 'hub-tab-inactive')}
           >
-            <Icon className="w-4 h-4 shrink-0" aria-hidden />
             {label}
           </button>
         )

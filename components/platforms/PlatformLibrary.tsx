@@ -117,7 +117,7 @@ export function PlatformLibrary({ platforms, countries, sovereignPlatforms = [] 
               key={f}
               type="button"
               onClick={() => setEmployment(f)}
-              className={`px-2 py-1 rounded-lg text-[10px] font-mono border ${employment === f ? "border-[var(--store-accent-border)] text-[var(--store-accent)]" : "border-[var(--store-line)] store-text-muted"}`}
+              className={`px-2 py-1 rounded-lg text-[11px] font-mono border ${employment === f ? "border-[rgba(41,151,255,0.5)] text-[var(--wb-blue)]" : "border-[var(--store-line)] store-text-muted"}`}
             >
               {f === "combat_proven" ? "Combat proven" : f === "all" ? "All forces" : `${f.toUpperCase()} force`}
             </button>

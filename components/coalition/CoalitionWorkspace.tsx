@@ -72,20 +72,20 @@ export function CoalitionWorkspace({ platforms, nations }: CoalitionWorkspacePro
                   ? s === 'blue'
                     ? 'border-cyan/50 text-cyan bg-cyan/10'
                     : 'border-red-500/50 text-red-300 bg-red-500/10'
-                  : 'store-panel-inner store-text-muted hover:border-[var(--store-accent-border)]',
+                  : 'store-panel-inner store-text-muted hover:border-[rgba(41,151,255,0.5)]',
               )}
             >
               {s === 'blue' ? 'BLUE' : 'RED'}
             </button>
           ))}
           <div className="flex-1" />
-          <p className="text-[10px] font-mono store-text-muted self-center">
+          <p className="text-[11px] font-mono store-text-muted self-center">
             {selected.length} platforms · {activeNations.length} nation{activeNations.length === 1 ? '' : 's'}
           </p>
         </div>
 
         {/* Presets */}
-        <p className="text-[10px] font-mono uppercase tracking-wider store-text-muted mb-1.5">Coalition</p>
+        <p className="text-[11px] font-mono uppercase tracking-wider store-text-muted mb-1.5">Coalition</p>
         <div className="flex flex-wrap gap-1.5 mb-3">
           {sidePresets.map((p) => (
             <button
@@ -93,10 +93,10 @@ export function CoalitionWorkspace({ platforms, nations }: CoalitionWorkspacePro
               type="button"
               onClick={() => { setPresetId(p.id); setCustom(null) }}
               className={clsx(
-                'px-2.5 py-1 rounded-lg text-[10px] font-mono border transition-colors',
+                'px-2.5 py-1 rounded-lg text-[11px] font-mono border transition-colors',
                 !custom && presetId === p.id
                   ? 'nav-item-active'
-                  : 'store-panel-inner store-text-body hover:border-[var(--store-accent-border)]',
+                  : 'store-panel-inner store-text-body hover:border-[rgba(41,151,255,0.5)]',
               )}
             >
               {p.label}
@@ -105,7 +105,7 @@ export function CoalitionWorkspace({ platforms, nations }: CoalitionWorkspacePro
         </div>
 
         {/* Nation picker */}
-        <p className="text-[10px] font-mono uppercase tracking-wider store-text-muted mb-1.5">
+        <p className="text-[11px] font-mono uppercase tracking-wider store-text-muted mb-1.5">
           Nations {custom ? '(custom)' : ''}
         </p>
         <div className="flex flex-wrap gap-1">
@@ -117,9 +117,9 @@ export function CoalitionWorkspace({ platforms, nations }: CoalitionWorkspacePro
                 type="button"
                 onClick={() => toggleNation(n.code)}
                 className={clsx(
-                  'px-2 py-0.5 rounded text-[10px] font-mono border transition-colors',
+                  'px-2 py-0.5 rounded text-[11px] font-mono border transition-colors',
                   on
-                    ? 'border-[var(--store-accent-border)] text-[var(--store-accent)] bg-[var(--store-accent)]/10'
+                    ? 'border-[rgba(41,151,255,0.5)] text-[var(--wb-blue)] bg-[rgba(41,151,255,0.14)]'
                     : 'store-panel-inner store-text-muted hover:store-text-body',
                 )}
               >

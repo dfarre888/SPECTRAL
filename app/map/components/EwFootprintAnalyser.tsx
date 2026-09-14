@@ -97,10 +97,10 @@ export function EwFootprintAnalyser({
     >
       <div className="p-3 space-y-3 text-[11px] store-text-body">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#06B6D4]">EW footprint analyser</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#06B6D4]">EW footprint analyser</p>
           <button type="button" onClick={onClose} className="store-text-muted hover:text-white text-xs" aria-label="Close">✕</button>
         </div>
-        <label className="block text-[10px] store-text-muted">
+        <label className="block text-[11px] store-text-muted">
           Band
           <select
             className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white"
@@ -113,7 +113,7 @@ export function EwFootprintAnalyser({
             ))}
           </select>
         </label>
-        <label className="block text-[10px] store-text-muted">
+        <label className="block text-[11px] store-text-muted">
           ERP (W): <span style={mono}>{erpWatts}</span>
           <input
             type="range"
@@ -124,7 +124,7 @@ export function EwFootprintAnalyser({
             className="w-full mt-1 accent-[#F97316]"
           />
         </label>
-        <p className="text-[10px]" style={mono}>
+        <p className="text-[11px]" style={mono}>
           50% effect radius: {footprint.effective_radius_m} m · {footprint.erp_dbm} dBm ERP
         </p>
         <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-24 store-panel-inner rounded">
@@ -132,9 +132,9 @@ export function EwFootprintAnalyser({
           <text x="4" y="12" fill="#94a3b8" fontSize="8">% effect</text>
         </svg>
         <div className="rounded-lg px-2 py-2 border" style={{ borderColor: verdictColor }}>
-          <p className="text-[10px] store-text-muted">Deconfliction verdict</p>
+          <p className="text-[11px] store-text-muted">Deconfliction verdict</p>
           <p className="text-xs uppercase font-semibold" style={{ color: verdictColor, ...mono }}>{deconflict.verdict}</p>
-          <p className="text-[9px] store-text-muted mt-1">{deconflict.summary}</p>
+          <p className="text-[11px] store-text-muted mt-1">{deconflict.summary}</p>
           <p className="text-[8px] store-text-muted mt-1" style={mono}>{deconflict.adversary_effectiveness_ref}</p>
         </div>
       </div>

@@ -590,7 +590,7 @@ export function MapBottomBar({
         <button
           type="button"
           onClick={onClearAll}
-          className="px-3 py-1.5 rounded-xl store-panel-inner store-text-muted text-xs font-mono hover:text-[var(--store-accent)] hover:border-[var(--store-accent-border)] transition-colors"
+          className="px-3 py-1.5 rounded-xl store-panel-inner store-text-muted text-xs font-mono hover:text-[var(--wb-blue)] hover:border-[rgba(41,151,255,0.5)] transition-colors"
         >
           Clear All
         </button>

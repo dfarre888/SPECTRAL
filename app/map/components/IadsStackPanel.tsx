@@ -39,7 +39,7 @@ export function IadsStackPanel({ assets, onApply }: Props) {
 
   return (
     <div className="space-y-2 p-2">
-      <p className="text-[10px] font-mono store-text-muted uppercase tracking-wide">IADS Stack Builder</p>
+      <p className="text-[11px] font-mono store-text-muted uppercase tracking-wide">IADS Stack Builder</p>
       {IADS_STACK_PRESETS.map((p) => (
         <button
           key={p.id}
@@ -48,7 +48,7 @@ export function IadsStackPanel({ assets, onApply }: Props) {
           className="map-press w-full text-left rounded-lg border border-[var(--store-line)] px-2 py-2 hover:border-cyan/50"
         >
           <div className="text-xs font-semibold text-white">{p.name}</div>
-          <div className="text-[10px] store-text-muted mt-0.5">{p.description}</div>
+          <div className="text-[11px] store-text-muted mt-0.5">{p.description}</div>
         </button>
       ))}
     </div>

@@ -200,7 +200,7 @@ export function DefeatHeatmap({
             type="button"
             onClick={() => setEffectMode(mode)}
             className={cn(
-              'rounded-full px-3 py-1 text-[10px] font-mono uppercase border',
+              'rounded-lg px-3 py-1 text-[11px] font-mono uppercase border',
               effectMode === mode
                 ? 'bg-[#F97316] border-[#F97316] text-white'
                 : 'border-[var(--store-line)] store-text-muted',
@@ -215,7 +215,7 @@ export function DefeatHeatmap({
             type="button"
             onClick={() => setSamOnlyFilter((v) => !v)}
             className={cn(
-              'rounded-full px-3 py-1 text-[10px] font-mono border',
+              'rounded-lg px-3 py-1 text-[11px] font-mono border',
               samOnlyFilter
                 ? 'bg-cyan/20 border-cyan text-cyan'
                 : 'border-[var(--store-line)] store-text-muted',
@@ -229,7 +229,7 @@ export function DefeatHeatmap({
             type="button"
             onClick={() => setSystemGroup(pill.id)}
             className={cn(
-              'rounded-full px-3 py-1 text-[10px] font-mono border',
+              'rounded-lg px-3 py-1 text-[11px] font-mono border',
               systemGroup === pill.id
                 ? 'bg-[#F97316] border-[#F97316] text-white'
                 : 'border-[var(--store-line)] store-text-muted',
@@ -250,7 +250,7 @@ export function DefeatHeatmap({
           </colgroup>
           <thead>
             <tr>
-              <th className="sticky left-0 top-0 z-40 bg-[var(--store-surface)] border border-[var(--store-line)] px-3 py-2 text-left text-[10px] uppercase store-text-muted">
+              <th className="sticky left-0 top-0 z-40 bg-[var(--store-surface)] border border-[var(--store-line)] px-3 py-2 text-left text-[11px] uppercase store-text-muted">
                 Effector
               </th>
               {THREAT_CLASSES.map((c) => (
@@ -262,7 +262,7 @@ export function DefeatHeatmap({
                   <span className="block text-[11px] font-semibold text-[var(--store-ink)] leading-tight">
                     {c.label}
                   </span>
-                  <span className="block text-[9px] font-mono store-text-muted">
+                  <span className="block text-[11px] font-mono store-text-muted">
                     {classCounts[c.id] ?? 0} platforms
                   </span>
                 </th>
@@ -276,7 +276,7 @@ export function DefeatHeatmap({
                   <span className="text-xs text-[var(--store-ink)] truncate block" title={system.name}>
                     {system.name}
                   </span>
-                  <span className="text-[9px] font-mono store-text-muted truncate block">
+                  <span className="text-[11px] font-mono store-text-muted truncate block">
                     {system.country}
                   </span>
                 </td>
@@ -315,7 +315,7 @@ export function DefeatHeatmap({
         </table>
       </div>
 
-      <div className="text-[10px] font-mono store-text-muted space-y-1">
+      <div className="text-[11px] font-mono store-text-muted space-y-1">
         <p className="flex flex-wrap gap-3 items-center">
           <span className="store-text-muted">Median Pk</span>
           {[10, 25, 40, 55, 70, 90].map((v) => (

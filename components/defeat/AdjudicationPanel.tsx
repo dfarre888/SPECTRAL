@@ -52,7 +52,7 @@ function PctRow({
     <div
       className={cn(
         'flex justify-between items-center py-2 px-3 rounded-xl store-panel-inner',
-        highlight && 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
+        highlight && 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
       )}
     >
       <span className="text-sm store-text-body">{label}</span>
@@ -120,7 +120,7 @@ export function AdjudicationPanel({
             {operations && (
               <Link
                 href={mapIntelDeepLink(platform.id, system.id)}
-                className="text-[10px] font-mono text-cyan hover:underline"
+                className="text-[11px] font-mono text-cyan hover:underline"
               >
                 Open in Map Intel →
               </Link>
@@ -134,7 +134,7 @@ export function AdjudicationPanel({
               </p>
               <Link
                 href={`/platforms/${platform.id}`}
-                className="text-[var(--store-accent)] text-sm hover:underline mt-2 inline-block"
+                className="text-[var(--wb-blue)] text-sm hover:underline mt-2 inline-block"
               >
                 View platform spec →
               </Link>
@@ -206,7 +206,7 @@ export function AdjudicationPanel({
                         key={i}
                         className="store-panel-inner rounded-xl px-3 py-2"
                       >
-                        <p className="text-xs font-mono text-[var(--store-accent)] uppercase">
+                        <p className="text-xs font-mono text-[var(--wb-blue)] uppercase">
                           {mod.type} — {mod.label}
                         </p>
                         <p className="text-sm store-text-body mt-0.5">{mod.impact}</p>
@@ -246,7 +246,7 @@ export function AdjudicationPanel({
                   <p className="text-sm font-mono text-cyan">{ex.exchangeRatio.toFixed(0)}:1 exchange · {ex.doctrineHint}</p>
                 )
               })()}
-              <Link href="/economics" className="text-[10px] font-mono text-[var(--store-accent)] hover:underline mt-2 inline-block">Open economics workspace</Link>
+              <Link href="/economics" className="text-[11px] font-mono text-[var(--wb-blue)] hover:underline mt-2 inline-block">Open economics workspace</Link>
             </div>
           )}
           {/* PCM engine provenance — wired when pair/Pd available from live adjudication */}

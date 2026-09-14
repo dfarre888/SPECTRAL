@@ -7,7 +7,7 @@
  */
 import { useMemo, useState, type MouseEvent } from 'react'
 import type { ConnTier } from '@/lib/coalition/datalink-matrix'
-import { spectrumForNet } from '@/lib/coalition/comms-spectrum'
+import { findContention, spectrumForNet } from '@/lib/coalition/comms-spectrum'
 import { BAND_KIND, type BandFill } from '@/lib/force-catalog/spectrum-bands'
 
 export interface NetFill { key: string; label: string; active: number; total: number; tier: ConnTier }
@@ -57,6 +57,10 @@ export function SpectrumDial({
   onToggleBand: (b: string) => void
 }) {
   const [cursor, setCursor] = useState<number | null>(null)
+  const contention = useMemo(
+    () => findContention(nets.filter((n) => n.active > 0).map((n) => n.key.replace(/\/.*$/, ''))),
+    [nets],
+  )
   const bars = useMemo(() => {
     const out: { key: string; label: string; x: number; w: number; h: number; tier: ConnTier }[] = []
     for (const n of nets) {
@@ -94,6 +98,7 @@ export function SpectrumDial({
           {([['track', 'var(--wb-track)'], ['data', 'var(--wb-data)'], ['voice', 'var(--wb-voice)']] as const).map(([l, c]) => (
             <span key={l} className="inline-flex items-center gap-1.5"><i className="h-1.5 w-1.5 rounded-full" style={{ background: c }} />{l}</span>
           ))}
+          <span className="inline-flex items-center gap-1.5" title="Stretches where more than one active net shares spectrum: friendly interference and single-jammer reach"><i className="h-1.5 w-3 rounded-sm" style={{ background: 'repeating-linear-gradient(45deg, rgba(251,191,36,.7) 0 2px, transparent 2px 4px)' }} />contention</span>
           <span className="w-px h-3 bg-[var(--store-line-strong)]" />
           {([['RF', 'var(--wb-rf)'], ['IR', 'var(--wb-ir)'], ['optical', 'var(--wb-optical)']] as const).map(([l, c]) => (
             <span key={l} className="inline-flex items-center gap-1.5"><i className="h-1.5 w-1.5 rounded-full" style={{ background: c }} />{l}</span>
@@ -101,13 +106,27 @@ export function SpectrumDial({
         </span>
       </div>
       <svg viewBox={`0 0 ${W} 132`} className="w-full h-auto block cursor-crosshair select-none" onMouseMove={move} onMouseLeave={leave} onClick={click} role="img" aria-label="Spectrum dial: comms above the rule, sensing below">
-        <defs><filter id="fc-glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" /></filter></defs>
+        <defs>
+          <filter id="fc-glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" /></filter>
+          <pattern id="fc-hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.5" height="4" fill="rgba(251,191,36,0.55)" /></pattern>
+        </defs>
         <text x={0} y={12} fontSize={11} fontFamily="JetBrains Mono, monospace" fill="var(--store-ink-mute)">comms ↑</text>
         <text x={W} y={12} fontSize={11} fontFamily="JetBrains Mono, monospace" fill="var(--store-ink-mute)" textAnchor="end">sensing ↓</text>
         {/* active band washes */}
         {[...activeBands].map((b) => (
           <rect key={b} x={bandX(b)} y={16} width={bandW(b)} height={BASE + DOWN - 10} fill="rgba(255,255,255,0.05)" rx={4} />
         ))}
+        {/* contention: more than one active net on the same stretch */}
+        {contention.map((c) => {
+          const x = xOf(c.loMhz)
+          const w = Math.max(3, xOf(c.hiMhz) - x)
+          return (
+            <g key={`${c.loMhz}-${c.hiMhz}`}>
+              <rect x={x} y={BASE - UP - 2} width={w} height={UP + 2} fill="url(#fc-hatch)" opacity={0.9} />
+              <title>{`${c.netKeys.length} nets share ${c.loMhz}–${c.hiMhz} MHz: ${c.netKeys.map((k) => k.replace(/^(std|voice|data):/, '')).join(', ')}`}</title>
+            </g>
+          )
+        })}
         {/* comms */}
         {bars.map((b) => (
           <g key={b.key} opacity={dim(bandAt(b.x + 1) ?? '')} style={{ transition: 'opacity 150ms ease-out' }}>

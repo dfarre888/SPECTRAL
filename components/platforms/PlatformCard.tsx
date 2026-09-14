@@ -78,7 +78,7 @@ export function PlatformCard({ platform, index = 0 }: PlatformCardProps) {
       whileHover={{ y: -4 }}
       className={cn(
         'store-panel rounded-2xl overflow-hidden flex flex-col cursor-pointer transition-colors',
-        selected && 'border-[var(--store-accent-border)]',
+        selected && 'border-[rgba(41,151,255,0.5)]',
       )}
       onClick={() => router.push(href)}
       onKeyDown={(e) => {
@@ -101,7 +101,7 @@ export function PlatformCard({ platform, index = 0 }: PlatformCardProps) {
           className="relative h-full w-full border-0 rounded-none store-panel-inner"
         />
         {featured ? (
-          <span className="absolute top-2.5 left-2.5 text-[10px] font-bold font-mono tracking-wider uppercase px-2 py-1 rounded-md bg-[var(--store-accent)] text-[#0a0a0a]">
+          <span className="absolute top-2.5 left-2.5 text-[11px] font-bold font-mono tracking-wider uppercase px-2 py-1 rounded-md bg-[var(--wb-blue)] text-white">
             Combat
           </span>
         ) : null}
@@ -112,8 +112,8 @@ export function PlatformCard({ platform, index = 0 }: PlatformCardProps) {
           className={cn(
             'absolute top-2.5 right-2.5 w-8 h-8 rounded-full grid place-items-center transition-all',
             selected
-              ? 'bg-[var(--store-accent)] text-[#0a0a0a]'
-              : 'bg-[rgba(8,8,8,0.6)] backdrop-blur-sm text-white hover:bg-[var(--store-accent-glow)]',
+              ? 'bg-[var(--wb-blue)] text-white'
+              : 'bg-[rgba(8,8,8,0.6)] backdrop-blur-sm text-white hover:bg-[rgba(41,151,255,0.14)]',
           )}
         >
           <GitCompare size={14} />

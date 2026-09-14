@@ -404,14 +404,16 @@ p {
 }
 
 .store-btn-primary {
-  background: var(--store-accent);
-  color: #0a0a0a;
-  border-radius: 0.75rem;
-  font-weight: 600;
+  background: var(--wb-blue);
+  color: #fff;
+  border: 1px solid var(--wb-blue);
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 0 22px -6px rgba(41, 151, 255, 0.9);
 }
 
 .store-btn-primary:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.08);
 }
 
 .nav-item-active {
@@ -427,30 +429,25 @@ p {
 .hub-tab-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  border-radius: 0.75rem;
-  padding: 0.25rem;
-  background: var(--store-surface);
-  border: 1px solid var(--store-line);
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--store-line);
 }
-
+/* Tabs are variant E buttons everywhere (see .fc-tab). */
+.hub-tab-active, .hub-tab-inactive {
+  min-height: 36px; padding: 0 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  border: 1px solid var(--btn-line); background: rgba(255, 255, 255, 0.03); color: var(--store-ink-soft);
+  transition: color 150ms ease-out, background-color 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out;
+}
 .hub-tab-active {
-  background: var(--store-accent);
-  color: #0a0a0a;
+  color: #fff; background: var(--wb-blue); border-color: var(--wb-blue);
+  box-shadow: 0 0 22px -6px rgba(41, 151, 255, 0.9);
 }
-
-.hub-tab-inactive {
-  color: var(--store-ink-mute);
-}
-
-.hub-tab-inactive:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--store-ink-soft);
-}
+.hub-tab-inactive:hover { color: var(--store-ink); border-color: #fff; }
 
 /* Focus — orange ring on zinc canvas */
 :focus-visible {
-  outline: 2px solid var(--store-accent);
+  outline: 2px solid var(--wb-blue);
   outline-offset: 2px;
 }
 

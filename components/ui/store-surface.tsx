@@ -39,8 +39,7 @@ export function StoreEyebrow({ children, className, icon }: StoreEyebrowProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full',
-        'border border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]',
+        'inline-flex items-center gap-2 text-[12px] store-text-muted',
         className,
       )}
     >

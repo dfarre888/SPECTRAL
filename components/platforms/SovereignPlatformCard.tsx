@@ -26,17 +26,17 @@ export function SovereignPlatformCard({ platform }: { platform: SovereignPlatfor
     <article className="store-panel rounded-2xl p-5 flex flex-col gap-4 border border-[var(--store-line)]">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-mono store-text-muted uppercase tracking-wider">
+          <p className="text-[11px] font-mono store-text-muted uppercase tracking-wider">
             {COUNTRY_FLAG[platform.origin_country]} {platform.origin_country}
           </p>
           <h3 className="text-base font-semibold text-white mt-1">{platform.display_name}</h3>
           <p className="text-xs store-text-muted mt-1">{platform.sovereign_program}</p>
         </div>
         <div className="flex flex-col gap-1 items-end">
-          <Badge variant="outline" className="text-[10px] font-mono">
+          <Badge variant="outline" className="text-[11px] font-mono">
             {STATUS_LABEL[platform.status]}
           </Badge>
-          <Badge variant="outline" className="text-[10px] font-mono">
+          <Badge variant="outline" className="text-[11px] font-mono">
             {ROLE_LABEL[platform.role]}
           </Badge>
         </div>
@@ -49,7 +49,7 @@ export function SovereignPlatformCard({ platform }: { platform: SovereignPlatfor
           ))}
         </ul>
       )}
-      <p className="text-[10px] font-mono store-text-muted border-t border-[var(--store-line)] pt-3 mt-auto">
+      <p className="text-[11px] font-mono store-text-muted border-t border-[var(--store-line)] pt-3 mt-auto">
         {SOVEREIGN_CORE_BOUNDARY}
       </p>
     </article>

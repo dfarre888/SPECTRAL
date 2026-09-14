@@ -174,7 +174,7 @@ export function DefeatMatrixTable({
                     >
                       {system.name}
                     </span>
-                    <span className="text-[10px] font-mono store-text-muted">
+                    <span className="text-[11px] font-mono store-text-muted">
                       {system.country}
                     </span>
                   </div>
@@ -239,7 +239,7 @@ export function DefeatMatrixTable({
       </div>
       {accreditedPkMap && Object.keys(accreditedPkMap).length > 0 ? (
         <p className="mt-3 px-4 pb-3 text-[11px] font-mono store-text-muted">
-          <span className="text-[var(--store-accent)]">A</span> Accredited Pk — Operations tier only. Arrow keys navigate cells; Enter opens adjudication panel.
+          <span className="text-[var(--wb-blue)]">A</span> Accredited Pk — Operations tier only. Arrow keys navigate cells; Enter opens adjudication panel.
         </p>
       ) : (
         <p className="mt-3 px-4 pb-3 text-[11px] font-mono store-text-muted">

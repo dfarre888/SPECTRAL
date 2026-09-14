@@ -38,7 +38,7 @@ export default async function TheatrePage({ params }: PageProps) {
       </p>
 
       <StorePanel className="mb-4 p-4">
-        <p className="text-[10px] font-mono uppercase store-text-muted">Briefing</p>
+        <p className="text-[11px] font-mono uppercase store-text-muted">Briefing</p>
         <p className="mt-2 text-sm store-text-body">{theatre.briefing}</p>
         <p className="mt-3 text-sm text-white">{theatre.so_what}</p>
       </StorePanel>

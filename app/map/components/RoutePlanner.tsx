@@ -24,7 +24,7 @@ function facetField(
 ) {
   return (
     <label className="flex flex-col gap-0.5">
-      <span className="text-[9px] uppercase tracking-wide store-text-muted">{label}</span>
+      <span className="text-[11px] uppercase tracking-wide store-text-muted">{label}</span>
       <input
         type="number"
         step="0.001"
@@ -55,30 +55,30 @@ export function RoutePlanner({ uas, rcsOverride, onRcsChange }: RoutePlannerProp
   return (
     <div className="mt-2 p-2 rounded-lg border border-[var(--store-line)] bg-black/20 space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--store-accent)]">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)]">
           RCS — OSINT planning nominal
         </span>
         {rcsOverride && (
-          <button type="button" onClick={reset} className="text-[9px] store-text-muted hover:text-white">
+          <button type="button" onClick={reset} className="text-[11px] store-text-muted hover:text-white">
             Reset
           </button>
         )}
       </div>
 
       {boundary && (
-        <p className="text-[10px] text-amber-400/95 leading-snug border border-amber-500/40 rounded px-2 py-1.5 bg-amber-950/30">
+        <p className="text-[11px] text-amber-400/95 leading-snug border border-amber-500/40 rounded px-2 py-1.5 bg-amber-950/30">
           SOVEREIGN_CORE_BOUNDARY — open-build values are geometry inference only. Real signature fidelity requires the accredited resolver.
         </p>
       )}
 
       {catalogueEntry && (
-        <p className="text-[10px] store-text-muted flex gap-1 leading-snug" title={catalogueEntry.osint_basis}>
+        <p className="text-[11px] store-text-muted flex gap-1 leading-snug" title={catalogueEntry.osint_basis}>
           <Info className="w-3 h-3 shrink-0 mt-0.5" />
           <span className="line-clamp-3">{catalogueEntry.osint_basis}</span>
         </p>
       )}
 
-      <p className="text-[9px] store-text-muted font-mono">
+      <p className="text-[11px] store-text-muted font-mono">
         ref: {resolved.rcs_ref} · confidence: {resolved.confidence}
       </p>
 

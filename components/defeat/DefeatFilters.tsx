@@ -37,7 +37,7 @@ export function DefeatFilters({
               onClick={() => onCategoryPillChange(pill.id)}
               className={cn(
                 categoryPill === pill.id
-                  ? 'border-[var(--store-accent)] text-[var(--store-accent)]'
+                  ? 'border-[var(--wb-blue)] text-[var(--wb-blue)]'
                   : 'border-[var(--store-line)] store-text-body'
               )}
             >

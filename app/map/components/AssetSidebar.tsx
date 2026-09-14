@@ -219,17 +219,17 @@ export function AssetSidebar({
       <div className="px-5 py-4 border-b border-[var(--store-line)]">
         <Link
           href="/"
-          className="text-[11px] store-text-muted hover:text-[var(--store-accent)] transition-colors mb-3 inline-block"
+          className="text-[11px] store-text-muted hover:text-[var(--wb-blue)] transition-colors mb-3 inline-block"
         >
           ← Dashboard
         </Link>
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] flex items-center justify-center shrink-0">
-            <Map className="w-4 h-4 text-[var(--store-accent)]" />
+          <div className="w-9 h-9 rounded-xl bg-[rgba(41,151,255,0.14)] border border-[rgba(41,151,255,0.5)] flex items-center justify-center shrink-0">
+            <Map className="w-4 h-4 text-[var(--wb-blue)]" />
           </div>
           <div className="min-w-0">
             <p className="store-display font-bold text-white tracking-wide text-sm">Map Intel</p>
-            <p className="text-[10px] store-text-muted">Terrain laydown & envelopes</p>
+            <p className="text-[11px] store-text-muted">Terrain laydown & envelopes</p>
           </div>
         </div>
         <div className="mt-3 flex items-center justify-between gap-2">
@@ -268,7 +268,7 @@ export function AssetSidebar({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search platforms, NATO name…"
-            className="w-full text-[13px] pl-9 pr-9 py-2.5 rounded-xl text-white store-panel-inner focus:outline-none focus:border-[var(--store-accent-border)]"
+            className="w-full text-[13px] pl-9 pr-9 py-2.5 rounded-xl text-white store-panel-inner focus:outline-none focus:border-[rgba(41,151,255,0.5)]"
           />
           {search && (
             <button
@@ -321,7 +321,7 @@ export function AssetSidebar({
             onToggle={() => setCotsOpen(!cotsOpen)}
             label="COTS catalog"
             count={cotsAll.length}
-            icon={<Plane size={14} className="text-[var(--store-accent)]" />}
+            icon={<Plane size={14} className="text-[var(--wb-blue)]" />}
           >
             <div className="space-y-2 max-h-72 overflow-y-auto pr-0.5">
               {cotsAll.map((asset) => (
@@ -348,7 +348,7 @@ export function AssetSidebar({
             onToggle={() => setCotsDjiOpen(!cotsDjiOpen)}
             label="COTS DJI"
             count={cotsDji.length}
-            icon={<Plane size={14} className="text-[var(--store-accent)]" />}
+            icon={<Plane size={14} className="text-[var(--wb-blue)]" />}
           >
             <div className="space-y-2 max-h-64 overflow-y-auto pr-0.5">
               {cotsDji.map((asset) => (
@@ -375,7 +375,7 @@ export function AssetSidebar({
           onToggle={() => setUasOpen(!uasOpen)}
           label="Threat platforms"
           count={visibleUas.length}
-          icon={<Plane size={14} className="text-[var(--store-accent)]" />}
+          icon={<Plane size={14} className="text-[var(--wb-blue)]" />}
         >
           <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
             {visibleUas.map((asset) => (
@@ -503,7 +503,7 @@ export function AssetSidebar({
                   className={cn(
                     'rounded-xl cursor-pointer',
                     isSameLaydownItem(selectedLaydownItem, { kind: 'uas', instanceId: u.instanceId }) &&
-                      'ring-2 ring-[var(--store-accent-border)]',
+                      'ring-2 ring-[rgba(41,151,255,0.5)]',
                   )}
                   onClick={() => onSelectPlacedItem?.({ kind: 'uas', instanceId: u.instanceId })}
                 >
@@ -527,7 +527,7 @@ export function AssetSidebar({
                   <div
                     className={cn(
                       'mt-2',
-                      loiterPlacingId === u.instanceId && 'ring-1 ring-[var(--store-accent-border)] rounded-xl',
+                      loiterPlacingId === u.instanceId && 'ring-1 ring-[rgba(41,151,255,0.5)] rounded-xl',
                     )}
                   >
                     <RoutePlanner
@@ -560,7 +560,7 @@ export function AssetSidebar({
                   className={cn(
                     'rounded-xl cursor-pointer',
                     isSameLaydownItem(selectedLaydownItem, { kind: 'cuas', instanceId: c.instanceId }) &&
-                      'ring-2 ring-[var(--store-accent-border)]',
+                      'ring-2 ring-[rgba(41,151,255,0.5)]',
                   )}
                   onClick={() => onSelectPlacedItem?.({ kind: 'cuas', instanceId: c.instanceId })}
                 >
@@ -582,7 +582,7 @@ export function AssetSidebar({
                         {c.lat.toFixed(4)}°, {c.lon.toFixed(4)}°
                       </p>
                       {c.hasTerrainMasking && (
-                        <p className="text-[11px] text-[var(--store-accent)] mt-1">
+                        <p className="text-[11px] text-[var(--wb-blue)] mt-1">
                           Terrain masking active
                         </p>
                       )}
@@ -600,7 +600,7 @@ export function AssetSidebar({
                   className={cn(
                     'rounded-xl cursor-pointer',
                     isSameLaydownItem(selectedLaydownItem, { kind: 'radar', instanceId: r.instanceId }) &&
-                      'ring-2 ring-[var(--store-accent-border)]',
+                      'ring-2 ring-[rgba(41,151,255,0.5)]',
                   )}
                   onClick={() => onSelectPlacedItem?.({ kind: 'radar', instanceId: r.instanceId })}
                 >
@@ -632,7 +632,7 @@ export function AssetSidebar({
                   className={cn(
                     'rounded-xl cursor-pointer',
                     isSameLaydownItem(selectedLaydownItem, { kind: 'effector', instanceId: e.instanceId }) &&
-                      'ring-2 ring-[var(--store-accent-border)]',
+                      'ring-2 ring-[rgba(41,151,255,0.5)]',
                   )}
                   onClick={() => onSelectPlacedItem?.({ kind: 'effector', instanceId: e.instanceId })}
                 >
@@ -687,17 +687,17 @@ export function AssetSidebar({
               </button>
             )}
             {operations && placedCuas.length > 0 && (
-              <p className="text-[10px] store-text-muted text-center leading-relaxed">
+              <p className="text-[11px] store-text-muted text-center leading-relaxed">
                 Jam heatmap requires Operations edition and a placed C-UAS with RF jamming capability.
               </p>
             )}
             {heatmapEnabled && !heatmapLoading && !heatmapError && (
-              <p className="text-[10px] font-mono text-cyan text-center">
+              <p className="text-[11px] font-mono text-cyan text-center">
                 Heatmap overlay active on globe — cyan = stronger jam field, orange = weaker path loss
               </p>
             )}
             {heatmapError && (
-              <p className="text-[10px] font-mono text-amber text-center">{heatmapError}</p>
+              <p className="text-[11px] font-mono text-amber text-center">{heatmapError}</p>
             )}
             <p className="text-[11px] store-text-muted text-center leading-relaxed">
               {operations
@@ -712,7 +712,7 @@ export function AssetSidebar({
         <button
           type="button"
           onClick={() => setLegendOpen(!legendOpen)}
-          className="w-full flex items-center justify-between text-[10px] font-semibold tracking-widest uppercase store-text-muted mb-2"
+          className="w-full flex items-center justify-between text-[11px] font-semibold tracking-widest uppercase store-text-muted mb-2"
         >
           <span>Map legend</span>
           {legendOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
@@ -732,7 +732,7 @@ export function AssetSidebar({
               <p className="text-[11px] store-text-body pt-1 border-t border-[var(--store-line)]">
                 {overlapLegend.defeat} defeat · {overlapLegend.survivable} survivable
                 {overlapSource === 'adjudication' && (
-                  <span className="block text-[10px] font-mono text-cyan mt-0.5">
+                  <span className="block text-[11px] font-mono text-cyan mt-0.5">
                     Dome colours: Operations adjudication
                   </span>
                 )}
@@ -742,7 +742,7 @@ export function AssetSidebar({
               <LegendRow colour="bg-gradient-to-r from-cyan/40 to-orange/40" label="Jam coverage heatmap (dB)" />
             )}
             {dualRoleIds.size > 0 && (
-              <p className="text-[10px] store-text-muted leading-snug pt-1">
+              <p className="text-[11px] store-text-muted leading-snug pt-1">
                 Dual-role assets (e.g. Anvil): pick UAS for combat disc, C-UAS for defeat sphere.
               </p>
             )}
@@ -769,7 +769,7 @@ function ForceFilterButton({
       type="button"
       onClick={onClick}
       className={cn(
-        'map-press rounded-xl border px-2 py-2 text-[10px] font-semibold tracking-widest uppercase',
+        'map-press rounded-xl border px-2 py-2 text-[11px] font-semibold tracking-widest uppercase',
         active
           ? activeClassName
           : 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-muted hover:text-white',
@@ -938,8 +938,8 @@ function MapAssetPickCard({
         active
           ? 'nav-item-active'
           : highlighted
-            ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
-            : 'store-panel-inner border-[var(--store-line)] hover:border-[var(--store-accent-border)]',
+            ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
+            : 'store-panel-inner border-[var(--store-line)] hover:border-[rgba(41,151,255,0.5)]',
       )}
     >
       <div className="flex gap-3 p-2.5">
@@ -962,7 +962,7 @@ function MapAssetPickCard({
           />
         </div>
         <div className="min-w-0 flex-1 py-0.5">
-          <p className="text-[10px] font-semibold tracking-widest uppercase store-text-muted truncate">
+          <p className="text-[11px] font-semibold tracking-widest uppercase store-text-muted truncate">
             {kicker}
           </p>
           <p className="text-[13px] font-semibold text-white leading-snug truncate">{name}</p>

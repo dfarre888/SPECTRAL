@@ -67,8 +67,8 @@ export function MatrixCell({
         onClick={() => onSelect(platform.id, system.id)}
         aria-label={`${platform.name} vs ${system.name}`}
         className={cn(
-          'w-full h-full min-h-[52px] flex items-center justify-center transition-all cursor-pointer hover:ring-1 hover:ring-orange/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-accent)]',
-          isActive && 'ring-2 ring-[var(--store-accent)] z-10 relative',
+          'w-full h-full min-h-[52px] flex items-center justify-center transition-all cursor-pointer hover:ring-1 hover:ring-[rgba(41,151,255,0.5)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--wb-blue)]',
+          isActive && 'ring-2 ring-[var(--wb-blue)] z-10 relative',
           value.kind === 'immune' && 'border-2 border-red bg-red/5',
           value.kind === 'pct' && value.colour !== 'none' && value.colour !== 'immune' && COLOUR_CLASSES[value.colour],
           value.kind === 'empty' && 'store-text-muted bg-[var(--store-surface-2)]/50'
@@ -90,7 +90,7 @@ function accreditedPkForSystem(row: AccreditedDefeatPkRow, system: AntiDroneSyst
 function CellContent({ value, accRow, system }: { value: CellValue; accRow?: AccreditedDefeatPkRow; system: AntiDroneSystem }) {
   if (accRow?.is_immune) {
     return (
-      <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-orange">IMMUNE</span>
+      <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-orange">IMMUNE</span>
     )
   }
   if (value.kind === 'immune') return <ImmuneBadge />
@@ -103,7 +103,7 @@ function CellContent({ value, accRow, system }: { value: CellValue; accRow?: Acc
     return (
       <div className="flex flex-col items-center gap-0.5 px-1">
         <span className="font-mono text-sm font-medium text-[#F97316]">
-          {accPk}%<sup className="text-[10px] ml-0.5">A</sup>
+          {accPk}%<sup className="text-[11px] ml-0.5">A</sup>
         </span>
       </div>
     )
@@ -115,7 +115,7 @@ function CellContent({ value, accRow, system }: { value: CellValue; accRow?: Acc
           {value.value}%
         </span>
         {value.laydown?.operationsPk != null && (
-          <span className="text-[9px] font-mono text-cyan leading-none">
+          <span className="text-[11px] font-mono text-cyan leading-none">
             Ops {value.laydown.operationsPk}% · {value.laydown.los_state}
           </span>
         )}

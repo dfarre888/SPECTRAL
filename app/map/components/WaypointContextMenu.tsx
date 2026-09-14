@@ -55,8 +55,8 @@ export function WaypointContextMenu({ target, onApply, onClose }: WaypointContex
     <>
       <button type="button" className="fixed inset-0 z-30 cursor-default" aria-label="Close menu" onClick={onClose} />
       <div className="map-material-float absolute z-40 w-56 rounded-xl overflow-hidden pointer-events-auto p-3 space-y-2" style={{ left: target.screenX, top: target.screenY }}>
-        <p className="text-[10px] store-text-muted truncate">Waypoint · {target.assetName}</p>
-        <label className="block text-[10px] store-text-muted">Longitude
+        <p className="text-[11px] store-text-muted truncate">Waypoint · {target.assetName}</p>
+        <label className="block text-[11px] store-text-muted">Longitude
           <input
             type="number"
             step="0.00001"
@@ -68,7 +68,7 @@ export function WaypointContextMenu({ target, onApply, onClose }: WaypointContex
             className="mt-1 w-full rounded-lg store-panel-inner border border-[var(--store-line)] px-2 py-1 font-mono text-[11px] text-white"
           />
         </label>
-        <label className="block text-[10px] store-text-muted">Latitude
+        <label className="block text-[11px] store-text-muted">Latitude
           <input
             type="number"
             step="0.00001"
@@ -80,11 +80,11 @@ export function WaypointContextMenu({ target, onApply, onClose }: WaypointContex
             className="mt-1 w-full rounded-lg store-panel-inner border border-[var(--store-line)] px-2 py-1 font-mono text-[11px] text-white"
           />
         </label>
-        {coordError && <p className="text-[10px] text-red-400 font-mono">{coordError}</p>}
-        <label className="block text-[10px] store-text-muted">Altitude AMSL (m)
+        {coordError && <p className="text-[11px] text-red-400 font-mono">{coordError}</p>}
+        <label className="block text-[11px] store-text-muted">Altitude AMSL (m)
           <input type="number" min={target.alt_m - 500} max={target.maxAlt_m} value={alt_m} onChange={(e) => setAlt_m(Number(e.target.value))} className="mt-1 w-full rounded-lg store-panel-inner border border-[var(--store-line)] px-2 py-1 font-mono text-[11px] text-white" />
         </label>
-        <label className="block text-[10px] store-text-muted">Speed (km/h)
+        <label className="block text-[11px] store-text-muted">Speed (km/h)
           <input type="number" min={1} max={target.maxSpeed_kmh} value={speed_kmh} onChange={(e) => setSpeed_kmh(Number(e.target.value))} className="mt-1 w-full rounded-lg store-panel-inner border border-[var(--store-line)] px-2 py-1 font-mono text-[11px] text-white" />
         </label>
         <button type="button" onClick={handleApply} className="store-btn-primary w-full py-1.5 text-[11px] font-semibold">Apply</button>

@@ -36,8 +36,8 @@ export function MissionPathControls({
   return (
     <div className="p-2.5 rounded-xl store-panel-inner border border-[var(--store-line)] text-[11px] space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-[var(--store-accent)] font-semibold text-[10px] tracking-wider uppercase">Mission path</span>
-        <button type="button" onClick={onClear} className="store-text-muted hover:text-[var(--store-accent)]" title="Clear mission">
+        <span className="text-[var(--wb-blue)] font-semibold text-[11px] tracking-wider uppercase">Mission path</span>
+        <button type="button" onClick={onClear} className="store-text-muted hover:text-[var(--wb-blue)]" title="Clear mission">
           <Trash2 className="w-3 h-3" />
         </button>
       </div>
@@ -50,9 +50,9 @@ export function MissionPathControls({
             type="button"
             onClick={() => onRouteObjectiveChange(mode)}
             className={cn(
-              'flex-1 px-2 py-1 rounded-md border text-[10px] font-semibold uppercase tracking-wide',
+              'flex-1 px-2 py-1 rounded-md border text-[11px] font-semibold uppercase tracking-wide',
               objective === mode
-                ? 'border-[var(--store-accent-border)] bg-[var(--store-accent)]/15 text-[var(--store-accent)]'
+                ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.15)] text-[var(--wb-blue)]'
                 : 'border-[var(--store-line)] store-text-muted hover:store-text-body',
             )}
           >
@@ -64,19 +64,19 @@ export function MissionPathControls({
       <p
         className={cn(
           'font-mono',
-          primaryMetric.value >= primaryMetric.threshold ? 'text-[var(--store-accent)]' : 'store-text-body',
+          primaryMetric.value >= primaryMetric.threshold ? 'text-[var(--wb-blue)]' : 'store-text-body',
         )}
       >
         {primaryMetric.label} {primaryMetric.value}% {primaryMetric.flag ? `(≥${primaryMetric.threshold}% flag)` : ''}
       </p>
-      <p className="font-mono store-text-muted text-[10px]">
+      <p className="font-mono store-text-muted text-[11px]">
         {objective === 'combined'
           ? `Pk ${mission.maxPk_pct}% · Pd ${mission.maxPd_pct}% · exp ${mission.pkExposure_km.toFixed(1)}/${mission.pdExposure_km.toFixed(1)} km`
           : objective === 'pd'
             ? `Pk ${mission.maxPk_pct}% · exposure ${mission.pdExposure_km.toFixed(1)} km`
             : `Pd ${mission.maxPd_pct}% · exposure ${mission.pkExposure_km.toFixed(1)} km`}
       </p>
-      <p className="font-mono store-text-muted text-[10px]">{mission.pathMode} · {mission.waypoints.length} waypoints</p>
+      <p className="font-mono store-text-muted text-[11px]">{mission.pathMode} · {mission.waypoints.length} waypoints</p>
 
       <label className="flex items-center gap-2 cursor-pointer">
         <input
@@ -85,17 +85,17 @@ export function MissionPathControls({
           onChange={(e) => onEmconChange(e.target.checked)}
           className="rounded border-[var(--store-line)]"
         />
-        <Radio className="w-3 h-3 text-[var(--store-accent)]" />
+        <Radio className="w-3 h-3 text-[var(--wb-blue)]" />
         <span className="store-text-body">EMCON (reduces Pd when on)</span>
       </label>
       {mission.manualOverride && (
-        <p className="text-[10px] text-[var(--store-accent)]">Manual override — auto-replan paused</p>
+        <p className="text-[11px] text-[var(--wb-blue)]">Manual override — auto-replan paused</p>
       )}
-      <p className="text-[10px] store-text-muted">Use toolbar <span className="text-[var(--store-accent)]">Edit flight path</span> to add/move waypoints on the map.</p>
+      <p className="text-[11px] store-text-muted">Use toolbar <span className="text-[var(--wb-blue)]">Edit flight path</span> to add/move waypoints on the map.</p>
       <button
         type="button"
         onClick={onReplan}
-        className="w-full flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg border border-[var(--store-line)] store-text-body hover:text-white text-[10px] font-semibold"
+        className="w-full flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg border border-[var(--store-line)] store-text-body hover:text-white text-[11px] font-semibold"
       >
         <RefreshCw className="w-3 h-3" /> Replan
       </button>

@@ -23,7 +23,7 @@ export function PlatformContextMenu({ target, onAdd, onClose }: PlatformContextM
         style={{ left: target.screenX, top: target.screenY }}
         role="menu"
       >
-        <p className="px-3 py-2 text-[10px] store-text-muted border-b border-[var(--store-line)] truncate">
+        <p className="px-3 py-2 text-[11px] store-text-muted border-b border-[var(--store-line)] truncate">
           {target.assetName}
         </p>
         <button
@@ -35,10 +35,10 @@ export function PlatformContextMenu({ target, onAdd, onClose }: PlatformContextM
           }}
           className="map-press flex w-full items-center gap-2 px-3 py-2.5 text-[11px] font-semibold text-white hover:bg-[var(--store-surface-2)]"
         >
-          <Plus className="w-3.5 h-3.5 text-[var(--store-accent)]" />
+          <Plus className="w-3.5 h-3.5 text-[var(--wb-blue)]" />
           ADD
         </button>
-        <p className="px-3 py-1.5 text-[9px] store-text-muted border-t border-[var(--store-line)]">
+        <p className="px-3 py-1.5 text-[11px] store-text-muted border-t border-[var(--store-line)]">
           ~1 km offset · drag to reposition
         </p>
       </div>

@@ -100,9 +100,9 @@ function EvalRow({
       onClick={() => onItemClick(item)}
       className={cn(
         'map-press store-panel-inner rounded-lg px-2.5 py-2 w-full text-left cursor-pointer border',
-        'hover:bg-[var(--store-surface-2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--store-accent-border)]',
+        'hover:bg-[var(--store-surface-2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(41,151,255,0.5)]',
         selected
-          ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
+          ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
           : 'border-transparent',
         item.finishClass === 'deny' && tone === 'can'
           ? 'border-l-2 border-l-amber-400/70'
@@ -115,7 +115,7 @@ function EvalRow({
         <p className={cn('text-xs font-mono truncate', tone === 'can' ? 'text-white' : 'store-text-muted')}>
           {displayName}
           {item.placed && (
-            <span className="ml-1.5 text-[9px] uppercase text-[var(--store-accent)]">on map</span>
+            <span className="ml-1.5 text-[11px] uppercase text-[var(--wb-blue)]">on map</span>
           )}
         </p>
         <div className="flex items-center gap-1.5 shrink-0">
@@ -153,24 +153,24 @@ function EvalRow({
         </div>
       </div>
       {item.parentSystem && !compactStack && (
-        <p className="text-[9px] font-mono text-cyan-400/90 mt-0.5">{item.parentSystem}</p>
+        <p className="text-[11px] font-mono text-cyan-400/90 mt-0.5">{item.parentSystem}</p>
       )}
       {item.roleLabel && item.kind === 'radar' && (
-        <p className="text-[9px] store-text-muted mt-0.5 capitalize">{item.roleLabel} radar</p>
+        <p className="text-[11px] store-text-muted mt-0.5 capitalize">{item.roleLabel} radar</p>
       )}
       {item.linkedEffectors && item.linkedEffectors.length > 0 && (
-        <p className="text-[9px] store-text-muted mt-0.5 leading-relaxed">
-          <span className="text-[var(--store-accent)]/90">Finish chain: </span>
+        <p className="text-[11px] store-text-muted mt-0.5 leading-relaxed">
+          <span className="text-[var(--wb-blue)]/90">Finish chain: </span>
           {item.linkedEffectors.join(' · ')}
         </p>
       )}
       {item.linkedRadars && item.linkedRadars.length > 0 && (
-        <p className="text-[9px] store-text-muted mt-0.5 leading-relaxed">
-          <span className="text-[var(--store-accent)]/90">Cueing radar: </span>
+        <p className="text-[11px] store-text-muted mt-0.5 leading-relaxed">
+          <span className="text-[var(--wb-blue)]/90">Cueing radar: </span>
           {item.linkedRadars.join(' · ')}
         </p>
       )}
-      <p className="text-[9px] store-text-muted mt-0.5 leading-relaxed">{item.reason}</p>
+      <p className="text-[11px] store-text-muted mt-0.5 leading-relaxed">{item.reason}</p>
     </button>
   )
 }
@@ -203,7 +203,7 @@ function IadsStackBlock({
         onClick={() => setOpen((v) => !v)}
         className={cn(
           'w-full px-2.5 py-2 text-left flex items-start gap-2 transition-colors',
-          'hover:bg-[var(--store-surface-2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--store-accent-border)]',
+          'hover:bg-[var(--store-surface-2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(41,151,255,0.5)]',
           tone === 'can' ? 'bg-green-950/20' : 'bg-[var(--store-surface-1)]',
         )}
       >
@@ -215,12 +215,12 @@ function IadsStackBlock({
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline justify-between gap-2">
-            <p className="text-[10px] font-mono font-semibold text-cyan-400 truncate">{stackLabel}</p>
-            <span className="text-[9px] font-mono store-text-muted shrink-0">{items.length}</span>
+            <p className="text-[11px] font-mono font-semibold text-cyan-400 truncate">{stackLabel}</p>
+            <span className="text-[11px] font-mono store-text-muted shrink-0">{items.length}</span>
           </div>
           {finishChainSummary && (
-            <p className="text-[9px] store-text-muted mt-0.5 leading-relaxed">
-              <span className="text-[var(--store-accent)]/90">Finish chain: </span>
+            <p className="text-[11px] store-text-muted mt-0.5 leading-relaxed">
+              <span className="text-[var(--wb-blue)]/90">Finish chain: </span>
               {finishChainSummary}
             </p>
           )}
@@ -266,7 +266,7 @@ function SectionItemList({
   const groupRadars = isRadarSection || (radarItems.length > 0 && radarGroups.length > 0)
 
   if (section.items.length === 0) {
-    return <p className="text-[10px] store-text-muted italic">None</p>
+    return <p className="text-[11px] store-text-muted italic">None</p>
   }
 
   if (groupRadars && radarItems.length > 0) {
@@ -333,13 +333,13 @@ function ScoreTile({
       onClick={onClick}
       className={cn(
         'map-press flex-1 min-w-0 rounded-lg border px-2 py-2 text-left',
-        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--store-accent-border)]',
+        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(41,151,255,0.5)]',
         active
-          ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]'
+          ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
           : 'border-[var(--store-line)] hover:bg-[var(--store-surface-2)]',
       )}
     >
-      <p className="text-[9px] font-semibold uppercase tracking-wider store-text-muted">{label}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider store-text-muted">{label}</p>
       <p
         className={cn(
           'text-lg font-mono leading-none mt-1',
@@ -354,7 +354,7 @@ function ScoreTile({
       >
         {value}
       </p>
-      <p className="text-[9px] store-text-muted mt-1 leading-tight">{hint}</p>
+      <p className="text-[11px] store-text-muted mt-1 leading-tight">{hint}</p>
     </button>
   )
 }
@@ -384,7 +384,7 @@ function PreviewList({
         <button
           type="button"
           onClick={onToggle}
-          className="mt-2 w-full text-[10px] font-mono store-text-muted hover:text-white border border-[var(--store-line)] rounded-lg py-1.5"
+          className="mt-2 w-full text-[11px] font-mono store-text-muted hover:text-white border border-[var(--store-line)] rounded-lg py-1.5"
         >
           {expanded ? 'Show decision set only' : `Show remaining ${hidden} systems`}
         </button>
@@ -432,23 +432,23 @@ export function LaydownEvaluationPanel({
   )
 
   return (
-    <StorePanel className="map-material-float absolute top-14 right-3 z-20 w-[min(100%,26rem)] max-h-[calc(100%-4rem)] overflow-y-auto p-3 pointer-events-auto border-[var(--store-accent-border)]">
+    <StorePanel className="map-material-float absolute top-14 right-3 z-20 w-[min(100%,26rem)] max-h-[calc(100%-4rem)] overflow-y-auto p-3 pointer-events-auto border-[rgba(41,151,255,0.5)]">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--store-accent)] flex items-center gap-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--wb-blue)] flex items-center gap-1.5">
             <Icon className="w-3.5 h-3.5" />
             Laydown evaluation
           </p>
-          <p className="text-[9px] store-text-muted mt-0.5">
+          <p className="text-[11px] store-text-muted mt-0.5">
             Commander scoreboard · OSINT catalog · virtual geometry
           </p>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
-          <Badge variant="outline" className="text-[9px] font-mono">
+          <Badge variant="outline" className="text-[11px] font-mono">
             {KIND_LABEL[evaluation.subject.kind]}
           </Badge>
           {adjudicationSource && adjudicationSource !== 'client' && (
-            <Badge variant="assessed" className="text-[9px]">
+            <Badge variant="assessed" className="text-[11px]">
               {adjudicationSource}
             </Badge>
           )}
@@ -466,9 +466,9 @@ export function LaydownEvaluationPanel({
                 type="button"
                 onClick={() => onSelectItem(item)}
                 className={cn(
-                  'map-press px-2 py-0.5 rounded-lg text-[10px] font-mono border truncate max-w-full',
+                  'map-press px-2 py-0.5 rounded-lg text-[11px] font-mono border truncate max-w-full',
                   active
-                    ? 'border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
+                    ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]'
                     : 'border-[var(--store-line)] store-text-muted hover:text-white',
                 )}
               >
@@ -493,7 +493,7 @@ export function LaydownEvaluationPanel({
       >
         <p
           className={cn(
-            'text-[10px] font-semibold uppercase tracking-wider',
+            'text-[11px] font-semibold uppercase tracking-wider',
             board.verdict === 'can_finish'
               ? 'text-green-400'
               : board.verdict === 'deny_only' || board.verdict === 'detect_only'
@@ -504,7 +504,7 @@ export function LaydownEvaluationPanel({
           {VERDICT_LABEL[board.verdict]}
         </p>
         <p className="text-[11px] text-white mt-1 leading-snug">{board.verdictLine}</p>
-        <p className="text-[9px] store-text-muted mt-1">
+        <p className="text-[11px] store-text-muted mt-1">
           P(kill) = airframe down. P(link) = pilot denied, airframe recoverable. OSINT / training estimates — not
           accredited Pk.
         </p>
@@ -512,7 +512,7 @@ export function LaydownEvaluationPanel({
 
       {board.williamtownLine && (
         <div className="rounded-lg border border-amber-400/40 bg-amber-950/25 px-2.5 py-2 mb-3">
-          <p className="text-[9px] font-semibold uppercase tracking-wider text-amber-300">Williamtown lesson</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-300">Williamtown lesson</p>
           <p className="text-[11px] text-white mt-1 leading-snug">{board.williamtownLine}</p>
         </div>
       )}
@@ -574,10 +574,10 @@ export function LaydownEvaluationPanel({
 
       {compareRows.length > 1 && (
         <div className="mb-3 rounded-lg border border-[var(--store-line)] overflow-hidden">
-          <p className="px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-wider store-text-muted">
+          <p className="px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider store-text-muted">
             Airframe compare
           </p>
-          <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-2.5 pb-1 text-[9px] font-mono store-text-muted">
+          <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-2.5 pb-1 text-[11px] font-mono store-text-muted">
             <span />
             <span>Find</span>
             <span>Deny</span>
@@ -592,9 +592,9 @@ export function LaydownEvaluationPanel({
                 type="button"
                 onClick={() => onSelectItem({ kind: 'uas', instanceId: row.instanceId })}
                 className={cn(
-                  'w-full grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-2.5 py-1.5 text-left text-[10px] font-mono border-t border-[var(--store-line)]',
+                  'w-full grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-2.5 py-1.5 text-left text-[11px] font-mono border-t border-[var(--store-line)]',
                   active
-                    ? 'bg-[var(--store-accent-glow)] text-[var(--store-accent)]'
+                    ? 'bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]'
                     : 'hover:bg-[var(--store-surface-2)] text-white',
                 )}
               >
@@ -634,7 +634,7 @@ export function LaydownEvaluationPanel({
       )}
 
       {tab === 'deny' && activeSection && (
-        <p className="text-[10px] text-amber-200/80 leading-snug mb-2">
+        <p className="text-[11px] text-amber-200/80 leading-snug mb-2">
           These systems take the pilot off the stick. They do not drop the aircraft.
         </p>
       )}
@@ -643,7 +643,7 @@ export function LaydownEvaluationPanel({
         <div>
           <p
             className={cn(
-              'text-[10px] font-semibold uppercase tracking-wider mb-2',
+              'text-[11px] font-semibold uppercase tracking-wider mb-2',
               activeSection.tone === 'can' ? 'text-green-400' : 'store-text-muted',
             )}
           >
@@ -662,13 +662,13 @@ export function LaydownEvaluationPanel({
 
       {tab === 'gaps' && (
         <div className="space-y-3">
-          <p className="text-[10px] store-text-muted leading-snug">
+          <p className="text-[11px] store-text-muted leading-snug">
             Catalog leftovers — systems that neither find nor finish this airframe. Do not use this list to make the
             call.
           </p>
           {gapSections.map((section) => (
             <div key={section.title}>
-              <p className="text-[10px] font-semibold uppercase tracking-wider mb-2 store-text-muted">
+              <p className="text-[11px] font-semibold uppercase tracking-wider mb-2 store-text-muted">
                 {section.title}
                 <span className="ml-1.5 font-mono font-normal normal-case">({section.items.length})</span>
               </p>

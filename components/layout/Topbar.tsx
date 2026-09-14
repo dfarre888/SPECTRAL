@@ -31,7 +31,7 @@ export function Topbar() {
   }, [])
 
   return (
-    <header className="h-12 flex-shrink-0 bg-[var(--store-surface)] border-b border-[var(--store-line)] flex items-center px-4 gap-4">
+    <header className="h-12 flex-shrink-0 bg-[var(--store-bg)] border-b border-[var(--store-line)] flex items-center px-4 gap-4">
       <button
         type="button"
         aria-label="Open navigation menu"
@@ -52,9 +52,9 @@ export function Topbar() {
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
           placeholder="Search platforms, jammers, incidents..."
-          className="w-full store-panel-inner rounded-xl pl-8 pr-4 py-1.5 text-xs text-white placeholder:store-text-muted focus:outline-none focus:border-[var(--store-accent-border)] font-mono"
+          className="w-full rounded-lg border border-[var(--btn-line)] bg-[rgba(255,255,255,0.03)] pl-8 pr-12 py-1.5 text-[12px] text-white placeholder:text-[var(--store-ink-mute)] focus:outline-none focus:border-[var(--wb-blue)] transition-colors duration-150"
         />
-        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] store-text-muted font-mono store-panel-inner px-1.5 py-0.5 rounded border border-[var(--store-line)]">
+        <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] store-text-muted font-mono px-1.5 py-0.5 rounded border border-[var(--store-line)]">
           ⌘K
         </kbd>
         {open && query.length > 1 && hits.length > 0 && (
@@ -66,7 +66,7 @@ export function Topbar() {
                 className="block px-3 py-2 text-xs hover:bg-[var(--store-surface-2)] border-b border-[var(--store-line)] last:border-0"
               >
                 <span className="text-white font-medium">{h.label}</span>
-                <span className="block text-[10px] store-text-muted font-mono">{h.module}</span>
+                <span className="block text-[11px] store-text-muted font-mono">{h.module}</span>
               </Link>
             ))}
           </div>
@@ -95,7 +95,7 @@ export function Topbar() {
         </button>
         {notifOpen && (
           <div className="absolute top-full right-0 mt-1 z-50 w-56 store-panel rounded-xl border border-[var(--store-line)] shadow-xl p-3">
-            <p className="text-[10px] font-mono uppercase tracking-wider store-text-muted">Operational alerts</p>
+            <p className="text-[11px] store-text-muted">Operational alerts</p>
             <p className="mt-2 text-[11px] store-text-body">No active alerts. Exercise injects and scenario notices will appear here.</p>
           </div>
         )}
@@ -123,7 +123,7 @@ export function Topbar() {
                 onClick={() => setSettingsOpen(false)}
               >
                 <span className="text-white font-medium">Data import</span>
-                <span className="block text-[10px] store-text-muted font-mono mt-0.5">Tenant ingest queue</span>
+                <span className="block text-[11px] store-text-muted font-mono mt-0.5">Tenant ingest queue</span>
               </Link>
             )}
             <Link
@@ -132,12 +132,12 @@ export function Topbar() {
               onClick={() => setSettingsOpen(false)}
             >
               <span className="text-white font-medium">Currency queue</span>
-              <span className="block text-[10px] store-text-muted font-mono mt-0.5">DS TTP review pipeline</span>
+              <span className="block text-[11px] store-text-muted font-mono mt-0.5">DS TTP review pipeline</span>
             </Link>
             <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--store-line)]">
               <div>
                 <span className="text-white font-medium text-xs">Appearance</span>
-                <span className="block text-[10px] store-text-muted font-mono mt-0.5">Briefing paper / ops floor</span>
+                <span className="block text-[11px] store-text-muted font-mono mt-0.5">Briefing paper / ops floor</span>
               </div>
               <ThemeToggle labeled />
             </div>
@@ -147,14 +147,14 @@ export function Topbar() {
               onClick={() => setSettingsOpen(false)}
             >
               <span className="text-white font-medium">Account</span>
-              <span className="block text-[10px] store-text-muted font-mono mt-0.5">Sign in or switch session</span>
+              <span className="block text-[11px] store-text-muted font-mono mt-0.5">Sign in or switch session</span>
             </Link>
           </div>
         )}
       </div>
 
-      <div className="w-7 h-7 rounded-full bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] flex items-center justify-center">
-        <span className="text-[10px] font-bold text-[var(--store-accent)]">DF</span>
+      <div className="w-7 h-7 rounded-full border border-[var(--btn-line)] flex items-center justify-center">
+        <span className="text-[11px] font-medium text-[var(--store-ink)]">DF</span>
       </div>
     </header>
   )

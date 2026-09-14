@@ -23,10 +23,10 @@ export default async function ForceIndexPage() {
       <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {forces.map((f) => (
           <Link key={f.nation.code} href={`/force/${f.nation.code.toLowerCase()}`}>
-            <StorePanel className="h-full p-4 hover:border-[var(--store-accent-border)]">
+            <StorePanel className="h-full p-4 hover:border-[rgba(41,151,255,0.5)]">
               <div className="mb-2 flex items-center justify-between">
-                <p className="font-mono text-[10px] text-[var(--store-accent)]">{f.nation.code}</p>
-                <p className="font-mono text-[10px] uppercase store-text-muted">{f.nation.side}</p>
+                <p className="font-mono text-[11px] text-[var(--wb-blue)]">{f.nation.code}</p>
+                <p className="font-mono text-[11px] uppercase store-text-muted">{f.nation.side}</p>
               </div>
               <p className="text-lg font-medium text-white">{f.nation.shortName}</p>
               <p className="mt-1 font-mono text-xs store-text-muted">
@@ -50,7 +50,7 @@ export default async function ForceIndexPage() {
           <Link
             key={`${a}-${b}`}
             href={`/force/compare?a=${a}&b=${b}`}
-            className="rounded-lg border border-[var(--store-line)] px-3 py-1.5 text-xs text-white hover:border-[var(--store-accent-border)]"
+            className="rounded-lg border border-[var(--store-line)] px-3 py-1.5 text-xs text-white hover:border-[rgba(41,151,255,0.5)]"
           >
             {a} vs {b}
           </Link>
@@ -61,8 +61,8 @@ export default async function ForceIndexPage() {
       <div className="grid gap-3 md:grid-cols-3">
         {FORCE_THEATRES.map((t) => (
           <Link key={t.id} href={`/force/theatres/${t.id}`}>
-            <StorePanel className="h-full p-4 hover:border-[var(--store-accent-border)]">
-              <p className="font-mono text-[10px] text-[var(--store-accent)]">{t.theatre}</p>
+            <StorePanel className="h-full p-4 hover:border-[rgba(41,151,255,0.5)]">
+              <p className="font-mono text-[11px] text-[var(--wb-blue)]">{t.theatre}</p>
               <p className="mt-1 text-sm font-medium text-white">{t.name}</p>
               <p className="mt-2 text-xs store-text-body">{t.so_what}</p>
             </StorePanel>

@@ -81,7 +81,7 @@ export function PlatformFilterSidebar(props: PlatformFilterSidebarProps) {
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search platforms, NATO name…"
-            className="w-full text-[13px] pl-9 pr-3 py-2.5 rounded-xl text-white store-panel-inner focus:outline-none focus:border-[var(--store-accent-border)]"
+            className="w-full text-[13px] pl-9 pr-3 py-2.5 rounded-xl text-white store-panel-inner focus:outline-none focus:border-[rgba(41,151,255,0.5)]"
           />
         </div>
       </StoreFilterSection>
@@ -109,7 +109,7 @@ export function PlatformFilterSidebar(props: PlatformFilterSidebarProps) {
         <select
           value={country}
           onChange={(e) => onCountryChange(e.target.value)}
-          className="w-full text-[13px] px-3 py-2.5 rounded-xl text-white store-panel-inner focus:outline-none focus:border-[var(--store-accent-border)]"
+          className="w-full text-[13px] px-3 py-2.5 rounded-xl text-white store-panel-inner focus:outline-none focus:border-[rgba(41,151,255,0.5)]"
         >
           <option value="all">All countries</option>
           {countries.map((c) => (
@@ -161,7 +161,7 @@ export function PlatformMobileFilters({
             onClick={() => onCategoryPillChange(pill.id)}
             className={
               categoryPill === pill.id
-                ? 'text-xs px-3 py-1.5 rounded-full font-semibold bg-[var(--store-accent-glow)] border border-[var(--store-accent-border)] text-[var(--store-accent)]'
+                ? 'text-xs px-3 py-1.5 rounded-full font-semibold bg-[rgba(41,151,255,0.14)] border border-[rgba(41,151,255,0.5)] text-[var(--wb-blue)]'
                 : 'text-xs px-3 py-1.5 rounded-full store-panel-inner store-text-body border border-[var(--store-line)]'
             }
           >

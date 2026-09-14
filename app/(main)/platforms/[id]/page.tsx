@@ -30,15 +30,15 @@ export default async function PlatformDetailPage({ params }: PlatformDetailPageP
   return (
     <div className="max-w-7xl mx-auto pb-12">
       <nav className="sticky top-0 z-20 -mx-4 px-4 py-2 mb-4 border-b border-[var(--store-line)] bg-[var(--store-bg)]/95 backdrop-blur-sm flex flex-wrap gap-2">
-        <a href="#specs" className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)]">Specifications</a>
-        <a href="#countermeasures" className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)]">Countermeasures</a>
-        <a href="#payloads" className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)]">Payloads</a>
-        <a href="#sam" className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)]">SAM defeat</a>
+        <a href="#specs" className="text-[11px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[rgba(41,151,255,0.5)]">Specifications</a>
+        <a href="#countermeasures" className="text-[11px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[rgba(41,151,255,0.5)]">Countermeasures</a>
+        <a href="#payloads" className="text-[11px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[rgba(41,151,255,0.5)]">Payloads</a>
+        <a href="#sam" className="text-[11px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[rgba(41,151,255,0.5)]">SAM defeat</a>
       </nav>
       <div className="mb-6">
         <Link
           href="/platforms"
-          className="inline-flex items-center gap-1.5 text-sm store-text-body hover:text-[var(--store-accent)] transition-colors mb-4"
+          className="inline-flex items-center gap-1.5 text-sm store-text-body hover:text-[var(--wb-blue)] transition-colors mb-4"
         >
           <ArrowLeft className="h-4 w-4" />
           Platform Library

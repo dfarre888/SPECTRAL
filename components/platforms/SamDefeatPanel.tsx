@@ -24,7 +24,7 @@ export function SamDefeatPanel({ platformId }: SamDefeatPanelProps) {
     return (
       <div className="store-panel rounded-2xl p-6 mt-6">
         <p className="text-sm store-text-body">Reference SAM Pk bars available for defeat-matrix UAS platforms.</p>
-        <Link href="/defeat?view=heatmap" className="text-[var(--store-accent)] text-sm mt-2 inline-block">Open defeat heat map →</Link>
+        <Link href="/defeat?view=heatmap" className="text-[var(--wb-blue)] text-sm mt-2 inline-block">Open defeat heat map →</Link>
       </div>
     )
   }
@@ -35,7 +35,7 @@ export function SamDefeatPanel({ platformId }: SamDefeatPanelProps) {
     <div className="store-panel rounded-2xl p-6 mt-6 space-y-4">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-lg font-semibold text-white">Top SAM intercept Pk (reference geometry)</h2>
-        <Link href="/defeat?view=heatmap" className="text-xs font-mono text-[var(--store-accent)] hover:opacity-80">
+        <Link href="/defeat?view=heatmap" className="text-xs font-mono text-[var(--wb-blue)] hover:opacity-80">
           Full heat map →
         </Link>
       </div>
@@ -55,7 +55,7 @@ export function SamDefeatPanel({ platformId }: SamDefeatPanelProps) {
           </li>
         ))}
       </ul>
-      <p className="text-[10px] font-mono store-text-muted">OSINT reference engagement — no ECM. Computed via SAM intercept engine.</p>
+      <p className="text-[11px] font-mono store-text-muted">OSINT reference engagement — no ECM. Computed via SAM intercept engine.</p>
     </div>
   )
 }

@@ -24,7 +24,7 @@ export function OperationsChrome() {
       <EditionBadge />
       {tenantId && (
         <span
-          className="text-[9px] font-mono store-text-muted px-2 py-0.5 rounded-lg border border-[var(--store-line)]"
+          className="text-[11px] font-mono store-text-muted px-2 py-0.5 rounded-md border border-[var(--store-line)]"
           title="Tenant scope — customer data isolated"
         >
           TNT {tenantId}
@@ -32,7 +32,7 @@ export function OperationsChrome() {
       )}
       {role === 'admin' && (
         <span
-          className="text-[9px] font-mono text-[var(--store-accent)] px-2 py-0.5 rounded-lg border border-[var(--store-accent-border)] bg-[var(--store-accent-glow)]"
+          className="text-[11px] font-mono text-[var(--wb-blue)] px-2 py-0.5 rounded-md border border-[rgba(41,151,255,0.5)]"
           title="WOPR administrator — full scenario control"
         >
           WOPR ADMIN

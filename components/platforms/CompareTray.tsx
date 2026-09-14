@@ -27,7 +27,7 @@ export function CompareTray({ platforms }: CompareTrayProps) {
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 store-panel rounded-2xl px-4 py-3 shadow-lg max-w-2xl w-[calc(100%-2rem)]">
-      <GitCompare className="h-4 w-4 text-[var(--store-accent)] flex-shrink-0" />
+      <GitCompare className="h-4 w-4 text-[var(--wb-blue)] flex-shrink-0" />
       <div className="flex flex-wrap gap-2 flex-1 min-w-0">
         {selected.map((p) => (
           <span

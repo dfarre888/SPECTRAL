@@ -97,7 +97,7 @@ export function EntityInfoPanel({
           </>
         )}
         {uas.loiter?.exceedsEndurance && (
-          <p className="text-[var(--store-accent)] pt-1 text-[11px]">
+          <p className="text-[var(--wb-blue)] pt-1 text-[11px]">
             Endurance warning — loiter exceeds fuel/time envelope
           </p>
         )}
@@ -125,7 +125,7 @@ function DataRow({
       <span className="store-text-muted shrink-0">{label}</span>
       <span
         className={
-          accent ? 'font-mono text-[var(--store-accent)] text-right' : 'font-mono store-text-body text-right'
+          accent ? 'font-mono text-[var(--wb-blue)] text-right' : 'font-mono store-text-body text-right'
         }
       >
         {value}

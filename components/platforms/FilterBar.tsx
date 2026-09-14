@@ -58,7 +58,7 @@ export function FilterBar({
             onClick={() => handlePillClick(pill.id)}
             className={cn(
               categoryPill === pill.id && pill.id !== 'gnss_shortcut' && pill.id !== 'cuas_shortcut'
-                ? 'border-[var(--store-accent)] text-[var(--store-accent)]'
+                ? 'border-[var(--wb-blue)] text-[var(--wb-blue)]'
                 : 'border-[var(--store-line)] store-text-body'
             )}
           >

@@ -52,10 +52,10 @@ function Section({
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1.5">
-        <Icon className={cn('w-3 h-3 shrink-0', warn ? 'text-[var(--store-accent)]' : 'text-cyan')} />
-        <p className="text-[9px] uppercase tracking-wide store-text-muted">{title}</p>
+        <Icon className={cn('w-3 h-3 shrink-0', warn ? 'text-[var(--wb-blue)]' : 'text-cyan')} />
+        <p className="text-[11px] uppercase tracking-wide store-text-muted">{title}</p>
       </div>
-      <div className="text-[10px] leading-snug store-text-body">{children}</div>
+      <div className="text-[11px] leading-snug store-text-body">{children}</div>
     </div>
   )
 }
@@ -102,16 +102,16 @@ export function EncounterAssessmentPanel({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
             <Crosshair className="w-3.5 h-3.5 text-cyan shrink-0" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-cyan">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-cyan">
               Encounter assessment
             </span>
           </div>
-          <span className="text-[9px] font-mono store-text-muted">AeroCopilot · template</span>
+          <span className="text-[11px] font-mono store-text-muted">AeroCopilot · template</span>
         </div>
       </div>
 
       <div className="p-3 space-y-3 text-[11px]">
-        <p className="font-mono text-[10px] store-text-muted">{assessment.summary}</p>
+        <p className="font-mono text-[11px] store-text-muted">{assessment.summary}</p>
 
         <Section title="Encounter summary" icon={Crosshair} warn={flagged}>
           {assessment.encounterSummary}
@@ -123,7 +123,7 @@ export function EncounterAssessmentPanel({
           ) : (
             <ul className="space-y-1 mt-1">
               {assessment.threatsOnRoute.slice(0, 4).map((t) => (
-                <li key={t.instanceId} className="font-mono text-[9px] store-text-muted">
+                <li key={t.instanceId} className="font-mono text-[11px] store-text-muted">
                   {t.name} · Pk {t.peakPk_pct}% · Pd {t.peakPd_pct}% · {t.exposureKm.toFixed(1)} km
                 </li>
               ))}
@@ -144,11 +144,11 @@ export function EncounterAssessmentPanel({
         </Section>
 
         {mission.goalKind === 'target' && (
-          <div className="rounded-lg border border-[var(--store-accent-border)]/50 bg-black/25 p-2.5 space-y-2.5">
+          <div className="rounded-lg border border-[rgba(41,151,255,0.5)]/50 bg-black/25 p-2.5 space-y-2.5">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
-                <Bomb className="w-3.5 h-3.5 text-[var(--store-accent)] shrink-0" />
-                <p className="text-[9px] uppercase tracking-wide text-[var(--store-accent)]">
+                <Bomb className="w-3.5 h-3.5 text-[var(--wb-blue)] shrink-0" />
+                <p className="text-[11px] uppercase tracking-wide text-[var(--wb-blue)]">
                   Collateral damage estimate
                 </p>
               </div>
@@ -156,7 +156,7 @@ export function EncounterAssessmentPanel({
                 <button
                   type="button"
                   onClick={onOpenBlastTool}
-                  className="text-[9px] font-mono text-cyan hover:text-white underline"
+                  className="text-[11px] font-mono text-cyan hover:text-white underline"
                 >
                   Blast map
                 </button>
@@ -164,15 +164,15 @@ export function EncounterAssessmentPanel({
             </div>
 
             {!collateral?.applicable || !cde ? (
-              <p className="text-[10px] store-text-muted leading-snug">{collateral?.summary}</p>
+              <p className="text-[11px] store-text-muted leading-snug">{collateral?.summary}</p>
             ) : (
               <>
-                <p className="font-mono text-[10px] text-white">{collateral.warhead?.weapon_name}</p>
-                <p className="text-[9px] store-text-muted font-mono">
+                <p className="font-mono text-[11px] text-white">{collateral.warhead?.weapon_name}</p>
+                <p className="text-[11px] store-text-muted font-mono">
                   Impact {collateral.impactLat.toFixed(4)}°N {collateral.impactLon.toFixed(4)}°E
                 </p>
                 <div
-                  className="rounded-full px-3 py-1 text-center text-[10px] font-bold uppercase"
+                  className="rounded-lg px-3 py-1 text-center text-[11px] font-bold uppercase"
                   style={{
                     background: RISK_STYLE[cde.risk_category].bg,
                     color: RISK_STYLE[cde.risk_category].text,
@@ -183,30 +183,30 @@ export function EncounterAssessmentPanel({
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <p className="store-text-muted text-[9px]">Expected casualties</p>
+                    <p className="store-text-muted text-[11px]">Expected casualties</p>
                     <p className="text-xl text-white" style={mono}>{cde.expected_casualties}</p>
                   </div>
                   <div>
-                    <p className="store-text-muted text-[9px]">Expected injured</p>
+                    <p className="store-text-muted text-[11px]">Expected injured</p>
                     <p className="text-xl text-orange-300" style={mono}>{cde.expected_injured}</p>
                   </div>
                 </div>
                 <div className="rounded border border-[var(--store-line)] store-panel-inner px-2 py-1.5 space-y-0.5">
-                  <p className="store-text-muted text-[9px]">Pop. in hazard disk</p>
+                  <p className="store-text-muted text-[11px]">Pop. in hazard disk</p>
                   <p className="text-sm text-white" style={mono}>{cde.population_in_hazard_disk}</p>
-                  <p className="text-[9px] store-text-muted">
+                  <p className="text-[11px] store-text-muted">
                     Density{' '}
                     <span className="text-white" style={mono}>
                       {cde.pop_density_pkm2.toLocaleString()}
                     </span>{' '}
                     persons/km²
                   </p>
-                  <p className="text-[9px] store-text-muted">
+                  <p className="text-[11px] store-text-muted">
                     Lethal zone occupants (est.):{' '}
                     <span className="text-white" style={mono}>{cde.civilians_in_lethal_zone}</span>
                   </p>
                 </div>
-                <table className="w-full text-[9px]">
+                <table className="w-full text-[11px]">
                   <tbody>
                     {(
                       [
@@ -226,16 +226,16 @@ export function EncounterAssessmentPanel({
                   </tbody>
                 </table>
                 {collateral.warhead && (
-                  <p className="text-[9px] store-text-muted leading-snug">
+                  <p className="text-[11px] store-text-muted leading-snug">
                     {collateral.warhead.warhead_kg} kg NEW · TNT-eq {collateral.warhead.tnt_equivalent_kg} kg
                     {collateral.warhead.fragmentation_m
                       ? ` · frag radius ~${collateral.warhead.fragmentation_m} m`
                       : ''}
                   </p>
                 )}
-                <p className="text-[9px] store-text-muted leading-snug">{cde.proportionality_summary}</p>
-                <p className="text-[10px] text-amber-200/90">{cde.authority_required}</p>
-                <p className="text-[9px] store-text-muted">
+                <p className="text-[11px] store-text-muted leading-snug">{cde.proportionality_summary}</p>
+                <p className="text-[11px] text-amber-200/90">{cde.authority_required}</p>
+                <p className="text-[11px] store-text-muted">
                   Optimal time window (min ECCas):{' '}
                   <span className="text-white font-mono">{cde.recommended_time_window.replace(/_/g, ' ')}</span>
                 </p>
@@ -245,10 +245,10 @@ export function EncounterAssessmentPanel({
             {(onPopulationTierChange || onTimeOfDayChange || onBuildingProtectionChange) && (
               <div className="space-y-2 pt-2 border-t border-[var(--store-line)]">
                 {onPopulationTierChange && (
-                  <label className="block text-[9px] store-text-muted">
+                  <label className="block text-[11px] store-text-muted">
                     Population density
                     <select
-                      className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white text-[10px] font-mono"
+                      className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white text-[11px] font-mono"
                       value={populationTier}
                       onChange={(e) => onPopulationTierChange(e.target.value as PopulationDensityTier)}
                     >
@@ -259,10 +259,10 @@ export function EncounterAssessmentPanel({
                   </label>
                 )}
                 {onTimeOfDayChange && (
-                  <label className="block text-[9px] store-text-muted">
+                  <label className="block text-[11px] store-text-muted">
                     Time of day
                     <select
-                      className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white text-[10px] font-mono"
+                      className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white text-[11px] font-mono"
                       value={timeOfDay}
                       onChange={(e) => onTimeOfDayChange(e.target.value as TimeOfDay)}
                     >
@@ -273,10 +273,10 @@ export function EncounterAssessmentPanel({
                   </label>
                 )}
                 {onBuildingProtectionChange && (
-                  <label className="block text-[9px] store-text-muted">
+                  <label className="block text-[11px] store-text-muted">
                     Building protection
                     <select
-                      className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white text-[10px] font-mono"
+                      className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white text-[11px] font-mono"
                       value={buildingProtection}
                       onChange={(e) => onBuildingProtectionChange(e.target.value as BuildingProtection)}
                     >
@@ -290,7 +290,7 @@ export function EncounterAssessmentPanel({
             )}
 
             {platformWarheads.length > 1 && (
-              <p className="text-[9px] store-text-muted">
+              <p className="text-[11px] store-text-muted">
                 {platformWarheads.length} warhead options for this platform — use Blast tool to compare munitions.
               </p>
             )}
@@ -299,8 +299,8 @@ export function EncounterAssessmentPanel({
 
         {assessment.tacticalRecommendations.length > 0 && (
           <div className="rounded-lg border border-[var(--store-line)] bg-black/20 px-2.5 py-2 space-y-1">
-            <p className="text-[9px] uppercase tracking-wide text-[var(--store-accent)]">Tactical recommendations</p>
-            <ul className="list-disc list-inside text-[10px] store-text-muted space-y-0.5">
+            <p className="text-[11px] uppercase tracking-wide text-[var(--wb-blue)]">Tactical recommendations</p>
+            <ul className="list-disc list-inside text-[11px] store-text-muted space-y-0.5">
               {assessment.tacticalRecommendations.map((rec) => (
                 <li key={rec}>{rec}</li>
               ))}

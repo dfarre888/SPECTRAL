@@ -146,7 +146,7 @@ function SpecSection({ id, title, platform, rows }: SpecSectionProps) {
 
   return (
     <section id={id} className="scroll-mt-24">
-      <h3 className="text-[10px] font-mono uppercase tracking-wider store-text-muted px-4 pt-3 pb-1">
+      <h3 className="text-[11px] font-mono uppercase tracking-wider store-text-muted px-4 pt-3 pb-1">
         {title}
       </h3>
       <SpecGrid className="px-4 pb-2">
@@ -186,13 +186,13 @@ export function PlatformSpecSheet({ platform }: PlatformSpecSheetProps) {
             <a
               key={s.id}
               href={`#dossier-${s.id}`}
-              className="text-[10px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[var(--store-accent-border)] hover:text-[var(--store-accent)] transition-colors"
+              className="text-[11px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[rgba(41,151,255,0.5)] hover:text-[var(--wb-blue)] transition-colors"
             >
               {s.label}
             </a>
           ))}
         </nav>
-        <p className="px-4 pb-2 text-[10px] font-mono tabular-nums store-text-muted">
+        <p className="px-4 pb-2 text-[11px] font-mono tabular-nums store-text-muted">
           Date of information: {dateOfInformation}
         </p>
       </div>

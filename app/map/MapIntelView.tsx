@@ -90,13 +90,13 @@ const MapBottomBar = dynamic(
 )
 
 function mapToolbarBtn(active: boolean, accent: 'orange' | 'cyan'): string {
-  const base = 'map-press px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border shadow-md'
+  const base = 'map-press px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border shadow-md'
   if (active) {
     return accent === 'orange'
       ? `${base} bg-[#F97316] border-[#F97316] text-[var(--store-bg)]`
       : `${base} bg-[#06B6D4] border-[#06B6D4] text-[var(--store-bg)]`
   }
-  return `${base} bg-[var(--store-surface-2)] border-[var(--store-line)] text-white hover:bg-[var(--store-surface)] hover:border-[var(--store-accent-border)]`
+  return `${base} bg-[var(--store-surface-2)] border-[var(--store-line)] text-white hover:bg-[var(--store-surface)] hover:border-[rgba(41,151,255,0.5)]`
 }
 
 interface MapIntelViewProps {
@@ -985,12 +985,12 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
               Edit flight path
             </button>
             {riskMode === 'blast' && (
-              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
+              <select className="text-[11px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
                 {WARHEAD_DB.map((w) => (<option key={w.weapon_id} value={w.weapon_id}>{w.weapon_name}</option>))}
               </select>
             )}
             {riskMode === 'jamming' && (
-              <select className="text-[10px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
+              <select className="text-[11px] rounded-lg bg-[var(--store-surface-2)] border border-[var(--store-line)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
                 {JAMMER_DB.map((j) => (<option key={j.jammer_id} value={j.jammer_id}>{j.jammer_name}</option>))}
               </select>
             )}
@@ -1010,7 +1010,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         {showIadsPanel && (
           <div className="map-material-float absolute bottom-16 left-3 z-20 w-72 max-h-64 overflow-y-auto rounded-xl">
             <div className="flex justify-between items-center px-2 py-1 border-b border-[var(--store-line)]">
-              <span className="text-[10px] font-mono text-cyan">IADS stacks</span>
+              <span className="text-[11px] font-mono text-cyan">IADS stacks</span>
               <button type="button" className="store-text-muted text-xs" onClick={() => setShowIadsPanel(false)}>✕</button>
             </div>
             <IadsStackPanel
@@ -1024,7 +1024,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           </div>
         )}
         {stagingBanner && (
-          <div className="map-material-float absolute top-2 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3">
+          <div className="map-material-float absolute top-2 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl border-[rgba(41,151,255,0.5)] text-[11px] store-text-body flex items-start justify-between gap-3">
             <span>
               AeroCopilot staged {stagingBanner.stagedCount} system
               {stagingBanner.stagedCount === 1 ? '' : 's'} — {stagingBanner.matchedCount} matched
@@ -1034,7 +1034,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             <button
               type="button"
               onClick={dismissStagingBanner}
-              className="store-text-muted hover:text-[var(--store-accent)] shrink-0"
+              className="store-text-muted hover:text-[var(--wb-blue)] shrink-0"
               aria-label="Dismiss staging banner"
             >
               ✕
@@ -1042,7 +1042,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           </div>
         )}
         {forceBanner && (
-          <div className="map-material-float absolute top-14 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl border-[var(--store-accent-border)] text-[11px] store-text-body flex items-start justify-between gap-3">
+          <div className="map-material-float absolute top-14 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl border-[rgba(41,151,255,0.5)] text-[11px] store-text-body flex items-start justify-between gap-3">
             <span>
               Force package — {forceBanner.theatre}: {forceBanner.placed} envelopes placed
               {forceBanner.unmatched > 0
@@ -1053,7 +1053,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             <button
               type="button"
               onClick={() => setForceBanner(null)}
-              className="store-text-muted hover:text-[var(--store-accent)] shrink-0"
+              className="store-text-muted hover:text-[var(--wb-blue)] shrink-0"
               aria-label="Dismiss force package banner"
             >
               ✕
@@ -1061,13 +1061,13 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           </div>
         )}
         {flightPathEditActive && !placementMode.active && (
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-xl store-panel-inner border-[var(--store-accent-border)] text-[11px] text-[var(--store-accent)] font-medium max-w-lg text-center">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-xl store-panel-inner border-[rgba(41,151,255,0.5)] text-[11px] text-[var(--wb-blue)] font-medium max-w-lg text-center">
             Flight path edit — right-click line to add waypoint · drag waypoints · right-click waypoint for altitude · Esc to exit
           </div>
         )}
 
         {placementMode.active && (
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-xl store-panel-inner border-[var(--store-accent-border)] text-[11px] text-[var(--store-accent)] font-medium">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-xl store-panel-inner border-[rgba(41,151,255,0.5)] text-[11px] text-[var(--wb-blue)] font-medium">
 {placementMode.kind === 'mission-goal'
               ? 'Mission goal — click globe for target/AOI point · Esc to cancel'
               : placementMode.kind === 'loiter'
@@ -1137,7 +1137,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         {heatmapEnabled && !heatmap.loading && (
           <div
             className={cn(
-              'absolute top-12 left-3 z-20 max-w-sm px-3 py-2 rounded-xl store-panel border text-[10px] font-mono shadow-lg pointer-events-none',
+              'absolute top-12 left-3 z-20 max-w-sm px-3 py-2 rounded-xl store-panel border text-[11px] font-mono shadow-lg pointer-events-none',
               heatmap.error
                 ? 'border-amber/40 text-amber'
                 : 'border-cyan/30 text-cyan',

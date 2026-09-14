@@ -22,13 +22,13 @@ export function LoiterControls({
     return (
       <div className="p-2.5 rounded-xl store-panel-inner border border-[var(--store-line)] text-[11px] space-y-1">
         <div className="flex items-center justify-between store-text-body">
-          <span className="text-[var(--store-accent)] font-semibold text-[10px] tracking-wider uppercase">
+          <span className="text-[var(--wb-blue)] font-semibold text-[11px] tracking-wider uppercase">
             Loiter active
           </span>
           <button
             type="button"
             onClick={onClearLoiter}
-            className="store-text-muted hover:text-[var(--store-accent)]"
+            className="store-text-muted hover:text-[var(--wb-blue)]"
             title="Clear loiter plan"
           >
             <X className="w-3 h-3" />
@@ -38,7 +38,7 @@ export function LoiterControls({
         <p className="font-mono store-text-muted">On station {formatHHMM(uas.loiter.timeOnStation_min)}</p>
         <p className="font-mono store-text-muted">RTH {formatHHMM(uas.loiter.returnTime_min)}</p>
         {uas.loiter.exceedsEndurance && (
-          <p className="text-[var(--store-accent)] font-semibold text-[11px]">
+          <p className="text-[var(--wb-blue)] font-semibold text-[11px]">
             Exceeds endurance envelope
           </p>
         )}
@@ -49,7 +49,7 @@ export function LoiterControls({
   return (
     <div className="space-y-1.5">
       {loiterPlacing && (
-        <p className="text-[11px] text-[var(--store-accent)] animate-pulse">
+        <p className="text-[11px] text-[var(--wb-blue)] animate-pulse">
           Click the map to set loiter point
         </p>
       )}

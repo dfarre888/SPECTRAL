@@ -90,13 +90,15 @@ const MapBottomBar = dynamic(
 )
 
 function mapToolbarBtn(active: boolean, accent: 'orange' | 'cyan'): string {
-  const base = 'map-press px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border shadow-md'
+  // Variant E: outline at rest, filled with glow when active. Cyan is kept for
+  // EW tools so a jam-mode button reads as data, not chrome.
+  const base = 'map-press px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-colors duration-150'
   if (active) {
     return accent === 'orange'
-      ? `${base} bg-[#F97316] border-[#F97316] text-[var(--store-bg)]`
-      : `${base} bg-[#06B6D4] border-[#06B6D4] text-[var(--store-bg)]`
+      ? `${base} bg-[var(--wb-blue)] border-[var(--wb-blue)] text-white shadow-[0_0_22px_-6px_rgba(41,151,255,0.9)]`
+      : `${base} bg-[#06B6D4] border-[#06B6D4] text-[var(--store-bg)] shadow-[0_0_22px_-6px_rgba(6,182,212,0.9)]`
   }
-  return `${base} bg-[var(--store-surface-2)] border-[var(--store-line)] text-white hover:bg-[var(--store-surface)] hover:border-[rgba(41,151,255,0.5)]`
+  return `${base} bg-[rgba(255,255,255,0.03)] border-[var(--btn-line)] text-[var(--store-ink-soft)] hover:text-white hover:border-white`
 }
 
 interface MapIntelViewProps {

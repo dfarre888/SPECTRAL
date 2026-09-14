@@ -18,7 +18,7 @@ export function StoreFilterSidebar({ children, className }: StoreFilterSidebarPr
       )}
     >
       <div className="flex items-center gap-2 font-semibold text-sm mb-4 store-display text-white">
-        <SlidersHorizontal size={16} className="text-[var(--store-accent)]" />
+        <SlidersHorizontal size={16} className="text-[var(--wb-blue)]" />
         Filters
       </div>
       {children}
@@ -65,7 +65,7 @@ export function StoreFilterNavItem({
       className={cn(
         'w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[13px] text-left transition-all',
         active
-          ? 'bg-[var(--store-accent-glow)] text-[var(--store-accent)] font-semibold'
+          ? 'bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)] font-semibold'
           : 'store-text-body hover:bg-[var(--store-surface-2)] hover:text-white',
       )}
     >
@@ -77,7 +77,7 @@ export function StoreFilterNavItem({
         <span
           className={cn(
             'font-mono text-[11px] shrink-0',
-            active ? 'text-[var(--store-accent)]' : 'store-text-muted',
+            active ? 'text-[var(--wb-blue)]' : 'store-text-muted',
           )}
         >
           {count}

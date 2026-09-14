@@ -34,8 +34,8 @@ export function StoreHero({
     <section className={cn('relative z-10', compact ? 'pb-3' : 'pb-6', className)}>
       <span
         className={cn(
-          'inline-flex items-center gap-2 font-semibold rounded-full border border-[var(--store-accent-border)] bg-[var(--store-accent-glow)] text-[var(--store-accent)]',
-          compact ? 'text-[10px] px-2.5 py-1 mb-2' : 'text-xs px-3 py-1.5 mb-4',
+          'inline-flex items-center gap-2 store-text-muted',
+          compact ? 'text-[11px] mb-1.5' : 'text-[12px] mb-2',
         )}
       >
         {!compact ? <Sparkles size={12} /> : null}
@@ -71,13 +71,13 @@ export function StoreHero({
       {trustItems && trustItems.length > 0 ? (
         <div
           className={cn(
-            'flex flex-wrap gap-x-4 gap-y-1 text-[10px] store-text-muted',
+            'flex flex-wrap gap-x-4 gap-y-1 text-[11px] store-text-muted',
             compact ? 'mt-2' : 'mt-5 text-xs',
           )}
         >
           {trustItems.map(({ icon: Icon, label }) => (
             <span key={label} className="inline-flex items-center gap-1.5">
-              <Icon size={compact ? 12 : 14} className="text-[var(--store-accent)]" />
+              <Icon size={compact ? 12 : 14} className="text-[var(--wb-blue)]" />
               {label}
             </span>
           ))}

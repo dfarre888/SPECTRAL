@@ -83,7 +83,7 @@ export function ModuleCard({
         </h3>
         <p className="text-[13px] leading-relaxed line-clamp-2 store-text-body">{blurb}</p>
         <p className="font-mono text-sm mt-auto pt-2 tabular-nums">
-          <span className="text-[var(--store-accent)] font-bold">{count}</span>{' '}
+          <span className="text-[var(--wb-blue)] font-bold">{count}</span>{' '}
           <span className="store-text-muted text-xs">{unit}</span>
         </p>
       </div>

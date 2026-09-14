@@ -252,7 +252,7 @@ export function AssetSidebar({
           <ForceFilterButton
             label="BOTH"
             active={forceFilter === 'both'}
-            activeClassName="bg-orange text-[#0a0a0a] border-orange"
+            activeClassName="bg-[var(--store-ink)] text-black border-[var(--store-ink)]"
             onClick={() => setForceFilter('both')}
           />
         </div>

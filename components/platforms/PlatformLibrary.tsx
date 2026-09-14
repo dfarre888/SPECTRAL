@@ -60,15 +60,9 @@ export function PlatformLibrary({ platforms, countries, sovereignPlatforms = [] 
   return (
     <div className="pb-24">
       <StoreHero
-        eyebrow="OSINT Database"
-        title={
-          <>
-            Military UAS Platforms,
-            <br />
-            Curated for Threat Analysis
-          </>
-        }
-        subtitle="World UAS order of battle from open sources — specifications, EW bands, combat employment, and defeat cross-reference. OSINT catalogue for operational threat analysis."
+        eyebrow="OSINT database"
+        title="Platform Library"
+        subtitle={`${platforms.length} UAS, jammers and C-UAS systems from open sources: specifications, EW bands, combat employment, defeat cross-reference.`}
         trustChip={
           <>
             <span

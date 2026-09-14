@@ -105,12 +105,12 @@ export function Workbench({
     ro.observe(el)
     return () => ro.disconnect()
   }, [])
-  const cols = hostW >= 1000 ? 3 : hostW >= 680 ? 2 : 1
+  const cols = hostW >= 940 ? 3 : hostW >= 680 ? 2 : 1
   const gridCols =
     cols === 3
       ? hostW >= 1240
         ? '280px minmax(0,1fr) 360px'
-        : '232px minmax(0,1fr) 316px'
+        : '216px minmax(0,1fr) 300px'
       : cols === 2
         ? '240px minmax(0,1fr)'
         : 'minmax(0,1fr)'

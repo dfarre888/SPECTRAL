@@ -586,6 +586,7 @@ p {
   box-shadow: 0 0 22px -6px rgba(41, 151, 255, 0.9);
 }
 .btn-e.sm { min-height: 30px; padding: 0 10px; font-size: 12px; border-radius: 7px; }
+.btn-e.xs { min-height: 24px; padding: 0 7px; font-size: 11px; border-radius: 6px; gap: 4px; }
 @media (prefers-reduced-motion: reduce) { .fc-tab, .btn-e { transition: none; } }
 .fc-inst { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .fc-inst > div { padding: 20px 22px 18px 0; border-right: 1px solid var(--store-line); min-width: 0; }

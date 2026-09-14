@@ -74,10 +74,10 @@ export function Roster({
       <header className="flex items-center gap-2 px-3 py-2 border-b store-line">
         <span className="wb-pane-title">Roster</span>
         <span className="text-[11px] font-mono tabular-nums store-text-muted">{active.length}</span>
-        <div className="ml-auto flex gap-0.5" role="group" aria-label="Sort roster">
+        <div className="ml-auto flex gap-1 shrink-0" role="group" aria-label="Sort roster">
           {(['name', 'nation', 'tier'] as const).map((k) => (
             <button key={k} type="button" aria-pressed={sort === k} onClick={() => setSort(k)}
-              className="btn-e sm font-mono capitalize">
+              className="btn-e xs font-mono capitalize">
               {k}
             </button>
           ))}

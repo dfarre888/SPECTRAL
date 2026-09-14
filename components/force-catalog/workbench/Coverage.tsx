@@ -41,10 +41,10 @@ export function Coverage({
           {result.benchedCount ? <> · <span className="text-[var(--wb-ir)]">{result.benchedCount} benched</span></> : null}
           {result.sensorGapCount ? <> · {result.sensorGapCount} without sensor data</> : null}
         </span>
-        <div className="ml-auto flex gap-0.5" role="group" aria-label="Sort rows">
+        <div className="ml-auto flex gap-1 shrink-0" role="group" aria-label="Sort rows">
           {([['coverage', 'Coverage'], ['rarest', 'Rarest'], ['az', 'A–Z']] as const).map(([k, label]) => (
             <button key={k} type="button" aria-pressed={sort === k} onClick={() => onSort(k)}
-              className="btn-e sm font-mono">
+              className="btn-e xs font-mono">
               {label}
             </button>
           ))}

@@ -9,7 +9,7 @@ import { variantLabel } from '@/lib/coalition/link-variants'
 import type { InteropResult } from '@/lib/coalition/interop'
 import type { CoverageRow } from '@/lib/force-catalog/coverage-model'
 import { findNet } from '@/lib/force-catalog/coverage-model'
-import { sensorBands } from '@/lib/force-catalog/spectrum-bands'
+import { BAND_KIND, sensorBands } from '@/lib/force-catalog/spectrum-bands'
 import { TalkGraph } from './TalkGraph'
 
 export type InspectorMode =
@@ -60,7 +60,7 @@ export function Inspector({
   return (
     <aside className="store-panel rounded-2xl flex flex-col min-h-0" aria-label="Inspector">
       <header className="flex items-center gap-2 px-3 py-2 border-b store-line">
-        <span className="text-[12px] store-text-body">
+        <span className="wb-pane-title">
           {mode?.type === 'platform' ? 'Platform' : mode?.type === 'net' ? 'Comms net' : mode?.type === 'capability' ? 'Capability' : 'Inspector'}
         </span>
         {mode ? (
@@ -105,7 +105,11 @@ export function Inspector({
                       <span className="ml-auto text-[11px] font-mono store-text-muted">{s.kind}</span>
                     </div>
                     <div className="flex flex-wrap gap-1">
-                      {sensorBands(s).map((b) => <span key={b} className="text-[11px] font-mono px-1.5 py-0.5 rounded border store-line store-text-body">{b}</span>)}
+                      {sensorBands(s).map((b) => {
+                        const k = BAND_KIND[b] ?? 'rf'
+                        const c = k === 'ir' ? 'var(--wb-ir)' : k === 'optical' ? 'var(--wb-optical)' : 'var(--wb-rf)'
+                        return <span key={b} className="text-[11px] font-mono px-1.5 py-0.5 rounded border" style={{ borderColor: c, color: c }}>{b}</span>
+                      })}
                       {sensorBands(s).length === 0 ? <span className="text-[11px] font-mono store-text-muted">band not stated</span> : null}
                     </div>
                     {s.can_detect.length ? <p className="text-[11px] font-mono store-text-muted">detects {s.can_detect.join(', ')}</p> : null}

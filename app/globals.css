@@ -530,3 +530,39 @@ p {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* ------------------------------------------------------------------ *
+   Workbench data colours. Colour belongs to the data: force side, comms
+   tier, sensing band family. Chrome stays matte black; glow only on the
+   element that is live.
+ * ------------------------------------------------------------------ */
+:root {
+  --wb-blue: #2997FF;
+  --wb-red: #FF5C6E;
+  --wb-neutral: #8E8E93;
+  --wb-track: #2997FF;
+  --wb-data: #06B6D4;
+  --wb-voice: #8E8E93;
+  --wb-rf: #2997FF;
+  --wb-ir: #F97316;
+  --wb-optical: #A78BFA;
+}
+.wb-glow-blue    { filter: drop-shadow(0 0 6px rgba(41, 151, 255, 0.55)); }
+.wb-glow-ir      { filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.55)); }
+.wb-glow-optical { filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.55)); }
+.wb-glow-cyan    { filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.55)); }
+.wb-pane-title {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--store-ink);
+  letter-spacing: -0.01em;
+}
+.wb-graph-bg {
+  background:
+    radial-gradient(60% 60% at 50% 45%, rgba(41, 151, 255, 0.10) 0%, transparent 70%),
+    var(--store-bg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .wb-glow-blue, .wb-glow-ir, .wb-glow-optical, .wb-glow-cyan { filter: none; }
+}

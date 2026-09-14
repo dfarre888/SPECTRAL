@@ -8,14 +8,20 @@
  */
 import { useMemo } from 'react'
 import { spectrumForNet } from '@/lib/coalition/comms-spectrum'
-import { SENSING_BANDS, type BandFill, type SensorBand } from '@/lib/force-catalog/spectrum-bands'
+import { BAND_KIND, SENSING_BANDS, type BandFill, type SensorBand } from '@/lib/force-catalog/spectrum-bands'
+import type { ConnTier } from '@/lib/coalition/datalink-matrix'
 
 export interface NetFill {
   key: string
   label: string
   active: number
   total: number
+  tier: ConnTier
 }
+const TIER_COLOR: Record<ConnTier, string> = { track: 'var(--wb-track)', data: 'var(--wb-data)', voice: 'var(--wb-voice)', none: 'var(--wb-voice)' }
+const TIER_GLOW: Record<ConnTier, string> = { track: 'wb-glow-blue', data: 'wb-glow-cyan', voice: '', none: '' }
+const KIND_COLOR = { rf: 'var(--wb-rf)', ir: 'var(--wb-ir)', optical: 'var(--wb-optical)' } as const
+const KIND_GLOW = { rf: 'wb-glow-blue', ir: 'wb-glow-ir', optical: 'wb-glow-optical' } as const
 
 const LO = 2
 const HI = 40_000
@@ -48,7 +54,7 @@ export function SpectrumRibbon({
   onToggleBand: (b: string) => void
 }) {
   const bars = useMemo(() => {
-    const out: { key: string; label: string; x: number; w: number; h: number; band: string }[] = []
+    const out: { key: string; label: string; x: number; w: number; h: number; band: string; tier: ConnTier }[] = []
     for (const n of nets) {
       const spec = spectrumForNet(n.key.replace(/\/.*$/, ''))
       if (!spec || !n.total) continue
@@ -57,7 +63,7 @@ export function SpectrumRibbon({
         const w = Math.max(3, xOf(sp.hiMhz) - x)
         const h = n.active ? Math.round(Math.max(2, (H - 6) * (n.active / n.total)) * 100) / 100 : 0
         const tick = TICKS.filter((t) => t[0] <= sp.hiMhz).pop()
-        out.push({ key: `${n.key}:${sp.loMhz}`, label: n.label, x, w, h, band: tick?.[1] ?? 'HF' })
+        out.push({ key: `${n.key}:${sp.loMhz}`, label: n.label, x, w, h, band: tick?.[1] ?? 'HF', tier: n.tier })
       }
     }
     return out
@@ -66,35 +72,45 @@ export function SpectrumRibbon({
   return (
     <div className="store-panel rounded-2xl px-4 py-3 space-y-2" aria-label="Spectrum ribbon">
       <div className="flex items-baseline justify-between">
-        <span className="text-[11px] store-text-muted">Comms</span>
-        <span className="text-[11px] font-mono store-text-muted">2 MHz → 40 GHz, log</span>
+        <span className="wb-pane-title">Comms</span>
+        <span className="text-[11px] font-mono store-text-muted flex items-center gap-3">
+          <span className="inline-flex items-center gap-1"><i className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--wb-track)' }} />track</span>
+          <span className="inline-flex items-center gap-1"><i className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--wb-data)' }} />data</span>
+          <span className="inline-flex items-center gap-1"><i className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--wb-voice)' }} />voice</span>
+          <span>2 MHz → 40 GHz, log</span>
+        </span>
       </div>
       <svg viewBox={`0 0 ${W} ${H + 16}`} className="w-full h-[60px] block" role="img" aria-label="Comms nets by frequency">
         {TICKS.map(([mhz, label]) => (
           <g key={label} data-band-state={state(label, focusBand)} onMouseEnter={() => onHoverBand(label)} onMouseLeave={() => onHoverBand(null)} onClick={() => onToggleBand(label)} className="cursor-pointer">
-            <line x1={xOf(mhz)} x2={xOf(mhz)} y1={0} y2={H} stroke="var(--store-line)" strokeWidth={1} />
-            <text x={xOf(mhz) + 4} y={H + 12} fontSize={11} fontFamily="JetBrains Mono, monospace" fill={activeBands.has(label) ? 'var(--store-accent)' : 'var(--store-ink-mute)'}>{label}</text>
+            <line x1={xOf(mhz)} x2={xOf(mhz)} y1={0} y2={H} stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
+            <text x={xOf(mhz) + 4} y={H + 12} fontSize={11} fontFamily="JetBrains Mono, monospace" fill={activeBands.has(label) ? 'var(--store-ink)' : 'var(--store-ink-mute)'}>{label}</text>
             <rect x={xOf(mhz)} y={0} width={xOf(TICKS[TICKS.indexOf(TICKS.find((t) => t[1] === label)!) + 1]?.[0] ?? HI) - xOf(mhz)} height={H} fill="transparent" />
           </g>
         ))}
         {bars.map((b) => (
-          <g key={b.key} data-band-state={state(b.band, focusBand)} className="rb-bar">
-            <rect x={b.x} y={2} width={b.w} height={H - 4} fill="none" stroke="var(--store-line)" strokeWidth={1} rx={2} />
-            <rect x={b.x} y={H - 2 - b.h} width={b.w} height={b.h} fill="var(--store-accent)" opacity={0.85} rx={2} style={{ transition: 'y 250ms cubic-bezier(0.22,1,0.36,1), height 250ms cubic-bezier(0.22,1,0.36,1)' }}>
-              <title>{`${b.label}`}</title>
+          <g key={b.key} data-band-state={state(b.band, focusBand)} className={`rb-bar ${b.h > 0 ? TIER_GLOW[b.tier] : ''}`}>
+            <rect x={b.x} y={2} width={b.w} height={H - 4} fill="var(--store-surface-2)" rx={3} />
+            <rect x={b.x} y={H - 2 - b.h} width={b.w} height={b.h} fill={TIER_COLOR[b.tier]} opacity={0.9} rx={3} style={{ transition: 'y 250ms cubic-bezier(0.22,1,0.36,1), height 250ms cubic-bezier(0.22,1,0.36,1)' }}>
+              <title>{`${b.label} · ${b.tier}`}</title>
             </rect>
           </g>
         ))}
       </svg>
 
       <div className="flex items-baseline justify-between pt-1">
-        <span className="text-[11px] store-text-muted">Sensing</span>
-        <span className="text-[11px] font-mono store-text-muted">RF · IR · optical</span>
+        <span className="wb-pane-title">Sensing</span>
+        <span className="text-[11px] font-mono store-text-muted flex items-center gap-3">
+          <span className="inline-flex items-center gap-1"><i className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--wb-rf)' }} />RF</span>
+          <span className="inline-flex items-center gap-1"><i className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--wb-ir)' }} />IR</span>
+          <span className="inline-flex items-center gap-1"><i className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--wb-optical)' }} />optical</span>
+        </span>
       </div>
       <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${SENSING_BANDS.length}, minmax(0, 1fr))` }} role="group" aria-label="Sensing bands">
         {sensing.map((f) => {
           const pct = f.total ? f.active / f.total : 0
           const has = f.total > 0
+          const kind = BAND_KIND[f.band]
           return (
             <button
               key={f.band}
@@ -105,16 +121,15 @@ export function SpectrumRibbon({
               onMouseLeave={() => onHoverBand(null)}
               onClick={() => onToggleBand(f.band)}
               title={has ? `${f.band}: ${f.active} of ${f.total} platforms` : `${f.band}: no platform in scope lists it`}
-              className={`group flex flex-col items-stretch gap-1 rounded-md px-0.5 pt-1 pb-1 min-h-10 transition-colors duration-150 ${activeBands.has(f.band) ? 'bg-[var(--store-accent-glow)]' : 'hover:bg-[var(--store-surface-2)]'}`}
+              className={`group flex flex-col items-stretch gap-1.5 rounded-md px-1 pt-1 pb-1 min-h-10 transition-colors duration-150 ${activeBands.has(f.band) ? 'bg-[var(--store-surface-2)] ring-1 ring-[var(--store-line-strong)]' : 'hover:bg-[var(--store-surface-2)]'}`}
             >
-              <span className="relative block h-7 rounded-sm border" style={{ borderColor: has ? 'var(--store-line)' : 'transparent' }}>
+              <span className="relative block h-7 rounded-full mx-auto w-1.5" style={{ background: has ? 'var(--store-surface-3)' : 'transparent', outline: has ? 'none' : '1px dashed var(--store-line)' }}>
                 <span
-                  className="absolute inset-x-0 bottom-0 rounded-sm"
-                  style={{ height: `${Math.max(pct > 0 ? 6 : 0, pct * 100)}%`, background: 'var(--store-accent)', opacity: 0.85, transition: 'height 250ms cubic-bezier(0.22,1,0.36,1)' }}
+                  className={`absolute inset-x-0 bottom-0 rounded-full ${pct > 0 ? KIND_GLOW[kind] : ''}`}
+                  style={{ height: `${Math.max(pct > 0 ? 12 : 0, pct * 100)}%`, background: KIND_COLOR[kind], transition: 'height 250ms cubic-bezier(0.22,1,0.36,1)' }}
                 />
-                {!has ? <span className="absolute inset-0 rounded-sm" style={{ background: 'repeating-linear-gradient(45deg, transparent 0 3px, var(--store-line) 3px 4px)', opacity: 0.5 }} /> : null}
               </span>
-              <span className={`text-[11px] font-mono tabular-nums text-center ${activeBands.has(f.band) ? 'store-accent' : has ? 'store-text-body' : 'store-text-muted'}`}>{f.band}</span>
+              <span className={`text-[11px] font-mono tabular-nums text-center ${activeBands.has(f.band) ? 'text-[var(--store-ink)]' : has ? 'store-text-body' : 'store-text-muted'}`}>{f.band}</span>
             </button>
           )
         })}

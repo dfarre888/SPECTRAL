@@ -22,7 +22,8 @@ interface Link extends SimulationLinkDatum<Node> {
   island: number
 }
 
-const TIER_FILL: Record<ConnTier, string> = { track: 'var(--store-accent)', data: '#2997FF', voice: '#8A8A8E', none: 'transparent' }
+const SIDE_FILL: Record<ForceCatalogPlatformFull['force_side'], string> = { blue: 'var(--wb-blue)', red: 'var(--wb-red)', neutral: 'var(--wb-neutral)' }
+const SIDE_GLOW: Record<ForceCatalogPlatformFull['force_side'], string> = { blue: 'wb-glow-blue', red: '', neutral: '' }
 const W = 340
 const H = 300
 
@@ -88,22 +89,22 @@ export function TalkGraph({
   const r = nodes.length > 120 ? 3.5 : 5
   return (
     <div className="space-y-1">
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[300px] block rounded-lg bg-[var(--store-bg)] border store-line" role="img" aria-label={`Talk graph for ${net.label}`}>
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[300px] block rounded-lg wb-graph-bg border store-line" role="img" aria-label={`Talk graph for ${net.label}`}>
       {links.map((l, i) => {
         const s = l.source as Node
         const t = l.target as Node
         if (s.x == null || t.x == null) return null
         const faded = fadedIds.has(s.id) || fadedIds.has(t.id)
-        return <line key={i} x1={s.x} y1={s.y} x2={t.x} y2={t.y} stroke="var(--store-line)" strokeWidth={1} opacity={faded ? 0.25 : 1} />
+        return <line key={i} x1={s.x} y1={s.y} x2={t.x} y2={t.y} stroke="rgba(41,151,255,0.28)" strokeWidth={1} opacity={faded ? 0.2 : 1} />
       })}
       {positions.map((n) => {
         const faded = fadedIds.has(n.id)
         const x = Math.max(12, Math.min(W - 12, n.x ?? W / 2))
         const y = Math.max(12, Math.min(H - 12, n.y ?? H / 2))
         return (
-          <g key={n.id} transform={`translate(${x},${y})`} opacity={faded ? 0.3 : 1} style={{ transition: 'opacity 250ms ease-out' }} className="cursor-pointer" onClick={() => { const p = byId.get(n.id); if (p) onSelect(p) }}>
-            {n.gateway ? <circle r={9} fill="none" stroke="var(--store-ink-soft)" strokeDasharray="2 2" strokeWidth={1} /> : null}
-            <circle r={r} fill={n.side === 'red' ? '#8A8A8E' : TIER_FILL[tier]} stroke="var(--store-bg)" strokeWidth={1} />
+          <g key={n.id} transform={`translate(${x},${y})`} opacity={faded ? 0.3 : 1} style={{ transition: 'opacity 250ms ease-out' }} className={`cursor-pointer ${!dense && !faded ? SIDE_GLOW[n.side] : ''}`} onClick={() => { const p = byId.get(n.id); if (p) onSelect(p) }}>
+            {n.gateway ? <circle r={r + 4} fill="none" stroke="var(--store-ink-soft)" strokeDasharray="2 2" strokeWidth={1} /> : null}
+            <circle r={r} fill={SIDE_FILL[n.side]} stroke="var(--store-bg)" strokeWidth={1} />
             <title>{`${n.label}${n.gateway ? ' · gateway' : ''}${faded ? ' · drops out under GNSS denial' : ''}`}</title>
             {!dense ? <text y={16} textAnchor="middle" fontSize={10} fontFamily="JetBrains Mono, monospace" fill="var(--store-ink-mute)">{n.label.length > 10 ? `${n.label.slice(0, 9)}…` : n.label}</text> : null}
           </g>
@@ -111,7 +112,7 @@ export function TalkGraph({
       })}
     </svg>
     <p className="text-[11px] font-mono store-text-muted">
-      {nodes.length} nodes{dense ? ', hover for names' : ''} · orange blue, grey red · dashed ring = gateway
+      {nodes.length} nodes{dense ? ', hover for names' : ''} · blue / red force · dashed ring = gateway · {tier} tier
     </p>
     </div>
   )

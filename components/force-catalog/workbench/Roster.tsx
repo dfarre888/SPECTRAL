@@ -18,10 +18,11 @@ export type RosterSort = 'name' | 'nation' | 'tier'
 const TIER_RANK: Record<ConnTier, number> = { track: 0, data: 1, voice: 2, none: 3 }
 
 function sideDot(side: ForceCatalogPlatformFull['force_side']) {
-  if (side === 'blue') return 'var(--store-accent)'
-  if (side === 'red') return '#8A8A8E'
-  return 'var(--store-ink-mute)'
+  if (side === 'blue') return 'var(--wb-blue)'
+  if (side === 'red') return 'var(--wb-red)'
+  return 'var(--wb-neutral)'
 }
+const TIER_COLOR: Record<ConnTier, string> = { track: 'var(--wb-track)', data: 'var(--wb-data)', voice: 'var(--wb-voice)', none: 'var(--store-ink-faint)' }
 
 export function Roster({
   platforms,
@@ -71,7 +72,7 @@ export function Roster({
   return (
     <section className="store-panel rounded-2xl flex flex-col min-h-0" aria-label="Roster">
       <header className="flex items-center gap-2 px-3 py-2 border-b store-line">
-        <span className="text-[12px] store-text-body">Roster</span>
+        <span className="wb-pane-title">Roster</span>
         <span className="text-[11px] font-mono tabular-nums store-text-muted">{active.length}</span>
         <div className="ml-auto flex gap-0.5" role="group" aria-label="Sort roster">
           {(['name', 'nation', 'tier'] as const).map((k) => (
@@ -91,13 +92,13 @@ export function Roster({
           const inMulti = multi.has(p.id)
           return (
             <li key={p.id}
-              className={`group flex items-center gap-2 px-3 h-9 transition-[background-color,opacity] duration-200 ${sel ? 'bg-[var(--store-accent-glow)]' : inMulti ? 'bg-[var(--store-surface-2)]' : 'hover:bg-[var(--store-surface-2)]'}`}>
+              className={`group flex items-center gap-2 px-3 h-9 transition-[background-color,opacity] duration-200 ${sel ? 'bg-[var(--store-surface-2)] shadow-[inset_2px_0_0_var(--wb-blue)]' : inMulti ? 'bg-[var(--store-surface-2)]' : 'hover:bg-[var(--store-surface-2)]'}`}>
               <button type="button" onClick={(e) => click(e, p)} className="flex-1 min-w-0 flex items-center gap-2 text-left cursor-pointer" title={`${p.designation} · ${p.nation_name}`}>
                 <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: sideDot(p.force_side) }} aria-hidden />
-                <span className={`text-[12px] truncate ${sel ? 'store-accent' : 'store-text-body'}`}>{p.short_name}</span>
+                <span className={`text-[12px] truncate ${sel ? 'text-[var(--store-ink)]' : 'store-text-body'}`}>{p.short_name}</span>
                 <span className="text-[11px] font-mono store-text-muted shrink-0">{p.nation_code}</span>
                 {gap ? <span className="h-2 w-2 rounded-full border shrink-0" style={{ borderColor: 'var(--store-ink-mute)' }} title="No sensors listed (OSINT gap)" aria-label="No sensors listed" /> : null}
-                <span className="ml-auto text-[11px] font-mono store-text-muted w-3 text-center shrink-0" title={TIER_TITLE[tier]}>{TIER_MARK[tier]}</span>
+                <span className="ml-auto text-[11px] font-mono w-3 text-center shrink-0" style={{ color: TIER_COLOR[tier] }} title={TIER_TITLE[tier]}>{TIER_MARK[tier]}</span>
               </button>
               <button type="button" onClick={() => onBench([p.id])} aria-label={`Bench ${p.short_name}`}
                 className="h-7 w-7 inline-flex items-center justify-center rounded store-text-muted opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:store-text-body hover:bg-[var(--store-surface-3)] transition-opacity duration-150">
@@ -112,13 +113,13 @@ export function Roster({
       {multi.size > 0 ? (
         <div className="px-3 py-2 border-t store-line flex items-center gap-2">
           <span className="text-[11px] font-mono store-text-muted">{multi.size} selected</span>
-          <button type="button" onClick={() => { onBench([...multi]); setMulti(new Set()) }} className="ml-auto text-[11px] font-mono px-2.5 py-1 min-h-8 rounded border store-accent-border store-accent">Bench selected</button>
+          <button type="button" onClick={() => { onBench([...multi]); setMulti(new Set()) }} className="ml-auto text-[11px] font-mono px-2.5 py-1 min-h-8 rounded border border-[var(--wb-blue)] text-[var(--wb-blue)]">Bench selected</button>
         </div>
       ) : null}
 
       <details className="border-t store-line" open={out.length > 0 || undefined}>
         <summary className="flex items-center gap-2 px-3 min-h-10 cursor-pointer list-none [&::-webkit-details-marker]:hidden select-none">
-          <span className="text-[12px] store-text-body">Benched</span>
+          <span className="wb-pane-title">Benched</span>
           <span className="text-[11px] font-mono tabular-nums store-text-muted">{out.length}</span>
           {out.length ? (
             <button type="button" onClick={(e) => { e.preventDefault(); onRestore(out.map((p) => p.id)) }} className="ml-auto inline-flex items-center gap-1 text-[11px] font-mono store-text-muted hover:store-text-body">
@@ -132,7 +133,7 @@ export function Roster({
               <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: sideDot(p.force_side) }} aria-hidden />
               <span className="text-[12px] truncate line-through decoration-[var(--store-ink-mute)] store-text-muted">{p.short_name}</span>
               <span className="text-[11px] font-mono store-text-muted">{p.nation_code}</span>
-              <button type="button" onClick={() => onRestore([p.id])} aria-label={`Restore ${p.short_name}`} className="ml-auto text-[11px] font-mono store-accent hover:underline">Restore</button>
+              <button type="button" onClick={() => onRestore([p.id])} aria-label={`Restore ${p.short_name}`} className="ml-auto text-[11px] font-mono text-[var(--wb-blue)] hover:underline">Restore</button>
             </li>
           ))}
         </ul>

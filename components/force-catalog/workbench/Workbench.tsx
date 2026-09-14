@@ -66,7 +66,7 @@ export function Workbench({
   )
   const sensing = useMemo(() => bandFill(platforms, benched), [platforms, benched])
   const nets: NetFill[] = useMemo(
-    () => coverage.sections[0].rows.map((r) => ({ key: r.id, label: r.label, active: r.active, total: r.ghost })),
+    () => coverage.sections[0].rows.map((r) => ({ key: r.id, label: r.label, active: r.active, total: r.ghost, tier: r.tier ?? 'voice' })),
     [coverage],
   )
   const statusById = useMemo(() => {

@@ -35,10 +35,10 @@ export function Coverage({
   return (
     <section className="store-panel rounded-2xl flex flex-col min-h-0" aria-label="Coverage">
       <header className="flex items-center gap-3 px-3 py-2 border-b store-line whitespace-nowrap overflow-hidden">
-        <span className="text-[12px] store-text-body">Coverage</span>
+        <span className="wb-pane-title">Coverage</span>
         <span className="text-[11px] font-mono tabular-nums store-text-muted truncate" title="Share of rows with at least one active holder">
-          <span className="store-text-body">{result.coveragePct}%</span> · {result.activeCount} active
-          {result.benchedCount ? <> · <span className="store-accent">{result.benchedCount} benched</span></> : null}
+          <span className="text-[var(--store-ink)]">{result.coveragePct}%</span> · {result.activeCount} active
+          {result.benchedCount ? <> · <span className="text-[var(--wb-ir)]">{result.benchedCount} benched</span></> : null}
           {result.sensorGapCount ? <> · {result.sensorGapCount} without sensor data</> : null}
         </span>
         <div className="ml-auto flex gap-0.5" role="group" aria-label="Sort rows">
@@ -71,7 +71,7 @@ export function Coverage({
                       disabled={row.noData}
                       aria-pressed={sel}
                       className={`w-full text-left grid grid-cols-[minmax(140px,1fr)_minmax(160px,3fr)_76px] items-center gap-3 px-2 rounded-lg min-h-10 transition-colors duration-150 ${
-                        lost ? 'gloss-tile purple' : sel ? 'bg-[var(--store-accent-glow)]' : row.noData ? 'cursor-default' : 'hover:bg-[var(--store-surface-2)]'
+                        lost ? 'gloss-tile purple' : sel ? 'bg-[var(--store-surface-2)] ring-1 ring-[var(--store-line-strong)]' : row.noData ? 'cursor-default' : 'hover:bg-[var(--store-surface-2)]'
                       }`}
                     >
                       <span className="min-w-0">
@@ -83,16 +83,16 @@ export function Coverage({
                           {lost ? <span className="text-[var(--store-ink-soft)]"> · lost with {row.lostWith.slice(0, 3).join(', ')}{row.lostWith.length > 3 ? ` +${row.lostWith.length - 3}` : ''}</span> : null}
                         </span>
                       </span>
-                      <span className="relative block h-3 rounded-sm">
+                      <span className="relative block h-1.5 rounded-full" style={{ background: row.noData ? 'transparent' : 'var(--store-surface-3)' }}>
                         {row.noData ? (
                           <span className="absolute inset-0 rounded-sm" style={{ background: 'repeating-linear-gradient(45deg, transparent 0 4px, var(--store-line) 4px 5px)' }} />
                         ) : (
                           <>
-                            <span className="absolute inset-y-0 left-0 rounded-sm border" style={{ width: w(row.ghost), borderColor: lost ? 'rgba(255,255,255,0.35)' : 'var(--store-line)', transition: 'width 250ms cubic-bezier(0.22,1,0.36,1)' }} />
-                            <span className="absolute inset-y-0 left-0 flex rounded-sm overflow-hidden" style={{ width: w(row.active), transition: 'width 250ms cubic-bezier(0.22,1,0.36,1)' }}>
-                              <span style={{ flex: row.bySide.blue, background: 'var(--store-accent)' }} />
-                              <span style={{ flex: row.bySide.red, background: '#8A8A8E' }} />
-                              <span style={{ flex: row.bySide.neutral, background: 'var(--store-ink-mute)' }} />
+                            <span className="absolute inset-y-0 left-0 rounded-full" style={{ width: w(row.ghost), background: lost ? 'rgba(255,255,255,0.22)' : 'var(--store-line-strong)', transition: 'width 250ms cubic-bezier(0.22,1,0.36,1)' }} />
+                            <span className={`absolute inset-y-0 left-0 flex rounded-full overflow-hidden ${sel ? 'wb-glow-blue' : ''}`} style={{ width: w(row.active), transition: 'width 250ms cubic-bezier(0.22,1,0.36,1)' }}>
+                              <span style={{ flex: row.bySide.blue, background: 'var(--wb-blue)' }} />
+                              <span style={{ flex: row.bySide.red, background: 'var(--wb-red)' }} />
+                              <span style={{ flex: row.bySide.neutral, background: 'var(--wb-neutral)' }} />
                             </span>
                           </>
                         )}

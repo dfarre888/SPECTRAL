@@ -65,6 +65,30 @@ export function ThreatRoutePanel({ start, objective, placed, speedMps = 250 }: T
     return makeProjection(pts, W, H)
   }, [start, objective, threats])
 
+  /**
+   * Label positions, pushed apart so co-located emitters stay readable.
+   *
+   * A laydown deliberately stacks systems — a Pantsir sits inside an S-300 ring
+   * by design — so two labels landing within a line-height of each other is the
+   * normal case, not an edge case. Walking them down in y order and enforcing a
+   * minimum gap keeps the association with the marker while stopping the text
+   * overlapping, which is what made "Pantsir" and "S-300" unreadable.
+   */
+  const labelPos = useMemo(() => {
+    const MIN_GAP = 11
+    const rows = threats
+      .map((t, i) => ({ i, x: proj.x(t.lon) + 6, y: proj.y(t.lat) - 6 }))
+      .sort((a, b) => a.y - b.y)
+    let lastY = -Infinity
+    for (const r of rows) {
+      if (r.y - lastY < MIN_GAP) r.y = lastY + MIN_GAP
+      lastY = r.y
+    }
+    const out: Record<number, { x: number; y: number }> = {}
+    for (const r of rows) out[r.i] = { x: r.x, y: r.y }
+    return out
+  }, [threats, proj])
+
   const pct = (n: number) => `${(n * 100).toFixed(1)}%`
   const improved = planned.survivalProbability > direct.survivalProbability
   const path = planned.waypoints.map((p) => `${proj.x(p.lon)},${proj.y(p.lat)}`).join(' ')
@@ -95,15 +119,31 @@ export function ThreatRoutePanel({ start, objective, placed, speedMps = 250 }: T
 
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full rounded-xl"
         style={{ background: 'var(--store-surface-2)' }}>
-        {threats.map((t) => (
+        {threats.map((t, ti) => (
           <g key={t.id}>
             <circle cx={proj.x(t.lon)} cy={proj.y(t.lat)} r={proj.r(t.detectionRangeM)}
               fill="rgba(248,113,113,0.05)" stroke="rgba(248,113,113,0.25)" strokeDasharray="3 3" />
             <circle cx={proj.x(t.lon)} cy={proj.y(t.lat)} r={proj.r(t.engagementRangeM)}
               fill="rgba(248,113,113,0.14)" stroke="rgba(248,113,113,0.55)" />
             <circle cx={proj.x(t.lon)} cy={proj.y(t.lat)} r={3} fill="#f87171" />
-            <text x={proj.x(t.lon) + 6} y={proj.y(t.lat) - 6} fill="#fca5a5"
-              style={{ font: '9px ui-monospace, monospace' }}>{t.label}</text>
+            {/* Leader line back to the marker, since the label may have moved. */}
+            {Math.abs((labelPos[ti]?.y ?? 0) - (proj.y(t.lat) - 6)) > 2 && (
+              <line
+                x1={proj.x(t.lon)} y1={proj.y(t.lat)}
+                x2={(labelPos[ti]?.x ?? 0) - 2} y2={labelPos[ti]?.y ?? 0}
+                stroke="rgba(248,113,113,0.35)" strokeWidth={0.75}
+              />
+            )}
+            <text
+              x={labelPos[ti]?.x ?? proj.x(t.lon) + 6}
+              y={labelPos[ti]?.y ?? proj.y(t.lat) - 6}
+              fill="#fca5a5"
+              style={{ font: '9px ui-monospace, monospace', paintOrder: 'stroke' }}
+              stroke="rgba(0,0,0,0.85)"
+              strokeWidth={2.5}
+            >
+              {t.label}
+            </text>
           </g>
         ))}
         <polyline points={directPath} fill="none" stroke="rgba(255,255,255,0.28)"

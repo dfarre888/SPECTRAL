@@ -155,15 +155,28 @@ export function buildEncounterAssessment(input: {
 
   const pkThreats = collectPkThreats(placedCuas, placedEffectors)
   const pdThreats = collectPdThreats(placedRadars, uas.asset)
-  const start = mission.waypoints[0]
-  const goal = mission.waypoints[mission.waypoints.length - 1]
-  const directChordPk = segmentIntersectsAny(start.lon, start.lat, goal.lon, goal.lat, pkThreats)
+  // A placed asset with no route drawn yet is an ordinary state, and it arrives
+  // here as a mission whose waypoints array is empty. Reading waypoints[0].lon
+  // in that case threw during render, which took the whole React tree down —
+  // the page stopped scrolling and every button stopped responding, so it read
+  // as the app being broken rather than one panel failing.
+  //
+  // With fewer than two waypoints there is no chord to test, so the direct
+  // chord cannot intersect anything. The per-segment loop below is already safe
+  // because it starts at index 1.
+  const waypoints = mission.waypoints ?? []
+  const start = waypoints.length >= 2 ? waypoints[0] : null
+  const goal = waypoints.length >= 2 ? waypoints[waypoints.length - 1] : null
+  const directChordPk =
+    start && goal
+      ? segmentIntersectsAny(start.lon, start.lat, goal.lon, goal.lat, pkThreats)
+      : false
 
   let pathIntersectsPk = false
   let pathIntersectsPd = false
-  for (let i = 1; i < mission.waypoints.length; i++) {
-    const a = mission.waypoints[i - 1]
-    const b = mission.waypoints[i]
+  for (let i = 1; i < waypoints.length; i++) {
+    const a = waypoints[i - 1]
+    const b = waypoints[i]
     if (segmentIntersectsAny(a.lon, a.lat, b.lon, b.lat, pkThreats)) pathIntersectsPk = true
     if (segmentIntersectsAny(a.lon, a.lat, b.lon, b.lat, pdThreats)) pathIntersectsPd = true
   }

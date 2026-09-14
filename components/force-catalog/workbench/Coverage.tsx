@@ -44,7 +44,7 @@ export function Coverage({
         <div className="ml-auto flex gap-0.5" role="group" aria-label="Sort rows">
           {([['coverage', 'Coverage'], ['rarest', 'Rarest'], ['az', 'A–Z']] as const).map(([k, label]) => (
             <button key={k} type="button" aria-pressed={sort === k} onClick={() => onSort(k)}
-              className={`text-[11px] font-mono px-1.5 py-1 rounded transition-colors duration-150 ${sort === k ? 'store-text-body bg-[var(--store-surface-2)]' : 'store-text-muted hover:store-text-body'}`}>
+              className="btn-e sm font-mono">
               {label}
             </button>
           ))}

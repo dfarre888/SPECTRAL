@@ -14,17 +14,8 @@ export function sideEdgeClass(side: ForceSideCatalog): string {
   return 'border-l-2 border-l-transparent'
 }
 
-function sideChipClass(side: ForceSideCatalog, active: boolean): string {
-  if (!active) {
-    return 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-line store-text-muted hover:store-text-body transition-[color,background-color,border-color] duration-150 ease-out'
-  }
-  if (side === 'blue') {
-    return 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-accent-border store-accent bg-[var(--store-accent-glow)]'
-  }
-  if (side === 'red') {
-    return 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-line store-text-body bg-[var(--store-surface-2)]'
-  }
-  return 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-line store-text-muted bg-[var(--store-surface)]'
+function sideChipClass(_side: ForceSideCatalog, _active: boolean): string {
+  return 'btn-e sm font-mono'
 }
 
 export function Chip({
@@ -38,11 +29,7 @@ export function Chip({
   children: ReactNode
   side?: ForceSideCatalog
 }) {
-  const className = side
-    ? sideChipClass(side, active)
-    : active
-      ? 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-accent-border store-accent bg-[var(--store-accent-glow)]'
-      : 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-line store-text-muted hover:store-text-body transition-[color,background-color,border-color] duration-150 ease-out'
+  const className = side ? sideChipClass(side, active) : 'btn-e sm font-mono'
 
   return (
     <button type="button" onClick={onClick} className={className} aria-pressed={active}>

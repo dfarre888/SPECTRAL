@@ -76,10 +76,10 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
         onClick={() => close()}
         aria-current={active ? 'page' : undefined}
         className={cn(
-          'flex items-center gap-3 pl-5 pr-4 py-2 group transition-colors duration-150 border-l-2',
+          'flex items-center gap-3 px-3 py-2 mx-2 mb-1 rounded-lg border group transition-colors duration-150',
           active
             ? 'nav-item-active'
-            : 'border-transparent store-text-body hover:text-white',
+            : 'border-transparent store-text-body hover:text-white hover:border-[var(--btn-line)]',
         )}
       >
         <Icon

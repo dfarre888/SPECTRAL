@@ -28,9 +28,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function BenchButton({ id, benched, onBench, onRestore }: { id: string; benched: boolean; onBench: (ids: string[]) => void; onRestore: (ids: string[]) => void }) {
   return benched ? (
-    <button type="button" onClick={() => onRestore([id])} className="text-[11px] font-mono px-2 py-1 min-h-8 rounded border store-line store-text-muted hover:store-text-body">Restore</button>
+    <button type="button" onClick={() => onRestore([id])} className="btn-e sm font-mono">Restore</button>
   ) : (
-    <button type="button" onClick={() => onBench([id])} className="text-[11px] font-mono px-2 py-1 min-h-8 rounded border store-line store-text-muted hover:store-text-body">Bench</button>
+    <button type="button" onClick={() => onBench([id])} className="btn-e sm font-mono">Bench</button>
   )
 }
 

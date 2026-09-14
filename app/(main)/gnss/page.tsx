@@ -15,9 +15,8 @@ export default async function GnssPage() {
 
   return (
     <HubPageShell
-      eyebrow="Navigation Warfare"
       title="GNSS Intelligence"
-      subtitle="Constellation status, platform GNSS dependency, and evidence-graded jamming incident awareness — OSINT"
+      subtitle={`${constellations.length} constellations · ${dependencies.length} platform dependencies · ${incidents.length} jamming incidents, evidence-graded · OSINT`}
     >
       <GnssIntelClient
         constellations={constellations}

@@ -10,22 +10,6 @@ const CATEGORY_LABEL: Record<GnssSystemCategory, string> = {
   leo_pnt_comms: 'LEO PNT / Comms',
 }
 
-const STATUS_STYLES: Record<string, string> = {
-  operational: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
-  degraded: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
-  testing: 'bg-[var(--store-surface-2)] store-text-muted border-[var(--store-line)]',
-}
-
-const OPERATOR_FLAG: Record<string, string> = {
-  USA: '🇺🇸',
-  Russia: '🇷🇺',
-  China: '🇨🇳',
-  EU: '🇪🇺',
-  India: '🇮🇳',
-  Japan: '🇯🇵',
-  'United States': '🇺🇸',
-}
-
 interface ConstellationStatusPanelProps {
   constellations: GnssConstellation[]
   incidents: GnssJammingIncident[]
@@ -44,60 +28,48 @@ export function ConstellationStatusPanel({ constellations, incidents }: Constell
   const jammed = jammedBandIds(incidents)
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-      {constellations.map((c) => (
-        <div
-          key={c.id}
-          className="rounded-xl border border-[var(--store-line)] bg-[var(--store-surface)] p-4 space-y-3"
-        >
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <h3 className="text-sm font-semibold text-white">{c.display_name}</h3>
-              <p className="text-xs store-text-muted mt-0.5">
-                {OPERATOR_FLAG[c.operator] ?? '🌐'} {c.operator}
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-x-10">
+      {constellations.map((c) => {
+        const active = c.satellites_active ?? 0
+        const nominal = c.satellites_nominal ?? 0
+        const pct = nominal ? Math.round((active / nominal) * 100) : 0
+        const inJamZone = jammed.has(c.id)
+        const statusColor = c.status === 'operational' ? 'var(--wb-data)' : c.status === 'degraded' ? 'var(--wb-ir)' : 'var(--store-ink-mute)'
+        return (
+          <section key={c.id} className="py-4 border-b fc-hair grid grid-cols-[minmax(0,1fr)_auto] gap-x-6 gap-y-2">
+            <div className="min-w-0">
+              <h3 className="text-[15px] store-display font-semibold tracking-[-0.01em] text-[var(--store-ink)] m-0 leading-tight">
+                {c.display_name}
+                {LEO_COMMS_IDS.has(c.id) ? <span className="ml-2 text-[11px] font-mono font-normal text-[var(--wb-optical)]">LEO SATCOM</span> : null}
+              </h3>
+              <p className="text-[12px] store-text-muted mt-0.5">
+                {c.operator} · {CATEGORY_LABEL[c.system_category]}
+                {inJamZone ? <span className="text-[var(--wb-ir)]"> · under confirmed jamming</span> : null}
               </p>
             </div>
-            <div className="flex flex-col items-end gap-1">
-              {LEO_COMMS_IDS.has(c.id) ? (
-                <span className="text-[11px] tracking-[0.02em] px-2 py-0.5 rounded border font-medium bg-violet-500/15 text-violet-300 border-violet-500/30">
-                  LEO SATCOM
-                </span>
-              ) : null}
-              <span
-                className={`text-[11px] tracking-[0.02em] px-2 py-0.5 rounded border font-medium ${STATUS_STYLES[c.status] ?? STATUS_STYLES.testing}`}
-              >
-                {c.status}
-              </span>
-              <span className="text-[11px] tracking-[0.02em] store-text-muted">
-                {CATEGORY_LABEL[c.system_category]}
-              </span>
+            <div className="text-right">
+              <div className="text-[22px] store-display font-semibold tracking-[-0.01em] tabular-nums leading-none">
+                <span className="text-[var(--store-ink)]">{c.satellites_active ?? '—'}</span>
+                <span className="store-text-muted text-[13px]">/{c.satellites_nominal ?? '—'} SV</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 text-[11px] mt-1" style={{ color: statusColor }}>
+                <i className="h-1.5 w-1.5 rounded-full" style={{ background: statusColor }} />{c.status}
+              </div>
             </div>
-          </div>
-          <p className="text-xs font-mono text-cyan-400">
-            {c.satellites_active ?? '—'}/{c.satellites_nominal ?? '—'} SV active
-          </p>
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="store-text-muted tracking-[0.02em]">
-                <th className="text-left py-1">Band</th>
-                <th className="text-right py-1">MHz</th>
-              </tr>
-            </thead>
-            <tbody>
-              {c.signal_bands.map((b) => {
-                const inJamZone = jammed.has(c.id)
-                return (
-                  <tr key={`${c.id}-${b.band}`} className={inJamZone ? 'text-orange-400' : 'store-text-body'}>
-                    <td className="py-0.5">{b.band}</td>
-                    <td className="py-0.5 text-right font-mono">{formatSignalFreqMhz(b.freq_mhz)}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-          {c.notes ? <p className="text-[11px] store-text-muted leading-relaxed">{c.notes}</p> : null}
-        </div>
-      ))}
+            <div className="col-span-2 h-1 rounded-full bg-[var(--store-surface-3)] overflow-hidden">
+              <div className="h-full rounded-full" style={{ width: `${pct}%`, background: statusColor, transition: 'width 250ms cubic-bezier(.22,1,.36,1)' }} />
+            </div>
+            <p className="col-span-2 text-[11px] font-mono flex flex-wrap gap-x-4 gap-y-1 m-0">
+              {c.signal_bands.map((b) => (
+                <span key={`${c.id}-${b.band}`} className={inJamZone ? 'text-[var(--wb-ir)]' : 'store-text-body'}>
+                  <span className={inJamZone ? '' : 'store-text-muted'}>{b.band}</span> {formatSignalFreqMhz(b.freq_mhz)}
+                </span>
+              ))}
+            </p>
+            {c.notes ? <p className="col-span-2 text-[12px] store-text-muted leading-relaxed m-0 max-w-[70ch] text-pretty">{c.notes}</p> : null}
+          </section>
+        )
+      })}
     </div>
   )
 }

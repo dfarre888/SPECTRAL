@@ -8,11 +8,11 @@ interface JammingIncidentsPanelProps {
   incidents: GnssJammingIncident[]
 }
 
-const TYPE_BADGE: Record<string, string> = {
-  broadband: 'bg-orange-500/20 text-orange-400',
-  meaconing: 'bg-[var(--store-surface-2)] store-text-body',
-  spoofing: 'bg-red-500/20 text-red-400',
-  selective: 'bg-cyan-500/20 text-cyan-400',
+const TYPE_COLOR: Record<string, string> = {
+  broadband: 'var(--wb-ir)',
+  meaconing: 'var(--store-ink-soft)',
+  spoofing: 'var(--wb-red)',
+  selective: 'var(--wb-data)',
 }
 
 export function JammingIncidentsPanel({ incidents }: JammingIncidentsPanelProps) {
@@ -90,49 +90,38 @@ export function JammingIncidentsPanel({ incidents }: JammingIncidentsPanelProps)
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <ul className="space-y-2 max-h-[420px] overflow-y-auto">
+      <ul className="max-h-[520px] overflow-y-auto">
         {incidents.map((inc) => (
           <li key={inc.id}>
             <button
               type="button"
               onClick={() => setSelectedId(inc.id)}
-              className={`w-full text-left rounded-xl border p-3 transition-colors ${
-                selectedId === inc.id
-                  ? 'border-orange-500/50 bg-orange-500/5'
-                  : 'border-[var(--store-line)] bg-[var(--store-surface)] hover:border-[rgba(41,151,255,0.5)]'
+              aria-pressed={selectedId === inc.id}
+              className={`w-full text-left px-3 py-3 border-b fc-hair grid grid-cols-[6px_minmax(0,1fr)_auto] gap-x-3 items-start transition-colors duration-150 ${
+                selectedId === inc.id ? 'bg-[rgba(41,151,255,0.08)]' : 'hover:bg-[var(--store-surface)]'
               }`}
             >
-              <p className="text-sm font-medium text-white">{inc.incident_name}</p>
-              <p className="text-[11px] font-mono store-text-muted mt-1">
-                {new Date(inc.detected_at).toISOString().slice(0, 10)}
-              </p>
-              <div className="flex flex-wrap gap-1 mt-2">
-                <span className={`text-[11px] uppercase px-1.5 py-0.5 rounded ${TYPE_BADGE[inc.jamming_type] ?? ''}`}>
-                  {inc.jamming_type}
+              <i className="mt-[7px] h-1.5 w-1.5 rounded-full" style={{ background: TYPE_COLOR[inc.jamming_type] ?? 'var(--store-ink-mute)' }} aria-hidden />
+              <span className="min-w-0">
+                <span className="block text-[13px] text-[var(--store-ink)] truncate">{inc.incident_name}</span>
+                <span className="block text-[11px] font-mono store-text-muted mt-0.5">
+                  {inc.jamming_type} · {inc.affected_constellations.join(', ') || 'no constellation recorded'}
                 </span>
-                <span
-                  className={`text-[11px] uppercase px-1.5 py-0.5 rounded ${
-                    inc.confirmed ? 'text-orange-400 bg-orange-500/10' : 'store-text-muted bg-[var(--store-surface-2)]'
-                  }`}
-                >
-                  {inc.confirmed ? 'confirmed' : 'unconfirmed'}
-                </span>
-                {inc.affected_constellations.map((c) => (
-                  <span key={c} className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400">
-                    {c}
-                  </span>
-                ))}
-              </div>
+              </span>
+              <span className="text-right">
+                <span className="block text-[11px] font-mono store-text-muted">{new Date(inc.detected_at).toISOString().slice(0, 10)}</span>
+                <span className={`block text-[11px] mt-0.5 ${inc.confirmed ? 'text-[var(--store-ink)]' : 'store-text-muted'}`}>{inc.confirmed ? 'confirmed' : 'unconfirmed'}</span>
+              </span>
             </button>
           </li>
         ))}
       </ul>
       <div className="space-y-3">
-        <div className="rounded-xl border border-[var(--store-line)] bg-[var(--store-surface)] p-2">
+        <div className="rounded-xl border border-[var(--store-line)] p-2">
           <svg ref={svgRef} className="w-full h-auto" role="img" aria-label="Jamming incident map" />
         </div>
         {selected ? (
-          <div className="rounded-xl border border-[var(--store-line)] bg-[var(--store-surface)] p-4 text-xs space-y-2">
+          <div className="pt-3 border-t fc-hair text-xs space-y-2">
             <p className="store-text-body leading-relaxed">{selected.source_ref}</p>
             {selected.platform_impacts.length > 0 ? (
               <ul className="font-mono text-[11px] text-cyan-400 space-y-1">

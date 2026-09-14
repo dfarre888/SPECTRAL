@@ -90,10 +90,10 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
         />
         <div className="flex-1 min-w-0">
           <p className="text-xs font-medium truncate">{module.label}</p>
-          <p className="text-[10px] store-text-muted truncate font-mono">{subFor(module)}</p>
+          <p className="text-[11px] store-text-muted truncate font-mono">{subFor(module)}</p>
         </div>
         {badge != null && badge > 0 && (
-          <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-[var(--store-accent)] text-[10px] font-mono font-bold text-black flex items-center justify-center">
+          <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-[var(--store-accent)] text-[11px] font-mono font-bold text-black flex items-center justify-center">
             {badge}
           </span>
         )}
@@ -128,7 +128,7 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
               <p className="store-display font-bold text-white tracking-widest text-sm uppercase">
                 Spectral
               </p>
-              <p className="store-text-muted text-[10px] font-mono tracking-wider">
+              <p className="store-text-muted text-[11px] font-mono tracking-wider">
                 Drone Threat Intel
               </p>
             </div>
@@ -160,10 +160,10 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
                       isCollapsed && '-rotate-90',
                     )}
                   />
-                  <span className="text-[10px] font-mono uppercase tracking-wider">
+                  <span className="text-[11px] font-mono uppercase tracking-wider">
                     {group.label}
                   </span>
-                  <span className="ml-auto text-[10px] font-mono tabular-nums opacity-60">
+                  <span className="ml-auto text-[11px] font-mono tabular-nums opacity-60">
                     {modules.length}
                   </span>
                 </button>
@@ -174,7 +174,7 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
         </nav>
 
         <div className="px-4 py-3 border-t border-[var(--store-line)] space-y-1">
-          <p className="text-[10px] font-mono store-text-muted text-center">
+          <p className="text-[11px] font-mono store-text-muted text-center">
             SPECTRAL v0.1.0 — UNCLASSIFIED
           </p>
         </div>

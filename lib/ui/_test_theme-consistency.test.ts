@@ -8,7 +8,7 @@ const ROOT = resolve(__dirname, '../..')
  * components/spectrum is being rebuilt separately against its own UI model, so
  * it is out of scope for these checks by agreement rather than by oversight.
  */
-const EXEMPT = ['components/spectrum']
+const EXEMPT: string[] = []
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {

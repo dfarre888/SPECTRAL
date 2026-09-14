@@ -16,15 +16,15 @@ export function sideEdgeClass(side: ForceSideCatalog): string {
 
 function sideChipClass(side: ForceSideCatalog, active: boolean): string {
   if (!active) {
-    return 'text-[10px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted hover:store-text-body transition-[color,background-color,border-color] duration-150 ease-out'
+    return 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-line store-text-muted hover:store-text-body transition-[color,background-color,border-color] duration-150 ease-out'
   }
   if (side === 'blue') {
-    return 'text-[10px] font-mono px-2 py-1 min-h-10 rounded border store-accent-border store-accent bg-[var(--store-accent-glow)]'
+    return 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-accent-border store-accent bg-[var(--store-accent-glow)]'
   }
   if (side === 'red') {
-    return 'text-[10px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-body bg-[var(--store-surface-2)]'
+    return 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-line store-text-body bg-[var(--store-surface-2)]'
   }
-  return 'text-[10px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted bg-[var(--store-surface)]'
+  return 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-line store-text-muted bg-[var(--store-surface)]'
 }
 
 export function Chip({
@@ -41,8 +41,8 @@ export function Chip({
   const className = side
     ? sideChipClass(side, active)
     : active
-      ? 'text-[10px] font-mono px-2 py-1 min-h-10 rounded border store-accent-border store-accent bg-[var(--store-accent-glow)]'
-      : 'text-[10px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted hover:store-text-body transition-[color,background-color,border-color] duration-150 ease-out'
+      ? 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-accent-border store-accent bg-[var(--store-accent-glow)]'
+      : 'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border store-line store-text-muted hover:store-text-body transition-[color,background-color,border-color] duration-150 ease-out'
 
   return (
     <button type="button" onClick={onClick} className={className} aria-pressed={active}>
@@ -54,14 +54,14 @@ export function Chip({
 export function SensorChip({ sensor }: { sensor: ForceCatalogPlatformFull['sensors'][number] }) {
   if (sensor.performance_ref === 'SOVEREIGN_CORE_BOUNDARY') {
     return (
-      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded border store-line store-text-muted">
+      <span className="text-[11px] font-mono px-1.5 py-0.5 rounded border store-line store-text-muted">
         {sensor.label}
         {sensor.band ? ` · ${sensor.band}` : ''} · resolved in defence IDE
       </span>
     )
   }
   return (
-    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded border store-line store-text-muted">
+    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded border store-line store-text-muted">
       {sensor.label}
       {sensor.band ? ` · ${sensor.band}` : ''}
     </span>
@@ -70,7 +70,7 @@ export function SensorChip({ sensor }: { sensor: ForceCatalogPlatformFull['senso
 
 export function CommsChip({ label }: { label: string }) {
   return (
-    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded border store-accent-border store-text-body">
+    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded border store-accent-border store-text-body">
       {label}
     </span>
   )
@@ -83,7 +83,7 @@ export function EmptyState({ message, onClear }: { message: string; onClear: () 
       <button
         type="button"
         onClick={onClear}
-        className="store-btn-primary text-[10px] font-mono px-3 py-2 min-h-10 transition-[filter,transform] duration-150 ease-out active:scale-[0.96]"
+        className="store-btn-primary text-[11px] font-mono px-3 py-2 min-h-10 transition-[filter,transform] duration-150 ease-out active:scale-[0.96]"
       >
         Clear filters
       </button>
@@ -102,7 +102,7 @@ export function StatChip({
 }) {
   return (
     <span
-      className={`px-2.5 py-1.5 rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] text-[10px] font-mono tabular-nums ${
+      className={`px-2.5 py-1.5 rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] text-[11px] font-mono tabular-nums ${
         accent ? 'text-[var(--store-accent)] border-[var(--store-accent-border)]' : 'store-text-muted'
       }`}
     >

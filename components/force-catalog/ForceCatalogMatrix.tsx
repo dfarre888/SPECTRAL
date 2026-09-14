@@ -16,7 +16,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
 } from 'react'
-import { Pin, PinOff, X } from 'lucide-react'
+import { ChevronDown, Pin, PinOff, X } from 'lucide-react'
 import type { CatalogNation, ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
 import { EmptyState, sideEdgeClass } from '@/components/force-catalog/force-catalog-ui'
 import { StorePanel } from '@/components/ui/store-surface'
@@ -33,6 +33,12 @@ const STICKY_W = 220
 const DEFAULT_COL_BUDGET = 24
 const PACKAGE_MAX = 12
 const ROW_WINDOW = 80
+const TOOL_BTN =
+  'text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border transition-[color,background-color,border-color] duration-150 ease-out'
+const TOOL_ON = 'store-accent-border store-accent bg-[var(--store-accent-glow)]'
+const TOOL_OFF = 'store-line store-text-muted hover:store-text-body'
+
+export type MatrixMotion = 'quiet' | 'scroll'
 
 export function ForceCatalogMatrix({
   platforms,
@@ -44,6 +50,7 @@ export function ForceCatalogMatrix({
   onShowAllColumns,
   scopedFromBattle = false,
   onClearScope,
+  motion = 'quiet',
 }: {
   platforms: ForceCatalogPlatformFull[]
   nations?: CatalogNation[]
@@ -54,6 +61,7 @@ export function ForceCatalogMatrix({
   onShowAllColumns?: (v: boolean) => void
   scopedFromBattle?: boolean
   onClearScope?: () => void
+  motion?: MatrixMotion
 }) {
   const [hiddenIds, setHiddenIds] = useState<string[]>([])
   const [pinnedIds, setPinnedIds] = useState<string[]>([])
@@ -259,151 +267,9 @@ export function ForceCatalogMatrix({
   let lastKind: string | null = null
 
   return (
-    <div className="space-y-3" data-testid="force-catalog-matrix">
-      {scopedFromBattle ? (
-        <div className="flex flex-wrap items-center gap-2 rounded border store-accent-border bg-[var(--store-accent-glow)] px-3 py-2">
-          <p className="text-[10px] font-mono store-text-body">
-            Scoped from Battle Picture drill — {platforms.length} platforms
-          </p>
-          {onClearScope ? (
-            <button
-              type="button"
-              onClick={onClearScope}
-              className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted"
-            >
-              Clear drill scope
-            </button>
-          ) : null}
-        </div>
-      ) : null}
-
-      {colWindowed ? (
-        <div
-          className="rounded border store-line px-3 py-2 text-[10px] font-mono store-text-muted"
-          role="status"
-        >
-          Showing {columns.length} of {budgeted.total} columns (densest-first budget {effectiveBudget}).
-          Use Show all to expand.
-        </div>
-      ) : null}
-
-      <div className="flex flex-wrap gap-2 items-center">
-        <label className="text-[9px] font-mono store-text-muted" htmlFor="pcm-focus-nation">
-          Focus nation
-        </label>
-        <select
-          id="pcm-focus-nation"
-          value={focusNation}
-          onChange={(e) => setFocusNation(e.target.value)}
-          className="text-[11px] font-mono px-2 py-2 min-h-10 rounded border store-line store-panel-inner store-text-body"
-        >
-          <option value="">All nations in filter</option>
-          {nationOptions.map((n) => (
-            <option key={n.code} value={n.code}>
-              {n.code} — {n.label}
-            </option>
-          ))}
-        </select>
-        <label className="text-[9px] font-mono store-text-muted" htmlFor="pcm-blue-pkg">
-          Blue package
-        </label>
-        <select
-          id="pcm-blue-pkg"
-          value=""
-          onChange={(e) => {
-            if (e.target.value) togglePackage('blue', e.target.value)
-          }}
-          className="text-[11px] font-mono px-2 py-2 min-h-10 rounded border store-line store-panel-inner store-text-body max-w-[10rem]"
-          aria-label="Add Blue platform to package"
-        >
-          <option value="">Add Blue…</option>
-          {blueOptions.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.short_name}
-            </option>
-          ))}
-        </select>
-        <label className="text-[9px] font-mono store-text-muted" htmlFor="pcm-red-pkg">
-          Red package
-        </label>
-        <select
-          id="pcm-red-pkg"
-          value=""
-          onChange={(e) => {
-            if (e.target.value) togglePackage('red', e.target.value)
-          }}
-          className="text-[11px] font-mono px-2 py-2 min-h-10 rounded border store-line store-panel-inner store-text-body max-w-[10rem]"
-          aria-label="Add Red platform to package"
-        >
-          <option value="">Add Red…</option>
-          {redOptions.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.short_name}
-            </option>
-          ))}
-        </select>
-        {packageBoth ? (
-          <span className="text-[9px] font-mono store-text-muted">
-            Package mode · max {PACKAGE_MAX} columns
-          </span>
-        ) : null}
-        {(bluePackage.length > 0 || redPackage.length > 0) && (
-          <button
-            type="button"
-            onClick={() => {
-              setBluePackage([])
-              setRedPackage([])
-            }}
-            className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted"
-          >
-            Clear packages
-          </button>
-        )}
-      </div>
-
-      <div className="flex flex-wrap gap-2 items-center">
-        <span className="text-[10px] font-mono store-text-muted tabular-nums">
-          <span className="store-text-body">{view.stats.capabilityCount}</span> capabilities
-        </span>
-        <span className="text-[10px] font-mono store-text-muted tabular-nums">
-          <span className="store-text-body">{view.stats.platformCount}</span> platforms
-        </span>
-        <span className="text-[10px] font-mono store-text-muted tabular-nums">
-          <span className="store-text-body">{view.stats.hiddenCount}</span> hidden
-        </span>
-        <span
-          className="text-[10px] font-mono store-text-muted tabular-nums"
-          title="Share of capability rows with ≥1 HAS among visible platform columns"
-        >
-          coverage <span className="store-text-body">{view.stats.coveragePct}%</span>
-        </span>
-        <div className="ml-auto flex flex-wrap gap-1">
-          <button
-            type="button"
-            onClick={() => hideSide('blue')}
-            className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted hover:store-text-body"
-          >
-            Hide all Blue
-          </button>
-          <button
-            type="button"
-            onClick={() => hideSide('red')}
-            className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted hover:store-text-body"
-          >
-            Hide all Red
-          </button>
-          <button
-            type="button"
-            onClick={resetColumns}
-            disabled={!hiddenIds.length && !pinnedIds.length}
-            className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-accent-border store-accent disabled:opacity-40"
-          >
-            Reset columns
-          </button>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-2 items-center">
+    <div className="space-y-3" data-testid="force-catalog-matrix" data-motion={motion}>
+      {/* One row of chrome, then the data. Column tools live behind a disclosure. */}
+      <div className="flex flex-wrap items-center gap-2">
         <div className="flex gap-1" role="group" aria-label="Capability kind">
           {(['all', 'comms', 'sensors'] as const).map((k) => (
             <button
@@ -411,11 +277,7 @@ export function ForceCatalogMatrix({
               type="button"
               aria-pressed={kindFilter === k}
               onClick={() => setKindFilter(k)}
-              className={`text-[9px] font-mono px-2 py-1 min-h-10 rounded border capitalize transition-[color,background-color,border-color] duration-150 ease-out ${
-                kindFilter === k
-                  ? 'store-accent-border store-accent bg-[var(--store-accent-glow)]'
-                  : 'store-line store-text-muted'
-              }`}
+              className={`${TOOL_BTN} capitalize ${kindFilter === k ? TOOL_ON : TOOL_OFF}`}
             >
               {k}
             </button>
@@ -426,10 +288,11 @@ export function ForceCatalogMatrix({
         </label>
         <input
           id="matrix-cap-search"
+          type="search"
           value={capSearch}
           onChange={(e) => setCapSearch(e.target.value)}
           placeholder="Search capabilities"
-          className="text-[11px] font-mono px-2 py-2 min-h-10 rounded border store-line store-panel-inner store-text-body w-44"
+          className="text-[12px] font-mono px-2.5 py-2 min-h-10 rounded border store-line store-panel-inner store-text-body placeholder:text-[var(--store-ink-mute)] w-44"
         />
         <div className="flex gap-1" role="group" aria-label="Row sort">
           {(
@@ -444,43 +307,189 @@ export function ForceCatalogMatrix({
               type="button"
               aria-pressed={sort === key}
               onClick={() => setSort(key)}
-              className={`text-[9px] font-mono px-2 py-1 min-h-10 rounded border ${
-                sort === key
-                  ? 'store-accent-border store-accent bg-[var(--store-accent-glow)]'
-                  : 'store-line store-text-muted'
-              }`}
+              className={`${TOOL_BTN} ${sort === key ? TOOL_ON : TOOL_OFF}`}
             >
               {label}
             </button>
           ))}
         </div>
-        {colWindowed ? (
-          <button
-            type="button"
-            onClick={() => setShowAll(true)}
-            className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted"
-          >
-            Show all {budgeted.total} columns
-          </button>
+
+        {scopedFromBattle ? (
+          <span className="inline-flex items-center gap-1 text-[11px] font-mono px-2 min-h-10 rounded border store-accent-border store-accent">
+            Battle scope · {platforms.length}
+            {onClearScope ? (
+              <button
+                type="button"
+                onClick={onClearScope}
+                aria-label="Clear battle drill scope"
+                className="ml-1 inline-flex items-center justify-center h-6 w-6 rounded hover:bg-[var(--store-accent-glow)]"
+              >
+                <X className="h-3 w-3" aria-hidden />
+              </button>
+            ) : null}
+          </span>
         ) : null}
-        {showAll && budgeted.total > effectiveBudget ? (
-          <button
-            type="button"
-            onClick={() => setShowAll(false)}
-            className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-accent-border store-accent"
+
+        <p className="ml-auto text-[11px] font-mono store-text-muted tabular-nums whitespace-nowrap" role="status">
+          <span className="store-text-body">{view.stats.capabilityCount}</span> caps ·{' '}
+          <span className="store-text-body">{columns.length}</span>
+          {colWindowed ? `/${budgeted.total}` : ''} platforms ·{' '}
+          <span
+            className="store-text-body"
+            title="Share of capability rows with at least one HAS among visible platform columns"
           >
-            Budget {effectiveBudget} densest
-          </button>
-        ) : null}
-        {rowWindowed ? (
-          <button
-            type="button"
-            onClick={() => setExpandRows(true)}
-            className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted"
+            {view.stats.coveragePct}%
+          </span>{' '}
+          coverage
+        </p>
+
+        <details className="relative">
+          <summary
+            className={`${TOOL_BTN} ${TOOL_OFF} inline-flex items-center gap-1.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden`}
           >
-            Show all {rows.length} rows
-          </button>
-        ) : null}
+            Columns
+            {view.stats.hiddenCount || focusNation || bluePackage.length || redPackage.length ? (
+              <span className="store-accent tabular-nums">
+                {view.stats.hiddenCount + bluePackage.length + redPackage.length + (focusNation ? 1 : 0)}
+              </span>
+            ) : null}
+            <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+          </summary>
+          <div className="absolute right-0 top-full mt-1 z-30 w-72 rounded-xl border store-line bg-[var(--store-surface)] p-3 space-y-3 shadow-[0_12px_32px_rgba(0,0,0,0.6)]">
+            <label className="block space-y-1">
+              <span className="text-[11px] font-mono store-text-muted">Focus nation</span>
+              <select
+                value={focusNation}
+                onChange={(e) => setFocusNation(e.target.value)}
+                className="w-full text-[12px] font-mono px-2 py-2 min-h-10 rounded border store-line store-panel-inner store-text-body"
+              >
+                <option value="">All nations in filter</option>
+                {nationOptions.map((n) => (
+                  <option key={n.code} value={n.code}>
+                    {n.code} — {n.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className="space-y-1">
+              <span className="text-[11px] font-mono store-text-muted">Packages</span>
+              <div className="grid grid-cols-2 gap-1">
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) togglePackage('blue', e.target.value)
+                  }}
+                  className="text-[12px] font-mono px-2 py-2 min-h-10 rounded border store-line store-panel-inner store-text-body"
+                  aria-label="Add Blue platform to package"
+                >
+                  <option value="">Add Blue…</option>
+                  {blueOptions.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.short_name}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) togglePackage('red', e.target.value)
+                  }}
+                  className="text-[12px] font-mono px-2 py-2 min-h-10 rounded border store-line store-panel-inner store-text-body"
+                  aria-label="Add Red platform to package"
+                >
+                  <option value="">Add Red…</option>
+                  {redOptions.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.short_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {bluePackage.length || redPackage.length ? (
+                <div className="flex flex-wrap gap-1 pt-1">
+                  {bluePackage.map((id) => {
+                    const p = platforms.find((x) => x.id === id)
+                    return (
+                      <button
+                        key={`b-${id}`}
+                        type="button"
+                        onClick={() => togglePackage('blue', id)}
+                        className="text-[11px] font-mono px-2 py-1 min-h-8 rounded border store-accent-border store-accent"
+                        aria-label={`Remove ${p?.short_name ?? id} from Blue package`}
+                      >
+                        {p?.short_name ?? id} ×
+                      </button>
+                    )
+                  })}
+                  {redPackage.map((id) => {
+                    const p = platforms.find((x) => x.id === id)
+                    return (
+                      <button
+                        key={`r-${id}`}
+                        type="button"
+                        onClick={() => togglePackage('red', id)}
+                        className="text-[11px] font-mono px-2 py-1 min-h-8 rounded border store-line store-text-body"
+                        aria-label={`Remove ${p?.short_name ?? id} from Red package`}
+                      >
+                        {p?.short_name ?? id} ×
+                      </button>
+                    )
+                  })}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBluePackage([])
+                      setRedPackage([])
+                    }}
+                    className="text-[11px] font-mono px-2 py-1 min-h-8 rounded border store-line store-text-muted"
+                  >
+                    Clear packages
+                  </button>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="space-y-1">
+              <span className="text-[11px] font-mono store-text-muted">Visibility</span>
+              <div className="flex flex-wrap gap-1">
+                <button type="button" onClick={() => hideSide('blue')} className={`${TOOL_BTN} ${TOOL_OFF}`}>
+                  Hide all Blue
+                </button>
+                <button type="button" onClick={() => hideSide('red')} className={`${TOOL_BTN} ${TOOL_OFF}`}>
+                  Hide all Red
+                </button>
+                <button
+                  type="button"
+                  onClick={resetColumns}
+                  disabled={!hiddenIds.length && !pinnedIds.length}
+                  className={`${TOOL_BTN} store-accent-border store-accent disabled:opacity-40`}
+                >
+                  Reset columns
+                </button>
+                {colWindowed ? (
+                  <button type="button" onClick={() => setShowAll(true)} className={`${TOOL_BTN} ${TOOL_OFF}`}>
+                    Show all {budgeted.total} columns
+                  </button>
+                ) : null}
+                {showAll && budgeted.total > effectiveBudget ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowAll(false)}
+                    className={`${TOOL_BTN} store-accent-border store-accent`}
+                  >
+                    Budget {effectiveBudget} densest
+                  </button>
+                ) : null}
+                {rowWindowed ? (
+                  <button type="button" onClick={() => setExpandRows(true)} className={`${TOOL_BTN} ${TOOL_OFF}`}>
+                    Show all {rows.length} rows
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </details>
       </div>
 
       {capFilters.length > 0 ? (
@@ -496,7 +505,7 @@ export function ForceCatalogMatrix({
                 type="button"
                 onClick={() => toggleCapFilter(id)}
                 aria-label={`Remove capability filter ${label}`}
-                className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-accent-border store-accent"
+                className="text-[11px] font-mono px-2 py-1 min-h-10 rounded border store-accent-border store-accent"
               >
                 cap:{label} ×
               </button>
@@ -581,10 +590,10 @@ export function ForceCatalogMatrix({
                       >
                         {p.short_name}
                       </button>
-                      <span className="text-[9px] font-mono store-text-muted truncate">
+                      <span className="text-[11px] font-mono store-text-muted truncate">
                         {p.designation}
                       </span>
-                      <span className="text-[9px] font-mono store-text-muted">
+                      <span className="text-[11px] font-mono store-text-muted">
                         {p.nation_code} · {p.force_side}
                       </span>
                       <div className="flex gap-0.5">
@@ -622,7 +631,7 @@ export function ForceCatalogMatrix({
               const activeFilter = capFilters.includes(row.capability.id)
               return (
                 <SectionRows key={row.capability.id} showSection={showSection} kind={row.capability.kind} colSpan={visibleColumns.length + 1}>
-                  <tr style={{ contentVisibility: 'auto', containIntrinsicSize: '44px' }}>
+                  <tr className="mx-row" style={{ contentVisibility: 'auto', containIntrinsicSize: '48px' }}>
                     <th
                       scope="row"
                       className="sticky left-0 z-[1] bg-[var(--store-surface)] border-b border-r store-line px-2 py-1 align-middle"
@@ -641,11 +650,11 @@ export function ForceCatalogMatrix({
                         <span className="text-[11px] store-text-body block truncate">
                           {row.capability.label}
                         </span>
-                        <span className="text-[9px] font-mono store-text-muted tabular-nums">
+                        <span className="text-[11px] font-mono store-text-muted tabular-nums">
                           {row.hasCount}/{row.platformCount}
                         </span>
                         {row.capability.subtitle ? (
-                          <span className="text-[9px] font-mono store-text-muted block truncate">
+                          <span className="text-[11px] font-mono store-text-muted block truncate">
                             {row.capability.subtitle}
                           </span>
                         ) : null}
@@ -690,7 +699,7 @@ export function ForceCatalogMatrix({
       </div>
 
       {colWindowed || rowWindowed ? (
-        <p className="text-[9px] font-mono store-text-muted">
+        <p className="text-[11px] font-mono store-text-muted">
           {colWindowed
             ? `Column budget ${effectiveBudget} densest of ${budgeted.total}`
             : 'Windowed for performance'}
@@ -742,7 +751,7 @@ function SectionRows({
         <tr>
           <td
             colSpan={colSpan}
-            className="sticky left-0 bg-[var(--store-surface-2)] border-b store-line px-2 py-1 text-[9px] font-mono uppercase tracking-widest store-text-muted"
+            className="sticky left-0 bg-[var(--store-surface-2)] border-b store-line px-2 py-1 text-[11px] font-mono uppercase tracking-widest store-text-muted"
           >
             {kind}
           </td>

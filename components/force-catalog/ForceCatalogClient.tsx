@@ -34,7 +34,7 @@ import { ForceCatalogFilters } from '@/components/force-catalog/ForceCatalogFilt
 import { ForceCatalogOverview } from '@/components/force-catalog/ForceCatalogOverview'
 import { ForceCatalogGrid } from '@/components/force-catalog/ForceCatalogGrid'
 import { ForceCatalogFuture } from '@/components/force-catalog/ForceCatalogFuture'
-import { ForceCatalogMatrix } from '@/components/force-catalog/ForceCatalogMatrix'
+import { ForceCatalogMatrix, type MatrixMotion } from '@/components/force-catalog/ForceCatalogMatrix'
 import { ForceCatalogDetail } from '@/components/force-catalog/ForceCatalogDetail'
 import { ForceCatalogBattlePicture } from '@/components/force-catalog/ForceCatalogBattlePicture'
 import {
@@ -78,6 +78,7 @@ export function ForceCatalogClient({ bundle }: Props) {
   const [confidence, setConfidence] = useState<DataConfidence[]>([])
   const [activePreset, setActivePreset] = useState<ScenarioPresetId | null>(null)
   const [compareScopeIds, setCompareScopeIds] = useState<string[] | null>(null)
+  const [motion, setMotion] = useState<MatrixMotion>('quiet')
   const [showAllColumns, setShowAllColumns] = useState(false)
 
   const nationByCode = useMemo(() => {
@@ -348,10 +349,34 @@ export function ForceCatalogClient({ bundle }: Props) {
             <StatChip label="filtered" value={`${stats.filtered}/${stats.total}`} accent />
             <StatChip label="future" value={stats.future} />
             {activeTab === 'compare' ? (
+              <div
+                className="ml-auto flex gap-1"
+                role="group"
+                aria-label="Motion preview (quiet or scroll-driven)"
+                title="Preview: pick a motion philosophy for dense pages"
+              >
+                {(['quiet', 'scroll'] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    aria-pressed={motion === m}
+                    onClick={() => setMotion(m)}
+                    className={`text-[11px] font-mono px-2.5 py-1 min-h-10 rounded border capitalize transition-colors duration-150 ${
+                      motion === m
+                        ? 'store-accent-border store-accent bg-[var(--store-accent-glow)]'
+                        : 'store-line store-text-muted hover:store-text-body'
+                    }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            {activeTab === 'compare' ? (
               <button
                 type="button"
                 onClick={openPopout}
-                className="ml-auto inline-flex items-center gap-1.5 text-[10px] font-mono px-3 py-2 min-h-10 rounded border store-line store-text-muted hover:store-text-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-accent)]"
+                className="inline-flex items-center gap-1.5 text-[11px] font-mono px-3 py-2 min-h-10 rounded border store-line store-text-muted hover:store-text-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-accent)]"
                 aria-label="Pop out current tab into a second window"
                 data-testid="pcm-popout"
               >
@@ -397,7 +422,7 @@ export function ForceCatalogClient({ bundle }: Props) {
             <button
               type="button"
               onClick={openPopout}
-              className="inline-flex items-center gap-1.5 text-[10px] font-mono px-3 py-2 min-h-10 rounded border store-line store-text-muted"
+              className="inline-flex items-center gap-1.5 text-[11px] font-mono px-3 py-2 min-h-10 rounded border store-line store-text-muted"
               aria-label="Re-open pop out window"
             >
               <ExternalLink className="h-3.5 w-3.5" aria-hidden />
@@ -424,7 +449,7 @@ export function ForceCatalogClient({ bundle }: Props) {
                 type="button"
                 onClick={() => clearChip(c.type, c.value)}
                 aria-label={`Remove ${c.type} filter ${c.value}`}
-                className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted hover:store-text-body transition-[color,border-color] duration-150 ease-out"
+                className="text-[11px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted hover:store-text-body transition-[color,border-color] duration-150 ease-out"
               >
                 {c.type}:{c.value} ×
               </button>
@@ -432,7 +457,7 @@ export function ForceCatalogClient({ bundle }: Props) {
             <button
               type="button"
               onClick={clearAll}
-              className="text-[9px] font-mono px-2 py-1 min-h-10 rounded border store-accent-border store-accent"
+              className="text-[11px] font-mono px-2 py-1 min-h-10 rounded border store-accent-border store-accent"
             >
               Clear all
             </button>
@@ -486,6 +511,7 @@ export function ForceCatalogClient({ bundle }: Props) {
                 onShowAllColumns={setShowAllColumns}
                 scopedFromBattle={Boolean(compareScopeIds?.length)}
                 onClearScope={() => setCompareScopeIds(null)}
+                motion={motion}
               />
             ) : null}
             {activeTab === 'future' ? (

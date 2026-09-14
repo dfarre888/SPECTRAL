@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { GeistSans } from 'geist/font/sans'
 import { Toaster } from 'react-hot-toast'
 import { ClassificationBanner } from '@/components/operations/ClassificationBanner'
 import { THEME_BOOT_SCRIPT } from '@/lib/ui/theme'
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={GeistSans.variable}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
       </head>
@@ -25,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               background: 'var(--store-surface)',
               color: 'var(--store-ink-soft)',
               border: '1px solid var(--store-line)',
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             },
           }}
         />

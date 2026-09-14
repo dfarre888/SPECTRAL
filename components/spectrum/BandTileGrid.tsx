@@ -449,7 +449,7 @@ export function TileCard({
         border: expanded
           ? '1px solid rgba(249,115,22,0.5)'
           : '1px solid rgba(255,255,255,0.06)',
-        background: 'radial-gradient(ellipse at 30% 40%, #0D1B2E 0%, #0A0A0F 70%)',
+        background: 'radial-gradient(ellipse at 30% 40%, var(--store-surface-2) 0%, var(--store-bg) 70%)',
         cursor: 'pointer',
         transition: 'border-color 0.15s',
         gridColumn: expanded && !fullscreenExpand ? '1 / -1' : undefined,

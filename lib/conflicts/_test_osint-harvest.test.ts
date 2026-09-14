@@ -62,3 +62,37 @@ describe('osint harvest', () => {
     expect(merged[0].lat).toBeCloseTo(55.5, 1)
   })
 })
+
+import { googleNewsToArticles, milAircraftByTheatre, parseFirmsCsv, thermalNear, withThermal } from './osint-harvest'
+
+describe('osint harvest — open-feed additions', () => {
+  it('reads Google News items and grades on the originating outlet', () => {
+    const xml = `<rss><channel><item><title>Drone strike hits Kyiv depot - Reuters</title><link>https://news.google.com/rss/articles/abc</link><pubDate>Sun, 13 Sep 2026 09:15:00 GMT</pubDate><source url="https://www.reuters.com">Reuters</source></item></channel></rss>`
+    const a = googleNewsToArticles(xml, Date.parse('2026-09-12T00:00:00Z'))
+    expect(a).toHaveLength(1)
+    expect(a[0].domain).toBe('reuters.com')
+    expect(a[0].title).toBe('Drone strike hits Kyiv depot')
+    expect(a[0].seendate).toBe('20260913T091500Z')
+    expect(googleNewsToArticles(xml, Date.parse('2026-09-14T00:00:00Z'))).toHaveLength(0)
+  })
+  it('counts high-confidence thermal anomalies near a point and attaches evidence', () => {
+    const csv = 'latitude,longitude,bright_ti4,scan,track,acq_date,acq_time,satellite,confidence,version,bright_ti5,frp,daynight\n49.1,31.6,330,0.4,0.4,2026-09-13,0115,N,nominal,2.0NRT,300,5,N\n49.2,31.4,330,0.4,0.4,2026-09-13,0115,N,low,2.0NRT,300,1,N\n10,10,330,0.4,0.4,2026-09-13,0115,N,high,2.0NRT,300,9,N\n'
+    const fires = parseFirmsCsv(csv)
+    expect(fires).toHaveLength(3)
+    expect(thermalNear(fires, 49.0, 31.5, 150)).toBe(1)
+    const inc = withThermal({ id: 'x', conflict_name: 'Ukraine', incident_title: 't', incident_type: 'uas_strike', occurred_at: '2026-09-13T00:00:00Z', lat: 49, lon: 31.5, summary: '', source_ref: '', platforms_involved: [], confidence: 'possible', classification: 'U', created_at: '', evidence: { outlets: 2, tier1: 1 } }, fires)
+    expect(inc.evidence).toEqual({ outlets: 2, tier1: 1, thermal24h: 1, thermalKm: 150 })
+  })
+  it('bins military aircraft to theatres and lists top types', () => {
+    const out = milAircraftByTheatre([
+      { hex: 'a', t: 'RC135', lat: 46.5, lon: 30.5 },
+      { hex: 'b', t: 'RC135', lat: 45.0, lon: 29.0 },
+      { hex: 'c', t: 'KC135', lat: 44.5, lon: 28.5 },
+      { hex: 'd', t: 'C17', lat: -33.0, lon: 151.0 },
+      { hex: 'e' },
+    ])
+    expect(out[0].airborne).toBe(3)
+    expect(out[0].types[0]).toEqual({ type: 'RC135', n: 2 })
+    expect(out.find((t) => t.key === 'baltic')).toBeUndefined()
+  })
+})

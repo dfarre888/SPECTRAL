@@ -8,6 +8,7 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import type { ConflictIncident } from '@/lib/conflicts/types'
 import type { IntelBundleManifest } from '@/lib/conflicts/intel-bundle'
+import type { TheatreSnapshot } from '@/lib/conflicts/osint-harvest'
 import { intelAge } from '@/lib/conflicts/intel-bundle'
 import { INCIDENT_TYPE_COLOR, INCIDENT_TYPE_LABEL, normalizeIncidentType } from '@/lib/conflicts/incident-style'
 
@@ -17,10 +18,12 @@ export function OsintLeadsPanel({
   incidents,
   manifest,
   attribution,
+  snapshots,
 }: {
   incidents: ConflictIncident[]
   manifest: IntelBundleManifest
   attribution: string[]
+  snapshots?: TheatreSnapshot[] | null
 }) {
   const [grade, setGrade] = useState<Grade>('all')
   const [selected, setSelected] = useState<string | null>(null)
@@ -57,6 +60,26 @@ export function OsintLeadsPanel({
         <span className="ml-auto text-[11px] font-mono store-text-muted">Automated leads, unverified. Sources: {attribution.join(' · ')}</span>
       </div>
 
+      {snapshots && snapshots.length ? (
+        <div className="border-b fc-hair pb-4">
+          <div className="flex items-baseline justify-between mb-2">
+            <span className="wb-pane-title">Theatre picture, last 24 h</span>
+            <span className="text-[11px] font-mono store-text-muted">thermal = VIIRS detections within 300 km · events = GDELT conflict-coded · aircraft = military ADS-B at snapshot</span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-x-6 gap-y-3">
+            {snapshots.filter((t) => t.gdeltEvents24h + t.thermal24h + t.milAirborne > 0).slice(0, 12).map((t) => (
+              <div key={t.key} className="min-w-0">
+                <div className="text-[12px] text-[var(--store-ink)] truncate">{t.theatre}</div>
+                <div className="text-[11px] font-mono store-text-muted mt-0.5">
+                  <span className="text-[var(--wb-ir)]">{t.thermal24h}</span> thermal · <span className="text-[var(--store-ink-soft)]">{t.gdeltEvents24h}</span> events · <span className="text-[var(--wb-blue)]">{t.milAirborne}</span> mil ac
+                </div>
+                {t.milTypes.length ? <div className="text-[11px] font-mono store-text-muted truncate">{t.milTypes.slice(0, 3).map((x) => `${x.type}×${x.n}`).join(' ')}</div> : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
         <ul className="max-h-[560px] overflow-y-auto">
           {rows.map((inc) => {
@@ -74,7 +97,10 @@ export function OsintLeadsPanel({
                   </span>
                   <span className="text-right">
                     <span className={`block text-[11px] ${inc.confidence === 'probable' ? 'text-[var(--store-ink)]' : 'store-text-muted'}`}>{inc.confidence}</span>
-                    <span className="block text-[11px] font-mono store-text-muted mt-0.5">{inc.incident_type === 'gnss_denial' ? 'ADS-B' : `${n} src`}</span>
+                    <span className="block text-[11px] font-mono store-text-muted mt-0.5">
+                      {inc.incident_type === 'gnss_denial' ? 'ADS-B' : `${n} src`}
+                      {inc.evidence?.thermal24h ? <span className="text-[var(--wb-ir)]"> · {inc.evidence.thermal24h} thermal</span> : null}
+                    </span>
                   </span>
                 </button>
               </li>
@@ -93,6 +119,13 @@ export function OsintLeadsPanel({
                 <p className="text-[11px] font-mono store-text-muted mt-1">{sel.occurred_at.slice(0, 16).replace('T', ' ')}Z · {sel.confidence} · {sel.classification}</p>
               </div>
               <p className="text-[12px] store-text-body leading-relaxed text-pretty m-0">{sel.summary}</p>
+              {sel.evidence ? (
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] font-mono m-0">
+                  <dt className="store-text-muted">Independent outlets</dt><dd className="text-[var(--store-ink)] m-0">{sel.evidence.outlets} ({sel.evidence.tier1} tier-1)</dd>
+                  {sel.evidence.thermal24h != null ? <><dt className="store-text-muted">Thermal anomalies, 24 h</dt><dd className="text-[var(--wb-ir)] m-0">{sel.evidence.thermal24h} within {sel.evidence.thermalKm} km</dd></> : null}
+                  {sel.evidence.gdeltEvents24h != null ? <><dt className="store-text-muted">GDELT conflict events, 24 h</dt><dd className="text-[var(--store-ink)] m-0">{sel.evidence.gdeltEvents24h} within {sel.evidence.thermalKm} km</dd></> : null}
+                </dl>
+              ) : null}
               {sources.length ? (
                 <div>
                   <div className="text-[11px] store-text-muted mb-1.5">Outlets</div>

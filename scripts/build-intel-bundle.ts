@@ -8,17 +8,24 @@
  * on the deployed box; it has no egress by design.
  *
  * Sources and attribution (must travel with any product built on this):
- *   GDELT Project DOC 2.0 API   https://www.gdeltproject.org   (rate: 1 req / 5 s)
+ *   GDELT Project DOC 2.0 API + v2 event exports   https://www.gdeltproject.org
+ *   Google News RSS (headline aggregation; outlet taken from <source>)
+ *   NASA FIRMS VIIRS active fire (LANCE/FIRMS, NASA)  https://firms.modaps.eosdis.nasa.gov
  *   GPSJam by John Wiseman      https://gpsjam.org             (attribution required)
+ *   adsb.lol community ADS-B    https://adsb.lol
  */
-import { execFileSync } from 'node:child_process'
+import { execFile, execFileSync } from 'node:child_process'
+import { tmpdir } from 'node:os'
+import { promisify } from 'node:util'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { cellToLatLng } from 'h3-js'
 import { FORCE_CATALOG } from '../data/force-catalog'
 import { buildBundle, validateBundle } from '../lib/conflicts/intel-bundle'
 import {
-  clusterGpsJam, corroborate, gpsJamClusterToIncident, leadToIncident, mergeClustersByTheatre, parseGpsJamCsv, type GdeltArticle, type PlatformName,
+  clusterGpsJam, corroborate, googleNewsToArticles, gpsJamClusterToIncident, leadToIncident, mergeClustersByTheatre, milAircraftByTheatre,
+  parseFirmsCsv, parseGdeltExport, parseGpsJamCsv, theatreSnapshots, withGdelt, withThermal,
+  type AdsbAircraft, type FireDetection, type GdeltArticle, type GdeltEvent, type PlatformName,
 } from '../lib/conflicts/osint-harvest'
 import type { ConflictIncident } from '../lib/conflicts/types'
 
@@ -71,6 +78,57 @@ function rssToArticles(xml: string, domain: string, sinceMs: number): GdeltArtic
   return out
 }
 
+const GNEWS_QUERIES = [
+  '"drone strike"', '"drone attack"', '"drones shot down" OR "drones intercepted"', '"loitering munition" OR Shahed OR Lancet',
+  '"GPS jamming" OR "GPS spoofing" OR "GNSS interference"', '"ballistic missile" strike OR intercepted', '"sea drone" OR "naval drone" OR "unmanned surface vessel"',
+  '"air defence" OR "air defense" drones', '"drone swarm"',
+]
+
+async function googleNews(q: string, days: number): Promise<GdeltArticle[]> {
+  const u = `https://news.google.com/rss/search?q=${encodeURIComponent(`${q} when:${days}d`)}&hl=en-US&gl=US&ceid=US:en`
+  const { ok, text } = await getText(u)
+  return ok ? googleNewsToArticles(text, Date.now() - days * 86_400_000) : []
+}
+
+async function firms(): Promise<FireDetection[]> {
+  const { ok, text } = await getText('https://firms.modaps.eosdis.nasa.gov/data/active_fire/suomi-npp-viirs-c2/csv/SUOMI_VIIRS_C2_Global_24h.csv')
+  return ok ? parseFirmsCsv(text) : []
+}
+
+async function adsbMil(): Promise<AdsbAircraft[]> {
+  const { ok, text } = await getText('https://api.adsb.lol/v2/mil')
+  if (!ok) return []
+  try { return (JSON.parse(text) as { ac?: AdsbAircraft[] }).ac ?? [] } catch { return [] }
+}
+
+/** Last 24 h of GDELT 15-minute event exports (96 files, ~70 KB each, no rate limit). */
+async function gdeltEvents24h(): Promise<GdeltEvent[]> {
+  const out: GdeltEvent[] = []
+  const now = new Date(Math.floor(Date.now() / 900_000) * 900_000 - 30 * 60_000)
+  const stamps: string[] = []
+  for (let i = 0; i < 96; i++) {
+    const t = new Date(now.getTime() - i * 900_000)
+    stamps.push(t.toISOString().replace(/[-:T]/g, '').slice(0, 12) + '00')
+  }
+  const one = async (stamp: string) => {
+    const url = `https://data.gdeltproject.org/gdeltv2/${stamp}.export.CSV.zip`
+    const zip = join(tmpdir(), `gdelt-${stamp}.zip`)
+    try {
+      await execFileP('curl', ['-sS', '-f', '-m', '60', '-A', UA, '-o', zip, url])
+      const { stdout } = await execFileP('unzip', ['-p', zip], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
+      return parseGdeltExport(stdout)
+    } catch {
+      return [] // a missing quarter-hour is normal
+    }
+  }
+  for (let i = 0; i < stamps.length; i += 8) {
+    const batch = await Promise.all(stamps.slice(i, i + 8).map(one))
+    for (const b of batch) out.push(...b)
+  }
+  return out
+}
+
+const execFileP = promisify(execFile)
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 /** fetch first; some hosts (and sandboxes) only let curl out. */
@@ -78,7 +136,7 @@ async function getText(url: string): Promise<{ ok: boolean; text: string }> {
   // curl first: a failed fetch still reaches the host and burns the GDELT rate budget.
   {
     try {
-      const text = execFileSync('curl', ['-sS', '--compressed', '-m', '40', '-A', UA, '-w', '\n%{http_code}', url], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
+      const text = execFileSync('curl', ['-sS', '--compressed', '-m', '180', '-A', UA, '-w', '\n%{http_code}', url], { encoding: 'utf8', maxBuffer: 128 * 1024 * 1024 })
       const i = text.lastIndexOf('\n')
       return { ok: text.slice(i + 1).trim() === '200', text: text.slice(0, i) }
     } catch (e) {
@@ -135,9 +193,20 @@ async function main() {
     for (const a of arts) if (!seen.has(a.url)) seen.set(a.url, a)
     console.log(`RSS ${f.domain} → ${arts.length} relevant (unique so far ${seen.size})`)
   }
+  for (const q of GNEWS_QUERIES) {
+    const arts = await googleNews(q, DAYS)
+    for (const a of arts) if (!seen.has(a.url)) seen.set(a.url, a)
+    console.log(`Google News ${q} → ${arts.length} (unique so far ${seen.size})`)
+    await sleep(1500)
+  }
   const leads = corroborate([...seen.values()], catalogNames())
-  const incidents: ConflictIncident[] = leads.map(leadToIncident)
   console.log(`Leads: ${leads.length} (${leads.filter((l) => l.grade === 'corroborated').length} corroborated)`)
+
+  const [fires, events, air] = await Promise.all([firms(), gdeltEvents24h(), adsbMil()])
+  console.log(`FIRMS: ${fires.length} detections (24 h) · GDELT events: ${events.length} conflict-coded (24 h) · adsb.lol: ${air.length} military aircraft airborne`)
+  const incidents: ConflictIncident[] = leads.map(leadToIncident).map((i) => withGdelt(withThermal(i, fires), events))
+  const airByTheatre = milAircraftByTheatre(air)
+  const snapshots = theatreSnapshots(fires, events, airByTheatre)
 
   const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10)
   const csv = await gpsjam(yesterday)
@@ -154,7 +223,11 @@ async function main() {
   if (!v.ok) throw new Error(`Bundle failed self-validation: ${v.message}`)
   mkdirSync(OUT, { recursive: true })
   const file = join(OUT, `${new Date().toISOString().slice(0, 10)}.json`)
-  writeFileSync(file, JSON.stringify({ ...bundle, attribution: ['GDELT Project (gdeltproject.org)', 'GPSJam by John Wiseman (gpsjam.org)'] }, null, 2))
+  writeFileSync(file, JSON.stringify({
+    ...bundle,
+    attribution: ['GDELT Project (gdeltproject.org)', 'Google News RSS (outlets as cited)', 'NASA FIRMS / LANCE (firms.modaps.eosdis.nasa.gov)', 'GPSJam by John Wiseman (gpsjam.org)', 'adsb.lol community ADS-B'],
+    snapshots: { generatedAt: bundle.manifest.generatedAt, theatres: snapshots },
+  }, null, 2))
   console.log(`Wrote ${file}: ${bundle.manifest.incidentCount} incidents, checksum ${bundle.manifest.checksum}`)
 }
 

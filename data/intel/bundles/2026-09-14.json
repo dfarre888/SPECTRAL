@@ -1,89 +1,390 @@
 {
   "manifest": {
     "formatVersion": 1,
-    "generatedAt": "2026-09-14T16:08:49.184Z",
+    "generatedAt": "2026-09-14T16:42:23.407Z",
     "producedBy": "davidfarrell@connected",
-    "incidentCount": 36,
-    "checksum": "dbb04050085769d9",
-    "coverageFrom": "2026-09-13T07:15:00Z",
-    "coverageTo": "2026-09-14T11:02:00Z",
+    "incidentCount": 78,
+    "checksum": "fc2e96ce2cae882a",
+    "coverageFrom": "2026-09-11T16:43:00Z",
+    "coverageTo": "2026-09-14T16:30:00Z",
     "classification": "UNCLASSIFIED // OSINT"
   },
   "incidents": [
     {
-      "id": "osint-naval-ukraine-2026-09-13",
+      "id": "osint-uas_strike-ukraine-2026-09-11",
       "conflict_name": "Ukraine",
-      "incident_title": "Ukrainian Navy sinks Russian USV in Black Sea Ukraine Russia Naval Drone Battle",
-      "incident_type": "naval",
-      "occurred_at": "2026-09-13T07:15:00Z",
+      "incident_title": "Air defence operating in Kyiv: explosions heard in the capital amid drone attack • ANTIKOR portal",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-11T16:43:00Z",
       "lat": 49,
       "lon": 31.5,
-      "summary": "1 outlet (0 tier-1) reported naval in Ukraine on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
-      "source_ref": "https://www.el-balad.com/17051067",
+      "summary": "1 outlet (0 tier-1) reported uas strike in Ukraine on 2026-09-11. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNeDZhT2xMOVFWZnJGM0RRQjR2dC1kaUpHc242ODBaUl9WX01BWHVia1dRU1VpQ05DNE1fT2sxZ2VlNm9QUzJvUXJvMEI4YXFvcUN0RWhHSFpFcDRjcDBzRWFWTTlLYm1iTjViNmhHUjBoTl9jaGpMSmJicXZXbUYxdUMyOWo2QlVZRDNZTm5SQ0RudG9QU2NkQVNTbUhyaEYyWUNkYkZNVzA?oc=5",
       "platforms_involved": [],
       "confidence": "unconfirmed",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:45.096Z"
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
     },
     {
-      "id": "osint-uas_strike-red-sea-2026-09-13",
-      "conflict_name": "Red Sea / Yemen",
-      "incident_title": "Houthis claim missile , drone attack on Saudi military base - Xinhua",
-      "incident_type": "uas_strike",
-      "occurred_at": "2026-09-13T07:30:00Z",
-      "lat": 15,
-      "lon": 42.5,
-      "summary": "1 outlet (0 tier-1) reported uas strike in Red Sea / Yemen on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
-      "source_ref": "https://english.news.cn/20260913/fc331f5c083f406bacd6fdd126d4e521/c.html",
+      "id": "osint-gnss_denial-israel-gaza-2026-09-11",
+      "conflict_name": "Israel / Gaza",
+      "incident_title": "US-Israel-Iran War Latest Live News: UAE Releases 10 Iranian Fishermen Detained For Months After GPS Jamming, Boats Strayed Into Emirati Waters Amid War",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-11T17:21:00Z",
+      "lat": 31.5,
+      "lon": 34.8,
+      "summary": "1 outlet (0 tier-1) reported gnss denial in Israel / Gaza on 2026-09-11. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMioAJBVV95cUxOc1dxRmxtbGRuYkI3YlB6UWpLU0JKa19LMkc5S1paYU9wYTlhV0dUakZkREU3ZjRzeWJLVTVsNnBoSnJGTlR2anZMQXEtNTJRQ2RMLTdibGx1N1VrTXltamIyNUl4X1BkRHVMeml5SW5rXzlDZVVxM054aDNFS1oydGhlOF9IZDhtT01sM0V0R3RwUG15UFdKdXJYVzVaX2J4Y1JlXzBSUkhmQ2ViVlFvSHJ1VmlSbE8yU3E0T1FsVVhNMTgwMlJlRXdhRDNqUk01dmliMUpVb0RSTmNfSldselc0NmQzMDZvVjR0cjRqb0tocmZQT2RyX0JPVkZfaEYwR1ZtY2pjZHdrTzB6aXZ3cmc1SUFpa1h1Nm1uak1OVFXSAaYCQVVfeXFMT3JYOEo1bC1oRG9SSlQ5VVZHaXh6ak5BV01oTWJ0NWxlUWp6a0lhOHcyR0prZVNmNkpKOGZDMjBlbWxLcHJjNFo3QUwzMnJ2WkRwQV9kVGRmS3pITzZuMTlVeGxtNWVUSDRNZEVfb0swd2pUakxHc3oyanY1UkpZbHFTV2htNzdVNEdkazBsVnRLNmVPSlk0czRlRVk0THNxZXVMS2NlZXRNcWR2djhqXzFsbXVUa0hTSGdldlpnSkstV2poOVBKVlBzNWVyQlFhOS0wNXRKWDhiRmVQTW5VUm5ITG1vUXFGYVctYW4wV19hcG1GeVR4UWlUcUo3Z3hoaURRNzY3Q1VtZnUtY09VSjBJaElLYkxYYnJwR1RMYmtScTlmZVlR?oc=5",
       "platforms_involved": [],
       "confidence": "unconfirmed",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:45.096Z"
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 5,
+        "thermalKm": 150,
+        "gdeltEvents24h": 490
+      }
     },
     {
-      "id": "osint-naval-iran-2026-09-13",
+      "id": "osint-intercept-ukraine-2026-09-11",
+      "conflict_name": "Ukraine",
+      "incident_title": "Air defense systems shot down 67 Ukrainian drones over the regions of Russia during the day",
+      "incident_type": "intercept",
+      "occurred_at": "2026-09-11T19:26:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported intercept in Ukraine on 2026-09-11. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiygFBVV95cUxOVV9UMXdPY1F3c044RzFobzlDTzBXV3hLUVFVNTV2c21FYnhkLXJfUHRPZkVKNGRqY25PUE1TQ3R5VDF6TW9kRk13TDBBeWxXanlUZVRzNTBfb1Judi1vNE9tQ1NoeVRXLXJEU0RvcGNwaGFpYnF0MHAzX0pKdjd3N2R3am9vZTVCYmM5WEQ3UGJ5Ym1Ea1FGS2FBczZtcHlzLTdhMGd5bU5pSFFXY3ZnN3lVcmtLLTU4SmRmTWxBMVo4SVhiWkh0UlB3?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-uas_strike-iran-2026-09-12",
       "conflict_name": "Iran",
-      "incident_title": "Iran Targets US Warships With New Precision Munitions As Shock Offensive Rocks The  Greater Israel  « nuclear - news",
-      "incident_type": "naval",
-      "occurred_at": "2026-09-13T08:15:00Z",
+      "incident_title": "US Copies Iran’s Shahed-136 Drone: IRGC Aerospace Chief",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-12T07:40:00Z",
       "lat": 32.4,
       "lon": 53.7,
-      "summary": "2 outlets (0 tier-1) reported naval in Iran on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
-      "source_ref": "https://nuclear-news.net/2026/09/13/3-b1-iran-targets-us-warships-with-new-precision-munitions-as-shock-offensive-rocks-the-greater-israel/ | https://www.omanobserver.om/article/1196065/world/region/iranian-vessel-struck-off-qeshm-island-one-killed",
-      "platforms_involved": [],
-      "confidence": "possible",
+      "summary": "3 outlets (0 tier-1) reported uas strike in Iran on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOc2I2bDVSYzFpOS1PNjZacHlmVnRjSnZMS1AtU1ZRNlFLdjF1MEJsTXZsaFpNam5PdlFrbElEWWNpU0F0UXc5Qm9HTFNIck9UVTR5NWlwS0oxQV94ZE5MVEx2QVdURWpreVpkY2txaXFTNURaRDVUOGxoQklNbDNxeEFxV19YZFFVV2gzYl9xTFNYdnJQUzFZdlFEZEEwSnZLenpYNGtnZlBhR2_SAbABQVVfeXFMUGl1QU50OURXM0EwUFBwRWZ4aUZ6U19CbFpEN1BjUmgtaXBoQjQ2d1NWRFNDdlFiRF9PUXZGbGRkcFhGbjdGcFhXZGNPenMxUEZFTEJOSU5ILVd2bnlZR1pjSTE0NkJaTUxwN2lTeUhleFhpTlQ1My14ODFia2ZDWTkwaFdZdG9SaWdGb3BZc3F4RUtnYUwySFQ2RHI0VmlpV2UyQmdXemduZzR6M0dKdm8?oc=5 | https://news.google.com/rss/articles/CBMiT0FVX3lxTE11TmdBblhiSnhoRll4clpWNFJLcHgybFJFSzFncXVPamY4c3d6MDY5UEFjUVVDTkhuNVVVeEozZ3pOcGp1ZGJVdnRjQ0Fuam8?oc=5 | https://news.google.com/rss/articles/CBMiuAFBVV95cUxQYmFtdmtoamYyU2taWm5uSUp0LWxRR3p3bGszYjhPT0tnNmoweWI3eWtjcnlmRzRqTmtJdWRYTU55Ym5zY0xkTVJOdlRSUVduWjVSSGRndlJwSThXSU9qOW50ejUxWTNjRUZPbkpxZHZBd1RoVUV0V2gtSmZycEZTeFlfejZfOEtNbjYxUF9VYnpHTURxZ3E2dkU3Z1FQOUtpZFM2MVdRdnNGc25RajFhdzlnQlZzbVh4?oc=5",
+      "platforms_involved": [
+        "IRN-CAT-SHAHED136"
+      ],
+      "confidence": "probable",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:45.096Z"
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 3,
+        "tier1": 0,
+        "thermal24h": 16,
+        "thermalKm": 150,
+        "gdeltEvents24h": 81
+      }
     },
     {
-      "id": "osint-uas_strike-iraq-2026-09-13",
-      "conflict_name": "Iraq",
-      "incident_title": "Iraq to Reopen Iran Crossings After Drone Attack",
+      "id": "osint-ballistic_strike-ukraine-2026-09-12",
+      "conflict_name": "Ukraine",
+      "incident_title": "Russia strikes Kryvyi Rih with ballistic missile: One killed, people injured - RBC-Ukraine",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-12T08:46:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported ballistic strike in Ukraine on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMikgFBVV95cUxNYXdFTVkxZk1NcUNBSi1lVlRCQlE2RXBYRkdlNkVqQ05HcXNFa0kydG1CNzFJMS14TXVkdmFQd3dZWmhkT2NVN0pVaDluMVRweTNOUVNIYnRiTkdRUFJ3Y0l5NmVXd0kzU1JPSzNKUWpOMlBjNTZRcFg0aHVkQ3VIcFotcGx6SjNlZ3VVdER4Ujlhdw?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-uas_strike-ukraine-2026-09-12",
+      "conflict_name": "Ukraine",
+      "incident_title": "Zelenskyy Says Latest Russian Missile And Drone Attacks Targeted Civilian Sites Across Ukraine",
       "incident_type": "uas_strike",
-      "occurred_at": "2026-09-13T08:45:00Z",
-      "lat": 33.3,
-      "lon": 44.4,
-      "summary": "2 outlets (0 tier-1) reported uas strike in Iraq on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
-      "source_ref": "https://english.aawsat.com/arab-world/5317669-iraq-reopen-iran-crossings-after-drone-attack | https://www.newindianexpress.com/world/2026/Sep/13/iraq-to-reopen-iran-crossings-after-drone-attack",
+      "occurred_at": "2026-09-12T08:51:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Ukraine on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNWWFKcGQyZng3Qm91WWtqUzFtWGRTZjZBb3M5R2N1Q0F2Y2YzOVpTWHczVHA0TmdVbTg0ODF3YXh0T2xCdHNaSHNVbTc4R1dtMld6SzgxWkFZUXlZNjFXTS1GSWFQVEdKWFhmWVVsM0otWm55dW9QVTJOcjJaUFBpQmwxNzdqYjJad09ZTnJYekUzcEo5cXhMOXpsQXQ1UFVjY2djU9IBpwFBVV95cUxNUnBOY0I0aDNHdnRqZ1lDSnIxOFhnOXU3cDN5RnQ5X2pDSWtrRGhXTk55VE13eXFNQjJoQVFZT3gxbExzMW5yX2lqdHN3NjZyeWZfU3dpaGFCZlhjVVJ1ekxBMngwaC1sRUoyVWNRSTNYUkNDTWNSaHpCQno1VzVqZkE2WWpURWV1aHVob1JOdlpnTFUwSFZSbVd1cF9RbVdDQmdncWZRbw?oc=5",
       "platforms_involved": [],
-      "confidence": "possible",
+      "confidence": "unconfirmed",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:45.096Z"
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
     },
     {
-      "id": "osint-strike-iran-2026-09-13",
-      "conflict_name": "Iran",
-      "incident_title": "Iran authorities say one dead after ship struck in Hormuz",
+      "id": "osint-strike-ukraine-2026-09-12",
+      "conflict_name": "Ukraine",
+      "incident_title": "Zaporizhzhia’s steel industry has come to a halt: Russia has launched a third missile strike on “Zaporizhstal” in a month",
       "incident_type": "strike",
-      "occurred_at": "2026-09-13T09:15:00Z",
+      "occurred_at": "2026-09-12T12:08:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "2 outlets (0 tier-1) reported strike in Ukraine on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQNzYyaFNDX3JnZGJlWFR0VERhcG1Dd0FlTGpTY2hMakQ5WWs2Y3p6dGtQQ3VkNWtMUkZBR25UanU1dmRadUdRY2xlU3ZhMzd0aWNiWWdaYVZqSU1EbHRTRVA3ZGpsUENqalpfMk1MUWFqUFVGTVFfZ25kS182eXpIcExaQzlUVVUxNEFybXZIUmlnMDVtdTdCVlliTlBGaEtNZTVyQnA1OWtuTnlFUzV1YUdEeEFqM1RZSHBxSUVn?oc=5 | https://news.google.com/rss/articles/CBMiywFBVV95cUxOZkp6WGhYR1R6MU52eS1zNk5WTm8tVk5KaVkxNWotcDlLWFI0R2R6M19vWVFDT1lELVM4U3JMNzREZml5Nm1VUXVpS0M1Z29aY1FPZ0wzXzh1TGFEa0Y2dUxxd1NDajFmN284SmZLSXZDcXZCM0wybmFKQ0FrcEpMb2JDZzMxUURWT1VrdlRmWm1VUU1NZ25VUlhVUnpyN1VzbzJURTU2QjN3MkNUQ3BIajM0ZGVNTGh0dEtMU0dvYU9MR0RWVUZyZUpZVdIB0AFBVV95cUxNTlA3c1FmNGVqWGpVZVpxZjBHWTVFVy1oMDh5X2JsLW9fMmRNTG9pd0hkZkxVb0g2RWR5WGtxTFl2NHpVWFZiWnRJc0JWNkRPT3JiZms3LU5lRXFiWEY3cW5NUmRjMmxjb0hsbjZ6ODJXZTRfQjZfeUJSR0FzUHZXa19BbVVsOGpkQW1qMEJxS2g2bThwZVhoU0dOWVkycWZPTTRBdUR3RVh3S00xamhzemlfdndkSzBud3J1YV8tOE9BTW5VWmg1Mm9ZbW96WmNK?oc=5",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-intercept-ukraine-2026-09-12",
+      "conflict_name": "Ukraine",
+      "incident_title": "Since morning, Russia has attacked Ukraine with 410 drones: air defence forces have shot down 336 enemy UAVs",
+      "incident_type": "intercept",
+      "occurred_at": "2026-09-12T16:08:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported intercept in Ukraine on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMikgFBVV95cUxPOXFWVEo5ZE9XeDhfYk1DMEtZbUIzRzFadE1Ud0Zrakw2MWxfekU3WkU3SlNLTXVpZ1NCMG1nYW9sMWdWZkVMSG50V0pYdENaYmIwZEVmXzVrVXo0cWRhbDdnRzh3dEdrTFRha0RxQXNFblJ6TW5STEVCZWJxY0tOOFhBVGpZdGFnLVlTMVIwRUQ2dw?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-strike-iran-2026-09-12",
+      "conflict_name": "Iran",
+      "incident_title": "Report: Chinese entities gave Iran satellite images before deadly strike on US base",
+      "incident_type": "strike",
+      "occurred_at": "2026-09-12T16:59:00Z",
       "lat": 32.4,
       "lon": 53.7,
-      "summary": "4 outlets (0 tier-1) reported strike in Iran on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
-      "source_ref": "https://www.rte.ie/news/2026/0913/1591336-iran-war/ | https://www.ksat.com/news/world/2026/09/13/iranian-media-say-1-killed-in-ship-strike-on-the-strait-of-hormuz-and-other-mideast-developments/ | https://www.wsls.com/news/world/2026/09/13/iranian-media-say-1-killed-in-ship-strike-on-the-strait-of-hormuz-and-other-mideast-developments/ | https://www.clickorlando.com/news/world/2026/09/13/iranian-media-say-1-killed-in-ship-strike-on-the-strait-of-hormuz-and-other-mideast-developments/",
+      "summary": "3 outlets (1 tier-1) reported strike in Iran on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPMmc0RUdwRk1ZdUZwVkNDYkJVUUdISF9HdFA1NkF4RGQybUFrVzViSG9vdWJqYVFsWUw0dGxHWXlSYWFhNzk0OS1qdVhLdmU5NHRqM1hjVU1fTWZ1UUZLYUpfc29mZ3RNOWNUdHNrZlRxSUFISHd0UGlEUVdiZnppTFhMRk9yWTJ3WEp0Nm9rOXRZeHYzVlE0MnVlOGhCQUkzd3NyOVV1eVd2Q0VsOU1LVkdvd9IBuAFBVV95cUxNdnd4VllaTHNQY3lKT1oteHRTNXp4c2Fma0k2c0lQSkxNMHY1aElESkJTUE82dXMzeWlnTm9kYlNxdlJkUk91LThKOTJ1bjB2Y0JhdzFkekt4Qjc1Q3U5Nl9OVW5yajcwYm81OUllTXlIbHFPeGdROG1MNzdlak1qelFqMHEwUkVGZFlYSmNldGE0QXluRHVUTkNxOHJyc1NId0NNYjhYRDVBTktRWTJHaXU5bkRiWWs4?oc=5 | https://news.google.com/rss/articles/CBMikgFBVV95cUxOeHZFVVhVdmJxMG00eDY4ZXRmVk1LdldvV3BaaGdJU2c3UXh3blVFeHpDRlBvWGxodHhzUmtwT0JsZjF1X3ZzemsyclQ2TkI3UVR5WThRZHNMUktYVGFtVjlYa3FtRkM4MU9GRkNNVDdsNjhfUWFXRjlKMEpaQ1pIaWhXdXBReDR2V0daaXBuV2l5QQ?oc=5 | https://news.google.com/rss/articles/CBMi4wFBVV95cUxQM2ZrdDl0a0xUX2ZDVnpYS3g2VERTQXZzSDh3TEpoYkhMNEswbmxWRW5CVG9VTE5EeTlqQ25xU1hldVYyU3dDdmZ6Rk0xdjI2dW9pRmxfMEJ0anI3TE11aEg4OTAya3NNODY1VFhKUFFGRENsM3FzU2t4dlA4UFBEaUFLdG1aUzMtMmw1VDBIZjFwVEpTcmIzZ0syMFBUaTBsUzdONEVma3JDODRUN3dmVk1sMVltRmtBcXVmNWJ1N3UzWlByZ0VaTkpBbUZIbllzZkdDT1RDWlg1bEJtNnVaRFV3dw?oc=5",
       "platforms_involved": [],
       "confidence": "probable",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:45.096Z"
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 3,
+        "tier1": 1,
+        "thermal24h": 16,
+        "thermalKm": 150,
+        "gdeltEvents24h": 81
+      }
+    },
+    {
+      "id": "osint-uas_strike-israel-gaza-2026-09-12",
+      "conflict_name": "Israel / Gaza",
+      "incident_title": "9 Palestinians injured in Israeli drone strike in southern Gaza",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-12T18:02:00Z",
+      "lat": 31.5,
+      "lon": 34.8,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Israel / Gaza on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQZUFUcHE5cHV5YmFnZ1IweVRHNWRUSGl3UmVfbE5iVzdJUlNzRVZFRG9OVDVEbnBWdVFmWTlDb0hCRFQ0dXl5bjVYczltcFVjUnVxZ0VVNTdLdWxVS194UXo4dS16bGZmbVlVRjVhNWVUN25oY2lrcTJXZmxFWlFVbVpLVi0xcXZsUHJwaHI0RkxTNms5UXZ3RnQ3MWJ0Z3FQS01HRkRJRzlOcElC?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 5,
+        "thermalKm": 150,
+        "gdeltEvents24h": 490
+      }
+    },
+    {
+      "id": "osint-naval-ukraine-2026-09-12",
+      "conflict_name": "Ukraine",
+      "incident_title": "Ukrainian drone triumphs: Navy video shows first-ever sea drone battle",
+      "incident_type": "naval",
+      "occurred_at": "2026-09-12T18:32:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "6 outlets (2 tier-1) reported naval in Ukraine on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQMms4TkhZbkU3TlNtMGlkbTB2SDhsM0thN1dBNVhZRTlpR1VxYWdoSE5ucjhZSnJTbkJDbXIza21ILWVXYy1zTEQ0YXBybGRsZ3dJQ2x2V0R3UFF0bnBCQ3djcDRfTzNaZFl0VG9xbnByN3J1c3owNndJTjZhTlF0ZmJOeWltNnNLUzlwdm1tN3MzWTJoOXJTZUpZTHZBZ1l4VkY0amRfUQ?oc=5 | https://news.google.com/rss/articles/CBMivwFBVV95cUxQVk0zbTFGaTZuenZ5QmdrZ1R5UUcwR0FUNkRuNlBGU0FtUEVmWGV0NW5JdzQ0dkdFRUhYMEVna3Bjem5nTTJwLXdtSmJDa0ZRU1NUc252LTZrc1Z1S25QcHNJUExFd3ZiQWFzU1B0a1FWWFg3YVZWN3BVdG5WQnNYR0NZbGlDMS1QT2dFSU9tTHYwTVlEQ3FFVVk5UVRiemszRENzaTNQcERhT2RkLUFjNmQwQzdldEM0V29ZazZwbw?oc=5 | https://news.google.com/rss/articles/CBMiZEFVX3lxTE5kYVRCbEVSZU04SFA3ZmJwUUgyZ1FNVmU5dy1hZjN4LW5yUDRIbWtQczRIQ2pRY2hWN05sTWhNUmR5QWp5QnBhVGMwdE1JWVBxMzVNdWNIVkw3VEJmVEp0aDdPVHY?oc=5 | https://news.google.com/rss/articles/CBMivgFBVV95cUxQOTA4N0RqTURtYm5uNEx4Sjc5NGx0NXl2UUctLWZLMy0tOHpaY05zNVpsZ3l5V1RXdV90ZlkzWFNscFRDVVY5SXhidWZUMks4azhuVVhMb2RUSUt6VXFEX1pNREIzMThtc2xLelZrVFlHc211ZmpUbHo3TWw5WTBlVGZGVGg0SFZqbVJYeTluSEtJOW91a1pXSjNPUThjZHowQVFSSzlHdUhOTXhzQjkxOEQ4ZVVfaFZlTzh1Wjl3?oc=5 | https://news.google.com/rss/articles/CBMiwwFBVV95cUxQY1pUUnRudkhfVWdna1E1YXdfV09mc09oWXhoaTBodUdJQjhQSmxUUUVwejZteWtFTWhidGwxQ3BiVzJndlNUR3ZpOGR3ZVczdVk5R2lxblNHYTBvckZYTU1Mek5PYV80enBWNFhpeFFwV3NqRkdnaWdnN3o2dDFZRS1iSUlWLUV5SHFWaEYtemdFZm0tdTZiUnFvcXpOSVVTTXFIbVB2ekkwRVB4dWlsbWRCWjFkYV9SMEhycjA1MkFzU0XSAbgBQVVfeXFMTjRBSVBlYUF1aERhdjloUm5ZR2hRSmsxTXo5RGpVeGk5QVN3SWk1UnJRVW9VQ1BRZU1lOXAzOVZmaGJBY2dJRld5MTRYQ1dKRmZ2dFU3cGs2R05FVXBtSjlZdGZhekdGejJDby12OEtnYjU3Z0JkeWRjSlF3Y1h6RzU4NTduRWY3TlE4UmRheHZGcVVvTE1tV1JjSFd3Y19iNlVYeHVSRVlCMGdhcFNpY0RkY3dLX1ZCZg?oc=5 | https://news.google.com/rss/articles/CBMimgFBVV95cUxNZUNYZFJ6WXZUdXZvelV6ZEFDZklsb25fWld5SXlXTmlxLVlDQmdVTEhsYUxCRktaQlQ5MW5IMFRHeDM5XzZib1JBLXBvd2MtSEJyTGNrNVVKVG9mM1R3d29qRm9IbzlDa1pDYUcxVTB6Tkx6Z2V3b0pQbi0xeGFObmtyUXc4Ni01SHBqWkFDY0g3Sl92UUVqLUhB?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 6,
+        "tier1": 2,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-ew-ukraine-2026-09-12",
+      "conflict_name": "Ukraine",
+      "incident_title": "Russia upgrades Shahed drone navigation to withstand Ukrainian electronic warfare",
+      "incident_type": "ew",
+      "occurred_at": "2026-09-12T18:32:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "3 outlets (0 tier-1) reported ew in Ukraine on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1nWUV1OVZpQzRORFM0RnpPcHBCaWtUR1BqV1VWMU5FOVhYclZOMnBnNExtZHc2S3VnRDdjQlJFektQNUE2T0FnUzdaRGs3OVBoVXE3X2VDN3ZNOC1UQVZyRWJWTnl0enpzeXVN?oc=5 | https://news.google.com/rss/articles/CBMivgFBVV95cUxPRjljYkNkdS16NFVtdDk2aWptUGFHeUlUc0RjMnhFejd2MlRmZnZIcjdLcmdHaW5sVEhNY0NsWUx0N091R2VUTTdkMDg0WE9fdFV4Vk5fQ0VjcmlWLVNiaUVFQkkzWV9vX2x0ajFCMkdGWG9FNVA0M244X09OakNfWmoxclRHOVBGV3JhZWNXaUt5bW1ua3FVazJJYnNVUnZsMU5YcUhZRDJiMVBSOTBDOFRHSEhCckY1UjFrT1hn0gGzAUFVX3lxTE1pbnBZUUMxS0xtMUpyclhaN09fOEtEQktubVZXT0UtbGpyNWpLRW5SSnh4azExaEZsbUZJYy1lT2lBb1NYeWJOVV9sak9ZM0JOay1jM1o4dnFTYTRhYm9vRlRMdzhaLTc2ODNsNTlpblg4VTZRRl9LRVNyRGtYX2N4TVQzaGhJOVpaRDIwT3M2ZkI0VW9kUUlmd1ViVVJ0YjFkZFZjb1NTWHZEMC15WmJpYlJv?oc=5 | https://news.google.com/rss/articles/CBMingFBVV95cUxPMlI1b05wYzNFdXhvcGVjMjFXbXJuVk9FZ3JVbUoyTFg1amlSTUxaT2c1Q1pKWVVIZ1l0OFJWc1BQbXZhb3lVWWNZOUVpRVNBNlhKMGxoNDIxdUJpWTlMQ2hwTGt3WnMwdWVBU3pTaVZOdEtfMjZpXy1YWW1rOEZod0IxZnZ1N0R2Y3pwMlI4V2JwYjlBanlCSDlaS2dsdw?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 3,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-uas_strike-iraq-2026-09-12",
+      "conflict_name": "Iraq",
+      "incident_title": "Iraq probes drone strikes on Saudi Arabia, shuts three crossings to Iran",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-12T22:11:00Z",
+      "lat": 33.3,
+      "lon": 44.4,
+      "summary": "1 outlet (1 tier-1) reported uas strike in Iraq on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQSEVTcUVKTUpBQnAwT0wzS3EwYlhlQ1VEZzhiaUEyc0czQ1NIOWRXVWZoVDIxQXV0Y1ZFWnc1ZXFhdERrMGVhZS1ER3JsWG5nOG0zM195SzBsTmNJSWlDNlJVNW9kTDFvVURkOVdFUDVpLUVGYnhqR2tHaTVjNkFibzJ4emhjbWoyTnNiZVN2Y256ZElLODBTOHVaVDluMlFTNEdZallKVnNXVlhxVml3Ykt30gG3AUFVX3lxTE9wdDJScDJXV3F4bFV0STZfd3NhcTAxYmdxQ2ZrazlvUGZlYmN0WnNpYmdXMm9VTmc5N3d6bkVRa1l0WDVUTjJGR3g0WHJ3R2pNMXV3XzBtTDd0LVNGUlZfNTZmZ216dThzWURDcm1iU05DaFlVdVEwMlhMZFA5d0twQTRJNklkVU9qNzNXc0dtRi03SHN0RDhhUHBNZmVtTjN4Ul9YTnktOHF6eGdMUDI1QW9GQWVsSQ?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 1,
+        "thermal24h": 37,
+        "thermalKm": 150,
+        "gdeltEvents24h": 50
+      }
+    },
+    {
+      "id": "osint-ballistic_strike-red-sea-2026-09-12",
+      "conflict_name": "Red Sea / Yemen",
+      "incident_title": "Yemen’s Houthis claim ballistic missile, drone attack on Saudi military base",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-12T23:02:00Z",
+      "lat": 15,
+      "lon": 42.5,
+      "summary": "1 outlet (0 tier-1) reported ballistic strike in Red Sea / Yemen on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNMHVma29SYmt3R2tFRzlKejJZRTU2VnBLZUpQYTFQczNTTmtwM2NZTlcyNmFmSldyamhhVl93SXJiUHAzWUl2Q2JxMmxpQkUtWklkaWlOYTA2U2d0MGczQ1lBQS02YmduTmUtVmU1WGVvSV9pZkFDQ1BBR1V3WFFiREtiYTlZSndoREVmU2Z2Wm5nMExaTndYNVhGVnVqV05fY1BfaGRZV192TUZxU21SNDQ5M0hxd0VoaXVEVA?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 10
+      }
+    },
+    {
+      "id": "osint-uas_strike-poland-2026-09-12",
+      "conflict_name": "Poland",
+      "incident_title": "Poland warns border regions, deploys helicopter during Russian Shahed attack",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-12T23:40:00Z",
+      "lat": 52,
+      "lon": 19.5,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Poland on 2026-09-12. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOQjJPWEptNXJNZUxpLWVpWVQzY1ZaYmMxS0hHX3hJNllDakU4WFFrX2daLTVrOHBEdE9pdDk3R3Fva2p5UzU5UTNFbmU1Ul9hV0ZTTVljTWptbVh1RjJSM0syeF92NDMzeko4TnhBczFpNHN3Y0ZycmFySHNqeC1KTFFydHNWWlpLUWtRY2hJdFBSUnVHREl6MkVrNkozMjExM2dtbWpRSkdEeTZ3RjhMQS15eWxTZXFFQm93cTVFLXRFOWpw0gHAAUFVX3lxTE1XYk9RQWwxa2xpZnVSTGRaNndtbGh6cDBpa0pTY09tdUFrOVVSelhqaE0wOS1vTnpTYUZQMmhieW85eFRXVjIxSEM0ZUxyOE5INGJzbE83ZDkyNG9YcTJiRGJiYmJyVmtVOXhTLTlhakd3UXR1cld2Q09zbGQ2UjB5WU5GckJoeVFVbThLSTYtVVRYNU40QXZxc01HYUk4Nkl6SUtnNVBlUEYyYUZhci1wbU5Kd21KckY3TEZBQzBldA?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 2,
+        "thermalKm": 150,
+        "gdeltEvents24h": 43
+      }
+    },
+    {
+      "id": "osint-naval-ukraine-2026-09-13",
+      "conflict_name": "Ukraine",
+      "incident_title": "Ukraine’s Armed Sea Drone Destroys Russian Drone in World’s First Naval Drone Battle",
+      "incident_type": "naval",
+      "occurred_at": "2026-09-13T08:37:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "11 outlets (0 tier-1) reported naval in Ukraine on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNZ1ByREF5NENKZ3p0bm5mTUhxOUYzU0xULW5tTVhNRFdXX3hZcmc1RkF2Qnh5dkNRLTkxZVFrX3IxSS1NRTVRRXByclR6dUxaaDJQNHVISnhYUThlMWlVOUlTdFE1STFmenF0cVVBZ2o0WjRRR1hXbkhweUlTVGdSZ1EtY2NQZzU0UDNOTVY0OWpqSzU5U3o5aUx5ZWduQTRQc0Vtc1dGV3VVZ2dMNzlKbGN4THZjT1dqNFRRMldlQTlTazFkUmFTeg?oc=5 | https://news.google.com/rss/articles/CBMinwFBVV95cUxPTGloYTc1eW1qWUk5NzlKQXdWcUdycDE0bEdjY1ptenlJTVNVU3dmSzlULVhhZTNhYVZETi1vUTlsSE1GWlhtNXk2THlsZjFkRFpicThid2Y1cTVkRDVDcGRCRktYRExzb0c0Vl9pNTluZ2RfaHktdXNKNGVkN09ncko1dzh1czVVVmVhT09ELXRaMEdVbGZlRV9GMlV3QzTSAaQBQVVfeXFMTTFrZDV2aFh6eVhCM0xkNVgtOGVkUmMwaUUwRE9PY0Z6ZnJLRnZzQ2MyUVZudlpNaXlLMC1vcUdfYnBYNm9FQ0l2NGxuUjByMm9naDBIMGhVWDdjRTJKTVdxSG5tNkxqQ1B4aF9JMHB2SF9QRFBTd2djSXhZSXRYSS1FWXlraWxLbmFENUNQRExpQ3JoTnBSbGJfZGF4M0dtOEFlVmE?oc=5 | https://news.google.com/rss/articles/CBMi4gFBVV95cUxPVWR4R19na1I3WG1lNnhZQmFaUDBPeFhDVDRFbHB3Ujh2Q3Vobk9paWd3OUg0UVd6cVp4RlpHU1lQNXBEdldyQ21ZSWVnSm9QM3Fsa0dfTXFneEd4VlBuNjV3V1hLa3dNUEVVZkNYWVN3UFZ1YjJMaTZ2VDk1WG1ULUp1SW4ySGFzdTV3ai1VbXZZekJmVnMzQS16Q0RzTWRyTUxZN3JYY3o1NHdXeVRHVmVLVDJBUEtiUTlOU0llb0dTa2VYVG9PczF2UlhKZ0VZUGxORTRLdVl0Q1l5YkViRlFn?oc=5 | https://news.google.com/rss/articles/CBMioAFBVV95cUxPVXpCdFNWMGlMZjhVYlpHd2U2ZUQzdUxEV0RxVkZnYThYcTR1QndFM3FwNzd1RHAzZGVYci1MRVlYNjJRaEVfSHdVaVpBSHFZRUp1cGZuckhjWDcxQ1ozZDFkR0pVV0Z3UlM3N0hDT1ZVU1dOdzRfM1F6VVhZSWgwQjRlN3dTTU1qUlgxd0xNUFVDeW5mVFFSZGVzRWVJS1BT?oc=5 | https://news.google.com/rss/articles/CBMipAFBVV95cUxOT1hfeFlkVENZSmFfc21pVGpuTkE4YVFucVd5dlJPVUNyMVNiRGJZRkd1MGkzREpWOUlxNnNiRl9pdkptdm9taWhlUTdWWk1ndkJsNFEwRHhtbDE2MUdqcDNERkRvSXJ3c044VmJOZXM0UGpVUVIyZDJOZlVpdmUwLXd0R3otQjFsRWczSWtySGgxUVl0bDhmSUE1YXAtR2hmY2tuaw?oc=5 | https://news.google.com/rss/articles/CBMiXkFVX3lxTE1iUTQwX3d6Y0xqdGZmNzV2U2lfaDJMUVdYTjBQZDFrMzE0N3BiQzhCNHVlQTJjRThkdFEyVExfYmRyLThKVFZrWUEwRU0xZEQwVVFMS2VLdEdTVkdjRUHSAVxBVV95cUxNVHlObjMtbDNtM0daTUE2c2FuRk1VNXVmYzhlU3lmRHNWR3FWLWxuT1U0enZIX25JMzVtUms5eWVXVklKY0VJN1lONHNwMHJJTl9EUWhMc2VKR2ZJSQ?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 11,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-intercept-ukraine-2026-09-13",
+      "conflict_name": "Ukraine",
+      "incident_title": "Rostov Region Governor: More than 60 Ukrainian drones intercepted and destroyed over the region",
+      "incident_type": "intercept",
+      "occurred_at": "2026-09-13T09:38:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "2 outlets (0 tier-1) reported intercept in Ukraine on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxPM3lVZU9CVEl4WFpoLTdGSEt4ckcyMFJCRGNSVTBUZ1VNVnVhWGNfbVhpV2E2dHVycXd6empPOFM3bzMtYy1RZklxS0R5X3d1NXBsRzRyWEprRjFfWTE3QkgtajJpUVVGQTYyUHd2c1RUbTVSRkpYblZfbFBRNllqdDFJbWxsOUJXVVkyMUxCQnlBU2x2NVhHcXRsTVcydjRyak8yeGtfdVM5N1hWbzhTR0FqbTYwaXdjTlVtemozYk0tOFJLOU9Kc0ZxMzZOcG90WUp0VUpCcVJENHhwNDQtaEJB?oc=5 | https://news.google.com/rss/articles/CBMiWEFVX3lxTE94VEFhWTRNQm51cWZTaVkwc3MzdnJTT2xIdUVNVmRhWkRvbzczRU85SWhwNXlQTVNwX0tESjhxekdYYnYyN1p6OFVNRzhFb2FvSy1kb0JFcXM?oc=5 | https://news.google.com/rss/articles/CBMikwFBVV95cUxNS2FjSmlTTmlFTHdTN3FkNThxdjJ0VTJ2em0yZlk5b19ZdFFMQV9pcUVSZllOV1pwaW85MkxoaXN5Y21BSE1QdnFGZ21LNmtOSVRmZDR2Tk05c1lpbVVOekNwNndtS09oLVJxUlNlbUtYajlnaXpTTDAxWHlvcXd2QWRZZVg1MGJwOFIxZWVjZVZEM0E?oc=5",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
     },
     {
       "id": "gpsjam-2026-09-13-43-29",
@@ -98,7 +399,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-40-35",
@@ -113,7 +414,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-58-23",
@@ -128,7 +429,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-25-55",
@@ -143,7 +444,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-54-21",
@@ -158,7 +459,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-17-96",
@@ -173,7 +474,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-34-36",
@@ -188,7 +489,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-33-72",
@@ -203,7 +504,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-30-32",
@@ -218,7 +519,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-56-41",
@@ -233,7 +534,7 @@
       "platforms_involved": [],
       "confidence": "probable",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-42-46",
@@ -248,7 +549,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-35-38",
@@ -263,7 +564,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-55-82",
@@ -278,7 +579,7 @@
       "platforms_involved": [],
       "confidence": "probable",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-57-61",
@@ -293,7 +594,7 @@
       "platforms_involved": [],
       "confidence": "probable",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-55-82",
@@ -308,7 +609,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-52-104",
@@ -323,7 +624,7 @@
       "platforms_involved": [],
       "confidence": "probable",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-40-44",
@@ -338,7 +639,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-55-74",
@@ -353,7 +654,7 @@
       "platforms_involved": [],
       "confidence": "probable",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-50-56",
@@ -368,7 +669,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-62-50",
@@ -383,7 +684,7 @@
       "platforms_involved": [],
       "confidence": "probable",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-44-51",
@@ -398,7 +699,7 @@
       "platforms_involved": [],
       "confidence": "probable",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-60-57",
@@ -413,7 +714,7 @@
       "platforms_involved": [],
       "confidence": "probable",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-55-83",
@@ -428,7 +729,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-50-54",
@@ -443,7 +744,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-25-67",
@@ -458,7 +759,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-62-51",
@@ -473,7 +774,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-44-52",
@@ -488,7 +789,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-55-89",
@@ -503,7 +804,7 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-46-52",
@@ -518,7 +819,7 @@
       "platforms_involved": [],
       "confidence": "probable",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
     },
     {
       "id": "gpsjam-2026-09-13-28--98",
@@ -533,7 +834,491 @@
       "platforms_involved": [],
       "confidence": "possible",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:49.183Z"
+      "created_at": "2026-09-14T16:42:23.407Z"
+    },
+    {
+      "id": "osint-uas_strike-baltic-2026-09-13",
+      "conflict_name": "Baltic",
+      "incident_title": "\"Shahed\" violated Lithuania’s airspace: the country declared an alert • ANTIKOR portal",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-13T13:10:00Z",
+      "lat": 57.5,
+      "lon": 20,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Baltic on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMisgFBVV95cUxObUExWjVvQjhkZjhtTlh5SWRRdmwxcUtDSUFITGdEd0VRUVVDbkN6N2UzLTJqV2VuNTRMbmRwZWEwQkRLajhUZDV6WFEzb3d2LV80MnVqN09yQnZVTWRYeXhGTnBVd0VSekM0QjhnM2ZnaEN1d3Rzc1dBVmNESVF6dFZodVExWFQxbVFJVGQxS2E0ekpyT2RrVzJlVDFkUUVZMmVUVmFETEZack8yY2ZsWHZ3?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 0
+      }
+    },
+    {
+      "id": "osint-uas_strike-iran-2026-09-13",
+      "conflict_name": "Iran",
+      "incident_title": "Video Trump says Iran 'probably responsible' for drone attack on Saudi pipeline - ABC News",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-13T13:34:00Z",
+      "lat": 32.4,
+      "lon": 53.7,
+      "summary": "5 outlets (0 tier-1) reported uas strike in Iran on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiTEFVX3lxTFB4b3kyR2RHOHQ4R2ttV1JWcS0tX2tNT1ZkeURhN0FsZThUR0ZBQndBNUlQRkFmQWlaWlZzQm11SHpBR1BtTWYzR3BLRWU?oc=5 | https://news.google.com/rss/articles/CBMiVkFVX3lxTFA3LWd1RThmTEM1Y0t1SVBmTXRSZExJWE13OTlDTDZzN1pNRm5wNXBtTjNROXhERHhzYlUwMW9VYkxkZnI5OFBHcHdpcU1fcEhtSEx1QkVR?oc=5 | https://news.google.com/rss/articles/CBMiigFBVV95cUxOX29yN3c3N1NvbnViZDNGenlFbTA0eDY5blBHeTlPVExmcTBQSk1SZF9XcFUwZm5SSUxpOHVnMDdUbmF3X0E0R2RaSVlYMXFCUFpMS0c4cHcxNHJibk1YRG04bVEyWjAxU1NvNXVYVlpWR2xlYUd4QlJEZlBLVXM1dV9Pa3FhVmEwSWc?oc=5 | https://news.google.com/rss/articles/CBMisAFBVV95cUxQaF9GUEN6dkFhZldhUXZCSUd4bVFjY3I1eHBaSkt2VDhOVFNHSEduMU50TW9ZQ2NpR3lxaks1aWJ3d3k0YzNpMVdTTnJTWGdLeXZfUTZRb3BmQ2x3aWprTEtKeEI3eW44c3lNbGZCQVVZWGFrWExLY2NMWThhQXBKUzFWd3dkbWQ3UkM0aTlvVFR5TXZwUWl1ejZVMXZ2dHYyZEZMalUwM1ZGUWpkWmFyQdIBtgFBVV95cUxNNHZnanV5U0pQWThGNEZBNDRKc1VnUnJ2YVA4UGRZaXlHLWlJYXkyQm9TR2l0eDdiVGZGUVZTeXI4ZXVDbHRqai1qdlZWX09BbmNKVjVDNl9vZWQtZHAtRHRhLWpkZ0hMQmltTXF3WmlYdS1Kak13NnFRb0hYVHl6bEFGa0ItQ2tXUHdRWG5YV2RGNkE0RW80ZlctSUtoOGhBbFRacjJsblM0aHNvNm0xdGN1czEtQQ?oc=5 | https://news.google.com/rss/articles/CBMihgFBVV95cUxPM0F5SE1HMzJhaTRMZWtsRl9kYURqQV9KUVFOaTd0cXBrcFVDZUVpWjBHZ2JubkpYZ3dtS0w3LXlmTXNvM2t1VXJHVndrQi1qcjU2ZU5NNDNYSXJfakpGSXVyc3hIZWZNWlNadkhULW51S3JodGpCSm8wRGx3ekY1Q1Jfa0k1UQ?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 5,
+        "tier1": 0,
+        "thermal24h": 16,
+        "thermalKm": 150,
+        "gdeltEvents24h": 81
+      }
+    },
+    {
+      "id": "osint-strike-iran-2026-09-13",
+      "conflict_name": "Iran",
+      "incident_title": "Eight of America’s Longest Ranged Fighters Damaged in Iranian Strike on Key Airbase",
+      "incident_type": "strike",
+      "occurred_at": "2026-09-13T15:54:00Z",
+      "lat": 32.4,
+      "lon": 53.7,
+      "summary": "1 outlet (0 tier-1) reported strike in Iran on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMilgFBVV95cUxONGo0WTRRUDJsV01DdnV2N29OeFRmX2hYclBjU3Bld0xwMVNJRGk3bGUwX0kxbzhDZEFnVDVfUm0yZFpkc19PcHJ6TWsxUHpROVlXXzgwaWhXNXFUZkVtOW9DS0ZwMEo0YmdpOEVsZVYxbFNWbTRVRlpLcGQwdndQM3VjNnlRaWt6R0FlQWlLU0pfckZVSmc?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 16,
+        "thermalKm": 150,
+        "gdeltEvents24h": 81
+      }
+    },
+    {
+      "id": "osint-strike-ukraine-2026-09-13",
+      "conflict_name": "Ukraine",
+      "incident_title": "Ukraine war latest: Kyiv-Warsaw train struck by Russian drone near Polish border as mass attack targets western Ukraine",
+      "incident_type": "strike",
+      "occurred_at": "2026-09-13T16:29:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (1 tier-1) reported strike in Ukraine on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxNMjlhRXhfTEFiSFdWQzZoYnN1T3kyYXR0N2pyb3VrQVc4Q2laZk9xaDlMUllYaU5zdzl2M3FxV2tTZHBGblpYZWpPNlVIY0NyclE3aDlYTHZ5YldVS0ZkYjhISHE1REFXLTgxM24zZ0dUV1EzckFWVGhvajhRZWpRTGpFeFIta19iNkxsU3l6Mkh4Rm5PZmtsT1FtMUR1MmFmSFhneU9BRXRwVzJ3aDhMR19qa0JDSkhBc1Jndy1HZ0pGYjNrX3NrVEw5VGVoMVVYUUZYVVpkU2dJWWZNYnNJTg?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 1,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-uas_strike-ukraine-2026-09-13",
+      "conflict_name": "Ukraine",
+      "incident_title": "Two medics injured in Russian drone attack on ambulance in Kherson",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-13T17:56:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "14 outlets (4 tier-1) reported uas strike in Ukraine on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPekNYeWg0TmJJa3RRUi1fTmZLRlFtYUUwdi1iUy1fMHNRTGFacGs5MTl1ak9qSHVXdHhNY3hZOTMyUXQ4Uk5MeUZCbHFISy1VRnVwM0VURE9zVnpMVEEwWV96Y2xwY0pzeFlDNktNRy1tb2tpdXEyOVVJS2ctNE51T0tDNm9RVHR2cEVsXzJ1Rjh2STJGVkVLVFQ5V2lsamVfU1cyaw?oc=5 | https://news.google.com/rss/articles/CBMisAFBVV95cUxQZFIyUS1HT3JDbGVMeFdxNzBQcHB0TFJXRlRGRnNuYjgwVGpUWW9CWER1QlJIUFZhT3l5LVlzQThxdTRlbXpPbWlucXYtSE9GRkpyOG5FNS12TkhfaTJNdmNIb25rYUZObThRM1ZadDEzSVlNelY1Zm12SHgxZkNUZXhuRHZzVERQZXp0ZE5qQjFNbExmTUZud2RJbkFac1FUdm1uN3ZqakFfbHJBWkN4Sg?oc=5 | https://news.google.com/rss/articles/CBMiwgFBVV95cUxOWE9NMG5UdHRwLVY5Z1VrVTZlNUx1NjNpemRoaF9hRnF2UWp5bGpqMUVrLVRSOGF5aDJGODhLUldhZUQ4blpQNmRyREdYcFAzWGo0YjNzaC16REhndUR4RkVlSmN1X2tFZnQ4MFNKZEpuTm5nX0FXMmNXZFBmV2FPaHdYYkVKaGl5N3RFWDhrQ2lvdkRFNEwzb0FyZ2RFTDFkdDlXSmFZRXhBLUVfb0lmNi1nM3JnazNxY3I4QXFQMW1QUQ?oc=5 | https://news.google.com/rss/articles/CBMiqAFBVV95cUxQZDhYc2RRZDVyMVhuZkZIU2R6SDRYQzJZQ1dRUHJLcnBYY1VXY0ZmejJBMWFIMUEwWV9VY20tcVlleU00VElqcllpcG81dlNWR2lkWENUVWdRMGJFZ3NORDdlWU9KZjFJS3FVbzl5QzlCVjJ2MHRRazFhSFZoX2w5SFNOR282NDlZSW52R25fWUVEQmJ5NkNLRHNhNms5bnVGTGQzSDhLVjQ?oc=5 | https://news.google.com/rss/articles/CBMiX0FVX3lxTE1lWnctZkNDcnZDckRxRjBhQzhKZnVsY1EzUDNVX2tETGxGTWFTNXJaNTRpUGdTWVdGemktaHlkelRaUHI3anJzOHpsdDMwWlloYjVWUWpoMXFBVzNTQUlF0gFcQVVfeXFMT3ItYkVuR3p2ajBVbmhhYWswa09VdzRSdjlWWTdwTnVlcUhIdnFjTUpaZnhFQVhQS0xpUjNSc1pxeWZEYWhyeXprdDQ5NWd1YjFyaHFDQ1FLQi14Q2k?oc=5 | https://news.google.com/rss/articles/CBMixgFBVV95cUxQanpXZG9hSzVfdFU0b3kyaFdVY01JOGQyZFZoeDdIdGtLRERnY1BydF9sX1NpNnZYbnlmSTVqQVNjZWptb24xOG9aZUs3YUJLZHJSTkFIV1FpTjNnaFVSR1FLaHA1dFF5OEJoUngxckdTdEw3TEtOZHdNMG9YaEZzcGx6WUU3ZmJXQnNhV3hrUjhfVkZGWl9TVTMtRXJoNTRCaFhTZFpJTmdIU1FranE2aHh6UDIzSjdmZnBEbWRUc1h3cEhFa1E?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 14,
+        "tier1": 4,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-uas_strike-israel-gaza-2026-09-13",
+      "conflict_name": "Israel / Gaza",
+      "incident_title": "Israeli Drone Strike Kills Two Palestinians, Wounds 13 in Gaza City",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-13T18:27:00Z",
+      "lat": 31.5,
+      "lon": 34.8,
+      "summary": "2 outlets (0 tier-1) reported uas strike in Israel / Gaza on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOMVUzQmR5d0U1R2JnTVIwN2ZVV3lRSkNZeXppZHBjZ1pqWkRNT0hUSDhYeW80dVVRNlVGZHRCeG9lOXF3WnRFWThEUjZsMGFWb21UcUVtcnpFLTNCUWJjRXRyckc2b0VFX0dOVnFXeFduaFM4eS1NLWRVakx6UTVRQV9nMmpNNHdZd2VQWld2VlFHczVHbHliNTBqOXRVNVJKRnF1bQ?oc=5 | https://news.google.com/rss/articles/CBMivAFBVV95cUxNb0F2LVZsVUp5Ylo2bUF1SnFpTHhXQ2w1NFhWOEN5RU1lMkpEMGhWV21mcFNQYmljS2tRcnhNNGVQdXFCWjFITFRNV1Q0VE1taUtOcmNrLVZNZGRmazhwQ2JZY1BKSkVQaVVrRTlPdVJUZHRIaWxZVDF6UHZUd0Z5YU50V2tTaHdTaVoyb1o0TWlaZVdQY2tlVko5cnc1U1Q4WURMNGZ3UGpCWEx0UFJfZFAtZFIxS3dCeVU2Tw?oc=5",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 0,
+        "thermal24h": 5,
+        "thermalKm": 150,
+        "gdeltEvents24h": 490
+      }
+    },
+    {
+      "id": "osint-naval-poland-2026-09-13",
+      "conflict_name": "Poland",
+      "incident_title": "Russia’s Largest Drone Attack Hits Near Poland; Ukraine Wins First Naval Drone Battle",
+      "incident_type": "naval",
+      "occurred_at": "2026-09-13T18:34:00Z",
+      "lat": 52,
+      "lon": 19.5,
+      "summary": "1 outlet (0 tier-1) reported naval in Poland on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQdHVKbzRHQV9Sek9HR1RLNno5clgxZ1N4MEItbTItdFFiN0gzWVZQSTRpS0dvUnh2YXJkOTdPQ29pMXZDeWp4aGNsRDlpaGFmZ1lEWkhzTWlMUTlfTmFtV2hGR0ttd2tQcDNaN3R5OG5PcWRINUxvTE9XUHA4clc2UnlCNGtBUQ?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 2,
+        "thermalKm": 150,
+        "gdeltEvents24h": 43
+      }
+    },
+    {
+      "id": "osint-uas_strike-poland-2026-09-13",
+      "conflict_name": "Poland",
+      "incident_title": "Drone attack prompts Poland to evacuate more than 600 people from two border crossings with Ukraine overnight",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-13T20:27:00Z",
+      "lat": 52,
+      "lon": 19.5,
+      "summary": "2 outlets (1 tier-1) reported uas strike in Poland on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxPWmxzdFg0NEV2cjgwUWhOTXd3YXBYSEM0b0E2UVJjYjVZNnRRdUwta1FKR1dCeVhQa2pfMHBPLUo4QXNHUHJRaFNyR2plME1MTFdkMFlKMGJVOTl6X3NrMkdyVzdPbU40MFpPaEZlMFE5cGxjcjN4TFR1YWNFVW5QU2xreUI1UnNjRjc4ZHZQOHFfWWxEMFduZUxwXzVVRmUxOVFlSm5EaVNaYTBvcGhBb3o4QkR1MVQ5c1BoRHhWS2N3MFFwUmdhdWRWcTZ5SnI1SEVRU0s1NXVTTnNlekQtMVBmM1NhTUs3X1hsTFA1bXDSAfYBQVVfeXFMTmVpazlKUlFyNDFGNXNHWTZGdGNHaktIUV9YcFlremtBNlFGZ1RTNlJOWGdzMDlMUmZfQ0ZIMW5zWVZyYjZoTDJjRUhHR1R5djUtUEFKWjhUTTdNTWw5RmVhejViMmlES1l2MkpyRVJSZVZseW5md1ZTcnNwX3FQamJtX0hWSU83OWR1Y0M0U0ZJS3JGZU82VkRrR0szWUFGaTdhU3VhMzgxMnVzTlBUY0RkcVJTdzhmaWpKWWpGLWFWUFkxNEJSZFp5LXp1em56aldUcjNzX0R4MUpBZE5rcld0M2hLem1UYzM4OG5SV01id2FRUmNR?oc=5 | https://news.google.com/rss/articles/CBMizAFBVV95cUxNbTljQ1VaYkdHRVBod3NReElSQzFTd2ZELV8ybUlpaG9nXzFHZUJGZ2c4MGRtS0NYY0VvdmZoc3VkWGliNE1LcHNtV2haeXNDSEZWdXIzVzh4cWpuOG51QXE3NjVYZ01xLW92bUVra0hmdFpQVjZuUTJJLUl0WkEwZzJ2c0NEMlBSaHdHNXdJV3FfRmlnRzBraTl0d194c2xzRDZJSnBTMjlycks5cGpTRnQ0YkVFTmplMjdzd3UzLUEybHc2alRyejF3VTfSAdIBQVVfeXFMTlVNM2JQUmtQak5jYnBMVVRFUk8zamlyMjFZWEs1cFcxX2Qta2hCMUJGeUhyc05vZV8tVDJEUm5LeGZ2YUQ1Nll0SVRqQnlNQklpek1iT3ZibFBjNjQyNVJoTEZSczVDZEF0SFZhT3A5bVZtYWlMLVZtYTNnMVY5XzNVV3lKdXgtVS01aVJOblJ1a2FBbkJPR1FhU3pKS3NuMGt3YldvYjcxX0E4ZW43emhSWWJSeW9XSV9mak5HdFNhSXBhYmR4MXE0NnRVZDN4aWh3?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 1,
+        "thermal24h": 2,
+        "thermalKm": 150,
+        "gdeltEvents24h": 43
+      }
+    },
+    {
+      "id": "osint-ballistic_strike-ukraine-2026-09-13",
+      "conflict_name": "Ukraine",
+      "incident_title": "Ukraine's AI-Driven Drones Outrange, Outmaneuver Ballistic Missiles",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-13T21:20:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported ballistic strike in Ukraine on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOQkM1MVJRZEt4QVpYY3RBa1ZSeUw0WkR0OC1CcXhJWFVMQkhSb0lubEJDZWktbjNyb1R3dVFKUF82WUx1VEZ6blBKUUtON1NLVnNhT01aSlNSWDhhSHl2aThBcVpjWW5na3dmM2JjRDdxM19mczJMako4bGh5bkQxUTBsQUY?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-swarm-sudan-2026-09-13",
+      "conflict_name": "Sudan",
+      "incident_title": "Drone swarm strikes Sudan’s Ed Damazin amid escalating Blue Nile front",
+      "incident_type": "swarm",
+      "occurred_at": "2026-09-13T22:52:00Z",
+      "lat": 15.6,
+      "lon": 32.5,
+      "summary": "1 outlet (0 tier-1) reported swarm in Sudan on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE9XRzNkTzZXcWYxdjBuWjVNS2NyZ2FGaUFHbGNBOG5NMzA4YUNhTlcwUHlJMi1JRmIyVFZ5RU9BajhDM1U5YUxreGVHWXhoUEdR?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 1,
+        "thermalKm": 150,
+        "gdeltEvents24h": 3
+      }
+    },
+    {
+      "id": "osint-strike-korea-2026-09-13",
+      "conflict_name": "Korean Peninsula",
+      "incident_title": "North Korea Reports Joint Long-Range Artillery and Missile Strike Drills Two Days Later, Vows to Continuously Enhance Counterattack Posture",
+      "incident_type": "strike",
+      "occurred_at": "2026-09-13T23:40:00Z",
+      "lat": 38,
+      "lon": 127,
+      "summary": "1 outlet (0 tier-1) reported strike in Korean Peninsula on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9vWHY0bE41UlVBcGNYdUVCcWxJNUliMk40RnpvX0VtTlAwNnlaX1ZpMzVLZ3FlRHEzQmlWejZ6OWZCdHFwZkt3d3E4QVhFd2NDekVuSmxZdlJTMVkwS0tJWGIwZ1I4QQ?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 1,
+        "thermalKm": 150,
+        "gdeltEvents24h": 32
+      }
+    },
+    {
+      "id": "osint-ballistic_strike-korea-2026-09-13",
+      "conflict_name": "Korean Peninsula",
+      "incident_title": "North Korea Conducts Cooperative Firepower Drill with Drones and Ballistic Missiles, Showcases Complex Strike Network",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-13T23:54:00Z",
+      "lat": 38,
+      "lon": 127,
+      "summary": "1 outlet (0 tier-1) reported ballistic strike in Korean Peninsula on 2026-09-13. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9zd3JBSUYwVEdBVl9jd0RnSWt2NllHREhNaVByR2N6YVNfc2hRa1AwekFSN3hNMzd6aFNOQnNuc1pkSFhFN1pMZzZEU3BCY0VsaWJpbHlBcDlnRVVvOUp2dVFGSmo?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 1,
+        "thermalKm": 150,
+        "gdeltEvents24h": 32
+      }
+    },
+    {
+      "id": "osint-strike-iran-2026-09-14",
+      "conflict_name": "Iran",
+      "incident_title": "US Links Chinese Satellite Imagery To Iran Missile Strike On Jordan Base That Killed 4 Troops: Report",
+      "incident_type": "strike",
+      "occurred_at": "2026-09-14T03:29:00Z",
+      "lat": 32.4,
+      "lon": 53.7,
+      "summary": "1 outlet (0 tier-1) reported strike in Iran on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxPaXJ4NU1mT0pLdkRCb1pMRFpIaGJjQjEzQWNUN2JDOTZpN3doRUhkM2x3aWRGcVM1aHNKeTNqODVKaXlsUFc3SlVJbXM3Y2dXZ3Zmc1d1WFVveXBHMjNGTVVXNVE1SUR4X1ZNVXhMbmNKQTZMRGc5clZCZHA3eVZzMGZ0bUxMN3pXQzUwY09oLUR4SnFPUkl6bWtKRW5VUzYyV0RtNW9nd1YxMy1LSGMzUHE4VC1mdFBOQlUzd1hjNFRBWGJhNHlrUDVRTzRxcURxRjFRQ0pXVDNfOTJ4dFpBb3VB0gHnAUFVX3lxTFBMajhxUDF5czVoRGlOcm9rUWJicnRzZEFaNlAwRnB1YmRqUmc5ZW9Xdk9ZWlUtZmhaS2doRXBhWVcybTM5UURHZ0FrUlZDcURzREpOb3d0cU9wN1kzN0owMnFzS0ZLb0Y3OHJTTy1jcmtma1N2MXYzZ2NXQk1iakp1UWlDYktDcFBMY1ZyMllqNzVmOVdwZXNDWTRQME5DLTEzaDRCTjM5aVhfd1VzLVFuRkdLVXB6UE1Wb2FJaENzYkxOc3RTblR4SFc4XzVsRWhXM21yN3JMZkRBUnhma1JiRmFfYVRuZw?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 16,
+        "thermalKm": 150,
+        "gdeltEvents24h": 81
+      }
+    },
+    {
+      "id": "osint-naval-ukraine-2026-09-14",
+      "conflict_name": "Ukraine",
+      "incident_title": "Watch: Ukrainian drone destroys Russian drone in first-ever naval drone-on-drone strike",
+      "incident_type": "naval",
+      "occurred_at": "2026-09-14T04:06:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "5 outlets (0 tier-1) reported naval in Ukraine on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxQMGdPSFdmOVFJZUY2OTRiUm1yNjlUNThXcDFraUp4dkJiNjZyWl9lSFhfeTFyQ0pDVW1pWlc0SjZELXJNM3JaTjZDWU05SVJ0RngzX2dBNmVKUndyaktoYnRjajhYOHlNTHBvUkhWLURMVURYalRnM09MV21wbUxDQUxwbkZGXzJJTnNJWDU1TURIaHhremlFdkVJamQ0RTBPZFNIdmhaS0VmVVFRWXZxakJ4U2pUeWVITVRJUDNocUhuTmd5SkdJQTN6ZU9WemJoWkJBTXdDXzZlZHMwblhXZzFuUE5rZ0hteFRHUmtsLTBzX3A2Z1o2b3pOLVprVG_SAYQCQVVfeXFMTkJfQ0lvNlpHd1otZ2RjaGROVHBIN1ZuMlBDZHZxT2dab2VMay14LXF1UVV6eG53ZkxoZXAyZmRwVkQ3Y1FpV2J1WGNCN3hTbEMwM1RSLTVrVGVNYkx1dVh1RElfTmRmem9BRC1CeWdaSGtoS2xUSWVmaXpQV3ZabVo4ODA5UGx2ejV1NDVvRXlTdExSRk5XUmNCd2cwQXFCWkoyU1JTdU5Eb2ZYQ2NEdmdzNHhLd3p1enVDMFRpMDNaX3NIT2Q5NGloZW9yOVBmNjBxNzVBS2RyT3RYbXp3TmRZa2htTm1VeExZMGQ4R1RydTV0RGZzc3ZwdkNsOFd5cmNKcFI?oc=5 | https://news.google.com/rss/articles/CBMiswFBVV95cUxPNnNYNU1pSUdSQ3BrcGZ5S1FZUWdWalR6Q0hfZkVERDYzcE9SSWNCZXhMcEtsZHJ3OXpLaUlTUENocHRmb0IyU3Iyckt0MFBYbXRXUlVZMWJaYUZwd2VNV3VPcFA0RWtzNmZoRFR4VVVsamFFbEdLTmFreU9XQ050WWtxZnM0TUlnNVlsbGtYNmc2bTRFM194N191djdadThkajFXQzRuMV9wNHpCTVZGOEF0Y9IBswFBVV95cUxPNnNYNU1pSUdSQ3BrcGZ5S1FZUWdWalR6Q0hfZkVERDYzcE9SSWNCZXhMcEtsZHJ3OXpLaUlTUENocHRmb0IyU3Iyckt0MFBYbXRXUlVZMWJaYUZwd2VNV3VPcFA0RWtzNmZoRFR4VVVsamFFbEdLTmFreU9XQ050WWtxZnM0TUlnNVlsbGtYNmc2bTRFM194N191djdadThkajFXQzRuMV9wNHpCTVZGOEF0Yw?oc=5 | https://news.google.com/rss/articles/CBMiY0FVX3lxTE5xcGJpcnZqdWhpN3hMZjBFOUNiVjVXT3lRcEtkYWpIM3lQTndaSVF0bExRWkNTMnh5eHlRT0F6aDJULXE3cUpuS053aDhTUTNzSnBFWjJ6c0FfMVFkQlBqaWRmQQ?oc=5 | https://news.google.com/rss/articles/CBMivAFBVV95cUxNWnJsVzNiaEI2VDJYRjMtbjNQMlY2QnI4ZGVKSjZ0dlZxNnVtYTJsZU9UelhWcWRQS2NGdlpPT3MyN2R1NTJBRkJ4SGI0aXlCRjNKT0ZHZTFJOXVYOG5CbU5DVG1jNmVoX0JQN0FXOFJWWEVZYU9QZXFOWlV2M2JHNktHeWRILWNZU21xMzdUVE1RcXRCZTNlV1loOXo5SER0bl9wTnFVY2V0dTVNQzR0dFIzaWhrc1NtYlVBSdIBwgFBVV95cUxOMk1WV243WlNSVDFDUXBkN3pNYm9XeXQyZU9LM2J3VWZDQ29QZVFBQmZ2ZWN1eHNRd1NGX2NhcHQxenV0bTY3TElKWFF2elhqWTdsWFd3U2ltVVRaVW1fOHhIbHRManhJQ2JLaDNoYUgyLTlDTUFDN0hxRDV0ZWVjeHFiZGt2MTNwNEZQVjBvb2gxR0VsWjlEWDFhZzRPUkNSRV9JT0QweHpZNVhjbGFkM3NrOFVZYUtldTRYcF85LXY2UQ?oc=5 | https://news.google.com/rss/articles/CBMiwgFBVV95cUxPcVlINDY1NU81NUVxeEpXUExxOE5TYzZOOUZCWmNqa0xmZ3dYNm96OHhEaGY3M2cxRTNOYWVqZ3pDTUdtT1VjWk9maVhaN1pCS2xxUmc4TFUxaGRzajNEMFhydy1KOXNySXFBODVaRXBXU25DaWU1TE1uaWJONjJESE4wZEdVdXNURnBKS2NqLTUzcU5VVDhRWVRyc0tGREc3UF9DTzNiaDVIRU1jOHlxMXl0ZjlUOGVoa21KU3V4cFhLdw?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 5,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-uas_strike-baltic-2026-09-14",
+      "conflict_name": "Baltic",
+      "incident_title": "Train carrying Estonian leaders crossed Ukraine border just before Russian drone strike",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-14T05:58:00Z",
+      "lat": 57.5,
+      "lon": 20,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Baltic on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPeGwydmE3QXNENWI1WlVRbWpndE5HOWtQMkZRT2xGVjBMR2o2eENlbk9Udmc4eVMta2lGMnJDRkFRTldwWGZLeTJaN085dWZBM2xDRm54M3NUREgwWDBpY2NXQzJRSW0tRUY5SG1LWFdOc09iZGo3aWRXT1ZoVFdJamRlenFJQVhrT2ZUYlIwNFhWWERJTngwX2owTWNMTmhfbFFWT0x1Z0hHalBFQVFzdnVDNVZjZ1NBTGc?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 0
+      }
+    },
+    {
+      "id": "osint-ballistic_strike-ukraine-2026-09-14",
+      "conflict_name": "Ukraine",
+      "incident_title": "Ukraine races to close Russia’s ballistic missile gap with homegrown FP-7 missile",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-14T07:23:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported ballistic strike in Ukraine on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxOSUVnblNocjFFVXJqcm91SHozQmplaDYzY0ZHN1BaNDJnZWJ5RXEwV0JMTFRobUd5MTNMUlgwXzJLUmRGN3dhMXVtOHA2SWd6TWN0Z1hRQUhMZzVZS29NalFzVHdIQzJLeFRvbnBVQ3VPalFMc1R2WC1lcmdkWU8xZllHVmVWeWNfTDN2SWpuRWpLdzM0dm9yMXNKa2JqLWZzWkNDMmkzcmtOWFl1dVI0NndRU1BZOEMwelRuMG9nYnJfcFlYRzN4MWsxSXNzWk1PRHVOa09TdmQ0ZWZPNWMweUZGU3pjcjdiLW93M1NSM2l3bjF3UEtV0gH8AUFVX3lxTE1KZWY2MEFwTDB5VXFoYkhKQW5DUEt3LUc1SE9WVkF2b1ZXdmRnNEtyT1pNOW13Ymx3RlZ2ald3VEFoM3M3MEk0LWJLVU95cDZhSDFka2hXQldPNXZFYlN0TWdXdThtNXhENEFIRzAzWHoyUkdJVlJvcWpPZ2tiYWJpMEhsNC1BZlNnUmJrZXlNejBfOTRIMklTOGtKM2llN2w4S05ienU3a2piTjdjYUNrcXZ2bV9GWUxINFR5NThxNUQ5YkF5U1F0bzdzc25VTW9pdE5BVnpmWDZGQTFuV2UydG1UaDcxZnVjdTRpcFBHUjZaMGtJNVNYajJxRw?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-uas_strike-iran-2026-09-14",
+      "conflict_name": "Iran",
+      "incident_title": "Shafaq News..Iran denies role in Saudi pipeline drone attack",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-14T09:02:00Z",
+      "lat": 32.4,
+      "lon": 53.7,
+      "summary": "2 outlets (0 tier-1) reported uas strike in Iran on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQa3piVFBacVg0SU82bEtDQ0NjQWJnODRDdWUtS1h4STJtTWJrcUlNemM2b0Q5VU16d01XQ1ZvOHFGazdiRHF4VUNlMzFQS0RiTEN2YjRraWJjaFV4RmRsbWoyT19CZDBfal9ONXBQbS15QWlRU0ZBWG9yM3YtUGxpZXo1MzR3aDVs?oc=5 | https://news.google.com/rss/articles/CBMitAFBVV95cUxPUE1hUklnYmJGM1FHc041ZFY2bWdqODNndkFuaVROdmp6WHVjMk9PMmRUd3JoZDZRSUxVTUtRaFhXdkdpYnR6UTJTNjVncGozampGTURxN1E1c2ZhNFgwVGpBS1BGalhBb3gyRTJ2N0ttbl9XajVTTWxqYW83WFNsMHEtVjdFbnNIeVJUNHZQaWRLQXVEYzZuSmZsVGUzelpzQ0ktSEoyM0pRU0RyTzlDaWpPeXI?oc=5",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 0,
+        "thermal24h": 16,
+        "thermalKm": 150,
+        "gdeltEvents24h": 81
+      }
+    },
+    {
+      "id": "osint-uas_strike-russia-2026-09-14",
+      "conflict_name": "Russia (interior)",
+      "incident_title": "Two people were killed in a drone attack in Tatarstan.",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-14T09:03:00Z",
+      "lat": 55.7,
+      "lon": 37.6,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Russia (interior) on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPaEM5bFBZamxnMTgzT0tlUFNGMXR5c1paVVJEWUFPQzRkOElmUlYxeXNvc1NMT1FBTlVNZDNrTENrMUFaLTdlWmVoUFV1LUNRV1FhVkhQNVMzdGVmSUxxVy1NVmdMWVloeGpVNVJLQ2VNZGhfX1lRcm81RFc4djRtbXZxQTJGemVpVHZJRnhuRUprRUk3dDI0WmRB?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 5,
+        "thermalKm": 150,
+        "gdeltEvents24h": 123
+      }
+    },
+    {
+      "id": "osint-uas_strike-iraq-2026-09-14",
+      "conflict_name": "Iraq",
+      "incident_title": "Saudi Arabia closes oil pipeline after drone attack from Iraq",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-14T09:29:00Z",
+      "lat": 33.3,
+      "lon": 44.4,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Iraq on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMickFVX3lxTE44Ti1ER1RURlpFbEtGdTg3cEQwVndkc0JuengxN0VrMjNUZHg2Rm10Mi0tSVktTC1Gdm5lXzM3UGxYSDVWQ0ppYnhsdFRYSmsycmJDUE1RMllnOWNVS202d1labWpjbXFRdmgwMV9oVm5mdw?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 37,
+        "thermalKm": 150,
+        "gdeltEvents24h": 50
+      }
+    },
+    {
+      "id": "osint-intercept-iran-2026-09-14",
+      "conflict_name": "Iran",
+      "incident_title": "Iran Says IRGC Shoots Down Drone With New Air Defense System",
+      "incident_type": "intercept",
+      "occurred_at": "2026-09-14T09:50:00Z",
+      "lat": 32.4,
+      "lon": 53.7,
+      "summary": "2 outlets (0 tier-1) reported intercept in Iran on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQZHNyWlRsdVk0cERyN242YlJlc1dYalFwRUZmRzdzWEV3RnhYQjhCUHR2TElaSWtqd0stMGp2QkMzWXdDNkc3MEllUmROODY0bHF3TlVoMjJtWVg0QUZOVVJUMW5TRVhwdVhJRFBjX2NnazB2eUIwMy03Q3o0TjRjMy1oVjFUQ1JESDliSQ?oc=5 | https://news.google.com/rss/articles/CBMiuAFBVV95cUxQTXYzUzJQMUtBTkdKc1V4dHh6TTdLUE5FUHJKU3N6cHh5amdGTGo0M3JpZmJMVTJyRHRZUk1PeGhqNUpEYnFBLTJxQmRqb1paRXg4U3ZhUjM2amNMVlFuMm1CSXNHNG9oOHE4bFdDYkJiVENQZnk3b2FxNXVHdzY2VW4yZGdlTUE5TFdIREtNS20tLTFWLV8xaXRNT2lBOURLanAzYjdpWGFPaVhub0hpZEhjOVZqeTJ10gFTQVVfeXFMUFNFbTE4N2VYQVhoNmVhVzVXRWpycXNJN2NfTHhMTHVSY0JXeDVwTGZRcmtoS2hnYWlhZFE4bGtsSXdtbEhtTDJjWnk0dWFMbVpLUlU?oc=5",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 0,
+        "thermal24h": 16,
+        "thermalKm": 150,
+        "gdeltEvents24h": 81
+      }
+    },
+    {
+      "id": "osint-uas_strike-red-sea-2026-09-14",
+      "conflict_name": "Red Sea / Yemen",
+      "incident_title": "Yemen Targets Saudi Air Base in Retaliatory Missile, Drone Strike",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-14T10:12:00Z",
+      "lat": 15,
+      "lon": 42.5,
+      "summary": "6 outlets (0 tier-1) reported uas strike in Red Sea / Yemen on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOU1g1dXNtZHloM1ZESE9qQXhMSGpiaDRPNGRxZnNlN2tiSTh6ei1lZ3dacEZJS09HY1Y2aWRGNVAwLWVJaHFMaWRBTXJhbmVpQWZZOGFvTTRVdTA2UENwdjI3UEt3aUFqS00xUEtUSkUxM0doLXlvTjB5a2J6Mlc2SUdCa3kyWTFiZFVMNk9QSDBPTWU4SFNNbmRra0Fmb0hLeW01TU1WY3FHemdRY25hTG9JNlJfZXlx0gG-AUFVX3lxTE95cTBFa2RrNEhkSEpCbzNhc3lBNlJicjBSQzdqbHRpdGtENXR0aWl5S0NRM1JXdTZoSjRWd0pCb1JOVTlsTFZRU1ZXYmRmb0FNLW5sNWFoMS1oNDQ1c3dzWGsxbzFtVXU3U0oyTDhOeWU2MWlNcGN2NzYydzEzc3paV3o3d1Jad0hYdEdaYkFYSkgwR3FqOWJuRlZYOUFUb1VhOVpTaE1fN2ozVHpyNmJDQ3ctcFdtMWxDNnlIUUE?oc=5 | https://news.google.com/rss/articles/CBMiWEFVX3lxTE9OZV9HallzenlyWWhVZ3VQeE9MV3NXcm44YTF0NGQ1d0tVSXA4dmk2VFJVbnZMbGtYUDdudW5rdzZQS1lmQVFoVUlDdVJfbnNDUG0xRmVVRVU?oc=5 | https://news.google.com/rss/articles/CBMiXEFVX3lxTE93aFFOZEF4dERVSDNUajRxbzRSX1pQa2RtTzRTbTJRYUdYUnB5ZHFyTVRGU1QxLVdfRVdsNDMtQTdoeHlGYWJRUTFqQVZmX3VodGlkTFdJWDdoVXMx?oc=5 | https://news.google.com/rss/articles/CBMiywFBVV95cUxQT0JmWE1tRzlHeUZZQ1p4Yy1JdkJLWXFiemMxMmZQVWpjaHFCa2hETVZsQzFUdVBpWXp1ZzBIM25lWW5TMHY2ZlhkLW9hQ2JoQnZPaHN5NFZBUHA1ajdMTElsQ3pKQXc5WW1xN3UxeXZtdEpIWXFWR0VwS0h4c0hRaVJ5T3lwYlh3RGV6Z3ltNS03M0JGNnlpV2RPSEQyNE0xSHBWc2NxM08wWkJ2eWpFVkFKYWdIN2x6bzlUV2V6dlZabDhSaEVONmJTcw?oc=5 | https://news.google.com/rss/articles/CBMioAFBVV95cUxNV0I4WEZUaENqa2xiQ3QzdGYwcXZGUW9XaDlsRU84RjNXZFoxVlZhVDEyWWVJX2pSZF8xT1dzbVNqLVlEbHAxejQ2VlBaWC1leE5vZ2l4UlgzdFVrNlpzZ19RbHlMU3NDQXhWMmRUZE84SU4wU1BuOVI2cGVuVFl5bEVPS05Ua1ZaVmM4ZDhKX0dpMXhvdWJESDl0QVlUc1Bx?oc=5 | https://news.google.com/rss/articles/CBMigAJBVV95cUxPMkJxa2R5UDNsTkQwaXNVUHIyQ2VQR1E4enhzNHBwV0tzcG4tN2Q2UnZVNURHeV9taXVZZ0JGWnRBWkJGd1l1eDlMR2MzNGFpZlZOWUNxQWNmNjlYWDBXY0ZDNjZ4bXRiSEliMHBJUWVFT1V0UlZZcFJ4bXVpMkZNc2tSTEJNQlRQLWVoNm05X0N0Q2dwbUtKVkVCd0xLZ1pPUE1HMDNxQUVvTDVhS3U0ZzlndGVyWWpGWnlSM014UV82Tk94QUNWd25rUnh6endCdnZvNzd6WWJCOXhRaVRzRjRDQmNoUFYxV2ZMc0JhempfdUxOMEVLQ3p0bXFQdm1B0gGGAkFVX3lxTFBiMDR6Rl9IOHhuTjQ2dDVKbVlfb0oxSC1neVdsYUtNT2JERWhIQXlIYTJNVXQzQVBFRGl5MjljWlE1WW9sT3pzeEFJN1VuY1RWeVJoWUhfbnF6RUw3Y1JkNUlFNmg2Wk5ya01VWjBWN3dkV3NBN3Q1RUNQS00yalgtY3lNWkNvTWZQOUlZUEctLWc5OXF3OFdOX3lyazJycnd4bWpadW1UOUlWOVk1akF0LWJWcWkzbEpSUFVfeDFGNFVOSzliZmVSNGtOWUdzMTFDSEswR1d1ZFZTRnA1VzljZEIwNWZrMlFmUWJVbmR3Rmh2RmlfdDZuNU5SNHMxb1VhNVluRnc?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 6,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 10
+      }
+    },
+    {
+      "id": "osint-ballistic_strike-red-sea-2026-09-14",
+      "conflict_name": "Red Sea / Yemen",
+      "incident_title": "Houthis Fire Ballistic Missiles at Saudi Air Base as War Spreads Beyond Hormuz",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-14T10:19:00Z",
+      "lat": 15,
+      "lon": 42.5,
+      "summary": "2 outlets (0 tier-1) reported ballistic strike in Red Sea / Yemen on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOVk4xbkhIVEF2NFlMb0JqV1RuZmhTeGZMRWdDbzJVLWFLd21VdFRYYVBUV3JuOGNScDRvanBwUGVJankxb2swRGswTTFWTkg5YjBramxtN180clBRa19FdmVPZ2l3NDhpcWlDYjgxX3lRdkFRQ0dVYnRWUEhrbUhuNnJoVEp0MkxxaWJwa2VRWmNNczBxZk90SkVqU2hPQTA?oc=5 | https://news.google.com/rss/articles/CBMi0gFBVV95cUxPdW4yYjU3T1hFNno0NDktRDhTTEtlczlMWUV2ekZuTjNESFNFZk0tdmVlZC15aU9fYm9XcHBjSy1mS1BFRzJ6R0dncGFTc0pBa0Z2MGZRVHZLN2pWb0pVbktlZEdtTVdLVXFsVmVZNU9KMi01RzNoYTh4TU9Jdlk5WlRyYlQzSjBxa21MRzR3dGpfUGNwRmcxb3JmekFPdFRlQ1NLYnB5SWFKczJOSktWVll4VjBtekg2QXhZVk5IaXFwUDd6bFdNSE13Y1FjLUVNQkE?oc=5",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 10
+      }
     },
     {
       "id": "osint-uas_strike-ukraine-2026-09-14",
@@ -543,16 +1328,444 @@
       "occurred_at": "2026-09-14T11:02:00Z",
       "lat": 49,
       "lon": 31.5,
-      "summary": "1 outlet (1 tier-1) reported uas strike in Ukraine on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
-      "source_ref": "https://www.ukrinform.net/rubric-ato/4163998-russian-drone-strikes-hospital-in-kherson-injuring-staff-member.html",
+      "summary": "37 outlets (6 tier-1) reported uas strike in Ukraine on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://www.ukrinform.net/rubric-ato/4163998-russian-drone-strikes-hospital-in-kherson-injuring-staff-member.html | https://news.google.com/rss/articles/CBMingFBVV95cUxNY0pCU2N2eGVadHpKOGpPYVZWdTdtV2d5VFdtZm9jeU9ySWZtUlVBZ2JRYXFLY3FwMl9DZ3U1Z1Q3VlFwLTZnZUVydFV5ZUdMdC1ORFhNRXMtUEtsMjhzTU1XcmtsLTN1YUxaRW5pS0t2bHNvM2dkc0Y2UWdXX256NW10cGoxSFdScjZOR243NE9VcXZwNFpRcVBIT0FyUQ?oc=5 | https://news.google.com/rss/articles/CBMikwFBVV95cUxQdkNZN1lQVHBHdXM1Z1RZX0ZSbWgyOVhQUVl0RlZYbGxXejlPcVA4Mmk2U2RUcDJoZmxnZnNmX3RqeGhzcEpXUUVwZldqNG9wQTZ1YkJWVl9TTXhZRVV2bjV0MDZRZ242c3dTbEJoRVp6eGpuRWk4ekVWcVk0WEZOYzBncnZOV0xTWl80b1dydV9tY0E?oc=5 | https://news.google.com/rss/articles/CBMipgFBVV95cUxQRHZfY0FzWW9wU014clRQMGs0bEFxS1A3bU4wekR4UF9ubF9ua0VWV3ZyaVZYSXVSenp5SFFmbW5vdkpSOU1iQW1Cb0dPX2JsdFM1S0V4ZUprNTlqaE5JaW5FOGRFYzhpMGRKZkJ5SVJ1SEcyZi1FV3g0aGNFd0VzMEFKOUlickZEZ25kT0VZRTVWZnFKYTlVWXlCLXl4ekVPTFRvaFVB?oc=5 | https://news.google.com/rss/articles/CBMiiwJBVV95cUxQdjZsVEEzRlNjeE05YmZIeVR4YnMtb18ySWNCR3luaTB3azNhTDM5bWJEX3pHN3JXVmF5N3pzZXkxNWI2bmVqR0xBR0hIZTRYU2ItVTMxc0VpYnBjdTk0dkhTeUdZSDdObnM1dmtHNk1DcHdMMzBHWXVlZVBEYnVZWFpEOWtYOElwQ004RURfeHloZ2M5c2RYSlZDcjJtMnd2X0RJemJkTEc2X080QnU1T1BlXzMzZ1ZFRHpSeG5rOFpDaHl0Vk1jNUowclNOMUlYcE5UWTFkRlZsQ29WTHZPX3dfY3VTLXQ4dTZWU3NOSUhfdThRWU9Fd2h3UFFrVENiajJZS1NLTlFRM2s?oc=5 | https://news.google.com/rss/articles/CBMirAFBVV95cUxOWHQtQ1FVeE5BMUtPT1dEb01xZThiZGxzVGotN3A0ZzgxeHV5Z2E5ejNpRF85TG0wYXNMOTI2R21CeUUxMjhrZ09taGlGQm96VnRSS0hfeW5jWFVhRXBuOFF5RHl3MnNjOVlsUExfdE5QTHA3UjNXbnBROFRGMy16aUpfTzVIT2ExUW94b2xfVXMwbU93YVN1R3NidjJYRzM3Z1F6RVJuMHZRZ0hV?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 37,
+        "tier1": 6,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-uas_strike-sahel-2026-09-14",
+      "conflict_name": "Sahel",
+      "incident_title": "Fatalities as drone strike targets Somalia’s Baidoa - APAnews",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-14T11:37:00Z",
+      "lat": 15,
+      "lon": 0,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Sahel on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBzelhhaWFTNXdTbG94LWNCMnZrOEFCM05CeWplSXJZaFZFSzAyTmV1cmdfd2UwWXUxcFRTSzY2UHhqM3JTTzNZVHdyRVV5cjAzRkRmSVFjU3VURnFTajRHTmpPTHUzNkQwb3ZBQl91R0xJTXg4WG52SmF1dw?oc=5",
       "platforms_involved": [],
       "confidence": "unconfirmed",
       "classification": "UNCLASSIFIED // OSINT",
-      "created_at": "2026-09-14T16:08:45.096Z"
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 0
+      }
+    },
+    {
+      "id": "osint-strike-ukraine-2026-09-14",
+      "conflict_name": "Ukraine",
+      "incident_title": "Russian strike on passenger train will not deter Ukraine’s backers, Nato chief says",
+      "incident_type": "strike",
+      "occurred_at": "2026-09-14T11:47:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "10 outlets (2 tier-1) reported strike in Ukraine on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNckRIQkFXdUlrT2NDbDFSU2N5OWVqSjJwOWlGMTNTdW5DR1hUSnJkT2I3RUh0SUR5RFhsRlJ6dERmaVVjMUI0aXQxQkRoYWU2TUdwTGhrc0RZUF9seTE2YXdGbF9PUC1aRkJYdmVJa2M2TFRBSzRacU1Ib09nUWpIWUxjUzlWS01OcFFBdkpKLWNCV213bnNz?oc=5 | https://news.google.com/rss/articles/CBMiswFBVV95cUxPUnV3VXVoYmc5bFpKc00wYVprNnRiVGU4aVhESjJKNG1RUFpEel9LZHpKZTV6bTB6Q0VJaE5RYklDTGZ4ZTZDSmxJdmFieldtM1ptY0pNWEFZVTBicEZhLVRDZmxuSXQ2NzZ5eXN2VGlrdWQxalF2X0pYb0ROa0pGSUtCUi0xaVBJdVkxRHlQeDRwbm0wbFR1d2dzaHdEU18zbVVTSlpoMVNKam1kLWpIX3FTTQ?oc=5 | https://news.google.com/rss/articles/CBMisgFBVV95cUxPTmJWNWgxS3ZzSkZ3TFJxX1huNm1ZWm42WHY4T2ZNWDgxbzJObnBSUDJxS3NKRkJjQ3lBd2lldWZ0WTA3M01tNi1WX1NjV3oyeDlLQ2RpX3pNMlB3RU1nM3ZIX1NYd21BTnQ4Y0ZWQVJQVFFrYzFVYTVZeXl5dkdhVG9XQ0lEVmR0MmVrYVFBS1l1VXlGVVlPWG5TM3lHTnVHZktvR0IwWktwUGlXTzZZLS1B?oc=5 | https://news.google.com/rss/articles/CBMiowFBVV95cUxPMFBnRm5YM0FOVmJLR0M0anVoa2NCaWQyY1J5aDAxX01aMmVGSEdONWdCb2c0RmdHRkdYMVJ6RTFHdjY0dUE3ODZFa1E0dTM5a3FHMnZSTUdVeGVwd0QydTYxeS1GVk5yRHA3d1Ffc0xBNFk1TEJJajk2M1VCdlNYZzF2VzF1aGNCZ2QxVmNYMjV6ZFp3TWNoQ2xrSVFiRXF0WEs0?oc=5 | https://news.google.com/rss/articles/CBMiV0FVX3lxTFB1elJWbEsxNDZ4Z09aSU13WE42UnhJS2dKS29iSDNyelhmbVhQX1ZFbXMyTk8zenJmeEJHVVVxNUQydzJOQ1hNem1BZXpxbmdOUHlBZElqOA?oc=5 | https://news.google.com/rss/articles/CBMivgFBVV95cUxPRWIyZHhBRHB6UnZsblRyTk9RSWc5TEh1VWRSTzY5MlFQRTlFNTRPVExBbWJsOFZBYXVLVV9QV3I1bjcteGtSRERyei1haGRWQU9KbVV1WGFWTmwyR1QxcjlCMTdTOVVpZUhwdjFCd19nTGlycXdFQ2FTVDlfZzZtYm11RmdZa3BZTzlVNFNORk5NMm1SMlpJQzRfREtvMUktZjlvWjRMWm1pX0xCa2paY3owN2xRcDIxdjlVMWRR?oc=5",
+      "platforms_involved": [
+        "RUS-CAT-MOLNIYA"
+      ],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 10,
+        "tier1": 2,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-intercept-ukraine-2026-09-14",
+      "conflict_name": "Ukraine",
+      "incident_title": "Russian air defence systems shot down 28 Ukrainian drones: Moscow Mayor Sergei Sobyanin",
+      "incident_type": "intercept",
+      "occurred_at": "2026-09-14T11:51:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported intercept in Ukraine on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMisgFBVV95cUxPYkQzVTNSazg0dG5qc2wwOElLcHJjaFJvZWpyN3E1eFNrQnI4dkc0VU4tbDkwSnRwU2VRZUcxMzRtWHYwZEtsQzF4eFdKZ3kxUHpIa1c5VUI2TFU0M19mSFV6T2JjSElUSmw4OVR2bUxMd0tWSnd6SzlxVmhfeFVweFZ4TGRKMnZuMFZsZEVORndhb2liSE9ibVdPUlVoR3RsaWFORmd2alpDZnpUNUQ2UVVn?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 36
+      }
+    },
+    {
+      "id": "osint-strike-poland-2026-09-14",
+      "conflict_name": "Poland",
+      "incident_title": "Russian Strike on Train Station Near Poland Seen as Warning to Kyiv’s Allies",
+      "incident_type": "strike",
+      "occurred_at": "2026-09-14T12:01:00Z",
+      "lat": 52,
+      "lon": 19.5,
+      "summary": "1 outlet (1 tier-1) reported strike in Poland on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiigFBVV95cUxONE5GRm43eENLSWZIVDVrRm0xbHQzbkQwS05qQ3g0bUxrRmczdUw2ZnpLOUZWVWs3Ul9NTm9SZkdVcUJiazFVYkJXODBZcUdEb2tZdFlkU0Fiem1RQkNRYUNBMmhySkJXaXY2QWFscGxvdG1qMnNvWE9aY3JKZWpKMlpXRndNV2xpNnc?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 1,
+        "thermal24h": 2,
+        "thermalKm": 150,
+        "gdeltEvents24h": 43
+      }
+    },
+    {
+      "id": "osint-uas_strike-poland-2026-09-14",
+      "conflict_name": "Poland",
+      "incident_title": "Russian drone strike hits train near Poland-Ukraine border – video",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-14T14:05:00Z",
+      "lat": 52,
+      "lon": 19.5,
+      "summary": "7 outlets (1 tier-1) reported uas strike in Poland on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMi9AFBVV95cUxObVFFd1NGZzNGTlp2WDA1TC15V1hzVlhYTGU3UU1vODUtODZYMU5pZnlrR05xQ0ZDdjlsS28yMlRDOF9ESWQxSnpycW1rRW55OVNCWVpyMElMSXVkSlk5ZF9EenZPR1dsOHU2U0wwTmV4X192NFFYQWRGX1Z1QTBydU9mWkdOUlJNeEh3M09wSWpXd2ZnZEMxME5fZk5CLVNiWUFvZk8zeWZrWERXTkNnaFBFYVBfbGtiZUtFamgzQjM3MEtXdzVhSms4VUFzdUlqYkhDaXhGUWJaM1JEX2NCMUhMazNsSDZhM3I0VnBaQU1jc202?oc=5 | https://news.google.com/rss/articles/CBMitwFBVV95cUxPaEV2LWNueklWd0gyVC10N1p0d0pZel9YNEpHRi1WalJNU19XSTZwaTJWR2xGMHRMZnFKakZ4c1R1OVROTXdtQjE0S3Y4Uk5WQ2l4VE9oZnZ6LVlOR0NjZl9ITURSdy01c2M5QTZBQ2JjUGQ0TEl5U3F3eHZPUk5oUXRZZ2RmOWdiQlFFM3dKTXA4RzU4Tnc1Y0hDdnZvd0ZsYVp5M0tOWFlsN1hzd1kzM0Fib0p5Z1k?oc=5 | https://news.google.com/rss/articles/CBMiswFBVV95cUxNZzZzU0Roc3IyVXh6OFlqSEhzTEhtb2ZCN3R6TGYzQjZYSVZ5cDZ4aS1yOVNseFRCYlNGOVlTNGpOMjhfb3hsYUhwX0NYZjlTTnVfTUxmd1Y5cTB6aGdOMUc1bTZOaEstY3U0TFFMckFicy1JUmhoeWFHcVo1RUNzQXN3R1k2dGEzZTFqNTI3ODctM2FTb3dSbm1UNUdNWi0wLWpxek5sLUUzRGhZeUpjSFpmOA?oc=5 | https://news.google.com/rss/articles/CBMitwFBVV95cUxPSS15SlRIdFFyd0dfM01DVlFUUEt0cDRPX1Y3SGVvUXA5MURxR3poWnM1ckdfOUw4dXNubjI3RUlhOGRxT25mUGp3Rk1HR2NVRXhhSmNudzRfWV9Yc2ZKWE90OWpkcGlDUC1Jam51VG1oZ0lqbXUwR1hWY0JwUDdqSENVZ1FZMWIzT0VzS3JpaDZ1ZzdncHV5dFZFeVJiZlVkVkpiN1h2aEdCQ1U2dm5LTE05bldGMnM?oc=5 | https://news.google.com/rss/articles/CBMizgFBVV95cUxQRUd6T2FvaHlPZGlRaFBSa2Radnp2QWxTV3dXWkE5UmR3XzQtMi1LaVZCZTgtNDJUT0UwcThMbHBNLUdMRzRoSzVYRjFHWlpBeXRjdl9TekliQkJBaTczNVozRnRZb2FTRnRNeFF2U1I5R2ZMZTd3d0kwaU9sMUVEczJqUjgzZWlib3BTYVBoTVAzNmhHcE1GaGtEQUJlbDBCSlVmYWdkclVwUnBKeENyTWtzVW9RSVg2LUFxdUp2M2dWbmROWXVkeC1Yemw2d9IBzgFBVV95cUxQRUd6T2FvaHlPZGlRaFBSa2Radnp2QWxTV3dXWkE5UmR3XzQtMi1LaVZCZTgtNDJUT0UwcThMbHBNLUdMRzRoSzVYRjFHWlpBeXRjdl9TekliQkJBaTczNVozRnRZb2FTRnRNeFF2U1I5R2ZMZTd3d0kwaU9sMUVEczJqUjgzZWlib3BTYVBoTVAzNmhHcE1GaGtEQUJlbDBCSlVmYWdkclVwUnBKeENyTWtzVW9RSVg2LUFxdUp2M2dWbmROWXVkeC1Yemw2dw?oc=5 | https://news.google.com/rss/articles/CBMikwFBVV95cUxQZmZHSU94N1lHdnZCNk5hMWozVGE2ZzRtWWdSYzB0QktETFJza1RxNXhySmJFUmowekdJZ0RVRlBZQl9wOFAtVFBBTGtOZ2RBRFhzRjZibUxuZTRiX3pfcUFXME9NMWprbkQyLVQ5RkFKZXFqNkl1MUk2ZWdOdzY0QWQ1a1JleUNfN0RFRkVHcDBXZmvSAZMBQVVfeXFMUGZmR0lPeDdZR3Z2QjZOYTFqM1RhNmc0bVlnUmMwdEJLRExSc2tUcTV4ckpiRVJqMHpHSWdEVUZQWUJfcDhQLVRQQUxrTmdkQURYc0Y2Ym1MbmU0Yl96X3FBVzBPTTFqa25EMi1UOUZBSmVxajZJdTFJNmVnTnc2NEFkNWtSZXlDXzdERUZFR3AwV2Zr?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 7,
+        "tier1": 1,
+        "thermal24h": 2,
+        "thermalKm": 150,
+        "gdeltEvents24h": 43
+      }
+    },
+    {
+      "id": "osint-naval-romania-2026-09-14",
+      "conflict_name": "Romania / Moldova",
+      "incident_title": "Romanian F-16 Guns Down a Sea Drone in the Black Sea",
+      "incident_type": "naval",
+      "occurred_at": "2026-09-14T15:02:00Z",
+      "lat": 45.5,
+      "lon": 27.5,
+      "summary": "1 outlet (0 tier-1) reported naval in Romania / Moldova on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQWVliZ1JHblVZTHhkdHA4RkZEcTg1c1otUWNWdnFiSnkzZDlqYUNOLWZndGtLVmxNLVZnb3dySG5uYWF2Zl8xZk40eHNya1AwMVVRUkpzTDJGRzdZTng4US1nMzBjZV9yblRPZEx6R0hQN0UxbGlkZE4zdVk0Z3lxN0xTWXpPX213?oc=5",
+      "platforms_involved": [
+        "USA-CAT-F16",
+        "PAK-CAT-F16",
+        "EGY-CAT-F16",
+        "IDN-CAT-F16",
+        "THA-CAT-F16"
+      ],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 0
+      }
+    },
+    {
+      "id": "osint-ballistic_strike-korea-2026-09-14",
+      "conflict_name": "Korean Peninsula",
+      "incident_title": "North Korea confirms the launch of ballistic missiles in an \"attack exercise.\"",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-14T15:20:00Z",
+      "lat": 38,
+      "lon": 127,
+      "summary": "1 outlet (0 tier-1) reported ballistic strike in Korean Peninsula on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOLWJjUTFYQ09MU2VuZkpuTVY4VzNhVFdyRkZMOU9LcDZ5LWtwUjVxSlEwbzFqR2o5OXVjVGpta29lOEdZODBwaFJYT3JGZ1NHVTMxWk9wMFAtYTJ4VjJ0ZjRfekZpU1BzZDh3QXo0UXU1TUwzTmFzUlNMWTNrU2RzWXh6UVV5OVdQUTRoZDQ0T3c0VTRleW1sakdMWnljWDMyQ3VwS0tNNEQ0dE81WmRwRjczd3BxVV9RRmJxazFBSWFfZw?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 1,
+        "thermalKm": 150,
+        "gdeltEvents24h": 32
+      }
+    },
+    {
+      "id": "osint-naval-crimea-2026-09-14",
+      "conflict_name": "Crimea",
+      "incident_title": "Satellite images show 21 shelters at suspected Russian naval drone base at Lake Donuzlav in occupied Crimea",
+      "incident_type": "naval",
+      "occurred_at": "2026-09-14T16:30:00Z",
+      "lat": 45.3,
+      "lon": 34.4,
+      "summary": "1 outlet (0 tier-1) reported naval in Crimea on 2026-09-14. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE9ZdjR5N0lqUW9rcmRCZjQxR2FCVjF3N3JNVjdLaE1BcjhPWEVNcHBreDI1MGdlb2lsQVF4QktHV1hKXzQ2QlZIc2c1NA?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-14T16:42:21.030Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 11,
+        "thermalKm": 150,
+        "gdeltEvents24h": 18
+      }
     }
   ],
   "attribution": [
     "GDELT Project (gdeltproject.org)",
-    "GPSJam by John Wiseman (gpsjam.org)"
-  ]
+    "Google News RSS (outlets as cited)",
+    "NASA FIRMS / LANCE (firms.modaps.eosdis.nasa.gov)",
+    "GPSJam by John Wiseman (gpsjam.org)",
+    "adsb.lol community ADS-B"
+  ],
+  "snapshots": {
+    "generatedAt": "2026-09-14T16:42:23.407Z",
+    "theatres": [
+      {
+        "key": "israel-gaza",
+        "theatre": "Israel / Gaza",
+        "thermal24h": 17,
+        "gdeltEvents24h": 549,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "lebanon",
+        "theatre": "Lebanon",
+        "thermal24h": 37,
+        "gdeltEvents24h": 347,
+        "milAirborne": 2,
+        "milTypes": [
+          {
+            "type": "A332",
+            "n": 1
+          },
+          {
+            "type": "AT76",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "key": "ukraine",
+        "theatre": "Ukraine",
+        "thermal24h": 26,
+        "gdeltEvents24h": 192,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "russia",
+        "theatre": "Russia (interior)",
+        "thermal24h": 36,
+        "gdeltEvents24h": 167,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "red-sea",
+        "theatre": "Red Sea / Yemen",
+        "thermal24h": 3,
+        "gdeltEvents24h": 135,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "iran",
+        "theatre": "Iran",
+        "thermal24h": 63,
+        "gdeltEvents24h": 115,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "india-pak",
+        "theatre": "India / Pakistan",
+        "thermal24h": 20,
+        "gdeltEvents24h": 98,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "iraq",
+        "theatre": "Iraq",
+        "thermal24h": 213,
+        "gdeltEvents24h": 55,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "syria",
+        "theatre": "Syria",
+        "thermal24h": 101,
+        "gdeltEvents24h": 63,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "crimea",
+        "theatre": "Crimea",
+        "thermal24h": 227,
+        "gdeltEvents24h": 31,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "poland",
+        "theatre": "Poland",
+        "thermal24h": 14,
+        "gdeltEvents24h": 48,
+        "milAirborne": 8,
+        "milTypes": [
+          {
+            "type": "A332",
+            "n": 1
+          },
+          {
+            "type": "A21N",
+            "n": 1
+          },
+          {
+            "type": "L410",
+            "n": 1
+          },
+          {
+            "type": "MI8",
+            "n": 1
+          },
+          {
+            "type": "A400",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "key": "korea",
+        "theatre": "Korean Peninsula",
+        "thermal24h": 8,
+        "gdeltEvents24h": 42,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "romania",
+        "theatre": "Romania / Moldova",
+        "thermal24h": 1,
+        "gdeltEvents24h": 31,
+        "milAirborne": 2,
+        "milTypes": [
+          {
+            "type": "F2TH",
+            "n": 1
+          },
+          {
+            "type": "GLF6",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "key": "gulf",
+        "theatre": "Gulf / Hormuz",
+        "thermal24h": 24,
+        "gdeltEvents24h": 18,
+        "milAirborne": 2,
+        "milTypes": [
+          {
+            "type": "C17",
+            "n": 1
+          },
+          {
+            "type": "K35R",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "key": "taiwan",
+        "theatre": "Taiwan Strait",
+        "thermal24h": 7,
+        "gdeltEvents24h": 13,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "sudan",
+        "theatre": "Sudan",
+        "thermal24h": 5,
+        "gdeltEvents24h": 10,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "baltic",
+        "theatre": "Baltic",
+        "thermal24h": 5,
+        "gdeltEvents24h": 6,
+        "milAirborne": 3,
+        "milTypes": [
+          {
+            "type": "UNKNOWN",
+            "n": 1
+          },
+          {
+            "type": "F900",
+            "n": 1
+          },
+          {
+            "type": "C27J",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "key": "libya",
+        "theatre": "Libya",
+        "thermal24h": 64,
+        "gdeltEvents24h": 0,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "myanmar",
+        "theatre": "Myanmar",
+        "thermal24h": 12,
+        "gdeltEvents24h": 2,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "sahel",
+        "theatre": "Sahel",
+        "thermal24h": 0,
+        "gdeltEvents24h": 1,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "scs",
+        "theatre": "South China Sea",
+        "thermal24h": 0,
+        "gdeltEvents24h": 0,
+        "milAirborne": 0,
+        "milTypes": []
+      }
+    ]
+  }
 }

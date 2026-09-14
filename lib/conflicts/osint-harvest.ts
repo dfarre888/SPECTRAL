@@ -4,8 +4,12 @@
  *
  * Sources (all open, each with its own attribution requirement):
  *   GDELT DOC 2.0  — worldwide news article index (attribution: GDELT Project)
+ *   Google News RSS — query-driven headline aggregation across outlets
+ *   Tier-1 / defence-press RSS
+ *   NASA FIRMS     — VIIRS active-fire detections (physical corroboration)
  *   GPSJam         — daily ADS-B-derived GNSS interference by H3 cell
  *                    (John Wiseman, gpsjam.org; attribution required)
+ *   adsb.lol       — community ADS-B, military-flagged aircraft snapshot
  *
  * Everything here is a LEAD, not a finding. A lead is graded by how many
  * independent outlets carried it and never by what any one outlet claimed.
@@ -13,7 +17,7 @@
  *
  * Pure: no network, no fs. The connected-machine script does the fetching.
  */
-import type { ConflictIncident, ConflictIncidentType } from '@/lib/conflicts/types'
+import type { ConflictIncident, ConflictIncidentType, LeadEvidence } from '@/lib/conflicts/types'
 
 export interface GdeltArticle {
   url: string
@@ -205,7 +209,194 @@ export function leadToIncident(lead: OsintLead): ConflictIncident {
     confidence: gradeToConfidence(lead.grade),
     classification: 'UNCLASSIFIED // OSINT',
     created_at: new Date().toISOString(),
+    evidence: { outlets: lead.domains.length, tier1: lead.tier1Count },
   }
+}
+
+/* ---------------- Google News RSS ---------------- */
+
+/**
+ * Google News search RSS. Each item carries the originating outlet in
+ * <source url="…">, which is what we grade on; the item link itself is a
+ * Google redirect and is kept only as the citation.
+ */
+export function googleNewsToArticles(xml: string, sinceMs: number): GdeltArticle[] {
+  const out: GdeltArticle[] = []
+  for (const it of xml.split(/<item[\s>]/).slice(1)) {
+    const title = decodeEntities(it.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/)?.[1] ?? '')
+    const link = (it.match(/<link>([\s\S]*?)<\/link>/)?.[1] ?? '').trim()
+    const pub = (it.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] ?? '').trim()
+    const srcUrl = it.match(/<source url="([^"]+)"/)?.[1] ?? ''
+    const t = Date.parse(pub)
+    if (!title || !link || !Number.isFinite(t) || t < sinceMs) continue
+    let domain = 'news.google.com'
+    try { domain = new URL(srcUrl).hostname.replace(/^www\./, '') } catch { /* keep */ }
+    // Google appends " - Outlet" to the headline.
+    const clean = title.replace(/\s+-\s+[^-]{2,40}$/, '').trim()
+    out.push({ url: link, title: clean, seendate: toSeendate(new Date(t)), domain, language: 'English' })
+  }
+  return out
+}
+
+export function decodeEntities(s: string): string {
+  return s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim()
+}
+
+export function toSeendate(d: Date): string {
+  return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')
+}
+
+/* ---------------- NASA FIRMS ---------------- */
+
+export interface FireDetection {
+  lat: number
+  lon: number
+  /** 'low' | 'nominal' | 'high' for VIIRS */
+  confidence: string
+  frp: number
+  acqDate: string
+  daynight: string
+}
+
+export function parseFirmsCsv(csv: string): FireDetection[] {
+  const lines = csv.split('\n')
+  const head = lines[0].split(',')
+  const ix = (k: string) => head.indexOf(k)
+  const iLat = ix('latitude'), iLon = ix('longitude'), iConf = ix('confidence'), iFrp = ix('frp'), iDate = ix('acq_date'), iDn = ix('daynight')
+  const out: FireDetection[] = []
+  for (const line of lines.slice(1)) {
+    if (!line.trim()) continue
+    const c = line.split(',')
+    const lat = Number(c[iLat]), lon = Number(c[iLon])
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue
+    out.push({ lat, lon, confidence: c[iConf] ?? '', frp: Number(c[iFrp]) || 0, acqDate: c[iDate] ?? '', daynight: c[iDn] ?? '' })
+  }
+  return out
+}
+
+/**
+ * High-confidence detections within `km` of a point. VIIRS 'nominal' is the
+ * standard detection; 'low' is excluded because it is dominated by sun glint
+ * and small agricultural fires. This counts thermal activity in the theatre;
+ * it does not attribute any one fire to a strike.
+ */
+export function thermalNear(fires: FireDetection[], lat: number, lon: number, km: number): number {
+  let n = 0
+  for (const f of fires) {
+    if (f.confidence === 'low' || f.confidence === 'l') continue
+    if (Math.abs(f.lat - lat) > km / 111 + 0.5) continue
+    if (haversineKm(lat, lon, f.lat, f.lon) <= km) n += 1
+  }
+  return n
+}
+
+export function withThermal(inc: ConflictIncident, fires: FireDetection[], km = 150): ConflictIncident {
+  const thermal24h = thermalNear(fires, inc.lat, inc.lon, km)
+  const evidence: LeadEvidence = { ...(inc.evidence ?? { outlets: 0, tier1: 0 }), thermal24h, thermalKm: km }
+  return { ...inc, evidence }
+}
+
+/* ---------------- GDELT 2.0 events (bulk export) ---------------- */
+
+export interface GdeltEvent {
+  day: string
+  rootCode: string
+  lat: number
+  lon: number
+  url: string
+}
+
+/** Parse a GDELT v2 export CSV (tab-separated, 61 columns). Keeps conflict root codes with a geocode. */
+export function parseGdeltExport(tsv: string): GdeltEvent[] {
+  const out: GdeltEvent[] = []
+  for (const line of tsv.split('\n')) {
+    const c = line.split('\t')
+    if (c.length < 61) continue
+    const rootCode = c[28]
+    if (rootCode !== '18' && rootCode !== '19' && rootCode !== '20') continue
+    const lat = Number(c[56]), lon = Number(c[57])
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || (lat === 0 && lon === 0)) continue
+    out.push({ day: c[1], rootCode, lat, lon, url: c[60] })
+  }
+  return out
+}
+
+export function gdeltNear(events: GdeltEvent[], lat: number, lon: number, km: number): number {
+  let n = 0
+  for (const e of events) {
+    if (Math.abs(e.lat - lat) > km / 111 + 0.5) continue
+    if (haversineKm(lat, lon, e.lat, e.lon) <= km) n += 1
+  }
+  return n
+}
+
+export function withGdelt(inc: ConflictIncident, events: GdeltEvent[], km = 150): ConflictIncident {
+  const gdeltEvents24h = gdeltNear(events, inc.lat, inc.lon, km)
+  return { ...inc, evidence: { ...(inc.evidence ?? { outlets: 0, tier1: 0 }), gdeltEvents24h, thermalKm: km } }
+}
+
+/** Per-theatre situation snapshot that rides alongside the bundle (not part of the checksum). */
+export interface TheatreSnapshot {
+  key: string
+  theatre: string
+  thermal24h: number
+  gdeltEvents24h: number
+  milAirborne: number
+  milTypes: { type: string; n: number }[]
+}
+
+export function theatreSnapshots(fires: FireDetection[], events: GdeltEvent[], air: TheatreAirspace[], km = 300): TheatreSnapshot[] {
+  return THEATRES.map((t) => {
+    const a = air.find((x) => x.key === t.key)
+    return {
+      key: t.key,
+      theatre: t.name,
+      thermal24h: thermalNear(fires, t.lat, t.lon, km),
+      gdeltEvents24h: gdeltNear(events, t.lat, t.lon, km),
+      milAirborne: a?.airborne ?? 0,
+      milTypes: a?.types ?? [],
+    }
+  }).sort((a, b) => b.gdeltEvents24h + b.thermal24h / 10 - (a.gdeltEvents24h + a.thermal24h / 10))
+}
+
+/* ---------------- adsb.lol military snapshot ---------------- */
+
+export interface AdsbAircraft {
+  hex: string
+  t?: string
+  r?: string
+  lat?: number
+  lon?: number
+  alt_baro?: number | string
+  flight?: string
+}
+
+export interface TheatreAirspace {
+  theatre: string
+  key: string
+  airborne: number
+  types: { type: string; n: number }[]
+}
+
+/** Military-flagged aircraft with a position, binned to the nearest theatre within 600 km. */
+export function milAircraftByTheatre(ac: AdsbAircraft[]): TheatreAirspace[] {
+  const m = new Map<string, TheatreAirspace & { tc: Map<string, number> }>()
+  for (const a of ac) {
+    if (typeof a.lat !== 'number' || typeof a.lon !== 'number') continue
+    const t = nearestTheatre(a.lat, a.lon, 600)
+    if (!t) continue
+    let e = m.get(t.key)
+    if (!e) {
+      e = { theatre: t.name, key: t.key, airborne: 0, types: [], tc: new Map() }
+      m.set(t.key, e)
+    }
+    e.airborne += 1
+    const ty = (a.t ?? 'unknown').toUpperCase()
+    e.tc.set(ty, (e.tc.get(ty) ?? 0) + 1)
+  }
+  return [...m.values()]
+    .map(({ tc, ...rest }) => ({ ...rest, types: [...tc.entries()].map(([type, n]) => ({ type, n })).sort((a, b) => b.n - a.n).slice(0, 5) }))
+    .sort((a, b) => b.airborne - a.airborne)
 }
 
 /* ---------------- GPSJam ---------------- */

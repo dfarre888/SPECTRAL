@@ -36,7 +36,7 @@ export default async function ConflictIntelPage() {
           Open news and GNSS-interference feeds harvested on a connected machine, graded by how many independent outlets carried each event, and matched against the platform catalogue. Leads, not findings; every row links to the outlets behind it.
         </p>
         {latest ? (
-          <OsintLeadsPanel incidents={latest.bundle.incidents} manifest={latest.bundle.manifest} attribution={latest.attribution} />
+          <OsintLeadsPanel incidents={latest.bundle.incidents} manifest={latest.bundle.manifest} attribution={latest.attribution} snapshots={latest.snapshots?.theatres ?? null} />
         ) : (
           <p className="text-[11px] font-mono store-text-muted">No OSINT bundle on this instance. Build one on a connected machine with `npx tsx scripts/build-intel-bundle.ts` and drop it in data/intel/bundles.</p>
         )}

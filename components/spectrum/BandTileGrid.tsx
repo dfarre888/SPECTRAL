@@ -197,8 +197,7 @@ function StackedAssetOverlay({
               <span
                 style={{
                   fontFamily: 'var(--sx-mono, monospace)',
-                  fontSize: 8,
-                  letterSpacing: '0.04em',
+                  fontSize: 11,
                   color: brick.side === 'red' ? 'rgba(248,113,113,0.9)' : 'rgba(74,158,255,0.9)',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -236,8 +235,7 @@ function StackedAssetOverlay({
                     top: '50%',
                     transform: 'translateY(-50%)',
                     fontFamily: 'var(--sx-mono, monospace)',
-                    fontSize: 7,
-                    letterSpacing: '0.06em',
+                    fontSize: 11,
                     color: 'rgba(255,255,255,0.85)',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -335,16 +333,15 @@ function Tooltip({ state, expanded }: { state: TooltipState; expanded: boolean }
       <div
         style={{
           fontFamily: 'var(--sx-mono, monospace)',
-          fontSize: 11,
-          fontWeight: 700,
-          color: 'var(--sx-orange)',
-          letterSpacing: '0.08em',
+          fontSize: 12,
+          fontWeight: 600,
+          color: '#6CB8FF',
           marginBottom: 5,
         }}
       >
         {state.box.label}
       </div>
-      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', lineHeight: 1.55 }}>
+      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.78)', lineHeight: 1.5 }}>
         {state.box.detail}
       </div>
     </div>
@@ -524,11 +521,11 @@ export function TileCard({
       <div
         style={{
           padding: compact ? '6px 8px' : '9px 13px',
-          borderTop: '1px solid rgba(255,255,255,0.05)',
+          borderTop: '1px solid rgba(255,255,255,0.06)',
           display: 'flex',
-          flexDirection: compact ? 'column' : 'row',
-          alignItems: compact ? 'stretch' : 'baseline',
-          gap: compact ? 4 : 10,
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          gap: compact ? 4 : 3,
           background: 'rgba(0,0,0,0.35)',
           flexShrink: fillViewport ? 0 : undefined,
         }}
@@ -543,10 +540,9 @@ export function TileCard({
           <span
             style={{
               fontFamily: 'var(--sx-mono, monospace)',
-              fontWeight: 700,
-              fontSize: compact ? 10 : expanded ? 15 : 12,
-              color: 'var(--sx-orange)',
-              letterSpacing: '0.06em',
+              fontWeight: 600,
+              fontSize: compact ? 12 : expanded ? 15 : 13,
+              color: 'var(--store-ink)',
               flexShrink: 0,
             }}
           >
@@ -555,9 +551,8 @@ export function TileCard({
           <span
             style={{
               fontFamily: 'var(--sx-mono, monospace)',
-              fontSize: compact ? 9 : 10,
-              color: 'rgba(255,255,255,0.35)',
-              letterSpacing: '0.04em',
+              fontSize: 11,
+              color: 'var(--store-ink-mute)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -565,19 +560,22 @@ export function TileCard({
           >
             {tile.range}
           </span>
-          {!compact && (
-            <span
-              style={{
-                fontSize: 10,
-                color: 'rgba(255,255,255,0.4)',
-                marginLeft: 'auto',
-                flexShrink: 0,
-              }}
-            >
-              {fillViewport ? tile.description : expanded ? '▲ collapse' : tile.description}
-            </span>
-          )}
         </div>
+        {!compact && (
+          <div
+            title={tile.description}
+            style={{
+              fontSize: 12,
+              color: 'var(--store-ink-soft)',
+              minWidth: 0,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: fillViewport ? 'normal' : 'nowrap',
+            }}
+          >
+            {!fillViewport && expanded ? 'Collapse' : tile.description}
+          </div>
+        )}
         {tileEmissions.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {chipKinds.map((kind) => {
@@ -587,9 +585,8 @@ export function TileCard({
                   key={kind}
                   style={{
                     fontFamily: 'var(--sx-mono, monospace)',
-                    fontSize: 8,
-                    letterSpacing: '0.08em',
-                    padding: '2px 6px',
+                    fontSize: 11,
+                    padding: '1px 6px',
                     borderRadius: 4,
                     border: '1px solid rgba(255,255,255,0.12)',
                     color:
@@ -620,72 +617,27 @@ function SectionTabs({
   tileCount: number;
 }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 4,
-        marginBottom: 14,
-        flexWrap: 'wrap',
-      }}
-    >
-      {BAND_TILE_SECTIONS.map((section) => {
-        const isActive = section.id === activeId;
-        const count = section.tileIds ? section.tileIds.length : BAND_TILES.length;
-        return (
-          <button
-            key={section.id}
-            type="button"
-            onClick={() => onSelect(section.id)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '6px 12px',
-              borderRadius: 7,
-              border: isActive
-                ? '1px solid rgba(41,151,255,0.6)'
-                : '1px solid rgba(255,255,255,0.08)',
-              background: isActive ? 'rgba(41,151,255,0.12)' : 'rgba(255,255,255,0.03)',
-              cursor: 'pointer',
-              transition: 'border-color 0.12s, background 0.12s',
-              outline: 'none',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: 'var(--sx-mono, monospace)',
-                fontSize: 10,
-                fontWeight: isActive ? 700 : 400,
-                letterSpacing: '0.1em',
-                color: isActive ? 'var(--sx-orange)' : 'rgba(255,255,255,0.5)',
-                textTransform: 'uppercase',
-              }}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10, flexWrap: 'wrap' }}>
+      <div className="seg sm" role="tablist" aria-label="Band section">
+        {BAND_TILE_SECTIONS.map((section) => {
+          const isActive = section.id === activeId;
+          const count = section.tileIds ? section.tileIds.length : BAND_TILES.length;
+          return (
+            <button
+              key={section.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => onSelect(section.id)}
             >
               {section.label}
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--sx-mono, monospace)',
-                fontSize: 9,
-                color: isActive ? 'rgba(41,151,255,0.6)' : 'rgba(255,255,255,0.2)',
-              }}
-            >
-              {count}
-            </span>
-          </button>
-        );
-      })}
-      <span
-        style={{
-          marginLeft: 'auto',
-          fontFamily: 'var(--sx-mono, monospace)',
-          fontSize: 10,
-          color: 'rgba(255,255,255,0.2)',
-          letterSpacing: '0.06em',
-        }}
-      >
-        {tileCount} tile{tileCount !== 1 ? 's' : ''} · OSINT
+              <span style={{ fontFamily: 'var(--sx-mono, monospace)', fontSize: 11, color: 'var(--store-ink-mute)' }}>{count}</span>
+            </button>
+          );
+        })}
+      </div>
+      <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--store-ink-mute)' }}>
+        <span style={{ fontFamily: 'var(--sx-mono, monospace)' }}>{tileCount}</span> tile{tileCount !== 1 ? 's' : ''} · OSINT
       </span>
     </div>
   );
@@ -713,35 +665,11 @@ function DefaultBandTileGrid() {
         tileCount={visibleTiles.length}
       />
 
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          marginBottom: 14,
-          padding: '8px 12px',
-          borderRadius: 8,
-          background: 'rgba(6,182,212,0.04)',
-          border: '1px solid rgba(6,182,212,0.08)',
-        }}
-      >
-        <span
-          style={{
-            fontFamily: 'var(--sx-mono, monospace)',
-            fontSize: 9,
-            letterSpacing: '0.12em',
-            color: '#06B6D4',
-            textTransform: 'uppercase',
-          }}
-        >
-          Band Tiles
-        </span>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', flex: 1 }}>
-          Hover allocation bars for intel · Click any tile to open full-screen · Esc to close
-        </span>
-      </div>
+      <p style={{ fontSize: 12, color: 'var(--store-ink-mute)', marginBottom: 14 }}>
+        Hover allocation bars for detail. Click a tile to open it full screen; Esc closes.
+      </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 14 }}>
         {visibleTiles.map((tile) => (
           <TileCard
             key={tile.id}
@@ -764,7 +692,9 @@ function DefaultBandTileGrid() {
 }
 
 export function BandTileGrid(props?: BandTileGridProps) {
-  if (!props) {
+  // React always passes a props object, so "no props" means an empty one:
+  // the Spectrum workspace catalogue (section tabs, full-screen on click).
+  if (!props || Object.keys(props).length === 0) {
     return <DefaultBandTileGrid />;
   }
   return <BandTileGridConfigured {...props} />;
@@ -808,16 +738,14 @@ function BandTileGridConfigured(props: BandTileGridProps) {
         >
           <span
             style={{
-              fontFamily: 'var(--sx-mono, monospace)',
-              fontSize: 9,
-              letterSpacing: '0.12em',
-              color: '#06B6D4',
-              textTransform: 'uppercase',
+              fontSize: 12,
+              fontWeight: 600,
+              color: '#67E8F9',
             }}
           >
             Laydown EW bands
           </span>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>
+          <span style={{ fontSize: 12, color: 'var(--store-ink-mute)' }}>
             {visibleTiles.length} active tile{visibleTiles.length === 1 ? '' : 's'}
           </span>
         </div>

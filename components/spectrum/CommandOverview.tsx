@@ -1,16 +1,19 @@
 'use client';
 /**
  * CommandOverview — the landing canvas (Mockup Frame 01).
- * Posture at a glance: active threats, bands monitored, defeat coverage,
- * a live congestion ribbon, and the Spectrum Advisor feed.
+ * Posture at a glance: one instrument row (threats, Blue systems, bands,
+ * radars, effectors, defeat coverage), a congestion ribbon on the true log
+ * scale, and the Spectrum Advisor feed.
  *
  * KPI values here are derived from the loaded platform set so the page is
  * live, not static. Wire the advisor feed to your RAG assistant.
  */
 
 import React, { useMemo } from 'react';
+import { ArrowRight, Layers, Radio, TriangleAlert } from 'lucide-react';
 import { usePlatforms } from './data';
-import { GlassCard, StatPuck } from '@/components/ui/primitives';
+import { useRadars } from './radar-data';
+import { useEffectors } from './effector-data';
 import { getAxisConfig, makeLogScale, capabilityExtent, LAYER_COLOR } from '@/lib/spectrum/scale';
 
 export function CommandOverview({
@@ -19,6 +22,8 @@ export function CommandOverview({
   onNavigate?: (page: string) => void;
 }) {
   const { platforms } = usePlatforms();
+  const radars = useRadars();
+  const effectors = useEffectors();
 
   const stats = useMemo(() => {
     const reds = platforms.filter((p) => p.side === 'red');
@@ -37,98 +42,105 @@ export function CommandOverview({
           if (blueJamLayers.has(c.layer)) covered++;
         }
     const coverage = dep ? Math.round((covered / dep) * 100) : 0;
-    return { red: reds.length, blue: blues.length, bands, coverage };
+    return { red: reds.length, blue: blues.length, bands, coverage, dep };
   }, [platforms]);
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-      {/* top bar */}
-      <GlassCard style={{ padding: '15px 20px', borderRadius: 18, display: 'flex', alignItems: 'center', gap: 18 }}>
-        <div>
-          <div className="sx-mono sx-faint" style={{ fontSize: 11 }}>
-            OPERATIONAL PICTURE
-          </div>
-          <div className="sx-display" style={{ fontWeight: 600, fontSize: 17, marginTop: 2 }}>
-            Electromagnetic Posture
-          </div>
-        </div>
-        <div
-          className="sx-glass"
-          style={{ marginLeft: 'auto', padding: '8px 14px', borderRadius: 11, display: 'flex', alignItems: 'center', gap: 9 }}
-        >
-          <span className="sx-dot" style={{ width: 8, height: 8, color: 'var(--sx-amber)', background: 'var(--sx-amber)' }} />
-          <span className="sx-mono" style={{ fontSize: 12 }}>EME CONTESTED</span>
-        </div>
-      </GlassCard>
+  const radarSplit = useMemo(
+    () => ({ red: radars.filter((r) => r.side === 'red').length, blue: radars.filter((r) => r.side === 'blue').length }),
+    [radars],
+  );
+  const effectorSplit = useMemo(
+    () => ({ red: effectors.filter((e) => e.side === 'red').length, blue: effectors.filter((e) => e.side === 'blue').length }),
+    [effectors],
+  );
 
-      {/* KPI row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
-        <StatPuck
-          label="Threat platforms"
-          value={String(stats.red).padStart(2, '0')}
-          delta="Red library"
-          deltaColor="var(--sx-red)"
-        />
-        <StatPuck
-          label="Bands catalogued"
-          value={stats.bands}
-          delta="RF · GNSS · EO/IR"
-        />
-        <StatPuck
-          label="Defeat coverage"
-          value={stats.coverage}
-          unit="%"
-          delta={`${stats.blue} effectors`}
-          deltaColor="var(--sx-green)"
-          glow="attention"
-        />
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+      {/* instrument row */}
+      <div className="fc-inst sx-six" style={{ borderTop: '1px solid var(--store-line)', borderBottom: '1px solid var(--store-line)' }}>
+        <div>
+          <div className="k">Threat platforms</div>
+          <div className="v red">{stats.red}</div>
+          <div className="d">Red library</div>
+        </div>
+        <div>
+          <div className="k">Blue systems</div>
+          <div className="v blue">{stats.blue}</div>
+          <div className="d">Blue library</div>
+        </div>
+        <div>
+          <div className="k">Bands catalogued</div>
+          <div className="v">{stats.bands.toLocaleString()}</div>
+          <div className="d">RF, GNSS, EO/IR</div>
+        </div>
+        <div>
+          <div className="k">Radars</div>
+          <div className="v">{radars.length}</div>
+          <div className="d">
+            {radarSplit.red} Red, {radarSplit.blue} Blue
+          </div>
+        </div>
+        <div>
+          <div className="k">Effectors</div>
+          <div className="v">{effectors.length}</div>
+          <div className="d">
+            {effectorSplit.blue} Blue, {effectorSplit.red} Red
+          </div>
+        </div>
+        <div>
+          <div className="k">Defeat coverage</div>
+          <div className="v">
+            {stats.coverage}
+            <small>%</small>
+          </div>
+          <div className="d" title="Share of Red control, video, datalink, telemetry and navigation bands on a layer that at least one Blue jammer or HPM system covers.">
+            of {stats.dep} Red link dependencies
+          </div>
+        </div>
       </div>
 
       {/* ribbon + advisor */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 18 }}>
-        <GlassCard style={{ padding: '18px 20px', borderRadius: 18 }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14 }}>
-            <div className="sx-display" style={{ fontWeight: 600, fontSize: 13.5 }}>
-              Live Spectrum Congestion
-            </div>
-            <div className="sx-mono sx-faint" style={{ fontSize: 10, marginLeft: 'auto' }}>
-              3 MHz → 40 GHz
-            </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))', gap: 18 }}>
+        <section className="sx-glass" style={{ padding: '20px 22px', gridColumn: 'span 1' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <h2 className="sx-h">Spectrum congestion</h2>
+            <span className="tag amber">
+              <span className="sx-dot" style={{ width: 6, height: 6, background: 'currentColor' }} />
+              EME contested
+            </span>
+            <span className="sx-cap sx-mono" style={{ marginLeft: 'auto' }}>
+              3 MHz to 40 GHz, log
+            </span>
           </div>
+          <p className="sx-cap" style={{ marginTop: 6, lineHeight: 1.5 }}>
+            Where the loaded platforms emit. Brighter means more emitters stacked in the same span.
+          </p>
           <CongestionRibbon platforms={platforms} />
-          <div style={{ display: 'flex', gap: 20, marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--sx-glass-line)' }}>
-            <RibbonStat n={9} label="clear bands" color="var(--sx-green)" />
-            <RibbonStat n={3} label="congested" color="var(--sx-amber)" />
-            <RibbonStat n={2} label="saturated" color="var(--sx-red)" />
+          <div style={{ display: 'flex', gap: 28, marginTop: 16, paddingTop: 14, borderTop: '1px solid var(--store-line)' }}>
+            <RibbonStat n={9} label="Clear bands" color="var(--sx-green)" />
+            <RibbonStat n={3} label="Congested" color="var(--sx-amber)" />
+            <RibbonStat n={2} label="Saturated" color="var(--sx-red)" />
           </div>
-        </GlassCard>
+        </section>
 
-        <GlassCard style={{ padding: '18px 20px', borderRadius: 18 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-            <div style={{ width: 20, height: 20, borderRadius: 6, background: 'linear-gradient(135deg, var(--sx-orange), #1B6FB8)' }} />
-            <div className="sx-display" style={{ fontWeight: 600, fontSize: 13.5 }}>
-              Spectrum Advisor
-            </div>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-            <AdvisorCard icon="⚠" iconColor="var(--sx-red)">
-              FOC threat in library — RF jamming will not engage. Recommend HPM.
-            </AdvisorCard>
-            <AdvisorCard icon="◷" iconColor="var(--sx-amber)">
-              2.4 GHz saturated — collateral risk to local Wi-Fi if jammed.
-            </AdvisorCard>
-            <AdvisorCard icon="◉" iconColor="var(--sx-green)">
-              Multi-constellation CRPA threats need layered defeat (jam + kinetic).
-            </AdvisorCard>
-            <button
-              onClick={() => onNavigate?.('engagement')}
-              className="sx-faint"
-              style={{ fontSize: 11, marginTop: 2, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0, color: 'var(--sx-ink-faint)' }}
-            >
-              + Open engagement planner
-            </button>
-          </div>
-        </GlassCard>
+        <section className="sx-glass" style={{ padding: '20px 22px' }}>
+          <h2 className="sx-h">Spectrum advisor</h2>
+          <ul style={{ listStyle: 'none', margin: '12px 0 0', padding: 0 }}>
+            <AdvisorItem icon={<TriangleAlert size={15} />} color="var(--sx-red)">
+              FOC threat in library: RF jamming will not engage. Recommend HPM.
+            </AdvisorItem>
+            <AdvisorItem icon={<Radio size={15} />} color="var(--sx-amber)">
+              2.4 GHz saturated: collateral risk to local Wi-Fi if jammed.
+            </AdvisorItem>
+            <AdvisorItem icon={<Layers size={15} />} color="var(--sx-green)">
+              Multi-constellation CRPA threats need layered defeat (jam plus kinetic).
+            </AdvisorItem>
+          </ul>
+          <button type="button" onClick={() => onNavigate?.('engagement')} className="fc-action" style={{ marginTop: 10 }}>
+            Open engagement planner
+            <ArrowRight size={13} aria-hidden />
+          </button>
+        </section>
       </div>
     </div>
   );
@@ -137,57 +149,105 @@ export function CommandOverview({
 function RibbonStat({ n, label, color }: { n: number; label: string; color: string }) {
   return (
     <div>
-      <div className="sx-mono" style={{ fontSize: 18, color }}>{n}</div>
-      <div className="sx-faint" style={{ fontSize: 10 }}>{label}</div>
+      <div className="sx-mono" style={{ fontSize: 22, fontWeight: 500, lineHeight: 1, color }}>{n}</div>
+      <div className="sx-cap" style={{ marginTop: 6 }}>{label}</div>
     </div>
   );
 }
 
-function AdvisorCard({ icon, iconColor, children }: { icon: string; iconColor: string; children: React.ReactNode }) {
+function AdvisorItem({ icon, color, children }: { icon: React.ReactNode; color: string; children: React.ReactNode }) {
   return (
-    <div className="sx-glass" style={{ padding: '11px 13px', borderRadius: 12, fontSize: 11.5, color: 'var(--sx-ink-dim)', display: 'flex', gap: 9, alignItems: 'baseline' }}>
-      <span style={{ color: iconColor }}>{icon}</span>
+    <li
+      style={{
+        display: 'flex',
+        gap: 12,
+        alignItems: 'flex-start',
+        padding: '12px 0',
+        borderBottom: '1px solid var(--store-line)',
+        fontSize: 13,
+        lineHeight: 1.5,
+        color: 'var(--store-ink-soft)',
+      }}
+    >
+      <span aria-hidden style={{ color, marginTop: 2, flexShrink: 0 }}>{icon}</span>
       <span>{children}</span>
-    </div>
+    </li>
   );
 }
+
+/** Named markers placed at their true position on the log axis. */
+const RIBBON_MARKS: { v: number; label: string }[] = [
+  { v: 10e6, label: '10M' },
+  { v: 100e6, label: '100M' },
+  { v: 433e6, label: '433M' },
+  { v: 1.4e9, label: 'L' },
+  { v: 2.4e9, label: '2.4G' },
+  { v: 5.8e9, label: '5.8G' },
+  { v: 12e9, label: 'X/Ku' },
+];
 
 /** Compressed read-only RF spectrum showing where the loaded platforms emit. */
 function CongestionRibbon({ platforms }: { platforms: ReturnType<typeof usePlatforms>['platforms'] }) {
-  const W = 600;
-  const H = 38;
+  const W = 1000;
+  const H = 56;
   const cfg = getAxisConfig('rf', [0, W]);
   const scale = makeLogScale(cfg.domain, cfg.range);
 
-  // density: count emitters per pixel bucket → opacity
   const allCaps = platforms.flatMap((p) => (p.capabilities ?? []).filter((c) => c.axis === 'rf' || c.axis === 'gnss'));
 
   return (
-    <div style={{ position: 'relative', height: H, borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--sx-glass-line)', overflow: 'hidden' }}>
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
-        {allCaps.map((c, i) => {
-          const ext = capabilityExtent(c, 'hz');
-          if (!ext) return null;
-          let x0 = scale(ext[0]);
-          let x1 = scale(ext[1]);
-          if (x1 < x0) [x0, x1] = [x1, x0];
-          return (
-            <rect
-              key={c.id + i}
-              x={x0}
-              y={4}
-              width={Math.max(x1 - x0, 2)}
-              height={H - 8}
-              rx={4}
-              fill={LAYER_COLOR[c.layer]}
-              opacity={0.22}
-            />
-          );
-        })}
-      </svg>
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', padding: '0 4px 2px' }}>
-        {['433M', '900M', 'L', '2.4G', '5.8G', 'X/Ku'].map((l) => (
-          <span key={l} className="sx-mono sx-faint" style={{ fontSize: 8 }}>{l}</span>
+    <div style={{ marginTop: 16 }}>
+      <div
+        style={{
+          position: 'relative',
+          height: H,
+          borderRadius: 10,
+          background: 'rgba(255,255,255,0.025)',
+          border: '1px solid var(--lacquer-line)',
+          overflow: 'hidden',
+        }}
+      >
+        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: '100%', height: '100%', display: 'block' }} aria-hidden>
+          {RIBBON_MARKS.map((m) => (
+            <line key={m.label} x1={scale(m.v)} x2={scale(m.v)} y1={0} y2={H} stroke="rgba(255,255,255,0.07)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+          ))}
+          {allCaps.map((c, i) => {
+            const ext = capabilityExtent(c, 'hz');
+            if (!ext) return null;
+            let x0 = scale(ext[0]);
+            let x1 = scale(ext[1]);
+            if (x1 < x0) [x0, x1] = [x1, x0];
+            return (
+              <rect
+                key={c.id + i}
+                x={x0}
+                y={6}
+                width={Math.max(x1 - x0, 2)}
+                height={H - 12}
+                rx={3}
+                fill={LAYER_COLOR[c.layer]}
+                opacity={0.18}
+              />
+            );
+          })}
+        </svg>
+      </div>
+      <div aria-hidden style={{ position: 'relative', height: 18, marginTop: 6 }}>
+        {RIBBON_MARKS.map((m) => (
+          <span
+            key={m.label}
+            className="sx-mono"
+            style={{
+              position: 'absolute',
+              left: `${(scale(m.v) / W) * 100}%`,
+              transform: 'translateX(-50%)',
+              fontSize: 11,
+              color: 'var(--store-ink-mute)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {m.label}
+          </span>
         ))}
       </div>
     </div>

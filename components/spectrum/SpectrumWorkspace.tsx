@@ -7,6 +7,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import { X } from 'lucide-react';
 import type { SpectrumAxis, SpectrumLayer, Platform } from '@/lib/spectrum/types';
 import { SpectrumCanvas } from '@/components/spectrum/SpectrumCanvas';
 import {
@@ -31,26 +32,49 @@ const AXIS_TABS: { axis: SpectrumAxis; label: string; color: string }[] = [
   { axis: 'cbrn', label: 'CBRN', color: LAYER_COLOR.cbrn },
 ];
 
+const MODES: { key: Mode; label: string }[] = [
+  { key: 'reference', label: 'Reference' },
+  { key: 'platform', label: 'Platform' },
+  { key: 'engagement', label: 'Engagement' },
+  { key: 'tiles', label: 'Band tiles' },
+];
+
 const ALL_LAYERS: SpectrumLayer[] = ['comms', 'navigation', 'radar', 'eo_ir', 'cbrn'];
+const LAYER_LABEL: Record<SpectrumLayer, string> = {
+  comms: 'Comms',
+  navigation: 'Navigation',
+  radar: 'Radar',
+  eo_ir: 'EO / IR',
+  cbrn: 'CBRN',
+};
 
 export interface SpectrumWorkspaceProps {
   accreditedWaveforms?: AccreditedWaveformProfile[];
   constellations?: GnssConstellation[];
   gnssVulnerabilities?: GnssPlatformDependency[];
+  /** Platforms already selected elsewhere in the module (library, copilot). */
+  initialSelectedIds?: string[];
 }
 
 export function SpectrumWorkspace({
   accreditedWaveforms,
   constellations,
   gnssVulnerabilities,
+  initialSelectedIds,
 }: SpectrumWorkspaceProps = {}) {
   const { platforms, source } = usePlatforms();
   const [axis, setAxis] = useState<SpectrumAxis>('rf');
-  const [mode, setMode] = useState<Mode>('reference');
+  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
+    (initialSelectedIds ?? []).filter((id, i, a) => a.indexOf(id) === i && platforms.some((p) => p.id === id)),
+  );
+  const [mode, setMode] = useState<Mode>(() => {
+    const sides = new Set(selectedIds.map((id) => platforms.find((p) => p.id === id)?.side));
+    if (sides.has('red') && sides.has('blue')) return 'engagement';
+    return selectedIds.length > 0 ? 'platform' : 'reference';
+  });
   const [activeLayers, setActiveLayers] = useState<Set<SpectrumLayer>>(
     new Set(['comms', 'navigation', 'radar'])
   );
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [gnssOverlay, setGnssOverlay] = useState(false);
 
   const selected = useMemo(
@@ -67,7 +91,7 @@ export function SpectrumWorkspace({
       const next = prev.includes(p.id)
         ? prev.filter((x) => x !== p.id)
         : [...prev, p.id];
-      if (next.length > 0 && (mode === 'reference' || mode === 'tiles')) {
+      if (next.length > 0 && (mode === 'reference' || mode === 'tiles' || mode === 'platform')) {
         const haveRed = next.some((id) => platforms.find((x) => x.id === id)?.side === 'red');
         const haveBlue = next.some((id) => platforms.find((x) => x.id === id)?.side === 'blue');
         setMode(haveRed && haveBlue ? 'engagement' : 'platform');
@@ -76,6 +100,14 @@ export function SpectrumWorkspace({
       return next;
     });
   };
+
+  const pickable = useMemo(() => {
+    const byName = (a: Platform, b: Platform) => a.name.localeCompare(b.name);
+    return {
+      red: platforms.filter((p) => p.side === 'red').sort(byName),
+      blue: platforms.filter((p) => p.side === 'blue').sort(byName),
+    };
+  }, [platforms]);
 
   // filter selected platforms' caps to active layers for display
   const displayPlatforms = useMemo(() => {
@@ -105,89 +137,37 @@ export function SpectrumWorkspace({
   );
 
   return (
-    <div className="sx-glass" style={{ padding: 0, overflow: 'hidden' }}>
-      {/* canvas tabs */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 8,
-          padding: '16px 18px',
-          borderBottom: '1px solid var(--sx-glass-line)',
-          background: 'rgba(0,0,0,0.2)',
-          flexWrap: 'wrap',
-        }}
-      >
-        {AXIS_TABS.map((t) => (
-          <button
-            key={t.axis}
-            onClick={() => setAxis(t.axis)}
-            className={axis === t.axis ? 'sx-glass-hi' : 'sx-glass'}
-            style={{
-              padding: '9px 16px',
-              borderRadius: 12,
-              fontSize: 12.5,
-              fontWeight: 600,
-              color: axis === t.axis ? 'var(--sx-ink)' : 'var(--sx-ink-dim)',
-              border:
-                axis === t.axis
-                  ? `1px solid ${t.color}55`
-                  : '1px solid var(--sx-glass-line)',
-              background: axis === t.axis ? `${t.color}14` : undefined,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <span
-              className="sx-dot"
-              style={{ width: 8, height: 8, color: t.color, background: t.color }}
-            />
-            {t.label}
-          </button>
-        ))}
-
-        <button
-          onClick={() => setGnssOverlay((v) => !v)}
-          className={gnssOverlay ? 'sx-glass-hi' : 'sx-glass'}
-          style={{
-            padding: '9px 16px',
-            borderRadius: 12,
-            fontSize: 12.5,
-            fontWeight: 600,
-            color: gnssOverlay ? 'var(--sx-ink)' : 'var(--sx-ink-dim)',
-            border: gnssOverlay ? '1px solid #06B6D455' : '1px solid var(--sx-glass-line)',
-            background: gnssOverlay ? '#06B6D414' : undefined,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}
-        >
-          <span className="sx-dot" style={{ width: 8, height: 8, color: '#06B6D4', background: '#06B6D4' }} />
-          GNSS Bands
-        </button>
-        {/* mode switch */}
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
-          {(['reference', 'platform', 'engagement', 'tiles'] as Mode[]).map((m) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* toolbar: axis, overlay toggle, view mode */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <div className="seg" role="tablist" aria-label="Spectrum axis">
+          {AXIS_TABS.map((t) => (
             <button
-              key={m}
-              onClick={() => setMode(m)}
-              className="sx-glass"
-              style={{
-                padding: '9px 14px',
-                borderRadius: 12,
-                fontSize: 11,
-                textTransform: 'capitalize',
-                color: mode === m ? 'var(--sx-orange-soft)' : 'var(--sx-ink-dim)',
-                border:
-                  mode === m
-                    ? '1px solid rgba(41,151,255,0.35)'
-                    : '1px solid var(--sx-glass-line)',
-                cursor: 'pointer',
-              }}
+              key={t.axis}
+              type="button"
+              role="tab"
+              aria-selected={axis === t.axis}
+              onClick={() => setAxis(t.axis)}
             >
-              {m === 'tiles' ? '⊞ tiles' : m}
+              <span className="sx-dot" style={{ width: 8, height: 8, background: t.color }} />
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          className="btn-e sm"
+          aria-pressed={gnssOverlay}
+          onClick={() => setGnssOverlay((v) => !v)}
+          title={axis === 'rf' ? 'Mark GNSS constellation signals on the RF axis' : 'GNSS markers show on the RF axis'}
+        >
+          <span className="sx-dot" style={{ width: 7, height: 7, background: '#06B6D4' }} />
+          GNSS bands
+        </button>
+        <div className="seg sm" role="group" aria-label="View mode" style={{ marginLeft: 'auto' }}>
+          {MODES.map((m) => (
+            <button key={m.key} type="button" aria-pressed={mode === m.key} onClick={() => setMode(m.key)}>
+              {m.label}
             </button>
           ))}
         </div>
@@ -195,164 +175,164 @@ export function SpectrumWorkspace({
 
       {/* tiles mode — full-width, no sidebar */}
       {mode === 'tiles' && (
-        <div style={{ padding: 22 }}>
+        <section className="sx-glass" style={{ padding: 20 }}>
           <BandTileGrid />
-        </div>
+        </section>
       )}
 
-      {/* analysis modes — sidebar + canvas */}
-      <div
-        style={{
-          display: mode === 'tiles' ? 'none' : 'grid',
-          gridTemplateColumns: '210px 1fr',
-          gap: 18,
-          padding: 22,
-        }}
-      >
-        {/* sidebar: layers + selection */}
-        <div className="sx-glass" style={{ padding: '18px 16px' }}>
+      {/* analysis modes: layer + compare strip, then a full-width canvas */}
+      {mode !== 'tiles' && (
+        <section className="sx-glass" style={{ padding: 0 }}>
           <div
-            className="sx-mono sx-faint"
-            style={{ fontSize: 10, letterSpacing: '0.12em', marginBottom: 14 }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px 18px',
+              flexWrap: 'wrap',
+              padding: '12px 18px',
+              borderBottom: '1px solid var(--store-line)',
+            }}
           >
-            LAYERS
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
-            {ALL_LAYERS.map((layer) => {
-              const on = activeLayers.has(layer);
-              return (
-                <button
-                  key={layer}
-                  onClick={() =>
-                    setActiveLayers((prev) => {
-                      const next = new Set(prev);
-                      next.has(layer) ? next.delete(layer) : next.add(layer);
-                      return next;
-                    })
-                  }
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    fontSize: 12.5,
-                    background: 'none',
-                    border: 'none',
-                    color: on ? 'var(--sx-ink)' : 'var(--sx-ink-faint)',
-                    cursor: 'pointer',
-                    opacity: on ? 1 : 0.45,
-                    padding: 0,
-                    textTransform: 'capitalize',
-                  }}
-                >
-                  <span
+            <div role="group" aria-label="Layers" style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <span className="sx-label" style={{ marginRight: 4 }}>Layers</span>
+              {ALL_LAYERS.map((layer) => {
+                const on = activeLayers.has(layer);
+                return (
+                  <button
+                    key={layer}
+                    type="button"
+                    role="switch"
+                    aria-checked={on}
+                    onClick={() =>
+                      setActiveLayers((prev) => {
+                        const next = new Set(prev);
+                        next.has(layer) ? next.delete(layer) : next.add(layer);
+                        return next;
+                      })
+                    }
                     style={{
-                      width: 30,
-                      height: 17,
-                      borderRadius: 99,
-                      background: on ? LAYER_COLOR[layer] : 'rgba(255,255,255,0.1)',
-                      position: 'relative',
-                      boxShadow: on ? `0 0 12px ${LAYER_COLOR[layer]}80` : 'none',
-                      flexShrink: 0,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      minHeight: 30,
+                      padding: '0 10px 0 6px',
+                      borderRadius: 9,
+                      fontSize: 13,
+                      color: on ? 'var(--store-ink)' : 'var(--store-ink-mute)',
                     }}
                   >
-                    <span
-                      style={{
-                        position: 'absolute',
-                        top: 2,
-                        [on ? 'right' : 'left']: 2,
-                        width: 13,
-                        height: 13,
-                        borderRadius: '50%',
-                        background: on ? '#fff' : 'var(--sx-ink-faint)',
-                      }}
-                    />
-                  </span>
-                  {layer === 'eo_ir' ? 'EO / IR' : layer}
-                </button>
-              );
-            })}
-          </div>
+                    <span className="sx-switch" data-on={on} style={on ? { background: LAYER_COLOR[layer] } : undefined} />
+                    {LAYER_LABEL[layer]}
+                  </button>
+                );
+              })}
+            </div>
 
-          <div
-            className="sx-mono sx-faint"
-            style={{ fontSize: 10, letterSpacing: '0.12em', margin: '20px 0 12px' }}
-          >
-            SELECTED ({selected.length})
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {selected.length === 0 && (
-              <div className="sx-faint" style={{ fontSize: 11 }}>
-                Pick platforms from the library.
-              </div>
-            )}
-            {selected.map((p) => (
-              <div
-                key={p.id}
-                className="sx-glass"
-                style={{
-                  padding: '8px 11px',
-                  borderRadius: 10,
-                  fontSize: 11,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 7,
-                  borderColor:
-                    p.side === 'red'
-                      ? 'rgba(248,113,113,0.25)'
-                      : 'rgba(74,158,255,0.25)',
+            <div role="group" aria-label="Compare" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', flex: '1 1 320px', minWidth: 0 }}>
+              <span className="sx-label">Compare</span>
+              <select
+                className="glass-field"
+                value=""
+                aria-label="Add a platform to compare"
+                onChange={(e) => {
+                  const p = platforms.find((x) => x.id === e.target.value);
+                  if (p && !selectedIds.includes(p.id)) onToggleSelect(p);
                 }}
+                style={{ height: 30, padding: '0 8px', fontSize: 13, maxWidth: 220 }}
               >
-                <PlatformThumbnail id={p.id} name={p.name} size="xs" rounded="sm" />
-                {p.name}
-              </div>
-            ))}
+                <option value="">Add a platform…</option>
+                <optgroup label="Red threats">
+                  {pickable.red.map((p) => (
+                    <option key={p.id} value={p.id} disabled={selectedIds.includes(p.id)}>
+                      {p.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Blue systems">
+                  {pickable.blue.map((p) => (
+                    <option key={p.id} value={p.id} disabled={selectedIds.includes(p.id)}>
+                      {p.name}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+              {selected.length === 0 && (
+                <span className="sx-cap">Add a Red and a Blue platform for the engagement overlay.</span>
+              )}
+              {selected.map((p) => (
+                <span
+                  key={p.id}
+                  className={p.side === 'red' ? 'tag red' : p.side === 'blue' ? 'tag blue' : 'tag'}
+                  style={{ height: 34, paddingLeft: 3, paddingRight: 4, gap: 6, fontSize: 12 }}
+                >
+                  <PlatformThumbnail id={p.id} name={p.name} size="xs" rounded="sm" />
+                  <span style={{ maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis' }} title={p.name}>
+                    {p.name}
+                  </span>
+                  <button
+                    type="button"
+                    className="glass-icon-btn"
+                    style={{ width: 20, height: 20, borderRadius: 6 }}
+                    aria-label={`Remove ${p.name}`}
+                    onClick={() => onToggleSelect(p)}
+                  >
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
+            </div>
+            {source === 'seed' && (
+              <span className="sx-cap" style={{ marginLeft: 'auto' }}>
+                Data: bundled seed
+              </span>
+            )}
           </div>
-          {source === 'seed' && (
-            <div className="sx-faint" style={{ fontSize: 9, marginTop: 14, opacity: 0.6 }}>
-              data: bundled seed
-            </div>
-          )}
-        </div>
 
-        {/* canvas */}
-        <div className="sx-glass" style={{ padding: 22 }}>
-          <SpectrumCanvas
-            axis={axis}
-            lanes={lanes}
-            mode={canvasMode}
-            overlaps={axisOverlaps}
-            referenceBands={canvasMode === 'reference' || canvasMode === 'platform' ? referenceBandsFor(axis) : []}
-            title={axisTitle(axis)}
-            subtitle={axisSubtitle(axis)}
-            accreditedWaveforms={axis === 'rf' ? accreditedWaveforms : undefined}
-            constellations={constellations}
-            gnssVulnerabilities={gnssVulnerabilities}
-            gnssOverlay={gnssOverlay}
-          />
-          {canvasMode === 'engagement' && engagement && (
-            <div style={{ marginTop: 16 }}>
-              <OutcomePanel result={engagement} red={red} blue={blue} />
-            </div>
-          )}
-        </div>
-      </div>
+          {/* canvas */}
+          <div style={{ padding: '18px 22px 20px', minWidth: 0 }}>
+            <SpectrumCanvas
+              axis={axis}
+              lanes={lanes}
+              mode={canvasMode}
+              overlaps={axisOverlaps}
+              referenceBands={canvasMode === 'reference' || canvasMode === 'platform' ? referenceBandsFor(axis) : []}
+              title={axisTitle(axis)}
+              subtitle={axisSubtitle(axis)}
+              accreditedWaveforms={axis === 'rf' ? accreditedWaveforms : undefined}
+              constellations={constellations}
+              gnssVulnerabilities={gnssVulnerabilities}
+              gnssOverlay={gnssOverlay}
+            />
+            {lanes.length === 0 && (
+              <p className="sx-cap" style={{ marginTop: 8 }}>
+                {canvasMode === 'reference'
+                  ? 'No bands on this axis for the active layers.'
+                  : 'No bands on this axis for the selected platforms and active layers.'}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
+      {mode !== 'tiles' && canvasMode === 'engagement' && engagement && (
+        <OutcomePanel result={engagement} red={red} blue={blue} />
+      )}
     </div>
   );
 }
 
 function axisTitle(a: SpectrumAxis): string {
   return {
-    rf: 'RF Spectrum — Comms, Datalink & Radar',
-    gnss: 'GNSS / NAVWAR — L-band detail',
-    eo_ir: 'EO / IR — optical spectrum',
-    cbrn: 'CBRN — ionising (payload detection)',
+    rf: 'RF spectrum: comms, datalink and radar',
+    gnss: 'GNSS / NAVWAR: L-band detail',
+    eo_ir: 'EO / IR: optical spectrum',
+    cbrn: 'CBRN: ionising (payload detection)',
   }[a];
 }
 function axisSubtitle(a: SpectrumAxis): string {
   return {
-    rf: 'LOG SCALE · 3 MHz → 40 GHz',
-    gnss: 'L-BAND · 1.1 – 1.7 GHz',
-    eo_ir: 'WAVELENGTH · 0.2 – 14 µm',
-    cbrn: 'X-RAY → GAMMA',
+    rf: 'Log scale, 3 MHz to 40 GHz',
+    gnss: 'L-band, 1.1 to 1.7 GHz',
+    eo_ir: 'Wavelength, 0.2 to 14 µm',
+    cbrn: 'X-ray to gamma',
   }[a];
 }

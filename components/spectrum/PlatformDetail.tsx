@@ -10,7 +10,8 @@ import { useRouter } from 'next/navigation';
 import { writeMapStaging } from '@/lib/spectrum/map-staging';
 import type { Platform, SpectrumCapability, DefeatResistance } from '@/lib/spectrum/types';
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail';
-import { GlassCard, SideBadge } from '@/components/ui/primitives';
+import { SideBadge } from '@/components/ui/primitives';
+import { MapPin } from 'lucide-react';
 import { LAYER_COLOR, capabilityExtent } from '@/lib/spectrum/scale';
 
 export function PlatformDetail({ platform }: { platform: Platform }) {
@@ -20,114 +21,110 @@ export function PlatformDetail({ platform }: { platform: Platform }) {
 
   const specs = useMemo(() => {
     const s: { label: string; value: string }[] = [];
-    if (platform.range_km != null) s.push({ label: 'RANGE', value: `${fmt(platform.range_km)} km` });
-    if (platform.warhead_kg != null) s.push({ label: 'WARHEAD', value: `${platform.warhead_kg} kg` });
-    if (platform.speed_kmh != null) s.push({ label: 'SPEED', value: `${platform.speed_kmh} km/h` });
-    if (platform.mass_kg != null) s.push({ label: 'MASS', value: `${fmt(platform.mass_kg)} kg` });
-    if (platform.ceiling_m != null) s.push({ label: 'CEILING', value: `${fmt(platform.ceiling_m)} m` });
+    if (platform.range_km != null) s.push({ label: 'Range', value: `${fmt(platform.range_km)} km` });
+    if (platform.warhead_kg != null) s.push({ label: 'Warhead', value: `${platform.warhead_kg} kg` });
+    if (platform.speed_kmh != null) s.push({ label: 'Speed', value: `${platform.speed_kmh} km/h` });
+    if (platform.mass_kg != null) s.push({ label: 'Mass', value: `${fmt(platform.mass_kg)} kg` });
+    if (platform.ceiling_m != null) s.push({ label: 'Ceiling', value: `${fmt(platform.ceiling_m)} m` });
     return s.slice(0, 4);
   }, [platform]);
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 22 }}>
-      {/* hero */}
-      <GlassCard hi style={{ padding: 24, borderRadius: 20 }}>
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: `radial-gradient(120% 90% at 50% -10%, ${red ? 'rgba(248,113,113,0.16)' : 'rgba(74,158,255,0.16)'}, transparent 60%)`,
-            pointerEvents: 'none',
-          }}
-        />
-        <div style={{ position: 'relative' }}>
-          <SideBadge side={platform.side} group={platform.group} category={platform.role ?? platform.category} />
-          <div style={{ margin: '20px 0' }}>
-            <PlatformThumbnail id={platform.id} name={platform.name} size="xl" rounded="lg" />
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 18, alignItems: 'start' }}>
+      {/* identity */}
+      <section className="sx-glass" style={{ padding: '22px 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 18 }}>
+          <PlatformThumbnail id={platform.id} name={platform.name} size="xl" rounded="lg" />
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <SideBadge side={platform.side} group={platform.group} category={platform.role ?? platform.category} />
+            <div className="sx-display" style={{ fontWeight: 600, fontSize: 22, letterSpacing: '-0.01em', marginTop: 10, color: 'var(--store-ink)' }}>
+              {platform.name}
+            </div>
+            <div style={{ fontSize: 13, marginTop: 2, color: 'var(--store-ink-soft)' }}>
+              {platform.variant_label ?? platform.category ?? platform.origin}
+            </div>
           </div>
-          <div className="sx-display" style={{ fontWeight: 700, fontSize: 24, letterSpacing: '-0.01em' }}>
-            {platform.name}
-          </div>
-          <div className="sx-dim" style={{ fontSize: 13 }}>
-            {platform.variant_label ?? platform.category ?? platform.origin}
-          </div>
+        </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 22 }}>
-            {specs.map((s) => (
-              <GlassCard key={s.label} style={{ padding: 13, borderRadius: 13 }}>
-                <div className="sx-faint sx-mono" style={{ fontSize: 9 }}>{s.label}</div>
-                <div className="sx-mono" style={{ fontSize: 18, marginTop: 3 }}>{s.value}</div>
-              </GlassCard>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              writeMapStaging({ placeIds: [platform.id], highlightIds: [platform.id] });
-              router.push('/map?from=spectra');
-            }}
+        {specs.length > 0 && (
+          <dl
             style={{
-              marginTop: 18,
-              width: '100%',
-              padding: '10px 16px',
-              borderRadius: 11,
-              fontSize: 12,
-              fontWeight: 600,
-              background: 'var(--sx-orange)',
-              color: '#0a0c0e',
-              border: 'none',
-              cursor: 'pointer',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+              margin: '20px 0 0',
+              borderTop: '1px solid var(--store-line)',
             }}
           >
-            View on Map →
-          </button>
+            {specs.map((sp, i) => (
+              <div
+                key={sp.label}
+                style={{
+                  padding: '12px 0',
+                  paddingLeft: i % 2 ? 16 : 0,
+                  borderLeft: i % 2 ? '1px solid var(--store-line)' : 0,
+                  borderBottom: '1px solid var(--store-line)',
+                }}
+              >
+                <dt style={{ fontSize: 12, color: 'var(--store-ink-mute)' }}>{sp.label}</dt>
+                <dd className="sx-mono" style={{ margin: '4px 0 0', fontSize: 18, color: 'var(--store-ink)' }}>{sp.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
 
-          {platform.intel_note && (
-            <div
-              style={{
-                marginTop: 18,
-                paddingTop: 16,
-                borderTop: '1px solid var(--sx-glass-line)',
-              }}
-            >
-              <div className="sx-mono sx-faint" style={{ fontSize: 9, letterSpacing: '0.14em', marginBottom: 7 }}>
-                INTELLIGENCE NOTE
-              </div>
-              <div className="sx-dim" style={{ fontSize: 12, lineHeight: 1.6 }}>
-                {platform.intel_note}
-              </div>
-            </div>
-          )}
-        </div>
-      </GlassCard>
+        <button
+          type="button"
+          className="btn-glass primary"
+          onClick={() => {
+            writeMapStaging({ placeIds: [platform.id], highlightIds: [platform.id] });
+            router.push('/map?from=spectra');
+          }}
+          style={{ marginTop: 18, width: '100%' }}
+        >
+          <MapPin size={15} aria-hidden />
+          View on map
+        </button>
+
+        {platform.intel_note && (
+          <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--store-line)' }}>
+            <div className="sx-label" style={{ marginBottom: 6 }}>Intelligence note</div>
+            <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--store-ink-soft)', margin: 0 }}>{platform.intel_note}</p>
+          </div>
+        )}
+      </section>
 
       {/* right column */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <GlassCard style={{ padding: '18px 20px', borderRadius: 18 }}>
-          <div className="sx-display" style={{ fontWeight: 600, fontSize: 14, marginBottom: 14 }}>
-            Spectral Footprint
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 18, minWidth: 0 }}>
+        <section className="sx-glass" style={{ padding: 0, overflow: 'hidden' }}>
+          <h2 className="sx-h" style={{ padding: '18px 20px 12px' }}>Spectral footprint</h2>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="dt compact">
+              <thead>
+                <tr>
+                  <th scope="col">Capability</th>
+                  <th scope="col">Band</th>
+                  <th scope="col">Resistance</th>
+                </tr>
+              </thead>
+              <tbody>
+                {caps.map((c) => (
+                  <CapabilityRow key={c.id} cap={c} />
+                ))}
+                {red && !caps.some((c) => c.fn === 'control' || c.fn === 'datalink') && <NoLinkRow />}
+              </tbody>
+            </table>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
-            {caps.map((c) => (
-              <CapabilityRow key={c.id} cap={c} />
-            ))}
-            {red && !caps.some((c) => c.fn === 'control' || c.fn === 'datalink') && (
-              <NoLinkRow />
-            )}
-          </div>
-        </GlassCard>
+        </section>
 
-        <GlassCard style={{ padding: '18px 20px', borderRadius: 18 }}>
-          <div className="sx-display" style={{ fontWeight: 600, fontSize: 14, marginBottom: 11 }}>
-            Defeat Assessment
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+        <section className="sx-glass" style={{ padding: '18px 20px' }}>
+          <h2 className="sx-h">Defeat assessment</h2>
+          <p className="sx-cap" style={{ marginTop: 4 }}>Heuristic from the capability ledger above, not an accredited Pk.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14 }}>
             {defeatBars(platform).map((b) => (
               <DefeatBar key={b.label} {...b} />
             ))}
           </div>
-        </GlassCard>
+        </section>
       </div>
     </div>
   );
@@ -138,59 +135,53 @@ function CapabilityRow({ cap }: { cap: SpectrumCapability }) {
   const resist = cap.defeat_resistance ?? [];
   const badge = resistBadge(resist);
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 13 }}>
-      <span className="sx-dot" style={{ width: 8, height: 8, color, background: color }} />
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 12.5, fontWeight: 500 }}>{cap.label}</div>
-        <div className="sx-faint sx-mono" style={{ fontSize: 10 }}>
-          {fmtExtent(cap)}
-          {cap.note ? ` · ${cap.note}` : ''}
-          {cap.derived ? ' · derived' : ''}
+    <tr>
+      <td>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span className="sx-dot" style={{ width: 8, height: 8, background: color }} />
+          <div style={{ minWidth: 0 }}>
+            <div className="primary">{cap.label}</div>
+            {(cap.note || cap.derived) && (
+              <span className="meta">
+                {cap.note ?? ''}
+                {cap.derived ? `${cap.note ? ' · ' : ''}derived` : ''}
+              </span>
+            )}
+          </div>
         </div>
-      </div>
-      {badge && (
-        <span
-          className="sx-mono"
-          style={{
-            fontSize: 9,
-            padding: '3px 8px',
-            borderRadius: 6,
-            background: `${badge.color}1f`,
-            color: badge.color,
-          }}
-        >
-          {badge.text}
-        </span>
-      )}
-    </div>
+      </td>
+      <td className="mono" style={{ whiteSpace: 'nowrap' }}>{fmtExtent(cap)}</td>
+      <td>{badge ? <span className={badge.cls}>{badge.text}</span> : null}</td>
+    </tr>
   );
 }
 
 function NoLinkRow() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 13, opacity: 0.5 }}>
-      <span className="sx-dot" style={{ width: 8, height: 8, color: 'var(--sx-ink-faint)', background: 'var(--sx-ink-faint)' }} />
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 12.5, fontWeight: 500 }}>Control datalink — none</div>
-        <div className="sx-faint sx-mono" style={{ fontSize: 10 }}>
-          Pre-programmed / autonomous · no operator link in flight
+    <tr>
+      <td>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span className="sx-dot" style={{ width: 8, height: 8, background: 'var(--store-ink-mute)' }} />
+          <div>
+            <div className="primary">Control datalink: none</div>
+            <span className="meta">Pre-programmed or autonomous; no operator link in flight</span>
+          </div>
         </div>
-      </div>
-      <span className="sx-mono" style={{ fontSize: 9, padding: '3px 8px', borderRadius: 6, border: '1px solid var(--sx-glass-line)' }}>
-        N/A
-      </span>
-    </div>
+      </td>
+      <td className="mono">n/a</td>
+      <td />
+    </tr>
   );
 }
 
 function DefeatBar({ label, pct, color }: { label: string; pct: number; color: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 11, fontSize: 12 }}>
-      <span className="sx-faint sx-mono" style={{ width: 78 }}>{label}</span>
-      <div style={{ flex: 1, height: 6, borderRadius: 99, background: 'rgba(255,255,255,0.05)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 13 }}>
+      <span style={{ width: 84, color: 'var(--store-ink-soft)' }}>{label}</span>
+      <div style={{ flex: 1, height: 6, borderRadius: 99, background: 'rgba(255,255,255,0.06)' }}>
         <div style={{ width: `${pct}%`, height: '100%', borderRadius: 99, background: color }} />
       </div>
-      <span className="sx-mono" style={{ fontSize: 11, color, width: 34, textAlign: 'right' }}>{pct}%</span>
+      <span className="sx-mono" style={{ fontSize: 12, color, width: 40, textAlign: 'right' }}>{pct}%</span>
     </div>
   );
 }
@@ -204,17 +195,17 @@ function fmtExtent(cap: SpectrumCapability): string {
   if (!ext) return '';
   if (unit === 'hz') {
     const f = (v: number) => (v >= 1e9 ? `${(v / 1e9).toFixed(2)} GHz` : `${(v / 1e6).toFixed(0)} MHz`);
-    return ext[0] === ext[1] ? f(ext[0]) : `${f(ext[0])} – ${f(ext[1])}`;
+    return ext[0] === ext[1] ? f(ext[0]) : `${f(ext[0])} to ${f(ext[1])}`;
   }
   const f = (v: number) => (v < 1 ? `${(v * 1000).toFixed(0)} nm` : `${v.toFixed(2)} µm`);
-  return ext[0] === ext[1] ? f(ext[0]) : `${f(ext[0])} – ${f(ext[1])}`;
+  return ext[0] === ext[1] ? f(ext[0]) : `${f(ext[0])} to ${f(ext[1])}`;
 }
 
-function resistBadge(resist: DefeatResistance[]): { text: string; color: string } | null {
-  if (resist.includes('rf_silent')) return { text: 'JAM-IMMUNE', color: '#f87171' };
-  if (resist.includes('gnss_denied_capable')) return { text: 'GNSS-DENIED OK', color: '#f87171' };
-  if (resist.some((r) => r.endsWith('_high'))) return { text: 'JAM-RESIST HIGH', color: '#f87171' };
-  if (resist.some((r) => r.endsWith('_med'))) return { text: 'CONDITIONAL', color: '#fbbf24' };
+function resistBadge(resist: DefeatResistance[]): { text: string; cls: string } | null {
+  if (resist.includes('rf_silent')) return { text: 'Jam-immune', cls: 'tag red' };
+  if (resist.includes('gnss_denied_capable')) return { text: 'GNSS-denied OK', cls: 'tag red' };
+  if (resist.some((r) => r.endsWith('_high'))) return { text: 'Jam-resist high', cls: 'tag red' };
+  if (resist.some((r) => r.endsWith('_med'))) return { text: 'Conditional', cls: 'tag amber' };
   return null;
 }
 
@@ -232,9 +223,9 @@ function defeatBars(p: Platform): { label: string; pct: number; color: string }[
   const hpm = 88;
   const kinetic = 80;
   return [
-    { label: 'RF JAM', pct: rfJam, color: col(rfJam) },
-    { label: 'GNSS JAM', pct: gnssJam, color: col(gnssJam) },
+    { label: 'RF jam', pct: rfJam, color: col(rfJam) },
+    { label: 'GNSS jam', pct: gnssJam, color: col(gnssJam) },
     { label: 'HPM', pct: hpm, color: col(hpm) },
-    { label: 'KINETIC', pct: kinetic, color: col(kinetic) },
+    { label: 'Kinetic', pct: kinetic, color: col(kinetic) },
   ];
 }

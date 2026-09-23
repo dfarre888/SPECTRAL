@@ -1,41 +1,18 @@
 'use client';
 /**
  * OutcomePanel — the engagement verdict (Mockup Frames 04 & 09).
- * Reads an EngagementResult and renders a plain-language outcome with a
- * colour-coded glow and recommendations.
+ * Reads an EngagementResult and renders a plain-language outcome: a coloured
+ * verdict tag, the headline, the reasoning and recommendations.
  */
 
 import React from 'react';
 import type { EngagementResult, Platform, OutcomeVerdict } from '@/lib/spectrum/types';
 
-const VERDICT_STYLE: Record<
-  OutcomeVerdict,
-  { color: string; glow: string; glyph: string; tag: string }
-> = {
-  defeat_likely: {
-    color: 'var(--sx-green)',
-    glow: 'rgba(74,222,128,0.14)',
-    glyph: '✓',
-    tag: 'DEFEAT LIKELY',
-  },
-  partial: {
-    color: 'var(--sx-amber)',
-    glow: 'rgba(251,191,36,0.14)',
-    glyph: '◐',
-    tag: 'PARTIAL EFFECT',
-  },
-  no_engagement: {
-    color: 'var(--sx-red)',
-    glow: 'rgba(248,113,113,0.14)',
-    glyph: '⃠',
-    tag: 'NO ENGAGEMENT',
-  },
-  detect_only: {
-    color: 'var(--sx-cyan)',
-    glow: 'rgba(34,211,238,0.14)',
-    glyph: '◎',
-    tag: 'DETECT ONLY',
-  },
+const VERDICT_STYLE: Record<OutcomeVerdict, { color: string; tag: string; label: string; glyph: string }> = {
+  defeat_likely: { color: 'var(--sx-green)', tag: 'tag green', label: 'Defeat likely', glyph: '✓' },
+  partial: { color: 'var(--sx-amber)', tag: 'tag amber', label: 'Partial effect', glyph: '◐' },
+  no_engagement: { color: 'var(--sx-red)', tag: 'tag red', label: 'No engagement', glyph: '⃠' },
+  detect_only: { color: 'var(--sx-cyan)', tag: 'tag', label: 'Detect only', glyph: '◎' },
 };
 
 export function OutcomePanel({
@@ -49,108 +26,70 @@ export function OutcomePanel({
 }) {
   const s = VERDICT_STYLE[result.verdict];
   return (
-    <div
-      className="sx-glass-hi"
-      style={{ padding: '22px 24px', position: 'relative', overflow: 'hidden', borderRadius: 18 }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: `radial-gradient(80% 140% at 50% 130%, ${s.glow}, transparent 60%)`,
-          pointerEvents: 'none',
-        }}
-      />
-      <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: 18 }}>
+    <section className="sx-glass" style={{ padding: '20px 22px' }} aria-label="Engagement outcome">
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
         <div
+          aria-hidden
           style={{
-            width: 52,
-            height: 52,
-            borderRadius: 14,
-            border: `1px solid ${s.color}66`,
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            border: `1px solid ${s.color}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 24,
+            fontSize: 20,
             color: s.color,
             flexShrink: 0,
+            opacity: 0.9,
           }}
         >
           {s.glyph}
         </div>
-        <div style={{ flex: 1 }}>
-          <div
-            className="sx-mono"
-            style={{ fontSize: 11, color: s.color }}
-          >
-            OUTCOME · {s.tag}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <span
+              className={s.tag}
+              style={result.verdict === 'detect_only' ? { color: '#67E8F9', borderColor: 'rgba(6,182,212,0.45)', background: 'rgba(6,182,212,0.08)' } : undefined}
+            >
+              {s.label}
+            </span>
+            {red && blue && (
+              <span className="sx-cap">
+                {red.name} vs {blue.name}
+              </span>
+            )}
           </div>
-          <div
-            className="sx-display"
-            style={{ fontWeight: 600, fontSize: 16, marginTop: 4 }}
-          >
+          <h3 className="sx-display" style={{ fontWeight: 600, fontSize: 17, marginTop: 8, color: 'var(--store-ink)', lineHeight: 1.35 }}>
             {result.headline}
-          </div>
-          <div
-            className="sx-dim"
-            style={{ fontSize: 12.5, marginTop: 7, maxWidth: '82ch', lineHeight: 1.55 }}
-          >
-            {result.detail}
-          </div>
+          </h3>
+          <p style={{ fontSize: 13, marginTop: 6, maxWidth: '82ch', lineHeight: 1.6, color: 'var(--store-ink-soft)' }}>{result.detail}</p>
           {result.recommendations.length > 0 && (
-            <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 7 }}>
+            <ul style={{ margin: '12px 0 0', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 6 }}>
               {result.recommendations.map((r, i) => (
-                <div
-                  key={i}
-                  style={{
-                    fontSize: 11.5,
-                    color: 'var(--sx-ink-dim)',
-                    display: 'flex',
-                    gap: 9,
-                    alignItems: 'baseline',
-                  }}
-                >
-                  <span style={{ color: s.color, fontSize: 10 }}>▸</span>
+                <li key={i} style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--store-ink-soft)', display: 'flex', gap: 9 }}>
+                  <span aria-hidden style={{ color: s.color }}>›</span>
                   {r}
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
         </div>
       </div>
 
       {/* uncovered dependencies, if partial */}
       {result.verdict === 'partial' && result.uncovered.length > 0 && (
-        <div
-          style={{
-            position: 'relative',
-            marginTop: 16,
-            paddingTop: 14,
-            borderTop: '1px solid var(--sx-glass-line)',
-          }}
-        >
-          <div className="sx-mono sx-faint" style={{ fontSize: 9, letterSpacing: '0.14em' }}>
-            UNCOVERED BY {blue?.name?.toUpperCase() ?? 'EFFECTOR'}
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginTop: 8 }}>
+        <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid var(--store-line)' }}>
+          <div className="sx-label">Not covered by {blue?.name ?? 'the effector'}</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
             {result.uncovered.map((c) => (
-              <span
-                key={c.id}
-                className="sx-mono"
-                style={{
-                  fontSize: 9.5,
-                  padding: '4px 9px',
-                  borderRadius: 7,
-                  background: 'rgba(248,113,113,0.1)',
-                  color: 'var(--sx-red)',
-                }}
-              >
+              <span key={c.id} className="tag red">
                 {c.label}
               </span>
             ))}
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }

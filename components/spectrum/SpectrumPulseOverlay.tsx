@@ -92,7 +92,7 @@ export function SpectrumPulseOverlay({
         <div
           key={`${zone.kind}-${zone.lo}-${zone.hi}-${i}`}
           style={spectrumZoneStyle(zone, tile)}
-          title={zone.kind === 'overlap' ? 'Band overlap — threat covered by blue' : 'Spectrum gap — threat not covered'}
+          title={zone.kind === 'overlap' ? 'Band overlap: threat covered by Blue' : 'Spectrum gap: threat not covered'}
         />
       ))}
       {!stacked && platformEmissionHighlights(tile, emissions, prominent)}
@@ -106,10 +106,8 @@ export function SpectrumPulseLegend({ compact = false }: { compact?: boolean }) 
     display: 'flex',
     alignItems: 'center',
     gap: compact ? 4 : 6,
-    fontFamily: 'var(--sx-mono, monospace)',
-    fontSize: compact ? 8 : 9,
-    letterSpacing: '0.06em',
-    color: 'rgba(255,255,255,0.55)',
+    fontSize: compact ? 11 : 12,
+    color: 'rgba(255,255,255,0.68)',
   }
 
   const swatch = (style: React.CSSProperties): React.CSSProperties => ({
@@ -134,7 +132,7 @@ export function SpectrumPulseLegend({ compact = false }: { compact?: boolean }) 
         border: '1px solid rgba(6,182,212,0.1)',
       }}
     >
-      <span style={{ ...itemStyle, color: '#06B6D4', fontWeight: 700, textTransform: 'uppercase' }}>
+      <span style={{ ...itemStyle, color: '#67E8F9', fontWeight: 600 }}>
         Pulse overlay
       </span>
       <span style={itemStyle}>

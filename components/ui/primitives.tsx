@@ -80,25 +80,17 @@ export function StatPuck({
 
 /* ---------- SideBadge ---------- */
 export function SideBadge({ side, group, category }: { side: Side; group?: number | null; category?: string | null }) {
-  const color = SIDE_COLOR[side];
-  const txt =
+  // Text plus hairline, never a filled slab (DESIGN.md tags).
+  const cls = side === 'red' ? 'tag red' : side === 'blue' ? 'tag blue' : 'tag';
+  const parts =
     side === 'red'
-      ? `RED${group ? ` · GROUP ${group}` : ''}${category ? ` · ${category.toUpperCase()}` : ''}`
+      ? ['Red', group ? `Group ${group}` : null, category]
       : side === 'blue'
-      ? `BLUE${category ? ` · ${category.toUpperCase()}` : ''}`
-      : 'NEUTRAL';
+      ? ['Blue', category]
+      : ['Neutral'];
+  const txt = parts.filter(Boolean).join(' · ');
   return (
-    <span
-      className="sx-mono"
-      style={{
-        fontSize: 10,
-        color,
-        border: `1px solid ${color}66`,
-        padding: '3px 8px',
-        borderRadius: 7,
-        display: 'inline-block',
-      }}
-    >
+    <span className={cls} title={txt} style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
       {txt}
     </span>
   );
@@ -125,8 +117,8 @@ export function FootprintStrip({ platform, height = 20 }: { platform: Platform; 
           justifyContent: 'center',
         }}
       >
-        <span className="sx-mono sx-faint" style={{ fontSize: 9, letterSpacing: '0.1em' }}>
-          — RF SILENT —
+        <span className="sx-mono sx-faint" style={{ fontSize: 11 }}>
+          RF silent
         </span>
       </div>
     );
@@ -201,12 +193,12 @@ export function PlatformIcon({ platform, size = 54 }: { platform: Platform; size
 /* ---------- PlatformSilhouette ---------- */
 /**
  * SVG line-art silhouette for a platform, keyed to its category string.
- * Color: orange (#F97316) for Red, cyan (#06B6D4) for Blue.
+ * Color: red (#F87171) for Red, cyan (#06B6D4) for Blue.
  * viewBox is always 0 0 80 80 — rendered at `size` px square.
  */
 export function PlatformSilhouette({ platform, size = 76 }: { platform: Platform; size?: number }) {
   const red = platform.side === 'red';
-  const c = red ? '#F97316' : '#06B6D4';
+  const c = red ? '#F87171' : '#06B6D4';
   const cat = (platform.category ?? '').toLowerCase();
 
   const shared = {

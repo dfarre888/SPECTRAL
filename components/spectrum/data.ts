@@ -110,22 +110,27 @@ export function useVariants(platformId: string | null): PlatformVariant[] {
   }, [platformId]);
 }
 
+/** Platforms that carry a generational variant history (evolution arc). */
+export const VARIANT_PLATFORM_IDS: string[] = Array.from(
+  new Set([...SHAHED_VARIANTS, ...CATALOGUE_VARIANTS].map((v) => v.platform_id)),
+);
+
 /* ---- lane builders ---- */
 
 /** Functions grouped into display lanes per axis. */
 const RF_LANES: { key: string; label: string; fns: string[] }[] = [
-  { key: 'control', label: 'CONTROL', fns: ['control'] },
-  { key: 'video', label: 'VIDEO', fns: ['video'] },
-  { key: 'datalink', label: 'DATALINK', fns: ['datalink', 'telemetry'] },
-  { key: 'nav', label: 'NAV (GNSS)', fns: ['navigation'] },
-  { key: 'radar', label: 'RADAR', fns: ['radar_emit'] },
-  { key: 'jam', label: 'JAM / EW', fns: ['jam_control', 'jam_video', 'jam_gnss', 'jam_datalink', 'spoof_gnss', 'takeover', 'hpm'] },
-  { key: 'detect', label: 'DETECT', fns: ['detect_rf', 'detect_radar'] },
+  { key: 'control', label: 'Control', fns: ['control'] },
+  { key: 'video', label: 'Video', fns: ['video'] },
+  { key: 'datalink', label: 'Datalink', fns: ['datalink', 'telemetry'] },
+  { key: 'nav', label: 'Nav (GNSS)', fns: ['navigation'] },
+  { key: 'radar', label: 'Radar', fns: ['radar_emit'] },
+  { key: 'jam', label: 'Jam / EW', fns: ['jam_control', 'jam_video', 'jam_gnss', 'jam_datalink', 'spoof_gnss', 'takeover', 'hpm'] },
+  { key: 'detect', label: 'Detect', fns: ['detect_rf', 'detect_radar'] },
 ];
 
 const EOIR_LANES: { key: string; label: string; fns: string[] }[] = [
-  { key: 'sensor', label: 'SENSOR', fns: ['sensor', 'detect_eo_ir'] },
-  { key: 'laser', label: 'LASER', fns: ['laser', 'laser_defeat'] },
+  { key: 'sensor', label: 'Sensor', fns: ['sensor', 'detect_eo_ir'] },
+  { key: 'laser', label: 'Laser', fns: ['laser', 'laser_defeat'] },
 ];
 
 /**
@@ -148,7 +153,7 @@ export function buildLanes(
     // one lane per platform, coloured by side
     return platforms.map((p) => ({
       key: p.id,
-      label: `${p.side.toUpperCase()} · ${p.name}`,
+      label: `${p.side === 'red' ? 'Red' : p.side === 'blue' ? 'Blue' : 'Neutral'} · ${p.name}`,
       side: p.side as Side,
       caps: (p.capabilities ?? []).filter(onAxis),
     }));
@@ -188,14 +193,14 @@ export function referenceBandsFor(axis: SpectrumAxis) {
   if (axis === 'gnss') {
     return [
       { lo: MHz(1164), hi: MHz(1215), label: 'ARNS (L5/E5)', tint: 'rgba(74,222,128,0.05)' },
-      { lo: MHz(1215), hi: MHz(1350), label: 'RADAR-SHARED', tint: 'rgba(251,191,36,0.05)' },
+      { lo: MHz(1215), hi: MHz(1350), label: 'Radar-shared', tint: 'rgba(251,191,36,0.05)' },
       { lo: MHz(1559), hi: MHz(1610), label: 'ARNS (L1/E1)', tint: 'rgba(74,222,128,0.05)' },
     ];
   }
   if (axis === 'eo_ir') {
     return [
       { lo: 0.2, hi: 0.4, label: 'UV', tint: 'rgba(167,139,250,0.08)' },
-      { lo: 0.4, hi: 0.7, label: 'VISIBLE', tint: 'rgba(255,255,255,0.04)' },
+      { lo: 0.4, hi: 0.7, label: 'Visible', tint: 'rgba(255,255,255,0.04)' },
       { lo: 0.7, hi: 1.0, label: 'NIR', tint: 'rgba(239,68,68,0.05)' },
       { lo: 1.0, hi: 3.0, label: 'SWIR', tint: 'rgba(127,29,29,0.18)' },
       { lo: 3.0, hi: 5.0, label: 'MWIR', tint: 'rgba(127,29,29,0.18)' },

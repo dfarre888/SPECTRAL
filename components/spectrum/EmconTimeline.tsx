@@ -21,7 +21,7 @@ export function EmconTimeline({ placedUas }: EmconTimelineProps) {
             <div
               className={`absolute inset-y-0 left-0 ${u.mission?.emcon ? "bg-cyan/40" : "bg-[var(--store-accent)]/40"}`}
               style={{ width: "100%" }}
-              title={u.mission?.emcon ? "EMCON — radiate silent" : "Radiating"}
+              title={u.mission?.emcon ? "EMCON: radiate silent" : "Radiating"}
             />
           </div>
           <span className={u.mission?.emcon ? "text-cyan" : "text-[var(--wb-blue)]"}>

@@ -11,8 +11,7 @@ import { usePlatforms, buildLanes } from './data';
 import { assessEngagement } from '@/lib/spectrum/engagement';
 import { SpectrumCanvas } from '@/components/spectrum/SpectrumCanvas';
 import { OutcomePanel } from './OutcomePanel';
-import { GlassCard, PlatformIcon } from '@/components/ui/primitives';
-import { LAYER_COLOR } from '@/lib/spectrum/scale';
+import { PlatformIcon } from '@/components/ui/primitives';
 
 export function EngagementPlanner({
   initialRed,
@@ -45,56 +44,26 @@ export function EngagementPlanner({
   );
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* consoles */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 64px 1fr', gap: 16, alignItems: 'stretch' }}>
-        <Console
-          side="red"
-          platforms={reds}
-          selected={red}
-          onSelect={(p) => setRedId(p.id)}
-        />
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 44px minmax(0, 1fr)', gap: 12, alignItems: 'stretch' }}>
+        <Console side="red" platforms={reds} selected={red} onSelect={(p) => setRedId(p.id)} />
         <div
+          aria-hidden
           className="sx-display"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 700,
-            color: 'var(--sx-ink-faint)',
-            fontSize: 13,
-          }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, color: 'var(--store-ink-mute)', fontSize: 13 }}
         >
-          VS
+          vs
         </div>
-        <Console
-          side="blue"
-          platforms={blues}
-          selected={blue}
-          onSelect={(p) => setBlueId(p.id)}
-        />
+        <Console side="blue" platforms={blues} selected={blue} onSelect={(p) => setBlueId(p.id)} />
       </div>
 
       {/* engagement canvas */}
-      <GlassCard style={{ padding: 22, borderRadius: 18, marginTop: 16 }}>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+      <section className="sx-glass" style={{ padding: '18px 22px 20px' }}>
+        <div className="seg sm" role="tablist" aria-label="Spectrum axis" style={{ marginBottom: 14 }}>
           {(['rf', 'gnss', 'eo_ir'] as SpectrumAxis[]).map((a) => (
-            <button
-              key={a}
-              onClick={() => setAxis(a)}
-              className="sx-glass"
-              style={{
-                padding: '7px 13px',
-                borderRadius: 10,
-                fontSize: 11,
-                color: axis === a ? 'var(--sx-ink)' : 'var(--sx-ink-dim)',
-                border: axis === a ? '1px solid var(--sx-glass-line-hi)' : '1px solid var(--sx-glass-line)',
-                cursor: 'pointer',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-              }}
-            >
-              {a === 'eo_ir' ? 'EO/IR' : a}
+            <button key={a} type="button" role="tab" aria-selected={axis === a} onClick={() => setAxis(a)}>
+              {a === 'eo_ir' ? 'EO/IR' : a.toUpperCase()}
             </button>
           ))}
         </div>
@@ -104,22 +73,18 @@ export function EngagementPlanner({
             lanes={lanes}
             mode="engagement"
             overlaps={axisOverlaps}
-            title="Red vs Blue — engagement overlay"
-            subtitle="purple hatch = coverage meets dependency"
+            title="Red vs Blue engagement overlay"
+            subtitle="Violet hatch: Blue coverage meets a Red dependency"
           />
         ) : (
-          <div className="sx-faint" style={{ fontSize: 12, padding: '30px 0', textAlign: 'center' }}>
+          <p className="sx-cap" style={{ padding: '30px 0', textAlign: 'center', fontSize: 13 }}>
             No bands on this axis for the current pairing.
-          </div>
+          </p>
         )}
-      </GlassCard>
+      </section>
 
       {/* outcome */}
-      {result && (
-        <div style={{ marginTop: 16 }}>
-          <OutcomePanel result={result} red={red} blue={blue} />
-        </div>
-      )}
+      {result && <OutcomePanel result={result} red={red} blue={blue} />}
     </div>
   );
 }
@@ -136,24 +101,22 @@ function Console({
   onSelect: (p: Platform) => void;
 }) {
   const isRed = side === 'red';
-  const accent = isRed ? 'var(--sx-red)' : 'var(--sx-blue)';
-  const border = isRed ? 'rgba(248,113,113,0.22)' : 'rgba(74,158,255,0.22)';
-  const bg = isRed
-    ? 'linear-gradient(180deg, rgba(248,113,113,0.06), rgba(255,255,255,0.015))'
-    : 'linear-gradient(180deg, rgba(74,158,255,0.06), rgba(255,255,255,0.015))';
+  const accent = isRed ? '#FF8A98' : '#6CB8FF';
 
   return (
-    <div className="sx-glass" style={{ padding: 20, borderColor: border, background: bg }}>
-      <div className="sx-mono" style={{ fontSize: 10, letterSpacing: '0.16em', color: accent }}>
-        {isRed ? 'RED — THREAT' : 'BLUE — EFFECTOR'}
-      </div>
+    <section
+      className="sx-glass"
+      style={{ padding: '18px 20px', borderColor: isRed ? 'rgba(255,92,110,0.28)' : 'rgba(41,151,255,0.28)' }}
+      aria-label={isRed ? 'Red threat' : 'Blue effector'}
+    >
+      <div style={{ fontSize: 12, fontWeight: 600, color: accent }}>{isRed ? 'Red threat' : 'Blue effector'}</div>
 
       {selected && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginTop: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginTop: 12 }}>
           <PlatformIcon platform={selected} size={46} />
-          <div>
-            <div className="sx-display" style={{ fontWeight: 600, fontSize: 15 }}>{selected.name}</div>
-            <div className="sx-faint" style={{ fontSize: 11 }}>{selected.category ?? selected.origin}</div>
+          <div style={{ minWidth: 0 }}>
+            <div className="sx-display" style={{ fontWeight: 600, fontSize: 16, color: 'var(--store-ink)' }}>{selected.name}</div>
+            <div className="sx-cap" style={{ marginTop: 2 }}>{selected.category ?? selected.origin}</div>
           </div>
         </div>
       )}
@@ -165,22 +128,12 @@ function Console({
           const p = platforms.find((x) => x.id === e.target.value);
           if (p) onSelect(p);
         }}
-        className="sx-glass"
-        style={{
-          marginTop: 16,
-          width: '100%',
-          padding: '10px 12px',
-          borderRadius: 11,
-          background: 'rgba(0,0,0,0.3)',
-          color: 'var(--sx-ink)',
-          fontSize: 12,
-          fontFamily: 'var(--sx-ui)',
-          border: '1px solid var(--sx-glass-line)',
-          outline: 'none',
-        }}
+        className="glass-field"
+        aria-label={isRed ? 'Choose Red threat' : 'Choose Blue effector'}
+        style={{ marginTop: 14, width: '100%', height: 36, padding: '0 10px', fontSize: 13 }}
       >
         {platforms.map((p) => (
-          <option key={p.id} value={p.id} style={{ background: '#0a0c0e' }}>
+          <option key={p.id} value={p.id}>
             {p.name}
           </option>
         ))}
@@ -188,16 +141,19 @@ function Console({
 
       {/* key facts */}
       {selected && (
-        <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <dl style={{ margin: '14px 0 0', display: 'flex', flexDirection: 'column' }}>
           {consoleFacts(selected).map((f) => (
-            <div key={f.k} style={{ fontSize: 11, display: 'flex', justifyContent: 'space-between' }}>
-              <span className="sx-dim">{f.k}</span>
-              <span className="sx-mono" style={{ color: f.color ?? 'var(--sx-ink-faint)' }}>{f.v}</span>
+            <div
+              key={f.k}
+              style={{ fontSize: 13, display: 'flex', justifyContent: 'space-between', gap: 12, padding: '7px 0', borderTop: '1px solid var(--store-line)' }}
+            >
+              <dt style={{ color: 'var(--store-ink-soft)' }}>{f.k}</dt>
+              <dd className="sx-mono" style={{ margin: 0, fontSize: 12, textAlign: 'right', color: f.color ?? 'var(--store-ink)' }}>{f.v}</dd>
             </div>
           ))}
-        </div>
+        </dl>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -209,16 +165,16 @@ function consoleFacts(p: Platform): { k: string; v: string; color?: string }[] {
     const nav = caps.find((c) => c.fn === 'navigation');
     const sensor = caps.find((c) => c.fn === 'sensor');
     const silent = caps.some((c) => (c.defeat_resistance ?? []).includes('rf_silent'));
-    facts.push({ k: 'Control link', v: silent ? 'fibre — no RF' : control ? control.label.split('—')[0].trim() : 'none', color: silent ? 'var(--sx-red)' : undefined });
-    facts.push({ k: 'Navigation', v: nav ? 'GNSS' : 'visual / inertial' });
+    facts.push({ k: 'Control link', v: silent ? 'Fibre, no RF' : control ? control.label.split('—')[0].trim() : 'None', color: silent ? 'var(--sx-red)' : undefined });
+    facts.push({ k: 'Navigation', v: nav ? 'GNSS' : 'Visual / inertial' });
     if (sensor) facts.push({ k: 'Sensor', v: sensor.label.split('—')[0].trim(), color: 'var(--sx-magenta)' });
   } else {
     const jam = caps.filter((c) => c.fn.startsWith('jam_'));
     const hpm = caps.some((c) => c.fn === 'hpm');
     const detect = caps.some((c) => c.fn.startsWith('detect_'));
-    if (hpm) facts.push({ k: 'Effect', v: 'HPM — electronics', color: 'var(--sx-blue)' });
-    else if (jam.length) facts.push({ k: 'Jam bands', v: `${jam.length} bands`, color: 'var(--sx-blue)' });
-    if (detect) facts.push({ k: 'Detection', v: 'active', color: 'var(--sx-cyan)' });
+    if (hpm) facts.push({ k: 'Effect', v: 'HPM (electronics)', color: '#6CB8FF' });
+    else if (jam.length) facts.push({ k: 'Jam bands', v: `${jam.length} bands`, color: '#6CB8FF' });
+    if (detect) facts.push({ k: 'Detection', v: 'Active', color: 'var(--sx-cyan)' });
     if (p.range_km != null) facts.push({ k: 'Range', v: `~${p.range_km} km` });
   }
   return facts;

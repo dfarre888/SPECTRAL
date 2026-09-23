@@ -62,8 +62,8 @@ export function BandTileFullscreenModal({
 
   const title =
     variant === 'laydown'
-      ? `Laydown EW band — ${tile.band}`
-      : `${tile.band} — ${tile.range}`
+      ? `Laydown EW band: ${tile.band}`
+      : `${tile.band} · ${tile.range}`
 
   return (
     <div
@@ -75,11 +75,11 @@ export function BandTileFullscreenModal({
       <div className="relative z-10 flex flex-col flex-1 min-h-0 p-3 pt-4">
         <div className="flex items-center justify-between gap-2 mb-2 shrink-0 flex-wrap">
           <div className="min-w-0">
-            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
+            <p className="text-[15px] font-semibold font-mono text-[var(--store-ink)]">
               {title}
             </p>
             {variant === 'catalog' && (
-              <p className="text-[11px] store-text-muted mt-0.5 max-w-xl">{tile.description}</p>
+              <p className="text-[12px] store-text-muted mt-0.5 max-w-xl">{tile.description}</p>
             )}
           </div>
           <div className="flex items-center gap-2 ml-auto">
@@ -87,50 +87,28 @@ export function BandTileFullscreenModal({
               <>
                 <button
                   type="button"
+                  className="btn-e sm"
+                  aria-pressed={showRed}
                   onClick={() => setShowRed((v) => !v)}
-                  style={{
-                    fontFamily: 'var(--sx-mono, monospace)',
-                    fontSize: 9,
-                    letterSpacing: '0.1em',
-                    padding: '4px 10px',
-                    borderRadius: 6,
-                    border: showRed
-                      ? '1px solid rgba(248,113,113,0.65)'
-                      : '1px solid rgba(255,255,255,0.1)',
-                    background: showRed ? 'rgba(248,113,113,0.15)' : 'rgba(255,255,255,0.03)',
-                    color: showRed ? 'rgba(248,113,113,0.95)' : 'rgba(255,255,255,0.35)',
-                    cursor: 'pointer',
-                    textTransform: 'uppercase',
-                  }}
                 >
-                  {showRed ? 'Hide red (threat)' : 'Show red (threat)'}
+                  <span style={{ width: 7, height: 7, borderRadius: 999, background: 'var(--wb-red)' }} />
+                  Red (threat)
                 </button>
                 <button
                   type="button"
+                  className="btn-e sm"
+                  aria-pressed={showBlue}
                   onClick={() => setShowBlue((v) => !v)}
-                  style={{
-                    fontFamily: 'var(--sx-mono, monospace)',
-                    fontSize: 9,
-                    letterSpacing: '0.1em',
-                    padding: '4px 10px',
-                    borderRadius: 6,
-                    border: showBlue
-                      ? '1px solid rgba(74,158,255,0.65)'
-                      : '1px solid rgba(255,255,255,0.1)',
-                    background: showBlue ? 'rgba(74,158,255,0.15)' : 'rgba(255,255,255,0.03)',
-                    color: showBlue ? 'rgba(74,158,255,0.95)' : 'rgba(255,255,255,0.35)',
-                    cursor: 'pointer',
-                    textTransform: 'uppercase',
-                  }}
                 >
-                  {showBlue ? 'Hide blue (defence)' : 'Show blue (defence)'}
+                  <span style={{ width: 7, height: 7, borderRadius: 999, background: showBlue ? '#fff' : 'var(--wb-blue)' }} />
+                  Blue (defence)
                 </button>
               </>
             )}
             <button
               type="button"
               onClick={handleClose}
-              className="p-1.5 rounded-lg store-text-muted hover:text-white hover:bg-white/5"
+              className="glass-icon-btn"
               aria-label="Close"
             >
               <X className="w-4 h-4" />

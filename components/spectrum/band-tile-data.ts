@@ -650,7 +650,7 @@ export interface BandSection {
 }
 
 export const BAND_TILE_SECTIONS: BandSection[] = [
-  { id: 'all',       label: 'ALL',           tileIds: null },
+  { id: 'all',       label: 'All',           tileIds: null },
   { id: 'rf',        label: 'RF',            tileIds: ['vlf', 'lf', 'mf', 'hf', 'vhf', 'uhf'] },
   { id: 'microwave', label: 'Microwave',      tileIds: ['shf', 'ehf', 'gnss'] },
   { id: 'optical',   label: 'Optical / DEW',  tileIds: ['ir', 'visible', 'uv', 'dew'] },

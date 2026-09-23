@@ -1,19 +1,20 @@
 'use client';
 /**
  * EffectorMatrix — the F3 / Find-Fix-Finish effector view.
- * Shows the layered air-defence picture: effectors grouped by tier
+ * Shows the layered air-defence picture: effectors ordered by tier
  * (strategic BMD → long → medium → SHORAD → point defence → CIWS → C-UAS),
- * Red and Blue side by side, each card surfacing the engagement envelope
- * (range/altitude), effect type, Pk, magazine, and cost-per-shot.
+ * Red or Blue, each row surfacing the engagement envelope (range/altitude),
+ * effect type, Pk, magazine, and cost-per-shot.
  *
  * Clicking an effector stages it; "stage laydown" hands the set to the map.
  */
 
 import React, { useState, useMemo } from 'react';
+import { Check, MapPin } from 'lucide-react';
 import type { EffectorSystem, EffectorTier, EffectType } from '@/lib/spectrum/effector-types';
 import { useEffectors, effectorsByTier } from './effector-data';
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail';
-import { GlassCard } from '@/components/ui/primitives';
+import { DataTable, type DataColumn } from '@/components/ui/DataTable';
 
 const TIER_LABEL: Record<EffectorTier, string> = {
   strategic_bmd: 'Strategic BMD',
@@ -24,15 +25,18 @@ const TIER_LABEL: Record<EffectorTier, string> = {
   ciws_naval: 'CIWS / Naval',
   c_uas: 'Counter-UAS / DE',
 };
+const TIER_ORDER: EffectorTier[] = ['strategic_bmd', 'long', 'medium', 'shorad', 'point_defence', 'ciws_naval', 'c_uas'];
 
-const EFFECT_LABEL: Record<EffectType, { label: string; color: string }> = {
-  kinetic_missile: { label: 'Kinetic missile', color: 'var(--sx-red)' },
-  kinetic_gun: { label: 'Gun', color: 'var(--sx-amber)' },
-  hpm: { label: 'HPM', color: 'var(--sx-purple)' },
-  laser: { label: 'Laser', color: 'var(--sx-cyan)' },
-  kinetic_interceptor_drone: { label: 'Interceptor', color: 'var(--sx-orange)' },
-  net_capture: { label: 'Capture', color: 'var(--sx-green)' },
+const EFFECT_LABEL: Record<EffectType, string> = {
+  kinetic_missile: 'Kinetic missile',
+  kinetic_gun: 'Gun',
+  hpm: 'HPM',
+  laser: 'Laser',
+  kinetic_interceptor_drone: 'Interceptor',
+  net_capture: 'Capture',
 };
+
+const ARM_CLASS: Record<string, string> = { high: 'tag red', medium: 'tag amber', low: 'tag green' };
 
 export function EffectorMatrix({
   onSelect,
@@ -46,110 +50,171 @@ export function EffectorMatrix({
   const effectors = useEffectors();
   const [side, setSide] = useState<'blue' | 'red'>('blue');
   const groups = useMemo(() => effectorsByTier(effectors, side), [effectors, side]);
+  const rows = useMemo(() => groups.flatMap((g) => g.effectors), [groups]);
+  const selected = useMemo(() => new Set(selectedIds), [selectedIds]);
+  const counts = useMemo(
+    () => ({ blue: effectors.filter((e) => e.side === 'blue').length, red: effectors.filter((e) => e.side === 'red').length }),
+    [effectors],
+  );
+
+  const columns = useMemo<DataColumn<EffectorSystem>[]>(
+    () => [
+      {
+        key: 'name',
+        header: 'Effector',
+        sticky: true,
+        width: 280,
+        sortValue: (e) => e.name,
+        cell: (e) => (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+            <PlatformThumbnail id={e.id} name={e.name} size="xs" variant="cuas" rounded="sm" />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="primary" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={e.name}>
+                {e.name}
+              </div>
+              {(() => {
+                const meta = [e.nato_name, e.associated_system].filter((x, i, a) => x && x !== e.name && a.indexOf(x) === i).join(' · ');
+                return meta ? (
+                  <span className="meta" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={meta}>
+                    {meta}
+                  </span>
+                ) : null;
+              })()}
+            </div>
+            {selected.has(e.id) && <Check size={15} aria-label="Staged" style={{ color: 'var(--wb-blue)', flexShrink: 0 }} />}
+          </div>
+        ),
+      },
+      {
+        key: 'tier',
+        header: 'Tier',
+        width: 160,
+        sortValue: (e) => TIER_ORDER.indexOf(e.tier),
+        cell: (e) => TIER_LABEL[e.tier],
+      },
+      { key: 'effect', header: 'Effect', width: 140, sortValue: (e) => EFFECT_LABEL[e.effect], cell: (e) => <span className="tag">{EFFECT_LABEL[e.effect]}</span> },
+      {
+        key: 'range',
+        header: 'Range km',
+        width: 118,
+        align: 'right',
+        sortValue: (e) => e.envelope.max_range_km,
+        cell: (e) => `${e.envelope.min_range_km} to ${e.envelope.max_range_km}`,
+      },
+      {
+        key: 'alt',
+        header: 'Altitude km',
+        width: 124,
+        align: 'right',
+        sortValue: (e) => e.envelope.max_alt_km,
+        cell: (e) => `${e.envelope.min_alt_km} to ${e.envelope.max_alt_km}`,
+      },
+      {
+        key: 'nez',
+        header: 'NEZ km',
+        width: 88,
+        align: 'right',
+        sortValue: (e) => e.envelope.no_escape_range_km ?? null,
+        cell: (e) => e.envelope.no_escape_range_km ?? '',
+      },
+      {
+        key: 'pk',
+        header: 'Pk',
+        width: 72,
+        align: 'right',
+        sortValue: (e) => e.pk_estimate ?? null,
+        cell: (e) => (e.pk_estimate != null ? `${Math.round(e.pk_estimate * 100)}%` : ''),
+      },
+      {
+        key: 'mag',
+        header: 'Magazine',
+        width: 100,
+        align: 'right',
+        sortValue: (e) => (e.magazine == null ? 1e9 : e.magazine),
+        cell: (e) => <span title={e.magazine_note ?? undefined}>{e.magazine != null ? e.magazine : '∞'}</span>,
+      },
+      {
+        key: 'cost',
+        header: 'Cost per shot',
+        width: 122,
+        align: 'right',
+        sortValue: (e) => e.cost_per_shot_usd ?? null,
+        cell: (e) => (e.cost_per_shot_usd != null ? fmtCost(e.cost_per_shot_usd) : ''),
+      },
+      {
+        key: 'defeats',
+        header: 'Defeats',
+        width: 300,
+        className: 'clip',
+        cell: (e) => {
+          const t = e.defeats.map((d) => d.replace(/_/g, ' ')).join(', ');
+          return <span title={t}>{t}</span>;
+        },
+      },
+      { key: 'mobility', header: 'Mobility', width: 128, sortValue: (e) => e.mobility, cell: (e) => cap(e.mobility.replace(/_/g, '-')) },
+      {
+        key: 'arm',
+        header: 'ARM risk',
+        width: 100,
+        sortValue: (e) => (e.arm_sead_vulnerability === 'high' ? 0 : e.arm_sead_vulnerability === 'medium' ? 1 : e.arm_sead_vulnerability === 'low' ? 2 : null),
+        cell: (e) =>
+          e.arm_sead_vulnerability ? <span className={ARM_CLASS[e.arm_sead_vulnerability]}>{cap(e.arm_sead_vulnerability)}</span> : '',
+      },
+      { key: 'origin', header: 'Origin', width: 150, className: 'clip', sortValue: (e) => e.origin, cell: (e) => <span title={e.origin}>{e.origin}</span> },
+    ],
+    [selected],
+  );
+  const tableMin = columns.reduce((n, c) => n + (typeof c.width === 'number' ? c.width : 0), 0);
+  const stagedHere = rows.filter((e) => selected.has(e.id)).length;
 
   return (
-    <GlassCard style={{ padding: 22, borderRadius: 18 }}>
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16, gap: 12, flexWrap: 'wrap' }}>
-        <div className="sx-display" style={{ fontWeight: 600, fontSize: 14 }}>Effectors — layered Find · Fix · Finish</div>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12, gap: 12, flexWrap: 'wrap' }}>
+        <div className="seg" role="group" aria-label="Side">
           {(['blue', 'red'] as const).map((s) => (
-            <button
-              key={s}
-              onClick={() => setSide(s)}
-              style={{
-                padding: '7px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                background: side === s ? (s === 'blue' ? 'rgba(74,158,255,0.16)' : 'rgba(248,113,113,0.16)') : 'transparent',
-                color: side === s ? (s === 'blue' ? 'var(--sx-blue)' : 'var(--sx-red)') : 'var(--sx-ink-dim)',
-                border: `1px solid ${side === s ? (s === 'blue' ? 'rgba(74,158,255,0.3)' : 'rgba(248,113,113,0.3)') : 'var(--sx-glass-line)'}`,
-              }}
-            >
+            <button key={s} type="button" aria-pressed={side === s} onClick={() => setSide(s)}>
+              <span className="sx-dot" style={{ width: 7, height: 7, background: s === 'blue' ? 'var(--wb-blue)' : 'var(--wb-red)' }} />
               {s === 'blue' ? 'Blue (defend)' : 'Red (threat)'}
+              <span className="sx-mono" style={{ fontSize: 12, color: 'var(--store-ink-mute)' }}>{counts[s]}</span>
             </button>
           ))}
-          {selectedIds.length > 0 && onStageLaydown && (
-            <button
-              onClick={() => onStageLaydown(selectedIds)}
-              style={{ padding: '7px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: 'var(--sx-orange)', color: '#0a0c0e', border: 'none' }}
-            >
-              Stage {selectedIds.length} → Map ⊕
-            </button>
-          )}
         </div>
+        <p className="sx-cap">
+          Ordered by tier, strategic to point defence. Pk and cost per shot are open-source estimates.
+          {stagedHere > 0 && ` ${stagedHere} staged on this side.`}
+        </p>
+        {onStageLaydown && (
+          <button
+            type="button"
+            className={selectedIds.length > 0 ? 'btn-glass primary' : 'btn-glass'}
+            disabled={selectedIds.length === 0}
+            onClick={() => onStageLaydown(selectedIds)}
+            style={{ marginLeft: 'auto', opacity: selectedIds.length > 0 ? 1 : 0.5 }}
+          >
+            <MapPin size={15} aria-hidden />
+            {selectedIds.length > 0 ? `Stage ${selectedIds.length} on map` : 'Stage on map'}
+          </button>
+        )}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-        {groups.map((g) => (
-          <div key={g.tier}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-              <div className="sx-mono" style={{ fontSize: 11, color: 'var(--sx-orange-soft)', textTransform: 'uppercase' }}>{TIER_LABEL[g.tier]}</div>
-              <div style={{ flex: 1, height: 1, background: 'var(--sx-glass-line)' }} />
-              <div className="sx-faint sx-mono" style={{ fontSize: 10 }}>{g.effectors.length}</div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(258px, 1fr))', gap: 10 }}>
-              {g.effectors.map((e) => (
-                <EffectorCard key={e.id} effector={e} selected={selectedIds.includes(e.id)} onClick={() => onSelect?.(e)} />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </GlassCard>
-  );
-}
-
-function EffectorCard({ effector: e, selected, onClick }: { effector: EffectorSystem; selected: boolean; onClick: () => void }) {
-  const fx = EFFECT_LABEL[e.effect];
-  const env = e.envelope;
-  return (
-    <button
-      onClick={onClick}
-      className="sx-glass"
-      style={{
-        padding: 14, borderRadius: 13, textAlign: 'left', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 9,
-        border: selected ? '1px solid var(--sx-orange)' : '1px solid var(--sx-glass-line)',
-        boxShadow: selected ? '0 0 0 1px var(--sx-orange), 0 8px 24px -12px var(--sx-orange)' : 'none',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-        <PlatformThumbnail id={e.id} name={e.name} size="md" variant="cuas" rounded="lg" />
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.2 }}>{e.name}</div>
-          {e.nato_name && <div className="sx-faint sx-mono" style={{ fontSize: 9.5, marginTop: 2 }}>{e.nato_name}</div>}
-        </div>
-        <span className="sx-mono" style={{ fontSize: 9, padding: '3px 7px', borderRadius: 6, background: `${fx.color}22`, color: fx.color, whiteSpace: 'nowrap' }}>{fx.label}</span>
-      </div>
-
-      {/* envelope readout */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px' }}>
-        <Stat label="RANGE" value={`${env.min_range_km}–${env.max_range_km} km`} />
-        <Stat label="ALT" value={`${env.min_alt_km}–${env.max_alt_km} km`} />
-        {env.no_escape_range_km != null && <Stat label="NEZ" value={`${env.no_escape_range_km} km`} />}
-      </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px' }}>
-        {e.pk_estimate != null && <Stat label="Pk" value={`${Math.round(e.pk_estimate * 100)}%`} />}
-        <Stat label="MAG" value={e.magazine != null ? `${e.magazine}` : '∞'} />
-        {e.cost_per_shot_usd != null && <Stat label="$/SHOT" value={fmtCost(e.cost_per_shot_usd)} />}
-      </div>
-
-      {/* what it kills */}
-      <div className="sx-dim" style={{ fontSize: 10, lineHeight: 1.5 }}>
-        Defeats: {e.defeats.slice(0, 4).map((d) => d.replace(/_/g, ' ')).join(', ')}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span className="sx-dot" style={{ width: 7, height: 7, color: e.arm_sead_vulnerability === 'high' ? 'var(--sx-red)' : e.arm_sead_vulnerability === 'medium' ? 'var(--sx-amber)' : 'var(--sx-green)', background: 'currentColor' }} />
-        <span className="sx-faint" style={{ fontSize: 9.5 }}>{e.mobility.replace(/_/g, '-')} · ARM risk {e.arm_sead_vulnerability ?? 'n/a'}</span>
-      </div>
-    </button>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <span className="sx-faint sx-mono" style={{ fontSize: 8, letterSpacing: '0.1em' }}>{label}</span>
-      <span className="sx-mono" style={{ fontSize: 11, color: 'var(--sx-ink)' }}>{value}</span>
+      <DataTable
+        rows={rows}
+        columns={columns}
+        rowKey={(e) => e.id}
+        onRowClick={(e) => onSelect?.(e)}
+        compact
+        className="sx-dt-fixed"
+        style={{ '--sx-dt-min': `${tableMin}px` } as React.CSSProperties}
+        maxHeight="max(360px, calc(100vh - 410px))"
+        caption={`${side === 'blue' ? 'Blue' : 'Red'} effectors by tier`}
+        empty="No effectors on this side."
+      />
     </div>
   );
+}
+
+function cap(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function fmtCost(usd: number): string {

@@ -28,8 +28,8 @@ function buildCalc(
 
   const top = options[0]
   const salvoNote = top
-    ? `Top option magazine ${top.magazine_rounds} rounds, reload ${top.reload_min} min — run salvo sim before fielding decision.`
-    : 'No economics rows matched threat — verify engagement_economics seed.'
+    ? `Top option magazine ${top.magazine_rounds} rounds, reload ${top.reload_min} min. Run the salvo sim before fielding decision.`
+    : 'No economics rows matched this threat. Verify the engagement_economics seed.'
 
   return {
     threat_platform_id: template.threat_platform_id,

@@ -7,12 +7,12 @@ import { PlannerLibraryClient } from '@/components/planner/PlannerLibraryClient'
 import { DEMO_LAYDOWN, ThreatRoutePanel } from '@/components/planner/ThreatRoutePanel';
 
 /**
- * Vignette names carry a qualifier after a dash ("Force — South China Sea",
- * "Taipan Strike 26 — GBAD CEA-SM-2"). Split it so the card reads as a title
+ * Vignette names carry a qualifier after a colon or dash ("Force: South China Sea",
+ * "Taipan Strike 26: GBAD CEA-SM-2"). Split it so the card reads as a title
  * plus a quiet line, instead of one long dashed string.
  */
 function splitName(v: PlannerVignette): { kicker?: string; title: string; qualifier?: string } {
-  const parts = v.name.split(/\s+[—–-]\s+/);
+  const parts = v.name.split(/:\s+|\s+[—–-]\s+/);
   if (parts.length < 2) return { title: v.name };
   const [head, ...rest] = parts;
   const tail = rest.join(', ');

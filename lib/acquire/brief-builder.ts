@@ -19,8 +19,8 @@ export function buildAcquisitionBrief(
 ): AcquisitionBrief {
   const osintSources = [
     ...new Set(options.map((o) => o.source_ref).filter(Boolean)),
-    'Defeat Matrix — OSINT effectiveness baselines (Training tier, not accredited Pk)',
-    'engagement_economics — unit cost seed from RUSI / CSIS / manufacturer press',
+    'Defeat Matrix: OSINT effectiveness baselines (Training tier, not accredited Pk)',
+    'engagement_economics: unit cost seed from RUSI / CSIS / manufacturer press',
   ]
 
   const structured = {
@@ -46,7 +46,7 @@ export function buildAcquisitionBrief(
         `### ${o.rank}. ${o.defeat_system_name}\n` +
         `- **$/expected kill:** $${Math.round(o.cost_per_expected_kill_usd).toLocaleString('en-US')}\n` +
         `- **Exchange ratio:** ${o.exchange.exchangeRatio.toFixed(0)}:1\n` +
-        `- **Pk (OSINT):** ${(o.pk * 100).toFixed(0)}% — not accredited\n` +
+        `- **Pk (OSINT):** ${(o.pk * 100).toFixed(0)}% (not accredited)\n` +
         `- **Confidence:** ${o.cost_confidence}\n` +
         `- **Source:** ${o.source_ref}\n` +
         `- ${o.rationale}`,
@@ -85,7 +85,7 @@ ${osintSources.map((s) => `- ${s}`).join('\n')}
 
 ## Training & force design
 
-- Force Design: \`/pcm/force-design\` — parallel laydown analysis before procurement
+- Force Design: \`/pcm/force-design\`: parallel laydown analysis before procurement
 - ${structured.training_note}
 `
 

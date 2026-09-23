@@ -32,10 +32,10 @@ function buildRationale(
   systemName: string,
 ): string {
   if (exchangeRatio > 50) {
-    return `${systemName}: cost catastrophe (${exchangeRatio.toFixed(0)}:1) — reserve for confirmed LACM; not primary OWA layer.`
+    return `${systemName}: cost catastrophe (${exchangeRatio.toFixed(0)}:1): reserve for confirmed LACM; not primary OWA layer.`
   }
   if (exchangeRatio > 10) {
-    return `${systemName}: unfavourable exchange — cue only when RF/HPM unavailable; magazine ${magazine} rounds.`
+    return `${systemName}: unfavourable exchange: cue only when RF/HPM unavailable; magazine ${magazine} rounds.`
   }
   return `${systemName}: favourable point-defence economics; magazine depth ${magazine} supports saturation handling.`
 }

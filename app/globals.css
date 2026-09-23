@@ -729,10 +729,14 @@ p {
 .fc-action:hover { color: var(--store-ink); }
 .fc-action[aria-pressed="true"] { color: var(--store-ink); }
 
-/* Pane header tools hide when the pane is too narrow to hold them. */
+/* Pane header tools hide when the pane is too narrow to hold them.
+   Compound selectors so a .seg (declared later) cannot re-show them. */
 .wb-pane { container-type: inline-size; }
-.wb-pane-tools { display: none; }
-@container (min-width: 300px) { .wb-pane-tools { display: flex; } }
+.wb-pane .wb-pane-tools { display: none; }
+@container (min-width: 300px) {
+  .wb-pane .wb-pane-tools { display: flex; }
+  .wb-pane .wb-pane-tools.seg { display: inline-flex; }
+}
 
 .store-accent { color: var(--wb-blue); }
 .store-accent-border { border-color: rgba(41, 151, 255, 0.5); }
@@ -958,7 +962,7 @@ p {
 .dt thead th.text-center, .dt tbody td.text-center { text-align: center; }
 .dt thead th[aria-sort] { cursor: pointer; user-select: none; }
 .dt thead th[aria-sort]:hover { color: #fff; }
-.dt thead th .sort-ind { display: inline-block; margin-left: 4px; color: var(--wb-blue); font-size: 11px; }
+.dt thead th .sort-ind { display: inline-block; width: 10px; margin-left: 2px; line-height: 1; text-align: center; color: var(--wb-blue); font-size: 11px; }
 .dt tbody td {
   padding: 10px 14px; vertical-align: middle;
   border-bottom: 1px solid rgba(255, 255, 255, 0.055);

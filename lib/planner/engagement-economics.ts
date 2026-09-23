@@ -37,9 +37,9 @@ export function computeExchangeRatio(
 ): ExchangeRatioResult {
   const effectiveCost = effectorCostUsd / Math.max(pk, 0.01);
   const exchangeRatio = effectiveCost / Math.max(threatCostUsd, 1);
-  let doctrineHint = 'Layered defence — preserve high-cost interceptors for high-value threats.';
-  if (exchangeRatio > 50) doctrineHint = 'Cost catastrophe — shift to RF/HPM or point-defence kinetic before SAM expenditure.';
-  else if (exchangeRatio > 10) doctrineHint = 'Unfavourable exchange — cue lowest-cost effector first; reserve SAM for confirmed LACM.';
+  let doctrineHint = 'Layered defence: preserve high-cost interceptors for high-value threats.';
+  if (exchangeRatio > 50) doctrineHint = 'Cost catastrophe: shift to RF/HPM or point-defence kinetic before SAM expenditure.';
+  else if (exchangeRatio > 10) doctrineHint = 'Unfavourable exchange: cue lowest-cost effector first; reserve SAM for confirmed LACM.';
   return {
     threatCostUsd,
     effectorCostUsd,

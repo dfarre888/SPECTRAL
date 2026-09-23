@@ -22,7 +22,7 @@ export interface PlannerVignette {
 export const PLANNER_VIGNETTES: PlannerVignette[] = [
   {
     id: 'taipan-strike-26',
-    name: 'Taipan Strike 26 — GBAD CEA-SM-2',
+    name: 'Taipan Strike 26: GBAD CEA-SM-2',
     description: 'ADF GBAD live-fire anchor: CEAFAR2-L cueing SM-2 Block IIIB against LACM penetration at 50–100m AGL.',
     iadsStackId: 'stack-taipan-gbad',
     terrain: 'coastal_gbad',
@@ -64,7 +64,7 @@ export const PLANNER_VIGNETTES: PlannerVignette[] = [
   {
     id: 'north-qld-cuas',
     name: 'North Queensland C-UAS Belt',
-    description: 'Shahed swarm economics — 8× Shahed vs Giraffe/NASAMS/Gepard layered belt (125:1 exchange ratio).',
+    description: 'Shahed swarm economics: 8× Shahed vs Giraffe/NASAMS/Gepard layered belt (125:1 exchange ratio).',
     iadsStackId: 'stack-north-qld-cuas',
     economicsHighlight: { platformId: 'shahed-136', defeatSystemId: 'nasams-amraam-er', label: '125:1 cost catastrophe' },
     swarmCount: 8,
@@ -86,8 +86,8 @@ export const PLANNER_VIGNETTES: PlannerVignette[] = [
   },
   {
     id: 'force-scs',
-    name: 'Force — South China Sea',
-    description: 'AUS/US quality vs PRC mass. UAS layer only — full ORBAT stays on /force. AEW and tanker are the Blue failure points.',
+    name: 'Force: South China Sea',
+    description: 'AUS/US quality vs PRC mass. UAS layer only; full ORBAT stays on /force. AEW and tanker are the Blue failure points.',
     iadsStackId: 'stack-taipan-gbad',
     terrain: 'maritime_scs',
     laydownSeed: {
@@ -100,8 +100,8 @@ export const PLANNER_VIGNETTES: PlannerVignette[] = [
   },
   {
     id: 'force-korea',
-    name: 'Force — Korean Peninsula',
-    description: 'USA increment vs DPRK massed fires. ROK is not in the seven-nation catalog — flag that on the AAR.',
+    name: 'Force: Korean Peninsula',
+    description: 'USA increment vs DPRK massed fires. ROK is not in the seven-nation catalog; flag that on the AAR.',
     iadsStackId: 'stack-north-qld-cuas',
     laydownSeed: {
       viewport: { lon: 127.0, lat: 38.0, height_m: 1200000 },
@@ -113,7 +113,7 @@ export const PLANNER_VIGNETTES: PlannerVignette[] = [
   },
   {
     id: 'force-north-aus',
-    name: 'Force — Northern Australia',
+    name: 'Force: Northern Australia',
     description: 'Darwin approaches. Pair with the C-UAS belt. PRC is a long-range strike problem, not an occupying land force.',
     iadsStackId: 'stack-north-qld-cuas',
     swarmCount: 4,

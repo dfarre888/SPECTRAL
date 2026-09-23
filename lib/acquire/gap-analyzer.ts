@@ -46,13 +46,13 @@ export function analyzeGap(
 
   if (cuasInOrbat.length === 0) {
     coverageGaps.push(
-      `${template.location} exercise laydown has no dedicated C-UAS ground nodes — BMI OrBat is air-centric (fighters, AEW, transport).`,
+      `${template.location} exercise laydown has no dedicated C-UAS ground nodes; BMI OrBat is air-centric (fighters, AEW, transport).`,
     )
   }
 
   if (existingCuasSystems.length === 0) {
     coverageGaps.push(
-      'Defeat matrix shows no fielded C-UAS layer at this base — fighter AD alone is cost-catastrophic vs OWA saturation.',
+      'Defeat matrix shows no fielded C-UAS layer at this base; fighter AD alone is cost-catastrophic vs OWA saturation.',
     )
   } else {
     coverageGaps.push(
@@ -61,7 +61,7 @@ export function analyzeGap(
   }
 
   coverageGaps.push(
-    `Required effect: ${requiredEffect}. Shahed-class OWA demands magazine depth + favourable exchange — not expending GBAD missiles on $20k threats.`,
+    `Required effect: ${requiredEffect}. Shahed-class OWA demands magazine depth + favourable exchange, not expending GBAD missiles on $20k threats.`,
   )
 
   const airCount = orbat.filter((p) => p.domain === 'air').length

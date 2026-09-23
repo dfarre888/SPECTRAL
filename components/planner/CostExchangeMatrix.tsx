@@ -1,7 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import { clsx } from 'clsx'
+import { useMemo, useState, type ReactNode } from 'react'
 import {
   COST_ENTRIES,
   allExchanges,
@@ -9,20 +8,177 @@ import {
   formatRatio,
   formatUsd,
   recommendedAgainst,
+  type CostConfidenceBand,
+  type CostInterval,
+  type ExchangeRatioBand,
   type ExchangeVerdict,
 } from '@/lib/planner/cost-model'
+import { DataTable, type DataColumn } from '@/components/ui/DataTable'
 
-const VERDICT_TONE: Record<ExchangeVerdict, { text: string; bg: string; border: string }> = {
-  favourable: { text: '#86efac', bg: 'rgba(74,222,128,0.10)', border: 'rgba(74,222,128,0.30)' },
-  acceptable: { text: '#fde047', bg: 'rgba(250,204,21,0.10)', border: 'rgba(250,204,21,0.30)' },
-  unfavourable: { text: '#fdba74', bg: 'rgba(249,115,22,0.12)', border: 'rgba(249,115,22,0.35)' },
-  catastrophic: { text: '#fca5a5', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.40)' },
+/**
+ * Verdict colour lives on the value (ratio text and a hairline tag), never on
+ * the row. Green is a good trade, neutral is tolerable, amber is a bad trade,
+ * red is one no magazine can sustain.
+ */
+const VERDICT: Record<ExchangeVerdict, { label: string; tag: string; ink: string }> = {
+  favourable: { label: 'Favourable', tag: 'tag green', ink: '#6EE7A0' },
+  acceptable: { label: 'Acceptable', tag: 'tag', ink: 'var(--store-ink)' },
+  unfavourable: { label: 'Unfavourable', tag: 'tag amber', ink: '#FCD34D' },
+  catastrophic: { label: 'Catastrophic', tag: 'tag red', ink: '#FF8A98' },
 }
 
-const CONF_LABEL: Record<string, string> = {
-  consensus: 'sources agree',
-  contested: 'sources disagree',
-  order_of_magnitude: 'order of magnitude only',
+const VERDICT_RANK: Record<ExchangeVerdict, number> = {
+  favourable: 0,
+  acceptable: 1,
+  unfavourable: 2,
+  catastrophic: 3,
+}
+
+const CONF_LABEL: Record<CostConfidenceBand, string> = {
+  consensus: 'Sources agree',
+  contested: 'Sources disagree',
+  order_of_magnitude: 'Order of magnitude',
+}
+
+/** `.dt thead th` sets text-align:left above Tailwind's `text-right`; force it for numeric headers. */
+const RIGHT = '!text-right'
+
+const usdBand = (c: CostInterval) => `${formatUsd(c.loUsd)}–${formatUsd(c.hiUsd)}`
+const ratioBand = (x: ExchangeRatioBand) => `${formatRatio(x.loRatio)} – ${formatRatio(x.hiRatio)}`
+
+function VerdictTag({ v }: { v: ExchangeVerdict }) {
+  return <span className={VERDICT[v].tag}>{VERDICT[v].label}</span>
+}
+
+/**
+ * Rank is the model's cheapest-first order, which is also the order of the
+ * exchange-ratio column, so it rides inside the pinned effector cell instead
+ * of spending a column.
+ */
+function layerColumns(rankOf: (x: ExchangeRatioBand) => number | undefined): DataColumn<ExchangeRatioBand>[] {
+  return [
+    {
+      key: 'effector',
+      header: 'Effector',
+      sticky: true,
+      sortValue: (x) => x.effector.label,
+      cell: (x) => (
+        <span className="flex min-w-[260px] items-center gap-3" title={`${x.effector.label}: ${x.effector.note}`}>
+          <span className="w-5 shrink-0 text-right font-mono text-xs tabular-nums store-text-muted">{rankOf(x)}</span>
+          <span className="primary truncate">{x.effector.label}</span>
+          {x.effector.reusable ? <span className="tag shrink-0">Reusable</span> : null}
+        </span>
+      ),
+    },
+    {
+      key: 'cost',
+      header: 'Cost per shot',
+      align: 'right',
+      headerClassName: RIGHT,
+      width: 160,
+      sortValue: (x) => x.effector.perEngagementUsd.loUsd,
+      cell: (x) => <span className="text-[var(--store-ink-soft)]">{usdBand(x.effector.perEngagementUsd)}</span>,
+    },
+    {
+      key: 'ratio',
+      header: 'Exchange ratio',
+      align: 'right',
+      headerClassName: RIGHT,
+      width: 200,
+      sortValue: (x) => x.loRatio,
+      cell: (x) => <span style={{ color: VERDICT[x.verdict].ink }}>{ratioBand(x)}</span>,
+    },
+    {
+      key: 'verdict',
+      header: 'Verdict',
+      width: 150,
+      sortValue: (x) => VERDICT_RANK[x.verdict],
+      cell: (x) => <VerdictTag v={x.verdict} />,
+    },
+  ]
+}
+
+const MATRIX_COLUMNS: DataColumn<ExchangeRatioBand>[] = [
+  {
+    key: 'effector',
+    header: 'Effector',
+    sticky: true,
+    sortValue: (x) => x.effector.label,
+    // Names wrap rather than truncate: the table fits the frame by wrapping
+    // these two text columns before it ever scrolls sideways.
+    cell: (x) => (
+      <span className="primary block min-w-[170px] leading-snug" title={x.effector.note}>
+        {x.effector.label}
+      </span>
+    ),
+  },
+  {
+    key: 'threat',
+    header: 'Threat',
+    sortValue: (x) => x.threat.label,
+    cell: (x) => (
+      <span className="block min-w-[150px] leading-snug text-[var(--store-ink-soft)]" title={x.threat.note}>
+        {x.threat.label}
+      </span>
+    ),
+  },
+  {
+    key: 'ecost',
+    header: 'Shot cost',
+    align: 'right',
+    headerClassName: RIGHT,
+    width: 124,
+    sortValue: (x) => x.effector.perEngagementUsd.loUsd,
+    cell: (x) => usdBand(x.effector.perEngagementUsd),
+  },
+  {
+    key: 'tcost',
+    header: 'Threat cost',
+    align: 'right',
+    headerClassName: RIGHT,
+    width: 124,
+    sortValue: (x) => x.threat.perEngagementUsd.loUsd,
+    cell: (x) => usdBand(x.threat.perEngagementUsd),
+  },
+  {
+    key: 'ratio',
+    header: 'Exchange ratio',
+    align: 'right',
+    headerClassName: RIGHT,
+    width: 168,
+    sortValue: (x) => x.loRatio,
+    cell: (x) => <span style={{ color: VERDICT[x.verdict].ink }}>{ratioBand(x)}</span>,
+  },
+  {
+    key: 'verdict',
+    header: 'Verdict',
+    width: 128,
+    sortValue: (x) => VERDICT_RANK[x.verdict],
+    cell: (x) => <VerdictTag v={x.verdict} />,
+  },
+  {
+    key: 'conf',
+    header: 'Cost basis',
+    width: 150,
+    sortValue: (x) => x.confidence,
+    cell: (x) => (
+      <span className={x.confidence === 'consensus' ? 'store-text-muted' : 'store-text-body'}>
+        {CONF_LABEL[x.confidence]}
+      </span>
+    ),
+  },
+]
+
+function PaneHead({ title, meta, children }: { title: string; meta?: string; children?: ReactNode }) {
+  return (
+    <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+      <div className="min-w-0">
+        <h2 className="store-display text-[17px] font-semibold tracking-[-0.01em] text-[var(--store-ink)]">{title}</h2>
+        {meta ? <p className="mt-1 text-[13px] store-text-body">{meta}</p> : null}
+      </div>
+      {children}
+    </div>
+  )
 }
 
 export function CostExchangeMatrix() {
@@ -34,155 +190,96 @@ export function CostExchangeMatrix() {
   const layered = useMemo(() => recommendedAgainst(threatId, 99), [threatId])
   const everything = useMemo(() => allExchanges(), [])
 
+  const columnsForLayer = useMemo(() => {
+    const order = new Map(layered.map((x, i) => [x.effector.id, i + 1]))
+    return layerColumns((x) => order.get(x.effector.id))
+  }, [layered])
+
   return (
-    <div className="space-y-4">
-      {/* ── Layering recommendation for one threat ───────────────────────── */}
-      <div className="store-panel rounded-2xl p-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-          <div>
-            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
-              Layering
-            </p>
-            <h3 className="store-display text-sm font-semibold text-white mt-0.5">
-              What to shoot it with, cheapest first
-            </h3>
-          </div>
-          <div className="flex flex-wrap gap-1">
-            {threats.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setThreatId(t.id)}
-                className={clsx(
-                  'px-2 py-1 rounded-lg text-[11px] font-mono border transition-colors',
-                  threatId === t.id
-                    ? 'nav-item-active'
-                    : 'store-panel-inner store-text-body hover:border-[rgba(41,151,255,0.5)]',
-                )}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
+    <div className="space-y-12">
+      {/* Layering recommendation for one threat */}
+      <section>
+        <PaneHead
+          title="What to shoot it with, cheapest first"
+          meta="Pick a threat. Effectors are ranked by the best-case exchange ratio against it."
+        />
+
+        <div className="seg mb-5 max-w-full flex-wrap" role="group" aria-label="Threat">
+          {threats.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              aria-pressed={threatId === t.id}
+              onClick={() => setThreatId(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
 
         {threat && (
-          <p className="text-[11px] store-text-body mb-3">
-            <span className="font-mono text-white">
-              {formatUsd(threat.perEngagementUsd.loUsd)}–{formatUsd(threat.perEngagementUsd.hiUsd)}
-            </span>{' '}
-            per {threat.label} · {CONF_LABEL[threat.confidence]}. {threat.note}
-          </p>
+          <div className="mb-5 grid gap-x-8 gap-y-3 md:grid-cols-[auto_minmax(0,1fr)]">
+            <div>
+              <p className="text-xs store-text-muted">Cost per {threat.label}</p>
+              <p className="mt-1.5 font-mono text-[28px] leading-none tabular-nums text-[var(--wb-red)]">
+                {usdBand(threat.perEngagementUsd)}
+              </p>
+              <p className="mt-2">
+                <span className={threat.confidence === 'consensus' ? 'tag green' : 'tag amber'}>
+                  {CONF_LABEL[threat.confidence]}
+                </span>
+              </p>
+            </div>
+            <p className="max-w-[80ch] self-center text-[13px] leading-relaxed store-text-body">{threat.note}</p>
+          </div>
         )}
 
-        <div className="space-y-1.5">
-          {layered.map((x) => {
-            const tone = VERDICT_TONE[x.verdict]
-            return (
-              <div
-                key={x.effector.id}
-                className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border px-3 py-2"
-                style={{ background: tone.bg, borderColor: tone.border }}
-              >
-                <span className="text-[12px] text-[var(--store-ink)] font-medium min-w-[210px] flex-1">
-                  {x.effector.label}
-                  {x.effector.reusable && (
-                    <span className="ml-1.5 text-[11px] font-mono store-text-muted">reusable</span>
-                  )}
-                </span>
-                <span className="text-[11px] font-mono store-text-muted w-[110px]">
-                  {formatUsd(x.effector.perEngagementUsd.loUsd)}–
-                  {formatUsd(x.effector.perEngagementUsd.hiUsd)}
-                </span>
-                <span className="text-[12px] font-mono font-semibold w-[150px]" style={{ color: tone.text }}>
-                  {formatRatio(x.loRatio)} – {formatRatio(x.hiRatio)}
-                </span>
-                <span className="text-[11px] font-mono uppercase" style={{ color: tone.text }}>
-                  {x.verdict}
-                </span>
-              </div>
-            )
-          })}
-        </div>
+        <DataTable
+          rows={layered}
+          columns={columnsForLayer}
+          rowKey={(x) => x.effector.id}
+          caption={`Effectors against ${threat?.label ?? threatId}, cheapest exchange first`}
+          maxHeight="none"
+        />
 
-        <p className="mt-3 text-[11px] store-text-muted leading-relaxed">
-          Ratio is cost per shot over cost per threat, shown as a band because published costs
-          disagree. Reusable effects are priced at marginal cost per engagement, not acquisition —
-          that asymmetry is the whole argument for putting them first against cheap mass. The verdict
-          is judged on the optimistic end: if even the best reading is bad, the exchange is bad.
+        <p className="mt-3 max-w-[100ch] text-xs leading-relaxed store-text-muted">
+          Ratio is cost per shot over cost per threat, shown as a band because published costs disagree.
+          Reusable effects are priced at marginal cost per engagement, not acquisition; that asymmetry is
+          the argument for putting them first against cheap mass. The verdict is judged on the optimistic
+          end: if even the best reading is bad, the exchange is bad.
         </p>
-      </div>
+      </section>
 
-      {/* ── Full matrix ──────────────────────────────────────────────────── */}
-      <div className="store-panel rounded-2xl p-4">
-        <div className="flex items-baseline justify-between gap-2 mb-3">
-          <div>
-            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
-              Full matrix
-            </p>
-            <h3 className="store-display text-sm font-semibold text-white mt-0.5">
-              {everything.length} pairings, worst exchange first
-            </h3>
+      {/* Full matrix */}
+      <section>
+        <PaneHead
+          title="Full matrix"
+          meta={`${everything.length} threat and effector pairings, worst exchange first. Click a header to sort.`}
+        >
+          <div className="seg sm" role="group" aria-label="Rows shown">
+            <button type="button" aria-pressed={!showAll} onClick={() => setShowAll(false)}>
+              Worst 12
+            </button>
+            <button type="button" aria-pressed={showAll} onClick={() => setShowAll(true)}>
+              All {everything.length}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowAll((v) => !v)}
-            className="px-2.5 py-1 rounded-lg text-[11px] font-mono store-panel-inner store-text-body border border-transparent hover:border-[rgba(41,151,255,0.5)]"
-          >
-            {showAll ? 'Show worst 12' : `Show all ${everything.length}`}
-          </button>
-        </div>
+        </PaneHead>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left" style={{ tableLayout: 'fixed' }}>
-            <colgroup>
-              <col style={{ width: '30%' }} />
-              <col style={{ width: '26%' }} />
-              <col style={{ width: '22%' }} />
-              <col style={{ width: '22%' }} />
-            </colgroup>
-            <thead>
-              <tr className="border-b border-[var(--store-line)]">
-                {['Effector', 'Threat', 'Exchange band', 'Verdict'].map((h) => (
-                  <th key={h} className="py-1.5 text-[11px] font-mono tracking-[0.02em] store-text-muted">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {(showAll ? everything : everything.slice(0, 12)).map((x) => {
-                const tone = VERDICT_TONE[x.verdict]
-                return (
-                  <tr
-                    key={`${x.effector.id}-${x.threat.id}`}
-                    className="border-b border-[var(--store-line)]/50"
-                    title={`${x.effector.note}\n\n${x.threat.note}`}
-                  >
-                    <td className="py-1.5 pr-2 text-[12px] text-[var(--store-ink)] truncate">{x.effector.label}</td>
-                    <td className="py-1.5 pr-2 text-[12px] store-text-body truncate">{x.threat.label}</td>
-                    <td className="py-1.5 pr-2 text-[11px] font-mono" style={{ color: tone.text }}>
-                      {formatRatio(x.loRatio)} – {formatRatio(x.hiRatio)}
-                    </td>
-                    <td className="py-1.5 text-[11px] font-mono uppercase" style={{ color: tone.text }}>
-                      {x.verdict}
-                      <span className="ml-1.5 store-text-muted normal-case">
-                        {x.confidence === 'consensus' ? '' : '·'}
-                      </span>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          rows={showAll ? everything : everything.slice(0, 12)}
+          columns={MATRIX_COLUMNS}
+          rowKey={(x) => `${x.effector.id}-${x.threat.id}`}
+          caption="All threat and effector exchange pairings"
+          maxHeight="calc(100vh - 180px)"
+        />
 
-        <p className="mt-3 text-[11px] store-text-muted leading-relaxed">
+        <p className="mt-3 max-w-[100ch] text-xs leading-relaxed store-text-muted">
           Costs are OSINT: US budget documents where published, press reporting and manufacturer
-          statements otherwise. Hover a row for the basis. No cost here is a procurement figure and
-          none should be quoted as one.
+          statements otherwise. Hover an effector or threat for the basis. No cost here is a
+          procurement figure and none should be quoted as one.
         </p>
-      </div>
+      </section>
     </div>
   )
 }

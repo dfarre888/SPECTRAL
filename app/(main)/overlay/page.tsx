@@ -10,7 +10,7 @@ export default async function OverlayPage() {
     <HubPageShell
       eyebrow="Engagement Analysis"
       title="SAM Engagement Overlay"
-      subtitle="Reference-geometry intercept Pk for SAM systems against matrix UAS platforms — live range rings and LOS on the globe."
+      subtitle="Reference-geometry intercept Pk for SAM systems against matrix UAS platforms, with live range rings and line of sight on the globe."
       maxWidthClass="max-w-[1400px]"
     >
       <OverlayWorkspace platforms={platforms} />

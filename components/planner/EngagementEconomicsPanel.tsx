@@ -18,13 +18,19 @@ interface EngagementEconomicsPanelProps {
 
 export function EngagementEconomicsPanel({ rows }: EngagementEconomicsPanelProps = {}) {
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <div className="rounded-xl border border-[var(--store-line)] store-panel-inner p-4">
-        <h3 className="text-sm font-semibold text-white mb-3">Exchange ratio table</h3>
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-[15px] font-semibold text-[var(--store-ink)]">Exchange ratio with Pk</h3>
+        <p className="mb-3 mt-1 text-[13px] store-text-body">
+          Shot cost divided by Pk, over the threat&apos;s unit cost: what one expected kill costs in threats.
+        </p>
         <ExchangeRatioTable rows={rows ?? DEMO_ROWS} />
       </div>
-      <div className="rounded-xl border border-[var(--store-line)] store-panel-inner p-4">
-        <h3 className="text-sm font-semibold text-white mb-3">Salvo simulator</h3>
+      <div className="store-panel rounded-2xl p-5">
+        <h3 className="text-[15px] font-semibold text-[var(--store-ink)]">Salvo simulator</h3>
+        <p className="mb-5 mt-1 text-[13px] store-text-body">
+          How many threats leak through a single magazine at a given Pk.
+        </p>
         <SalvoSimulator />
       </div>
     </div>

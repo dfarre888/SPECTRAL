@@ -23,7 +23,7 @@ function demoMoatRecord(): Pick<LongitudinalCompetencyRecord, 'player_id' | 'cal
       {
         id: 'bs-mag-1',
         competency: 'magazine_management',
-        description: 'Expends kinetic interceptors early against cheap OWA — acquisition gap for point-defence SPAAG',
+        description: 'Expends kinetic interceptors early against cheap OWA: acquisition gap for point-defence SPAAG',
         first_observed_exercise_id: 'ex-demo',
         first_observed_at: '2026-07-01T00:00:00.000Z',
         recurrence_count: 3,
@@ -52,19 +52,21 @@ export default async function AcquirePage({ searchParams }: AcquirePageProps) {
       eyebrow="Acquire · capability gaps"
       eyebrowIcon={<ShoppingCart className="h-3.5 w-3.5" />}
       title="Close capability gaps"
-      subtitle="GAP → OPTION → CALC → BRIEF workflow. OSINT economics and defeat matrix only — no accredited Pk to client."
+      subtitle="Four steps from gap to acquisition brief: the gap, ranked options, the cost calculation, then the brief. OSINT economics and the defeat matrix only; no accredited Pk reaches the client."
       headerAction={
-        <div className="ring-gradient glass flex flex-wrap gap-2 rounded-xl px-3 py-2">
-          <div className="text-center px-2">
-            <div className="hero-number text-sm text-[#F7F9FC] font-mono uppercase">{session.template.id}</div>
-            <div className="text-[11px] tracking-[0.02em] store-text-muted">Template</div>
+        <dl className="flex items-stretch gap-5">
+          <div className="text-right">
+            <dt className="text-xs store-text-muted">Template</dt>
+            <dd className="mt-1 font-mono text-[13px] text-[var(--store-ink)]">{session.template.id}</dd>
           </div>
-          <div className="w-px bg-[var(--store-line)]" />
-          <div className="text-center px-2">
-            <div className="hero-number text-lg text-[#F7F9FC] tabular-nums">{session.defeatCoverage?.length ?? 0}</div>
-            <div className="text-[11px] tracking-[0.02em] store-text-muted">Defeat rows</div>
+          <div className="w-px bg-[var(--store-line)]" aria-hidden />
+          <div className="text-right">
+            <dt className="text-xs store-text-muted">Defeat rows</dt>
+            <dd className="mt-1 font-mono text-[13px] tabular-nums text-[var(--store-ink)]">
+              {session.defeatCoverage?.length ?? 0}
+            </dd>
           </div>
-        </div>
+        </dl>
       }
     >
       <Suspense fallback={null}>

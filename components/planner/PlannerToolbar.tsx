@@ -17,10 +17,10 @@ interface PlannerToolbarProps {
 }
 
 export function PlannerToolbar(props: PlannerToolbarProps) {
-  const btn = 'btn-e sm font-mono';
+  const btn = 'btn-e sm';
   return (
     <div className="flex flex-wrap items-center gap-0.5 min-h-8">
-      <span className="text-[11px] font-mono store-text-muted truncate max-w-[160px] px-2" title={props.planName}>
+      <span className="text-[12px] text-[var(--store-ink-soft)] truncate max-w-[180px] px-2" title={props.planName}>
         {props.planId ? props.planName : 'Unsaved laydown'}
       </span>
       <button type="button" className={cn(btn, '')} onClick={props.onSave} disabled={props.saving}>
@@ -32,9 +32,9 @@ export function PlannerToolbar(props: PlannerToolbarProps) {
       <button type="button" className={cn(btn, '')} onClick={props.onPublishPcm}>PCM</button>
       <Link href="/planner" className={cn(btn, '')}>Library</Link>
       {props.lastSaved && (
-        <span className="text-[11px] font-mono store-text-muted">saved {props.lastSaved.toLocaleTimeString()}</span>
+        <span className="text-[12px] store-text-muted">Saved <span className="font-mono">{props.lastSaved.toLocaleTimeString()}</span></span>
       )}
-      {props.error && <span className="text-[11px] font-mono text-red">{props.error}</span>}
+      {props.error && <span className="text-[12px] text-[#FF8A98]">{props.error}</span>}
     </div>
   );
 }

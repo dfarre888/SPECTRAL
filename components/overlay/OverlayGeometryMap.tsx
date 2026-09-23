@@ -48,10 +48,14 @@ export default function OverlayGeometryMap({
 
   useEffect(() => {
     if (!containerRef.current || viewerRef.current) return
+    // Strict Mode mounts, unmounts and remounts in dev. Without this flag the
+    // first load resolves after cleanup and builds a second, orphan viewer that
+    // covers the live one, so rings and camera framing land on a hidden globe.
+    let cancelled = false
 
     loadCesium()
       .then((Cesium) => {
-        if (!containerRef.current) return
+        if (cancelled || !containerRef.current || viewerRef.current) return
 
         const { Viewer, Ion, Color } = Cesium
         Ion.defaultAccessToken = process.env.NEXT_PUBLIC_CESIUM_ION_TOKEN || ''
@@ -84,6 +88,7 @@ export default function OverlayGeometryMap({
       })
 
     return () => {
+      cancelled = true
       setCesiumReady(false)
       cameraFramedRef.current = false
       if (viewerRef.current && !viewerRef.current.isDestroyed()) {
@@ -172,12 +177,13 @@ export default function OverlayGeometryMap({
         color: Color.fromCssColorString('#3B82F6').withAlpha(0.95),
         outlineColor: Color.WHITE.withAlpha(0.85),
         outlineWidth: 2,
-        disableDepthTestDistance: 0,
+        // Draw over the translucent envelope domes so the marker stays legible.
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
       },
       label: {
         text: 'SAM',
-        font: '11px JetBrains Mono',
-        fillColor: Color.fromCssColorString('#3B82F6'),
+        font: '500 12px "JetBrains Mono", monospace',
+        fillColor: Color.fromCssColorString('#6CB8FF'),
         outlineColor: Color.BLACK,
         outlineWidth: 2,
         style: LabelStyle.FILL_AND_OUTLINE,
@@ -185,7 +191,8 @@ export default function OverlayGeometryMap({
         pixelOffset: { x: 0, y: -22 },
         showBackground: true,
         backgroundColor: Color.fromCssColorString(SCENE_GROUND).withAlpha(0.85),
-        disableDepthTestDistance: 0,
+        // Draw over the translucent envelope domes so the marker stays legible.
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
       },
     })
 
@@ -218,12 +225,13 @@ export default function OverlayGeometryMap({
         color: Color.fromCssColorString('#EF4444').withAlpha(0.95),
         outlineColor: Color.WHITE.withAlpha(0.85),
         outlineWidth: 2,
-        disableDepthTestDistance: 0,
+        // Draw over the translucent envelope domes so the marker stays legible.
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
       },
       label: {
         text: scenario.platform_id,
-        font: '11px JetBrains Mono',
-        fillColor: Color.fromCssColorString('#EF4444'),
+        font: '500 12px "JetBrains Mono", monospace',
+        fillColor: Color.fromCssColorString('#FF8A98'),
         outlineColor: Color.BLACK,
         outlineWidth: 2,
         style: LabelStyle.FILL_AND_OUTLINE,
@@ -231,7 +239,8 @@ export default function OverlayGeometryMap({
         pixelOffset: { x: 0, y: -20 },
         showBackground: true,
         backgroundColor: Color.fromCssColorString(SCENE_GROUND).withAlpha(0.85),
-        disableDepthTestDistance: 0,
+        // Draw over the translucent envelope domes so the marker stays legible.
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
       },
     })
 
@@ -269,16 +278,16 @@ export default function OverlayGeometryMap({
 
   const placementBanner =
     placementMode === 'sam'
-      ? 'Click map to place SAM launcher'
+      ? 'Click the globe to place the SAM launcher'
       : placementMode === 'uas'
-        ? 'Click map to place UAS target'
+        ? 'Click the globe to place the UAS target'
         : null
 
   return (
     <div className="absolute inset-0 w-full h-full">
       <div
         ref={containerRef}
-        className="absolute inset-0 w-full h-full rounded-xl overflow-hidden border border-[var(--store-line)]"
+        className="absolute inset-0 w-full h-full rounded-xl overflow-hidden border border-[var(--lacquer-line)]"
         style={{
           background: SCENE_GROUND,
           cursor: placementMode ? 'crosshair' : undefined,
@@ -286,7 +295,7 @@ export default function OverlayGeometryMap({
       />
       {placementBanner ? (
         <div
-          className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-lg border border-[rgba(41,151,255,0.5)] bg-[var(--store-bg)]/90 px-3 py-1.5 text-[11px] font-mono text-[var(--wb-blue)] shadow-lg"
+          className="lg-glass pointer-events-none absolute left-3 top-[58px] z-10 px-3 py-1.5 text-xs text-[var(--store-ink)]"
           role="status"
         >
           {placementBanner}

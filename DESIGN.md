@@ -45,6 +45,8 @@ The shell (`components/layout/AppChrome.tsx`) gives every non-full-bleed page a 
 
 Do not use negative margins to escape main's padding. Full-bleed pages (map, spectrum) use `fullBleed` in their layout.
 
+Sticky elements inside the page: use `top-0`. Sticky offsets are measured inside the scroller's padding, so `top-0` already sits just below the glass top bar. A table that should own the viewport can use `components/defeat/useDockScroll.ts` (page scrolls until the table's toolbar docks under the bar, then the table scrolls).
+
 ## Controls
 
 - `.seg` segmented control (glass track, lit lens for the selection). Children are `<button aria-pressed>` or `aria-selected`. `.seg.accent` makes the selection blue. `.seg.sm` for dense toolbars. Use for any mutually exclusive choice: Table / Heat map, Blue / Red, view tabs.

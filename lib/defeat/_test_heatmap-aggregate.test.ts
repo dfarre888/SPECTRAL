@@ -69,7 +69,7 @@ describe('cell aggregation', () => {
 })
 
 describe('colour ramp', () => {
-  it('gets hotter as effectiveness rises', () => {
+  it('steps through a distinct colour per band, red low to green high', () => {
     const ramp = [10, 25, 40, 55, 70, 90].map(heatColor)
     expect(new Set(ramp).size).toBe(6)
   })
@@ -77,7 +77,7 @@ describe('colour ramp', () => {
   it('gives missing data a neutral, not a low-score colour', () => {
     expect(heatColor(null)).toBe('#15151f')
     expect(heatColor(null)).not.toBe(heatColor(0))
-    expect(heatTextColor(null)).toBe('#52525b')
+    expect(heatTextColor(null)).toBe('#86868b')
   })
 
   it('switches text colour for legibility on hot cells', () => {

@@ -16,6 +16,7 @@ import {
   type DefeatTypeFilter,
 } from '@/lib/defeat/defeat-types'
 import type { AntiDroneSystem, Platform } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 interface DefeatFilterSidebarProps {
   platforms: Platform[]
@@ -24,6 +25,7 @@ interface DefeatFilterSidebarProps {
   onCategoryPillChange: (pill: CategoryPill) => void
   defeatType: DefeatTypeFilter
   onDefeatTypeChange: (type: DefeatTypeFilter) => void
+  className?: string
 }
 
 export function DefeatFilterSidebar({
@@ -33,13 +35,18 @@ export function DefeatFilterSidebar({
   onCategoryPillChange,
   defeatType,
   onDefeatTypeChange,
+  className,
 }: DefeatFilterSidebarProps) {
   const rowPills = CATEGORY_PILLS.filter(
     (p) => p.id !== 'gnss_shortcut' && p.id !== 'cuas_shortcut',
   )
 
   return (
-    <StoreFilterSidebar>
+    // Never taller than the matrix beside it, so the sidebar cannot lengthen
+    // the page past the point where the matrix docks under the top bar.
+    // Sticky offsets are measured inside the page scroller's 72px top
+    // padding, so top-0 already clears the top bar.
+    <StoreFilterSidebar className={cn('lg:top-0 lg:max-h-[max(440px,calc(100vh_-_216px))]', className)}>
       <StoreFilterSection label="Platform rows">
         <nav className="space-y-0.5">
           {rowPills.map((pill) => (
@@ -74,13 +81,6 @@ export function DefeatFilterSidebar({
             />
           ))}
         </nav>
-      </StoreFilterSection>
-
-      <StoreFilterSection label="Matrix size">
-        <p className="text-xs font-mono store-text-body">
-          {platforms.filter((p) => matchesCategoryPill(p.category, categoryPill)).length}{' '}
-          platforms × {systems.length} systems
-        </p>
       </StoreFilterSection>
     </StoreFilterSidebar>
   )

@@ -97,23 +97,27 @@ export function coveragePct(cell: HeatCell): number {
 /**
  * Colour ramp for a median Pk.
  *
- * Sequential dark-to-hot, so higher effectiveness reads as hotter without
- * needing the legend. Null (no data) is deliberately a flat neutral rather than
- * a colour on the ramp — absence of data must not look like a low score.
+ * Same meaning as the table's Pk bands: red is a poor defeat, amber marginal,
+ * green effective. The heat map once ran a hot ramp where red meant HIGH Pk,
+ * the opposite of the table, so one screen contradicted the other. Null (no
+ * data) is a flat neutral rather than a colour on the ramp: absence of data
+ * must not look like a low score.
  */
 export function heatColor(medianPct: number | null): string {
   if (medianPct == null) return '#15151f'
-  if (medianPct < 15) return '#0b2f22'
-  if (medianPct < 30) return '#14532d'
-  if (medianPct < 45) return '#3f6212'
-  if (medianPct < 60) return '#854d0e'
-  if (medianPct < 75) return '#c2410c'
-  return '#991b1b'
+  if (medianPct < 15) return '#4c0d17'
+  if (medianPct < 30) return '#7a1a28'
+  if (medianPct < 45) return '#6b4a0c'
+  if (medianPct < 60) return '#8a6410'
+  if (medianPct < 75) return '#1f5c38'
+  return '#15803d'
 }
 
 export function heatTextColor(medianPct: number | null): string {
-  if (medianPct == null) return '#52525b'
-  return medianPct >= 45 ? '#fef3c7' : '#6ee7b7'
+  if (medianPct == null) return '#86868b'
+  if (medianPct >= 60) return '#dcfce7'
+  if (medianPct >= 30) return '#fef3c7'
+  return '#ffe4e6'
 }
 
 /** One-line explanation of what a cell is claiming, for the tooltip. */

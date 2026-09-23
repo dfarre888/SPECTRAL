@@ -66,12 +66,12 @@ export function LiveOperationsMap({
           </svg>
         )}
         <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-2 z-10">
-          <StatusBadge status="in-flight" />
-          <span className="tag lg-glass !rounded-full">
+          <StatusBadge status="in-flight" className="on-imagery !text-[#6EE7A0]" />
+          <span className="tag on-imagery">
             <MapPin className="w-3 h-3 text-[#22D3EE]" />
             <span className="font-mono">{context.geofenceCount}</span> geofences
           </span>
-          {recentPlanId && <span className="tag lg-glass !rounded-full">Plan linked</span>}
+          {recentPlanId && <span className="tag on-imagery">Plan linked</span>}
         </div>
       </div>
 

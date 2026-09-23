@@ -188,7 +188,7 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
           ) : (
             <>
               <span className="text-[11px] font-mono store-text-muted">v0.1.0</span>
-              <span className="text-[11px] font-mono text-[#F5B94A]">UNCLASSIFIED</span>
+              <span className="shell-marking text-[11px] font-mono text-[#F5B94A]">UNCLASSIFIED</span>
             </>
           )}
         </div>

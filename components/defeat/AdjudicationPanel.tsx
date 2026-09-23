@@ -12,7 +12,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { resolveCellValue } from '@/lib/defeat/cell-value'
+import { getCellColour, resolveCellValue } from '@/lib/defeat/cell-value'
+import { BAND_TEXT } from '@/components/defeat/MatrixCell'
 import { resolveSamKineticPct } from '@/lib/defeat/resolve-sam-pk'
 import { getPrimaryDefeatType } from '@/lib/defeat/defeat-types'
 import type {
@@ -56,8 +57,13 @@ function PctRow({
       )}
     >
       <span className="text-sm store-text-body">{label}</span>
-      <span className="font-mono text-sm text-white">
-        {pct != null ? `${pct}%` : '—'}
+      <span
+        className={cn(
+          'font-mono text-sm tabular-nums',
+          pct != null ? BAND_TEXT[getCellColour(pct)] : 'store-text-muted',
+        )}
+      >
+        {pct != null ? `${pct}%` : 'Not assessed'}
       </span>
     </div>
   )
@@ -130,7 +136,7 @@ export function AdjudicationPanel({
           {!effectiveness ? (
             <div className="store-panel-inner rounded-xl p-4">
               <p className="text-sm store-text-body">
-                No adjudication data — effectiveness not assessed for this pairing.
+                No adjudication data: effectiveness has not been assessed for this pairing.
               </p>
               <Link
                 href={`/platforms/${platform.id}`}
@@ -206,8 +212,8 @@ export function AdjudicationPanel({
                         key={i}
                         className="store-panel-inner rounded-xl px-3 py-2"
                       >
-                        <p className="text-xs font-mono text-[var(--wb-blue)] uppercase">
-                          {mod.type} — {mod.label}
+                        <p className="text-xs font-mono text-[var(--wb-blue)]">
+                          {mod.type}: {mod.label}
                         </p>
                         <p className="text-sm store-text-body mt-0.5">{mod.impact}</p>
                       </div>
@@ -228,8 +234,8 @@ export function AdjudicationPanel({
               )}
 
               {effectiveness.weather_limited && (
-                <p className="text-xs font-mono text-amber border border-amber/30 bg-amber/10 rounded px-3 py-2">
-                  Weather-limited — fog, dust, or smoke degrades effectiveness
+                <p className="text-[12px] text-[#FCD34D] border border-[rgba(251,191,36,0.35)] rounded-lg px-3 py-2">
+                  Weather-limited: fog, dust or smoke degrades effectiveness.
                 </p>
               )}
             </>
@@ -249,7 +255,7 @@ export function AdjudicationPanel({
               <Link href="/economics" className="text-[11px] font-mono text-[var(--wb-blue)] hover:underline mt-2 inline-block">Open economics workspace</Link>
             </div>
           )}
-          {/* PCM engine provenance — wired when pair/Pd available from live adjudication */}
+          {/* PCM engine provenance: wired when pair/Pd available from live adjudication */}
           <AdjudicationProvenancePanel pd={provenance.pd} pair={provenance.pair} />
         </div>
       </SheetContent>

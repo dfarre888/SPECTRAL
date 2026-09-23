@@ -1,13 +1,15 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
+import { ScrollArea } from '@/components/ui/ScrollArea'
+import { useDockScroll } from '@/components/defeat/useDockScroll'
 import {
   getSamSystemGroup,
   isSamSystemId,
   type SamSystemGroup,
 } from '@/lib/defeat/sam-matrix-bridge'
 import type { DefeatTypeFilter } from '@/lib/defeat/defeat-types'
-import { resolveCellValue } from '@/lib/defeat/cell-value'
+import { getCellColour, resolveCellValue } from '@/lib/defeat/cell-value'
 import { resolveSamKineticPct } from '@/lib/defeat/resolve-sam-pk'
 import type {
   AccreditedDefeatPkRow,
@@ -15,15 +17,12 @@ import type {
   DefeatEffectiveness,
   Platform,
 } from '@/lib/types'
-import { cn } from '@/lib/utils'
 import { matchesCategoryPill, type CategoryPill } from '@/lib/platforms/constants'
 import {
   THREAT_CLASSES,
   aggregateCell,
   coveragePct,
   describeCell,
-  heatColor,
-  heatTextColor,
   type HeatSample,
 } from '@/lib/defeat/heatmap-aggregate'
 
@@ -53,7 +52,19 @@ interface DefeatHeatmapProps {
   accreditedPkMap?: Record<string, AccreditedDefeatPkRow>
   computedSamPkMap?: Record<string, number>
   samOnly?: boolean
+  /** CSS height of the whole frame. Defaults to the docked-viewport height. */
+  height?: string
+  /** Hand wheel input to the page until the frame is docked. */
+  dockScroll?: boolean
 }
+
+const HEATMAP_FRAME_HEIGHT = 'max(440px, calc(100vh - 216px))'
+
+const HEAT_EXPLAINER =
+  'Each tile is the median across the platforms in that class, so one outlier cannot move it. ' +
+  'Immune platforms are left out of the median and counted separately: scoring them zero would ' +
+  'read as a weak effector rather than one that cannot apply.'
+const EFFECTOR_COL_PX = 300
 
 function sortSystems(systems: AntiDroneSystem[]): AntiDroneSystem[] {
   return [...systems].sort((a, b) => {
@@ -65,11 +76,12 @@ function sortSystems(systems: AntiDroneSystem[]): AntiDroneSystem[] {
   })
 }
 
-function confidenceDot(confidence: string | undefined): string {
-  if (confidence === 'high') return '#06B6D4'
-  if (confidence === 'estimated') return '#EAB308'
-  return '#6b7280'
-}
+const EFFECT_MODES: { id: EffectMode; label: string }[] = [
+  { id: 'kinetic', label: 'Kinetic' },
+  { id: 'rf_jamming', label: 'RF jamming' },
+  { id: 'dew', label: 'DEW' },
+  { id: 'swarm', label: 'Swarm' },
+]
 
 const GROUP_PILLS: { id: SystemGroupFilter; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -81,6 +93,28 @@ const GROUP_PILLS: { id: SystemGroupFilter; label: string }[] = [
   { id: 'other', label: 'Other' },
 ]
 
+/**
+ * Tile colour for a median Pk. Same bands and meaning as the table view
+ * (lib/defeat/cell-value getCellColour): high Pk is green, low is red, so a
+ * colour never means the opposite thing when you switch views. Within the
+ * outer bands the tint deepens toward the extreme. No data is a flat neutral:
+ * absence of an assessment must not look like a low score.
+ */
+function heatTile(medianPct: number | null): { bg: string; line: string; ink: string } {
+  if (medianPct == null) {
+    return { bg: 'rgba(255,255,255,0.025)', line: 'rgba(255,255,255,0.05)', ink: 'rgba(255,255,255,0.24)' }
+  }
+  const band = getCellColour(medianPct)
+  if (band === 'green') {
+    const a = 0.1 + (Math.min(100, medianPct) - 70) / 30 * 0.16
+    return { bg: `rgba(74,222,128,${a.toFixed(3)})`, line: 'rgba(74,222,128,0.22)', ink: '#86EFAC' }
+  }
+  if (band === 'red') {
+    const a = 0.1 + (30 - Math.max(0, medianPct)) / 30 * 0.16
+    return { bg: `rgba(255,92,110,${a.toFixed(3)})`, line: 'rgba(255,92,110,0.24)', ink: '#FF9AA6' }
+  }
+  return { bg: 'rgba(251,191,36,0.12)', line: 'rgba(251,191,36,0.22)', ink: '#FCD34D' }
+}
 
 function effectModeToFilter(mode: EffectMode): DefeatTypeFilter {
   if (mode === 'kinetic') return 'Kinetic'
@@ -124,15 +158,18 @@ export function DefeatHeatmap({
   platforms,
   systems,
   effectiveness,
-  defeatTypeFilter,
   onCellSelect,
-  accreditedPkMap,
   computedSamPkMap,
   samOnly = false,
+  height = HEATMAP_FRAME_HEIGHT,
+  dockScroll = false,
 }: DefeatHeatmapProps) {
   const [effectMode, setEffectMode] = useState<EffectMode>('kinetic')
   const [systemGroup, setSystemGroup] = useState<SystemGroupFilter>('all')
   const [samOnlyFilter, setSamOnlyFilter] = useState(Boolean(samOnly))
+  const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
+
+  useDockScroll(scrollEl, dockScroll)
 
   const filteredSystems = useMemo(() => {
     let list = systems
@@ -183,87 +220,98 @@ export function DefeatHeatmap({
     }
   }, [classPlatforms, cellMap, effectMode, computedSamPkMap])
 
+  const controls = (
+    <div className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b border-[rgba(255,255,255,0.08)] px-4 py-3">
+      <div className="seg sm" role="group" aria-label="Effect">
+        {EFFECT_MODES.map((mode) => (
+          <button
+            key={mode.id}
+            type="button"
+            aria-pressed={effectMode === mode.id}
+            onClick={() => setEffectMode(mode.id)}
+          >
+            {mode.label}
+          </button>
+        ))}
+      </div>
+      <button
+        type="button"
+        aria-pressed={samOnlyFilter}
+        onClick={() => setSamOnlyFilter((v) => !v)}
+        className="btn-e sm"
+      >
+        SAM only
+      </button>
+      <div className="flex items-center gap-2">
+        <span className="text-[12px] store-text-muted">SAM class</span>
+        <div className="seg sm" role="group" aria-label="SAM class">
+          {GROUP_PILLS.map((pill) => (
+            <button
+              key={pill.id}
+              type="button"
+              aria-pressed={systemGroup === pill.id}
+              onClick={() => setSystemGroup(pill.id)}
+            >
+              {pill.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+
   if (platforms.length === 0 || filteredSystems.length === 0) {
     return (
-      <div className="store-panel rounded-2xl p-12 text-center">
-        <p className="store-text-body text-sm">No data matches current filters.</p>
+      <div className="dt-frame flex flex-col" style={{ minHeight: 280 }}>
+        {controls}
+        <div className="grid flex-1 place-items-center p-12 text-center">
+          <p className="text-[13px] store-text-body">No effectors match these filters.</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap gap-2">
-        {(['kinetic', 'rf_jamming', 'dew', 'swarm'] as EffectMode[]).map((mode) => (
-          <button
-            key={mode}
-            type="button"
-            onClick={() => setEffectMode(mode)}
-            className={cn(
-              'rounded-lg px-3 py-1 text-[11px] font-mono uppercase border',
-              effectMode === mode
-                ? 'bg-[#F97316] border-[#F97316] text-white'
-                : 'border-[var(--store-line)] store-text-muted',
-            )}
-          >
-            {mode.replace(/_/g, ' ')}
-          </button>
-        ))}
-      </div>
-      <div className="flex flex-wrap gap-2 items-center">
-      <button
-            type="button"
-            onClick={() => setSamOnlyFilter((v) => !v)}
-            className={cn(
-              'rounded-lg px-3 py-1 text-[11px] font-mono border',
-              samOnlyFilter
-                ? 'bg-cyan/20 border-cyan text-cyan'
-                : 'border-[var(--store-line)] store-text-muted',
-            )}
-          >
-            SAM only
-          </button>
-        {GROUP_PILLS.map((pill) => (
-          <button
-            key={pill.id}
-            type="button"
-            onClick={() => setSystemGroup(pill.id)}
-            className={cn(
-              'rounded-lg px-3 py-1 text-[11px] font-mono border',
-              systemGroup === pill.id
-                ? 'bg-[#F97316] border-[#F97316] text-white'
-                : 'border-[var(--store-line)] store-text-muted',
-            )}
-          >
-            {pill.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="overflow-auto max-h-[calc(100vh-260px)] rounded-xl border border-[var(--store-line)]">
-        <table className="border-collapse w-full" style={{ tableLayout: 'fixed' }}>
+    <div className="dt-frame flex flex-col" style={{ height }}>
+      {controls}
+      <ScrollArea
+        frame={false}
+        height="100%"
+        className="flex-1 min-h-0 [&>.edge-fade.l]:left-[var(--pin-w)]"
+        style={{ '--pin-w': `${EFFECTOR_COL_PX}px` } as CSSProperties}
+        scrollRef={(el) => {
+          if (el) setScrollEl((prev) => (prev === el ? prev : el))
+        }}
+      >
+        <table
+          className="dt"
+          style={{ tableLayout: 'fixed', minWidth: EFFECTOR_COL_PX + THREAT_CLASSES.length * 96 }}
+          aria-label="Defeat heat map, effector by threat class, median Pk"
+        >
           <colgroup>
-            <col style={{ width: 260 }} />
+            <col style={{ width: EFFECTOR_COL_PX }} />
             {THREAT_CLASSES.map((c) => (
               <col key={c.id} />
             ))}
           </colgroup>
           <thead>
             <tr>
-              <th className="sticky left-0 top-0 z-40 bg-[var(--store-surface)] border border-[var(--store-line)] px-3 py-2 text-left text-[11px] uppercase store-text-muted">
-                Effector
+              <th scope="col" className="stick !align-bottom">
+                <span className="flex items-end justify-between gap-3">
+                  <span>Effector</span>
+                  <span className="text-[11.5px] font-normal store-text-muted">Origin</span>
+                </span>
               </th>
               {THREAT_CLASSES.map((c) => (
                 <th
                   key={c.id}
-                  className="sticky top-0 z-30 bg-[var(--store-surface)] border border-[var(--store-line)] px-2 py-2 text-center"
-                  title={c.label}
+                  scope="col"
+                  className="!whitespace-normal !px-2 !align-bottom text-center"
+                  title={`${c.label}: ${classCounts[c.id] ?? 0} platforms`}
                 >
-                  <span className="block text-[11px] font-semibold text-[var(--store-ink)] leading-tight">
-                    {c.label}
-                  </span>
-                  <span className="block text-[11px] font-mono store-text-muted">
-                    {classCounts[c.id] ?? 0} platforms
+                  <span className="block leading-[15px]">{c.label}</span>
+                  <span className="mt-[3px] block text-[11px] font-normal store-text-muted">
+                    <span className="font-mono tabular-nums">{classCounts[c.id] ?? 0}</span> platforms
                   </span>
                 </th>
               ))}
@@ -272,36 +320,50 @@ export function DefeatHeatmap({
           <tbody>
             {filteredSystems.map((system) => (
               <tr key={system.id}>
-                <td className="sticky left-0 z-20 bg-[var(--store-bg)] border border-[var(--store-line)] px-3 py-2 overflow-hidden">
-                  <span className="text-xs text-[var(--store-ink)] truncate block" title={system.name}>
-                    {system.name}
-                  </span>
-                  <span className="text-[11px] font-mono store-text-muted truncate block">
-                    {system.country}
+                <td className="stick !py-0">
+                  <span className="flex h-10 items-center gap-3">
+                    <span className="primary min-w-0 flex-1 truncate text-[13px]" title={system.name}>
+                      {system.name}
+                    </span>
+                    {system.country ? (
+                      <span
+                        className="max-w-[96px] shrink-0 truncate text-right text-[11.5px] store-text-muted"
+                        title={system.country}
+                      >
+                        {system.country}
+                      </span>
+                    ) : null}
                   </span>
                 </td>
                 {THREAT_CLASSES.map((c) => {
                   const cell = cellFor(system, c.id)
                   const cov = coveragePct(cell)
+                  const tile = heatTile(cell.medianPct)
+                  const label = describeCell(cell, system.name, c.label)
                   return (
-                    <td key={c.id} className="border border-[var(--store-line)] p-0">
+                    <td key={c.id} className="!px-[3px] !py-[3px]">
                       <button
                         type="button"
-                        title={describeCell(cell, system.name, c.label)}
+                        title={label}
+                        aria-label={label}
                         onClick={() => {
                           const first = classPlatforms[c.id]?.[0]
                           if (first) onCellSelect(first.id, system.id)
                         }}
-                        className="relative w-full min-h-[46px] flex flex-col items-center justify-center font-mono hover:ring-1 hover:ring-orange/40"
-                        style={{ background: heatColor(cell.medianPct), color: heatTextColor(cell.medianPct) }}
+                        className="relative flex h-[34px] w-full items-center justify-center overflow-hidden rounded-[7px] font-mono text-[13px] font-medium tabular-nums transition-[filter] duration-150 hover:brightness-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--wb-blue)]"
+                        style={{ background: tile.bg, color: tile.ink, boxShadow: `inset 0 0 0 1px ${tile.line}` }}
                       >
-                        <span className="text-[13px] font-semibold">
-                          {cell.medianPct == null ? '—' : `${cell.medianPct}%`}
-                        </span>
-                        {/* Coverage bar: how much of the class this median rests on. */}
-                        <span className="absolute bottom-0 left-0 h-[2px] bg-current opacity-50" style={{ width: `${cov}%` }} />
+                        {cell.medianPct == null ? '–' : `${cell.medianPct}%`}
+                        {/* Coverage: how much of the class this median rests on. */}
+                        {cell.medianPct != null ? (
+                          <span
+                            aria-hidden
+                            className="absolute bottom-[3px] left-[6px] h-[2px] rounded-full bg-current opacity-40"
+                            style={{ width: `calc((100% - 12px) * ${cov / 100})` }}
+                          />
+                        ) : null}
                         {cell.immuneCount > 0 && (
-                          <span className="absolute top-0.5 right-1 text-[8px] opacity-70">
+                          <span className="absolute right-[6px] top-[3px] text-[11px] font-normal leading-none text-[var(--wb-red)]">
                             {cell.immuneCount}✕
                           </span>
                         )}
@@ -313,29 +375,33 @@ export function DefeatHeatmap({
             ))}
           </tbody>
         </table>
-      </div>
+      </ScrollArea>
 
-      <div className="text-[11px] font-mono store-text-muted space-y-1">
-        <p className="flex flex-wrap gap-3 items-center">
-          <span className="store-text-muted">Median Pk</span>
-          {[10, 25, 40, 55, 70, 90].map((v) => (
-            <span key={v} className="inline-flex items-center gap-1">
-              <span className="inline-block w-3 h-3 rounded-sm" style={{ background: heatColor(v) }} />
-              {v < 15 ? '<15' : v >= 75 ? '75+' : `${v}`}%
-            </span>
-          ))}
-          <span className="inline-flex items-center gap-1">
-            <span className="inline-block w-3 h-3 rounded-sm" style={{ background: heatColor(null) }} />
-            no data
-          </span>
-          <span>N✕ = immune in class</span>
+      <div className="shrink-0 space-y-1 border-t border-[rgba(255,255,255,0.08)] px-4 py-2.5 text-[11.5px] store-text-muted">
+        <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <span title={HEAT_EXPLAINER}>Median Pk</span>
+          {[
+            { v: 85, label: '>70%' },
+            { v: 50, label: '31 to 70%' },
+            { v: 15, label: '≤30%' },
+            { v: null, label: 'No data' },
+          ].map(({ v, label }) => {
+            const t = heatTile(v)
+            return (
+              <span key={label} className="inline-flex items-center gap-1.5">
+                <span
+                  className="inline-block h-3 w-5 rounded-[3px]"
+                  style={{ background: t.bg, boxShadow: `inset 0 0 0 1px ${t.line}` }}
+                />
+                <span className={v == null ? undefined : 'font-mono'}>{label}</span>
+              </span>
+            )
+          })}
+          <span><span className="text-[var(--wb-red)]">N✕</span> immune in class</span>
+          <span>Bar: share of the class assessed</span>
         </p>
-        <p>
-          Each cell is the median across platforms in that class, so one outlier cannot move it.
-          Immune platforms are excluded from the median and counted separately — scoring them
-          zero would read as a weak effector rather than one that cannot apply. The bar under each
-          value shows how much of the class carries an assessment.
-        </p>
+        {/* On short screens the explainer yields its line to the grid; it stays on the key's tooltip. */}
+        <p className="max-w-[110ch] [@media(max-height:820px)]:hidden">{HEAT_EXPLAINER}</p>
       </div>
     </div>
   )

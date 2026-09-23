@@ -171,30 +171,31 @@ export function GuidedTour({ tour, open, onClose, onAction }: GuidedTourProps) {
 
       <div
         ref={calloutRef}
-        className="absolute store-panel rounded-2xl border border-[rgba(41,151,255,0.5)] shadow-2xl p-4"
+        className="absolute glass-popover !rounded-[18px] p-5"
         style={{ top: pos.top, left: pos.left, width: CALLOUT_W }}
       >
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
+          <p className="text-[12px] font-medium text-[var(--wb-blue)]">
             {tour.label}
           </p>
-          <p className="text-[11px] font-mono store-text-muted tabular-nums">
+          <p className="text-[12px] font-mono store-text-muted tabular-nums">
             {index + 1} / {tour.steps.length}
           </p>
         </div>
 
-        <h2 className="store-display text-sm font-semibold text-white">{step.title}</h2>
-        <p className="text-xs store-text-body leading-relaxed mt-1.5">{step.body}</p>
+        <h2 className="store-display text-[16px] font-semibold text-[var(--store-ink)]">{step.title}</h2>
+        <p className="text-[13px] store-text-body leading-relaxed mt-1.5">{step.body}</p>
 
         {step.say && (
-          <p className="mt-3 pl-3 border-l-2 border-[var(--wb-blue)] text-[11px] italic store-text-body">
+          <p className="mt-3 rounded-xl store-panel-inner px-3 py-2.5 text-[12.5px] leading-relaxed store-text-body">
+            <span className="block text-[11px] store-text-muted mb-0.5">Say</span>
             “{step.say}”
           </p>
         )}
 
         {settling && (
-          <p className="mt-3 text-[11px] font-mono store-text-muted flex items-center gap-1.5">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--store-accent)] animate-pulse" />
+          <p className="mt-3 text-[12px] store-text-muted flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--store-accent)] animate-pulse motion-reduce:animate-none" />
             rendering view…
           </p>
         )}
@@ -203,7 +204,7 @@ export function GuidedTour({ tour, open, onClose, onAction }: GuidedTourProps) {
           <button
             type="button"
             onClick={onClose}
-            className="text-[11px] font-mono store-text-muted hover:text-white"
+            className="text-[13px] store-text-muted hover:text-[var(--store-ink)]"
           >
             Exit
           </button>
@@ -212,19 +213,14 @@ export function GuidedTour({ tour, open, onClose, onAction }: GuidedTourProps) {
               type="button"
               onClick={back}
               disabled={index === 0}
-              className={clsx(
-                'px-2.5 py-1 rounded-lg text-[11px] font-mono border store-panel-inner',
-                index === 0
-                  ? 'opacity-40 cursor-not-allowed store-text-muted'
-                  : 'store-text-body hover:border-[rgba(41,151,255,0.5)]',
-              )}
+              className={clsx('btn-glass !min-h-[30px] !px-3 !text-[12px]', index === 0 && 'opacity-40 cursor-not-allowed')}
             >
               Back
             </button>
             <button
               type="button"
               onClick={next}
-              className="px-3 py-1 rounded-lg text-[11px] font-mono font-semibold bg-[var(--wb-blue)] text-white hover:opacity-90"
+              className="btn-glass primary !min-h-[30px] !px-4 !text-[12px]"
             >
               {isLast ? 'Done' : 'Next'}
             </button>

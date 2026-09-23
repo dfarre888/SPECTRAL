@@ -13,7 +13,7 @@ export function StoreFilterSidebar({ children, className }: StoreFilterSidebarPr
   return (
     <aside
       className={cn(
-        'store-panel rounded-2xl p-4 lg:sticky lg:top-[68px] hidden lg:block lg:max-h-[calc(100vh-100px)] lg:overflow-y-auto',
+        'store-panel rounded-2xl p-4 lg:sticky lg:top-0 hidden lg:block lg:max-h-[calc(100vh-130px)] lg:overflow-y-auto',
         className,
       )}
     >

@@ -4,15 +4,7 @@ interface ImmuneBadgeProps {
   className?: string
 }
 
+/** Status label: text plus hairline (.tag), never a filled slab. */
 export function ImmuneBadge({ className }: ImmuneBadgeProps) {
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center px-1.5 py-0.5 rounded border-2 border-red text-red font-mono text-[11px] font-bold tracking-[0.02em] bg-red/10',
-        className
-      )}
-    >
-      IMMUNE
-    </span>
-  )
+  return <span className={cn('tag red', className)}>Immune</span>
 }

@@ -37,6 +37,9 @@ export function ScrollArea({
 }: ScrollAreaProps) {
   const ref = useRef<HTMLDivElement | null>(null)
   const [edges, setEdges] = useState({ l: false, r: false, b: false })
+  // Width of a pinned leading column, so the left fade starts where
+  // content actually slides under it rather than on top of the pinned names.
+  const [pinW, setPinW] = useState(0)
 
   const measure = useCallback(() => {
     const el = ref.current
@@ -45,6 +48,9 @@ export function ScrollArea({
     const r = el.scrollLeft + el.clientWidth < el.scrollWidth - 2
     const b = el.scrollTop + el.clientHeight < el.scrollHeight - 2
     setEdges((prev) => (prev.l === l && prev.r === r && prev.b === b ? prev : { l, r, b }))
+    const pin = el.querySelector<HTMLElement>('thead .stick, [data-pin-left]')
+    const w = pin ? pin.offsetWidth : 0
+    setPinW((prev) => (prev === w ? prev : w))
   }, [])
 
   useEffect(() => {
@@ -73,7 +79,7 @@ export function ScrollArea({
       >
         {children}
       </div>
-      <div aria-hidden className={cn('edge-fade l', edges.l && 'on')} />
+      <div aria-hidden className={cn('edge-fade l', edges.l && 'on')} style={pinW ? { left: pinW } : undefined} />
       <div aria-hidden className={cn('edge-fade r', edges.r && 'on')} />
       <div aria-hidden className={cn('edge-fade b', edges.b && 'on')} />
     </div>

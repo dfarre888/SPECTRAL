@@ -1,9 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, type ReactNode } from 'react'
-import { Download, Grid3x3, Table2, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { X } from 'lucide-react'
 
 type MatrixView = 'table' | 'heatmap'
 
@@ -51,63 +49,47 @@ export function DefeatMatrixFullscreen({
   if (!open) return null
 
   return (
+    // Starts below the 20px classification banner so the marking stays on screen.
     <div
-      className="fixed inset-0 z-[100] flex flex-col bg-[var(--store-bg)]"
+      className="fixed inset-x-0 bottom-0 top-5 z-[100] flex flex-col bg-black"
       role="dialog"
       aria-modal="true"
-      aria-label="Effectiveness matrix full screen"
+      aria-label="Defeat matrix full screen"
     >
-      <div className="shrink-0 border-b border-[var(--store-line)] bg-[var(--store-surface)] px-4 py-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="relative shrink-0 border-b border-[var(--glass-line)] bg-[rgba(10,10,12,0.72)] px-4 backdrop-blur-xl">
+        <div className="flex h-14 items-center gap-4">
           <div className="min-w-0">
-            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
-              Effectiveness Matrix
-            </p>
-            <p className="text-xs font-mono store-text-muted mt-0.5">
-              {platformCount} platforms × {systemCount} defeat systems
+            <p className="text-[14px] font-semibold text-[var(--store-ink)] leading-tight">Defeat Matrix</p>
+            <p className="mt-0.5 font-mono text-[11.5px] tabular-nums store-text-muted">
+              {platformCount} platforms × {systemCount} effectors
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex rounded-lg border border-[var(--store-line)] overflow-hidden">
-              <button
-                type="button"
-                onClick={() => onViewChange('table')}
-                className={cn(
-                  'px-3 py-1.5 text-xs font-mono flex items-center gap-1',
-                  view === 'table' ? 'bg-[#F97316] text-white' : 'store-text-muted',
-                )}
-              >
-                <Table2 className="h-3.5 w-3.5" /> Table
-              </button>
-              <button
-                type="button"
-                onClick={() => onViewChange('heatmap')}
-                className={cn(
-                  'px-3 py-1.5 text-xs font-mono flex items-center gap-1',
-                  view === 'heatmap' ? 'bg-[#F97316] text-white' : 'store-text-muted',
-                )}
-              >
-                <Grid3x3 className="h-3.5 w-3.5" /> Heat map
-              </button>
-            </div>
-            <Button variant="outline" size="sm" onClick={onExport}>
-              <Download className="h-4 w-4" /> Export CSV
-            </Button>
+          <div className="seg sm" role="group" aria-label="Matrix view">
+            <button type="button" aria-pressed={view === 'table'} onClick={() => onViewChange('table')}>
+              Table
+            </button>
+            <button type="button" aria-pressed={view === 'heatmap'} onClick={() => onViewChange('heatmap')}>
+              Heat map
+            </button>
+          </div>
+          <div className="ml-auto flex items-center gap-4">
+            <button type="button" onClick={onExport} className="fc-action">
+              Export CSV
+            </button>
             <button
               type="button"
               onClick={handleClose}
-              className="inline-flex items-center justify-center rounded-lg border border-[var(--store-line)] p-2 text-white hover:bg-[var(--store-surface-2)] transition-colors"
+              className="glass-icon-btn"
               aria-label="Close full screen"
+              title="Close (Esc)"
             >
-              <X className="h-5 w-5" />
+              <X className="h-[18px] w-[18px]" />
             </button>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-auto p-4">
-        <div className="store-panel rounded-2xl overflow-hidden min-h-full">{children}</div>
-      </div>
+      <div className="min-h-0 flex-1 p-4">{children}</div>
     </div>
   )
 }

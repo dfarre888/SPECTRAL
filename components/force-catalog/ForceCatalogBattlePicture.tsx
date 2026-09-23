@@ -19,10 +19,15 @@ import {
 } from '@/lib/force-catalog/battle-picture-model'
 
 function tagClass(band: AssessmentBand): string {
-  if (band === 'OVERMATCH') return 'fc-tag over'
-  if (band === 'UNDERDOG') return 'fc-tag under'
-  if (band === 'CONTESTED') return 'fc-tag contested'
-  return 'fc-tag'
+  if (band === 'OVERMATCH') return 'tag blue'
+  if (band === 'UNDERDOG') return 'tag red'
+  if (band === 'CONTESTED') return 'tag amber'
+  return 'tag'
+}
+
+function bandLabel(band: AssessmentBand): string {
+  const t = band.toLowerCase()
+  return t.charAt(0).toUpperCase() + t.slice(1)
 }
 
 function splitLabel(label: string): [string, string | null] {
@@ -55,13 +60,15 @@ export function ForceCatalogBattlePicture({
 
   return (
     <div data-testid="force-catalog-battle">
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-1 py-3 border-b fc-hair" role="group" aria-label="Scenario">
-        <span className="text-[11px] store-text-muted mr-1">Scenario</span>
-        {SCENARIO_PRESETS.map((p) => (
-          <button key={p.id} type="button" aria-pressed={activePreset === p.id} onClick={() => onApplyPreset(p.id)} className="fc-chip">{p.label}</button>
-        ))}
-        {activePreset ? <button type="button" onClick={onClearPreset} className="fc-chip">Clear</button> : null}
-        {customFiltersActive ? <span className="text-[11px] font-mono store-text-muted ml-auto">custom filters active</span> : null}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pb-4 border-b fc-hair">
+        <span className="text-[13px] store-text-muted">Scenario</span>
+        <div className="seg sm" role="group" aria-label="Scenario">
+          {SCENARIO_PRESETS.map((p) => (
+            <button key={p.id} type="button" aria-pressed={activePreset === p.id} onClick={() => onApplyPreset(p.id)}>{p.label}</button>
+          ))}
+        </div>
+        {activePreset ? <button type="button" onClick={onClearPreset} className="fc-action">Clear scenario</button> : null}
+        {customFiltersActive ? <span className="tag ml-auto">Custom filters active</span> : null}
       </div>
 
       <section className="pt-7 pb-2">
@@ -83,12 +90,12 @@ export function ForceCatalogBattlePicture({
                 </span>
                 <span className="fc-bar red relative"><i style={{ width: rw }} /><b className="absolute -top-[7px] text-[12px] font-mono text-[var(--wb-red)]" style={{ right: `min(calc(${rw} + 8px), calc(100% - 22px))` }}>{row.redCount}</b></span>
                 <span className="fc-bar blue relative"><i style={{ width: bw }} /><b className="absolute -top-[7px] text-[12px] font-mono text-[var(--wb-blue)]" style={{ left: `min(calc(${bw} + 8px), calc(100% - 22px))` }}>{row.blueCount}</b></span>
-                <span className="justify-self-end"><span className={tagClass(row.band)}>{row.band}</span></span>
+                <span className="justify-self-end"><span className={tagClass(row.band)}>{bandLabel(row.band)}</span></span>
               </button>
             )
           })}
           <span />
-          <span className="col-span-2 flex justify-between text-[11px] font-mono store-text-muted pt-1.5"><span>Red {max}</span><span className="store-text-body">0</span><span>Blue {max}</span></span>
+          <span className="col-span-2 flex justify-between text-[12px] font-mono store-text-muted pt-1.5"><span>Red {max}</span><span className="store-text-body">0</span><span>Blue {max}</span></span>
           <span />
         </div>
       </section>
@@ -108,7 +115,7 @@ export function ForceCatalogBattlePicture({
 
       <section className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-10 py-7">
         <div>
-          <h2 className="text-[18px] store-display text-[var(--store-ink)] font-semibold tracking-[-0.01em] m-0 mb-3">Commander's assessment</h2>
+          <h2 className="text-[18px] store-display text-[var(--store-ink)] font-semibold tracking-[-0.01em] m-0 mb-3">Commander&rsquo;s assessment</h2>
           <p className="text-[15px] leading-[1.55] text-[var(--store-ink)] max-w-[62ch] whitespace-pre-wrap text-pretty m-0">{view.assessText}</p>
           <p className="text-[13px] store-text-body max-w-[62ch] text-pretty mt-3">
             Track reach is {instruments.track.reachPct}% of Blue on one picture and {instruments.denied.reachPct}% once GNSS time is lost.
@@ -116,14 +123,14 @@ export function ForceCatalogBattlePicture({
           </p>
         </div>
         <div className="lg:border-l fc-hair lg:pl-7">
-          <div className="text-[11px] store-text-muted">Biggest single point of failure</div>
+          <div className="text-[12px] store-text-muted">Biggest single point of failure</div>
           <div className="text-[13px] text-[var(--store-ink)] mt-0.5 mb-3.5">{instruments.spof ? `${instruments.spof.short_name} · ${instruments.spof.strandedCount} units stranded without it` : 'No single gateway carries the picture'}</div>
-          <div className="text-[11px] store-text-muted">Nets that split on variant</div>
+          <div className="text-[12px] store-text-muted">Nets that split on variant</div>
           <div className="text-[13px] text-[var(--store-ink)] mt-0.5 mb-3.5">{instruments.variantSplits.length ? instruments.variantSplits.map((v) => `${v.standard} · ${v.islands} islands`).join(', ') : 'None recorded (variants unknown are assumed compatible)'}</div>
-          <div className="text-[11px] store-text-muted">Data gaps that distort this</div>
+          <div className="text-[12px] store-text-muted">Data gaps that distort this</div>
           <div className="text-[13px] text-[var(--store-ink)] mt-0.5 mb-3.5">{gaps} platforms without sensor fit · {thin} classes on thin OSINT</div>
-          <div className="text-[11px] store-text-muted">Basis</div>
-          <div className="text-[11px] font-mono store-text-muted mt-0.5">Open-source OrBat · manufacturer pages · interop engine, not a forecast</div>
+          <div className="text-[12px] store-text-muted">Basis</div>
+          <div className="text-[12px] store-text-muted mt-0.5">Open-source OrBat · manufacturer pages · interop engine, not a forecast</div>
         </div>
       </section>
     </div>

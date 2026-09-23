@@ -4,7 +4,8 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import type { ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
-import { ConfidenceBadge } from '@/components/platforms/ConfidenceBadge'
+import { ScrollArea } from '@/components/ui/ScrollArea'
+import { ConfidenceTag } from '@/components/force/ConfidenceTag'
 import { variantLabel } from '@/lib/coalition/link-variants'
 import type { InteropResult } from '@/lib/coalition/interop'
 import type { CoverageRow } from '@/lib/force-catalog/coverage-model'
@@ -19,8 +20,8 @@ export type InspectorMode =
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-1.5">
-      <h3 className="text-[11px] tracking-[0.02em] store-text-muted">{title}</h3>
+    <div className="space-y-2">
+      <h3 className="text-[12px] font-medium store-text-muted">{title}</h3>
       {children}
     </div>
   )
@@ -58,22 +59,23 @@ export function Inspector({
   const [gnssDenied, setGnssDenied] = useState(false)
 
   return (
-    <aside className="bg-[var(--store-bg)] flex flex-col min-h-0" aria-label="Inspector">
-      <header className="flex items-center gap-2 px-3 py-2 border-b store-line">
+    <aside className="store-panel flex h-full min-h-0 flex-col overflow-hidden rounded-2xl" aria-label="Inspector">
+      <header className="flex min-h-12 items-center gap-2 border-b border-[var(--store-line)] px-4">
         <span className="wb-pane-title">
           {mode?.type === 'platform' ? 'Platform' : mode?.type === 'net' ? 'Comms net' : mode?.type === 'capability' ? 'Capability' : 'Inspector'}
         </span>
         {mode ? (
-          <button type="button" onClick={onClose} aria-label="Close inspector" className="ml-auto h-7 w-7 inline-flex items-center justify-center rounded store-text-muted hover:store-text-body hover:bg-[var(--store-surface-2)]">
+          <button type="button" onClick={onClose} aria-label="Close inspector" className="glass-icon-btn ml-auto !h-8 !w-8">
             <X className="h-3.5 w-3.5" aria-hidden />
           </button>
         ) : null}
       </header>
 
-      <div className="flex-1 overflow-y-auto min-h-0 p-3 space-y-4">
+      <ScrollArea frame={false} height="100%" className="min-h-0 flex-1">
+      <div className="space-y-5 p-4">
         {!mode ? (
-          <p className="text-[11px] font-mono store-text-muted text-pretty pt-6 text-center">
-            Click a platform, a coverage row or a comms net.
+          <p className="pt-10 text-center text-[13px] leading-relaxed store-text-muted text-pretty">
+            Click a platform, a coverage row or a comms net to inspect it here.
           </p>
         ) : null}
 
@@ -85,24 +87,24 @@ export function Inspector({
               <div className="space-y-1">
                 <div className="flex items-start gap-2">
                   <div className="min-w-0">
-                    <h2 className="text-[15px] store-display text-[var(--store-ink)] leading-tight text-balance">{p.short_name}</h2>
-                    <p className="text-[11px] font-mono store-text-muted truncate">{p.designation} · {p.nation_code} · {p.force_side}</p>
+                    <h2 className="text-[16px] font-semibold store-display text-[var(--store-ink)] leading-tight text-balance">{p.short_name}</h2>
+                    <p className="mt-0.5 text-[12px] font-mono store-text-muted truncate">{p.designation} · {p.nation_code} · {p.force_side}</p>
                   </div>
                   <div className="ml-auto shrink-0 flex items-center gap-1.5">
-                    <ConfidenceBadge confidence={p.data_confidence} />
+                    <ConfidenceTag confidence={p.data_confidence} />
                     <BenchButton id={p.id} benched={benched.has(p.id)} onBench={onBench} onRestore={onRestore} />
                   </div>
                 </div>
-                <p className="text-[11px] font-mono store-text-muted">Best tier: <span className="store-text-body">{tier}</span></p>
+                <p className="text-[12px] store-text-muted">Best tier <span className="font-mono text-[var(--store-ink)]">{tier}</span></p>
               </div>
 
               <Section title={`Sensors · ${p.sensors.length || 'none listed'}`}>
-                {p.sensors.length === 0 ? <p className="text-[11px] font-mono store-text-muted">No sensors in the open-source dossier (OSINT gap), not proof of none.</p> : null}
+                {p.sensors.length === 0 ? <p className="text-[12px] font-mono store-text-muted">No sensors in the open-source dossier (OSINT gap), not proof of none.</p> : null}
                 {p.sensors.map((s) => (
-                  <div key={s.id} className="rounded-lg border store-line px-2.5 py-2 space-y-1">
+                  <div key={s.id} className="rounded-xl border border-[var(--store-line)] px-3 py-2.5 space-y-1.5">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-[12px] store-text-body">{s.label}</span>
-                      <span className="ml-auto text-[11px] font-mono store-text-muted">{s.kind}</span>
+                      <span className="text-[13px] text-[var(--store-ink)]">{s.label}</span>
+                      <span className="ml-auto text-[12px] font-mono store-text-muted">{s.kind}</span>
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {sensorBands(s).map((b) => {
@@ -110,27 +112,27 @@ export function Inspector({
                         const c = k === 'ir' ? 'var(--wb-ir)' : k === 'optical' ? 'var(--wb-optical)' : 'var(--wb-rf)'
                         return <span key={b} className="text-[11px] font-mono px-1.5 py-0.5 rounded border" style={{ borderColor: c, color: c }}>{b}</span>
                       })}
-                      {sensorBands(s).length === 0 ? <span className="text-[11px] font-mono store-text-muted">band not stated</span> : null}
+                      {sensorBands(s).length === 0 ? <span className="text-[12px] font-mono store-text-muted">band not stated</span> : null}
                     </div>
-                    {s.can_detect.length ? <p className="text-[11px] font-mono store-text-muted">detects {s.can_detect.join(', ')}</p> : null}
-                    {s.cannot_detect.length ? <p className="text-[11px] font-mono store-text-muted">not {s.cannot_detect.join(', ')}</p> : null}
+                    {s.can_detect.length ? <p className="text-[12px] font-mono store-text-muted">detects {s.can_detect.join(', ')}</p> : null}
+                    {s.cannot_detect.length ? <p className="text-[12px] font-mono store-text-muted">not {s.cannot_detect.join(', ')}</p> : null}
                   </div>
                 ))}
               </Section>
 
               <Section title={`Comms · ${p.comms.length || 'none listed'}`}>
                 {p.comms.map((c) => (
-                  <div key={c.id} className="rounded-lg border store-line px-2.5 py-2 space-y-0.5">
+                  <div key={c.id} className="rounded-xl border border-[var(--store-line)] px-3 py-2.5 space-y-1">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-[12px] store-text-body">{c.label}</span>
-                      <span className="ml-auto text-[11px] font-mono store-text-muted">{c.band}</span>
+                      <span className="text-[13px] text-[var(--store-ink)]">{c.label}</span>
+                      <span className="ml-auto text-[12px] font-mono store-text-muted">{c.band}</span>
                     </div>
-                    <p className="text-[11px] font-mono store-text-muted">
+                    <p className="text-[12px] font-mono store-text-muted">
                       {c.standard ? <>{c.standard} · {variantLabel(c.standard, c.variant)}</> : c.kind}
                       {c.gateway_capable ? ' · gateway' : ''}
                       {c.pnt_dependent ? ' · needs GNSS time' : ''}
                     </p>
-                    {c.comsec_note ? <p className="text-[11px] store-text-muted">{c.comsec_note}</p> : null}
+                    {c.comsec_note ? <p className="text-[12px] store-text-muted">{c.comsec_note}</p> : null}
                   </div>
                 ))}
               </Section>
@@ -138,7 +140,7 @@ export function Inspector({
               {p.sources.length ? (
                 <Section title="Sources">
                   <ul className="space-y-0.5">
-                    {p.sources.slice(0, 4).map((s) => <li key={s} className="text-[11px] font-mono store-text-muted truncate" title={s}>{s}</li>)}
+                    {p.sources.slice(0, 4).map((s) => <li key={s} className="text-[12px] font-mono store-text-muted truncate" title={s}>{s}</li>)}
                   </ul>
                 </Section>
               ) : null}
@@ -149,15 +151,15 @@ export function Inspector({
         {mode?.type === 'capability' ? (
           <>
             <div>
-              <h2 className="text-[15px] store-display text-[var(--store-ink)] leading-tight text-balance">{mode.row.label}</h2>
-              <p className="text-[11px] font-mono store-text-muted">{mode.row.active} active · {mode.row.ghost} in scope</p>
+              <h2 className="text-[16px] font-semibold store-display text-[var(--store-ink)] leading-tight text-balance">{mode.row.label}</h2>
+              <p className="text-[12px] font-mono store-text-muted">{mode.row.active} active · {mode.row.ghost} in scope</p>
             </div>
             <Section title="Holders">
               <ul className="space-y-1">
                 {mode.holders.map((p) => (
                   <li key={p.id} className={`flex items-center gap-2 h-8 ${benched.has(p.id) ? 'opacity-60' : ''}`}>
-                    <button type="button" onClick={() => onSelect(p)} className={`text-[12px] truncate text-left hover:store-accent ${benched.has(p.id) ? 'line-through store-text-muted' : 'store-text-body'}`}>{p.short_name}</button>
-                    <span className="text-[11px] font-mono store-text-muted">{p.nation_code}</span>
+                    <button type="button" onClick={() => onSelect(p)} className={`text-[12px] truncate text-left hover:text-[var(--wb-blue)] ${benched.has(p.id) ? 'line-through store-text-muted' : 'store-text-body'}`}>{p.short_name}</button>
+                    <span className="text-[12px] font-mono store-text-muted">{p.nation_code}</span>
                     <span className="ml-auto"><BenchButton id={p.id} benched={benched.has(p.id)} onBench={onBench} onRestore={onRestore} /></span>
                   </li>
                 ))}
@@ -177,21 +179,21 @@ export function Inspector({
           return (
             <>
               <div>
-                <h2 className="text-[15px] store-display text-[var(--store-ink)] leading-tight text-balance">{mode.row.label}</h2>
-                <p className="text-[11px] font-mono store-text-muted">{tier} tier · {net?.memberIds.length ?? 0} active members · {isl.length} island{isl.length === 1 ? '' : 's'}</p>
+                <h2 className="text-[16px] font-semibold store-display text-[var(--store-ink)] leading-tight text-balance">{mode.row.label}</h2>
+                <p className="text-[12px] font-mono store-text-muted">{tier} tier · {net?.memberIds.length ?? 0} active members · {isl.length} island{isl.length === 1 ? '' : 's'}</p>
               </div>
-              <label className="flex items-center gap-2 text-[11px] font-mono store-text-muted cursor-pointer">
-                <input type="checkbox" checked={gnssDenied} onChange={(e) => setGnssDenied(e.target.checked)} className="accent-[var(--wb-blue)]" />
+              <label className="flex items-start gap-2 text-[12px] leading-snug store-text-body cursor-pointer">
+                <input type="checkbox" checked={gnssDenied} onChange={(e) => setGnssDenied(e.target.checked)} className="mt-0.5 accent-[var(--wb-blue)]" />
                 GNSS denied (pessimistic bound: every PNT-dependent bearer lost)
               </label>
               {net && ghostNet ? (
                 <TalkGraph net={ghostNet} islands={interop[tier === 'none' ? 'voice' : tier].islands} platforms={platforms.filter((p) => !benched.has(p.id))} tier={tier === 'none' ? 'voice' : tier} fadedIds={faded} onSelect={onSelect} />
               ) : (
-                <p className="text-[11px] font-mono store-text-muted">Nobody active on this net{gnssDenied ? ' once GNSS time is lost' : ''}.</p>
+                <p className="text-[12px] font-mono store-text-muted">Nobody active on this net{gnssDenied ? ' once GNSS time is lost' : ''}.</p>
               )}
-              {faded.size ? <p className="text-[11px] font-mono store-text-muted">Drops out: {[...faded].map((id) => platforms.find((p) => p.id === id)?.short_name ?? id).join(', ')}</p> : null}
+              {faded.size ? <p className="text-[12px] font-mono store-text-muted">Drops out: {[...faded].map((id) => platforms.find((p) => p.id === id)?.short_name ?? id).join(', ')}</p> : null}
               {isl.length > 1 ? (
-                <p className="text-[11px] store-text-muted text-pretty">
+                <p className="text-[12px] store-text-muted text-pretty">
                   {isl.length} islands: members share the standard but not a net. Check link variants (HF vs UHF legs) and whether a gateway unit is fitted for both.
                 </p>
               ) : null}
@@ -199,6 +201,7 @@ export function Inspector({
           )
         })() : null}
       </div>
+      </ScrollArea>
     </aside>
   )
 }

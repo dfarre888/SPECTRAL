@@ -106,12 +106,12 @@ export function TalkGraph({
             {n.gateway ? <circle r={r + 4} fill="none" stroke="var(--store-ink-soft)" strokeDasharray="2 2" strokeWidth={1} /> : null}
             <circle r={r} fill={SIDE_FILL[n.side]} stroke="var(--store-bg)" strokeWidth={1} />
             <title>{`${n.label}${n.gateway ? ' · gateway' : ''}${faded ? ' · drops out under GNSS denial' : ''}`}</title>
-            {!dense ? <text y={16} textAnchor="middle" fontSize={10} fontFamily="JetBrains Mono, monospace" fill="var(--store-ink-mute)">{n.label.length > 10 ? `${n.label.slice(0, 9)}…` : n.label}</text> : null}
+            {!dense ? <text y={18} textAnchor="middle" fontSize={12} fontFamily="JetBrains Mono, monospace" fill="var(--store-ink-soft)">{n.label.length > 10 ? `${n.label.slice(0, 9)}…` : n.label}</text> : null}
           </g>
         )
       })}
     </svg>
-    <p className="text-[11px] font-mono store-text-muted">
+    <p className="text-[12px] store-text-muted">
       {nodes.length} nodes{dense ? ', hover for names' : ''} · blue / red force · dashed ring = gateway · {tier} tier
     </p>
     </div>

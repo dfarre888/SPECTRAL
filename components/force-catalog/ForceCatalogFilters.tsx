@@ -2,7 +2,7 @@
 
 /**
  * Gate facts: called by ForceCatalogClient; filter rail for Force Catalogue;
- * no API/schema; user asked Force Catalogue UI polish v2 with attached skills.
+ * no API/schema.
  *
  * Progressive disclosure: search, force side and domain are always visible.
  * Everything else sits behind a native <details> disclosure that opens by
@@ -11,7 +11,7 @@
  */
 
 import { useMemo, useState, type ReactNode } from 'react'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Search } from 'lucide-react'
 import type {
   Bloc,
   Domain,
@@ -22,8 +22,9 @@ import type {
 } from '@/lib/bmi/bmi-types'
 import type { DataConfidence } from '@/lib/types'
 import { CATALOG_NATIONS } from '@/data/force-catalog'
+import { ScrollArea } from '@/components/ui/ScrollArea'
 import { StorePanel } from '@/components/ui/store-surface'
-import { Chip, toggle } from '@/components/force-catalog/force-catalog-ui'
+import { Chip, SideDot, toggle } from '@/components/force-catalog/force-catalog-ui'
 
 const FORCE_SIDES: ForceSideCatalog[] = ['blue', 'red', 'neutral']
 const DOMAINS: Domain[] = ['air', 'ground', 'maritime']
@@ -64,7 +65,25 @@ export interface ForceCatalogFilterState {
   onClearAll: () => void
 }
 
+/** Enum values whose plain-English form is an acronym. */
+const PRETTY: Record<string, string> = {
+  aew_c: 'AEW&C',
+  isr: 'ISR',
+  ew: 'EW',
+  c2_ground: 'Ground C2',
+  radar_ground: 'Ground radar',
+  trainer_lead_in: 'Lead-in trainer',
+  lrip: 'LRIP',
+  emd: 'EMD',
+  r_and_d: 'R&D',
+}
 
+/** 'technology_demonstrator' reads as 'Technology demonstrator'. */
+export function pretty(s: string): string {
+  if (PRETTY[s]) return PRETTY[s]
+  const t = s.replace(/_/g, ' ')
+  return t.charAt(0).toUpperCase() + t.slice(1)
+}
 
 function ChipRow<T extends string>({
   legend,
@@ -82,21 +101,18 @@ function ChipRow<T extends string>({
   sideOf?: (o: T) => ForceSideCatalog | undefined
 }) {
   return (
-    <fieldset className="space-y-1 border-0 p-0 m-0">
-      <legend className={showLegend ? 'text-[11px] font-mono store-text-muted px-0' : 'sr-only'}>
-        {legend}
-      </legend>
-      <div className="flex flex-wrap gap-1">
-        {options.map((o) => (
-          <Chip
-            key={o}
-            side={sideOf?.(o)}
-            active={value.includes(o)}
-            onClick={() => toggle(o, value, onChange)}
-          >
-            {o}
-          </Chip>
-        ))}
+    <fieldset className="m-0 space-y-2 border-0 p-0">
+      <legend className={showLegend ? 'mb-2 px-0 text-[12px] store-text-muted' : 'sr-only'}>{legend}</legend>
+      <div className="flex flex-wrap gap-1.5">
+        {options.map((o) => {
+          const side = sideOf?.(o)
+          return (
+            <Chip key={o} active={value.includes(o)} onClick={() => toggle(o, value, onChange)}>
+              {side ? <SideDot side={side} /> : null}
+              {pretty(o)}
+            </Chip>
+          )
+        })}
       </div>
     </fieldset>
   )
@@ -113,18 +129,18 @@ function Disclosure({
   children: ReactNode
 }) {
   return (
-    <details className="group border-t store-line pt-2" open={count > 0 || undefined}>
-      <summary className="flex items-center gap-2 cursor-pointer list-none min-h-10 -my-1 select-none [&::-webkit-details-marker]:hidden">
+    <details className="group border-t border-[var(--store-line)]" open={count > 0 || undefined}>
+      <summary className="flex min-h-10 cursor-pointer list-none select-none items-center gap-2 [&::-webkit-details-marker]:hidden">
         <ChevronRight
           className="h-3.5 w-3.5 store-text-muted transition-transform duration-150 ease-out group-open:rotate-90"
           aria-hidden
         />
-        <span className="text-[11px] store-text-body">{label}</span>
+        <span className="text-[13px] store-text-body group-hover:text-[var(--store-ink)]">{label}</span>
         {count > 0 ? (
-          <span className="ml-auto text-[11px] font-mono tabular-nums store-accent">{count}</span>
+          <span className="ml-auto font-mono text-[12px] tabular-nums text-[var(--wb-blue)]">{count}</span>
         ) : null}
       </summary>
-      <div className="pt-1 pb-2 pl-5">{children}</div>
+      <div className="pb-3 pl-5">{children}</div>
     </details>
   )
 }
@@ -171,36 +187,34 @@ export function ForceCatalogFilters(props: ForceCatalogFilterState) {
 
   return (
     <aside
-      className="w-full lg:w-[260px] shrink-0 lg:sticky lg:top-4 lg:self-start"
+      id="force-catalog-filter-rail"
+      className="w-full shrink-0 lg:sticky lg:top-2 lg:w-[260px] lg:self-start"
       aria-label="Catalogue filters"
     >
-      <StorePanel className="p-3 space-y-3">
-        <div className="flex items-center justify-between gap-2 min-h-8">
-          <p className="text-[11px] store-text-body">
+      <StorePanel className="space-y-4 p-4">
+        <div className="flex min-h-7 items-center justify-between gap-2">
+          <p className="wb-pane-title">
             Filters
             {activeCount > 0 ? (
-              <span className="ml-1.5 font-mono tabular-nums store-accent">{activeCount}</span>
+              <span className="ml-2 font-mono text-[12px] font-normal tabular-nums text-[var(--wb-blue)]">{activeCount}</span>
             ) : null}
           </p>
           {activeCount > 0 ? (
-            <button
-              type="button"
-              onClick={onClearAll}
-              className="text-[11px] font-mono store-text-muted hover:store-text-body px-1 transition-colors duration-150"
-            >
+            <button type="button" onClick={onClearAll} className="fc-action">
               Clear all
             </button>
           ) : null}
         </div>
 
-        <label className="block">
+        <label className="relative block">
           <span className="sr-only">Search platforms</span>
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 store-text-muted" aria-hidden />
           <input
             type="search"
             value={search}
             onChange={(e) => onSearch(e.target.value)}
-            placeholder="Name, designation, nation, id"
-            className="w-full rounded-lg border store-line bg-[var(--store-surface-2)] px-2.5 py-2 text-[12px] font-mono store-text-body placeholder:text-[var(--store-ink-mute)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--wb-blue)]"
+            placeholder="Name, designation, nation"
+            className="glass-field h-9 w-full pl-8 pr-2.5 text-[13px]"
           />
         </label>
 
@@ -222,20 +236,20 @@ export function ForceCatalogFilters(props: ForceCatalogFilterState) {
               onChange={(e) => setNationQuery(e.target.value)}
               placeholder="Find nation"
               aria-label="Find nation"
-              className="mb-2 w-full rounded border store-line bg-[var(--store-surface-2)] px-2 py-1.5 text-[11px] font-mono store-text-body placeholder:text-[var(--store-ink-mute)]"
+              className="glass-field mb-2 h-8 w-full px-2.5 text-[12px]"
             />
-            <div className="flex flex-wrap gap-1 max-h-48 overflow-y-auto pr-1">
-              {nations.map((n) => (
-                <Chip
-                  key={n.code}
-                  side={n.force_side}
-                  active={nationCodes.includes(n.code)}
-                  onClick={() => toggle(n.code, nationCodes, setNationCodes)}
-                >
-                  {n.code}
-                </Chip>
-              ))}
-            </div>
+            <ScrollArea frame={false} maxHeight="200px">
+              <div className="flex flex-wrap gap-1.5 pr-1">
+                {nations.map((n) => (
+                  <span key={n.code} title={n.name}>
+                    <Chip active={nationCodes.includes(n.code)} onClick={() => toggle(n.code, nationCodes, setNationCodes)}>
+                      <SideDot side={n.force_side} />
+                      <span className="font-mono">{n.code}</span>
+                    </Chip>
+                  </span>
+                ))}
+              </div>
+            </ScrollArea>
           </Disclosure>
           <Disclosure label="Bloc" count={blocs.length}>
             <ChipRow legend="Bloc" options={BLOCS} value={blocs} onChange={setBlocs} />

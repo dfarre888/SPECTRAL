@@ -28,7 +28,7 @@ export function InstrumentRow({ inst }: { inst: ForceInstruments }) {
       </div>
       <div>
         <div className="k">Single point of failure</div>
-        <div className="v" style={{ fontSize: 'clamp(18px, 1.6vw, 24px)', marginTop: 14 }}>{inst.spof ? inst.spof.short_name : '—'}</div>
+        <div className="v" style={{ fontSize: 'clamp(18px, 1.6vw, 24px)', marginTop: 14 }}>{inst.spof ? inst.spof.short_name : 'None'}</div>
         <div className="d">{inst.spof ? `−${inst.spof.reachDropPct} pts reach · ${inst.spof.strandedCount} units stranded` : 'no single gateway carries the picture'}</div>
       </div>
     </div>

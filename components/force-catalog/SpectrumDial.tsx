@@ -5,7 +5,7 @@
  * MHz scale; sensing bands hang below it. Hover sweeps a cursor and focuses the
  * band; click filters. Replaces the boxed ribbon.
  */
-import { useMemo, useState, type MouseEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import type { ConnTier } from '@/lib/coalition/datalink-matrix'
 import { findContention, spectrumForNet } from '@/lib/coalition/comms-spectrum'
 import { BAND_KIND, type BandFill } from '@/lib/force-catalog/spectrum-bands'
@@ -57,6 +57,20 @@ export function SpectrumDial({
   onToggleBand: (b: string) => void
 }) {
   const [cursor, setCursor] = useState<number | null>(null)
+  // The dial scales with its pane; keep every label at 12px or more on screen.
+  const svgRef = useRef<SVGSVGElement>(null)
+  const [pxPerUnit, setPxPerUnit] = useState(1)
+  useEffect(() => {
+    const el = svgRef.current
+    if (!el) return
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width
+      if (w) setPxPerUnit(w / W)
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  const fs = Math.max(11, 12 / pxPerUnit)
   const contention = useMemo(
     () => findContention(nets.filter((n) => n.active > 0).map((n) => n.key.replace(/\/.*$/, ''))),
     [nets],
@@ -91,10 +105,13 @@ export function SpectrumDial({
   const dim = (band: string) => (focusBand && focusBand !== band ? 0.35 : 1)
 
   return (
-    <div className="py-5 border-b fc-hair">
-      <div className="flex items-baseline justify-between mb-3">
-        <span className="wb-pane-title">Spectrum</span>
-        <span className="text-[11px] font-mono store-text-muted flex items-center gap-3.5">
+    <div className="store-panel rounded-2xl px-5 pt-4 pb-3">
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <span className="wb-pane-title">
+          Spectrum
+          <span className="ml-2 text-[12px] font-normal store-text-muted">hover to focus a band, click to filter coverage</span>
+        </span>
+        <span className="text-[12px] store-text-muted flex flex-wrap items-center gap-x-3.5 gap-y-1">
           {([['track', 'var(--wb-track)'], ['data', 'var(--wb-data)'], ['voice', 'var(--wb-voice)']] as const).map(([l, c]) => (
             <span key={l} className="inline-flex items-center gap-1.5"><i className="h-1.5 w-1.5 rounded-full" style={{ background: c }} />{l}</span>
           ))}
@@ -105,13 +122,13 @@ export function SpectrumDial({
           ))}
         </span>
       </div>
-      <svg viewBox={`0 0 ${W} 132`} className="w-full h-auto block cursor-crosshair select-none" onMouseMove={move} onMouseLeave={leave} onClick={click} role="img" aria-label="Spectrum dial: comms above the rule, sensing below">
+      <svg ref={svgRef} viewBox={`0 0 ${W} 138`} className="w-full h-auto block cursor-crosshair select-none" onMouseMove={move} onMouseLeave={leave} onClick={click} role="img" aria-label="Spectrum dial: comms above the rule, sensing below">
         <defs>
           <filter id="fc-glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" /></filter>
           <pattern id="fc-hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.5" height="4" fill="rgba(251,191,36,0.55)" /></pattern>
         </defs>
-        <text x={0} y={12} fontSize={11} fontFamily="JetBrains Mono, monospace" fill="var(--store-ink-mute)">comms ↑</text>
-        <text x={W} y={12} fontSize={11} fontFamily="JetBrains Mono, monospace" fill="var(--store-ink-mute)" textAnchor="end">sensing ↓</text>
+        <text x={0} y={Math.round(fs)} fontSize={fs} fontFamily="JetBrains Mono, monospace" fill="var(--store-ink-mute)">comms ↑</text>
+        <text x={W} y={Math.round(fs)} fontSize={fs} fontFamily="JetBrains Mono, monospace" fill="var(--store-ink-mute)" textAnchor="end">sensing ↓</text>
         {/* active band washes */}
         {[...activeBands].map((b) => (
           <rect key={b} x={bandX(b)} y={16} width={bandW(b)} height={BASE + DOWN - 10} fill="rgba(255,255,255,0.05)" rx={4} />
@@ -155,7 +172,7 @@ export function SpectrumDial({
         })}
         {/* labels */}
         {[...RF_TICKS.map((t) => t[1]), ...NON_RF].map((b) => (
-          <text key={b} x={bandX(b) + 2} y={128} fontSize={11} fontFamily="JetBrains Mono, monospace" fill={activeBands.has(b) || focusBand === b ? 'var(--store-ink)' : 'var(--store-ink-mute)'}>{b}</text>
+          <text key={b} x={bandX(b) + 2} y={134} fontSize={fs} fontFamily="JetBrains Mono, monospace" fill={activeBands.has(b) || focusBand === b ? 'var(--store-ink)' : 'var(--store-ink-mute)'}>{b}</text>
         ))}
         {/* cursor */}
         {cursor != null ? <line x1={cursor} x2={cursor} y1={16} y2={BASE + DOWN + 6} stroke="rgba(255,255,255,0.35)" strokeDasharray="3 3" /> : null}

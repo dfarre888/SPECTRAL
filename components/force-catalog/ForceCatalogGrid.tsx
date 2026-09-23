@@ -35,23 +35,27 @@ export function ForceCatalogGrid({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {groups.map(([code, plats]) => {
         const meta = nationByCode.get(code)
         return (
-          <div key={code} className="space-y-2">
-            <div
-              className={`flex items-baseline justify-between gap-2 ${showRegion ? 'border-b store-line pb-2' : ''}`}
-            >
-              <h2
-                className={`${showRegion ? 'text-sm' : 'text-xs'} store-display store-text-body tracking-wide text-balance`}
-              >
+          <div key={code} className="space-y-3">
+            <div className="flex items-baseline gap-3 border-b border-[var(--store-line)] pb-2">
+              <h2 className="store-display text-[16px] font-semibold tracking-[-0.01em] text-[var(--store-ink)] text-balance">
                 {meta?.name ?? code}
               </h2>
-              <p className="text-[11px] font-mono tracking-[0.02em] store-text-muted tabular-nums">
-                {code} · {meta?.force_side}
-                {showRegion && meta?.region ? ` · ${meta.region}` : ''} · {plats.length}
-              </p>
+              <span className="font-mono text-[12px] store-text-muted">{code}</span>
+              {showRegion && meta?.region ? <span className="text-[12px] store-text-muted">{meta.region}</span> : null}
+              <span className="ml-auto flex items-center gap-2 text-[12px] store-text-muted">
+                {meta?.force_side ? (
+                  <span className={`tag ${meta.force_side === 'blue' ? 'blue' : meta.force_side === 'red' ? 'red' : ''}`}>
+                    {meta.force_side.charAt(0).toUpperCase() + meta.force_side.slice(1)}
+                  </span>
+                ) : null}
+                <span>
+                  <span className="font-mono tabular-nums text-[var(--store-ink)]">{plats.length}</span> platforms
+                </span>
+              </span>
             </div>
             <div
               className={

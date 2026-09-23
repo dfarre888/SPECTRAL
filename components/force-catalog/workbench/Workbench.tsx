@@ -109,10 +109,12 @@ export function Workbench({
   const gridCols =
     cols === 3
       ? hostW >= 1240
-        ? '280px minmax(0,1fr) 360px'
-        : '216px minmax(0,1fr) 300px'
+        ? '300px minmax(0,1fr) 360px'
+        : hostW >= 1080
+          ? '280px minmax(0,1fr) 320px'
+          : '250px minmax(0,1fr) 290px'
       : cols === 2
-        ? '240px minmax(0,1fr)'
+        ? '300px minmax(0,1fr)'
         : 'minmax(0,1fr)'
 
   const selectedId = mode?.type === 'platform' ? mode.platform.id : null
@@ -120,20 +122,20 @@ export function Workbench({
 
   if (platforms.length === 0) {
     return (
-      <div className="store-panel rounded-2xl p-8 text-center">
-        <p className="text-[11px] font-mono store-text-muted">No platforms match the active filters.</p>
+      <div className="store-panel rounded-2xl p-10 text-center">
+        <p className="text-[13px] store-text-body">No platforms match the active filters.</p>
       </div>
     )
   }
 
   return (
-    <div ref={hostRef} className="space-y-3" data-testid="capability-workbench">
+    <div ref={hostRef} className="space-y-4" data-testid="capability-workbench">
       {scopedFromBattle ? (
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 text-[11px] font-mono px-2 min-h-8 rounded border store-accent-border store-accent">
-            Battle scope · {platforms.length}
+          <span className="tag blue !h-7 !pr-1 !text-[12px]">
+            Scoped from Battle Picture · <span className="font-mono tabular-nums">{platforms.length}</span> platforms
             {onClearScope ? (
-              <button type="button" onClick={onClearScope} aria-label="Clear battle drill scope" className="ml-1 inline-flex items-center justify-center h-6 w-6 rounded hover:bg-[rgba(41,151,255,0.14)]">
+              <button type="button" onClick={onClearScope} aria-label="Clear battle drill scope" className="inline-flex h-5 w-5 items-center justify-center rounded-full hover:bg-[rgba(41,151,255,0.2)]">
                 <X className="h-3 w-3" aria-hidden />
               </button>
             ) : null}
@@ -143,7 +145,8 @@ export function Workbench({
 
       <SpectrumDial nets={nets} sensing={sensing} focusBand={focusBand} activeBands={filterBands} onHoverBand={setFocusBand} onToggleBand={toggleBand} />
 
-      <div className="grid gap-3 items-stretch" style={{ gridTemplateColumns: gridCols, height: cols === 1 ? 'auto' : 'min(72vh, 820px)' }}>
+      {/* Panes fill the viewport once scrolled to, so each list scrolls on its own and the page does not. */}
+      <div className="grid gap-3 items-stretch" style={{ gridTemplateColumns: gridCols, height: cols === 1 ? 'auto' : 'clamp(480px, calc(100vh - 170px), 900px)' }}>
         <Roster
           platforms={platforms}
           benched={benched}
@@ -155,7 +158,7 @@ export function Workbench({
           onRestore={restore}
         />
         <Coverage result={coverage} sort={sort} onSort={setSort} focusBand={focusBand} filterBands={filterBands} selectedRowId={selectedRowId} onSelectRow={selectRow} />
-        <div className={`min-h-0 ${cols === 3 ? '' : mode ? 'fixed top-20 bottom-4 right-4 z-40 w-[360px] max-w-[92vw] shadow-[0_24px_64px_rgba(0,0,0,0.7)]' : 'hidden'}`}>
+        <div className={`min-h-0 ${cols === 3 ? '' : mode ? 'fixed top-20 bottom-4 right-4 z-40 w-[360px] max-w-[92vw] rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.7)]' : 'hidden'}`}>
           <Inspector
             mode={mode}
             platforms={platforms}
@@ -170,8 +173,10 @@ export function Workbench({
         </div>
       </div>
       {onSelect && mode?.type === 'platform' ? (
-        <p className="text-[11px] font-mono store-text-muted">
-          <button type="button" onClick={() => onSelect(mode.platform)} className="store-accent hover:underline">Open full dossier</button>
+        <p>
+          <button type="button" onClick={() => onSelect(mode.platform)} className="text-[13px] text-[var(--wb-blue)] hover:underline">
+            Open the full dossier for {mode.platform.short_name}
+          </button>
         </p>
       ) : null}
     </div>

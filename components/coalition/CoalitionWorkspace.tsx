@@ -1,7 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import { clsx } from 'clsx'
+import { useMemo, useState, type ReactNode } from 'react'
 import { CommsLinkageView } from '@/components/coalition/CommsLinkageView'
 import type { InteropPlatform } from '@/lib/coalition/interop'
 
@@ -29,6 +28,18 @@ interface CoalitionWorkspaceProps {
   nations: { code: string; name: string; side: string }[]
 }
 
+function ControlRow({ label, children, aside }: { label: string; children: ReactNode; aside?: ReactNode }) {
+  return (
+    <div className="grid gap-2 py-3 sm:grid-cols-[96px_minmax(0,1fr)] sm:items-start sm:gap-4">
+      <p className="pt-1.5 text-[12px] store-text-muted">{label}</p>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+        {children}
+        {aside ? <div className="ml-auto">{aside}</div> : null}
+      </div>
+    </div>
+  )
+}
+
 export function CoalitionWorkspace({ platforms, nations }: CoalitionWorkspaceProps) {
   const [side, setSide] = useState<'blue' | 'red'>('blue')
   const [presetId, setPresetId] = useState('indopac')
@@ -54,85 +65,94 @@ export function CoalitionWorkspace({ platforms, nations }: CoalitionWorkspacePro
 
   return (
     <div className="space-y-4">
-      <div className="store-panel rounded-2xl p-4">
-        {/* Side */}
-        <div className="flex gap-2 mb-3">
-          {(['blue', 'red'] as const).map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => {
-                setSide(s)
-                setCustom(null)
-                setPresetId(s === 'blue' ? 'indopac' : 'crink')
-              }}
-              className={clsx(
-                'px-4 py-1.5 rounded-lg text-xs font-mono font-bold border transition-colors',
-                side === s
-                  ? s === 'blue'
-                    ? 'border-cyan/50 text-cyan bg-cyan/10'
-                    : 'border-red-500/50 text-red-300 bg-red-500/10'
-                  : 'store-panel-inner store-text-muted hover:border-[rgba(41,151,255,0.5)]',
-              )}
-            >
-              {s === 'blue' ? 'BLUE' : 'RED'}
-            </button>
-          ))}
-          <div className="flex-1" />
-          <p className="text-[11px] font-mono store-text-muted self-center">
-            {selected.length} platforms · {activeNations.length} nation{activeNations.length === 1 ? '' : 's'}
-          </p>
-        </div>
-
-        {/* Presets */}
-        <p className="text-[11px] font-mono tracking-[0.02em] store-text-muted mb-1.5">Coalition</p>
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {sidePresets.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => { setPresetId(p.id); setCustom(null) }}
-              className={clsx(
-                'px-2.5 py-1 rounded-lg text-[11px] font-mono border transition-colors',
-                !custom && presetId === p.id
-                  ? 'nav-item-active'
-                  : 'store-panel-inner store-text-body hover:border-[rgba(41,151,255,0.5)]',
-              )}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Nation picker */}
-        <p className="text-[11px] font-mono tracking-[0.02em] store-text-muted mb-1.5">
-          Nations {custom ? '(custom)' : ''}
-        </p>
-        <div className="flex flex-wrap gap-1">
-          {nationsForSide.map((n) => {
-            const on = activeNations.includes(n.code)
-            return (
+      <div className="store-panel rounded-2xl px-5 py-2">
+        <ControlRow
+          label="Force"
+          aside={
+            <p className="text-[12px] store-text-muted">
+              <span className="font-mono tabular-nums text-[var(--store-ink)]">{selected.length}</span> platforms ·{' '}
+              <span className="font-mono tabular-nums text-[var(--store-ink)]">{activeNations.length}</span> nation
+              {activeNations.length === 1 ? '' : 's'}
+            </p>
+          }
+        >
+          <div className="seg" role="group" aria-label="Force side">
+            {(['blue', 'red'] as const).map((s) => (
               <button
-                key={n.code}
+                key={s}
                 type="button"
-                onClick={() => toggleNation(n.code)}
-                className={clsx(
-                  'px-2 py-0.5 rounded text-[11px] font-mono border transition-colors',
-                  on
-                    ? 'border-[rgba(41,151,255,0.5)] text-[var(--wb-blue)] bg-[rgba(41,151,255,0.14)]'
-                    : 'store-panel-inner store-text-muted hover:store-text-body',
-                )}
+                aria-pressed={side === s}
+                onClick={() => {
+                  setSide(s)
+                  setCustom(null)
+                  setPresetId(s === 'blue' ? 'indopac' : 'crink')
+                }}
               >
-                {n.code}
+                <i
+                  className="h-2 w-2 rounded-full"
+                  style={{ background: s === 'blue' ? 'var(--wb-blue)' : 'var(--wb-red)' }}
+                  aria-hidden
+                />
+                {s === 'blue' ? 'Blue' : 'Red'}
               </button>
-            )
-          })}
+            ))}
+          </div>
+        </ControlRow>
+
+        <div className="border-t border-[var(--store-line)]">
+          <ControlRow label="Coalition">
+            <div className="seg sm flex-wrap" role="group" aria-label="Coalition preset">
+              {sidePresets.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  aria-pressed={!custom && presetId === p.id}
+                  onClick={() => {
+                    setPresetId(p.id)
+                    setCustom(null)
+                  }}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            {custom ? (
+              <span className="tag blue">Custom mix</span>
+            ) : null}
+            {custom ? (
+              <button type="button" onClick={() => setCustom(null)} className="fc-action">
+                Reset to {preset.label}
+              </button>
+            ) : null}
+          </ControlRow>
+        </div>
+
+        <div className="border-t border-[var(--store-line)]">
+          <ControlRow label="Nations">
+            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Nations in the coalition">
+              {nationsForSide.map((n) => {
+                const on = activeNations.includes(n.code)
+                return (
+                  <button
+                    key={n.code}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => toggleNation(n.code)}
+                    title={n.name}
+                    className="btn-e xs min-w-[46px] justify-center font-mono"
+                  >
+                    {n.code}
+                  </button>
+                )
+              })}
+            </div>
+          </ControlRow>
         </div>
       </div>
 
       {selected.length === 0 ? (
-        <div className="store-panel rounded-2xl p-8 text-center">
-          <p className="text-xs store-text-muted font-mono">Select at least one nation.</p>
+        <div className="store-panel rounded-2xl p-10 text-center">
+          <p className="text-[13px] store-text-body">Select at least one nation.</p>
         </div>
       ) : (
         <CommsLinkageView

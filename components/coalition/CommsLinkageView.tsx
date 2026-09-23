@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { clsx } from 'clsx'
+import { ScrollArea } from '@/components/ui/ScrollArea'
 import { analyseInterop, interopUnderDenial, type InteropPlatform } from '@/lib/coalition/interop'
 import { findContention, formatMhz, spectrumForNet } from '@/lib/coalition/comms-spectrum'
 import type { ConnTier } from '@/lib/coalition/datalink-matrix'
@@ -15,9 +16,9 @@ interface CommsLinkageViewProps {
 
 const TIER_COLOR: Record<ConnTier, string> = {
   track: 'var(--wb-track)',
-  data: '#22d3ee',
-  voice: '#4ade80',
-  none: '#71717a',
+  data: 'var(--wb-data)',
+  voice: '#4ADE80',
+  none: 'var(--store-ink-mute)',
 }
 
 const TIER_LABEL: Record<ConnTier, string> = {
@@ -27,19 +28,26 @@ const TIER_LABEL: Record<ConnTier, string> = {
   none: 'None',
 }
 
+const TIER_HINT: Record<ConnTier, string> = {
+  track: 'Machine-to-machine track exchange',
+  data: 'Digital data, not track quality',
+  voice: 'Human relay only',
+  none: 'No bearer recorded',
+}
+
 // Log axis over the military comms span: HF through Ku.
 const F_MIN = 2
 const F_MAX = 20_000
-const PAD_L = 8
-const PAD_R = 4
+const PAD = 1.5
+const ROW_H = 40
 
 function xPct(mhz: number): number {
   const clamped = Math.min(Math.max(mhz, F_MIN), F_MAX)
   const t = (Math.log10(clamped) - Math.log10(F_MIN)) / (Math.log10(F_MAX) - Math.log10(F_MIN))
-  return PAD_L + t * (100 - PAD_L - PAD_R)
+  return PAD + t * (100 - PAD * 2)
 }
 
-const AXIS_TICKS = [3, 30, 300, 1_000, 3_000, 10_000, 20_000]
+const AXIS_TICKS = [3, 30, 300, 1_000, 3_000, 10_000]
 
 export function CommsLinkageView({ platforms, title, side = 'blue' }: CommsLinkageViewProps) {
   const [selectedNet, setSelectedNet] = useState<string | null>(null)
@@ -75,146 +83,226 @@ export function CommsLinkageView({ platforms, title, side = 'blue' }: CommsLinka
     .filter((r) => r.spec)
     .sort((a, b) => b.net.memberIds.length - a.net.memberIds.length)
 
+  const plotH = rows.length * ROW_H
+
   return (
-    <div className="store-panel rounded-2xl p-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-        <div>
-          <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
+    <div className="store-panel overflow-hidden rounded-2xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--store-line)] px-5 py-4">
+        <div className="min-w-0">
+          <p className="flex items-center gap-2 text-[12px] store-text-muted">
+            <i
+              className="h-2 w-2 rounded-full"
+              style={{ background: side === 'red' ? 'var(--wb-red)' : 'var(--wb-blue)' }}
+              aria-hidden
+            />
             Comms linkage · {side === 'red' ? 'Red' : 'Blue'} force
           </p>
-          <h3 className="store-display text-sm font-semibold text-white mt-0.5">
+          <h2 className="mt-0.5 store-display text-[18px] font-semibold tracking-[-0.01em] text-[var(--store-ink)]">
             {title ?? 'Coalition connectivity'}
-          </h3>
+          </h2>
         </div>
-        <button
-          type="button"
-          onClick={() => setDenied((v) => !v)}
-          className={clsx(
-            'px-2.5 py-1 rounded-lg text-[11px] font-mono border transition-colors',
-            denied
-              ? 'border-red-500/50 text-red-300 bg-red-500/10'
-              : 'store-panel-inner store-text-body hover:border-[rgba(41,151,255,0.5)]',
-          )}
-        >
-          {denied ? '⚠ GNSS DENIED' : 'GNSS nominal'}
-        </button>
+        <div className="seg sm" role="group" aria-label="GNSS condition">
+          <button type="button" aria-pressed={!denied} onClick={() => setDenied(false)}>
+            GNSS nominal
+          </button>
+          <button type="button" aria-pressed={denied} onClick={() => setDenied(true)}>
+            GNSS denied
+          </button>
+        </div>
       </div>
 
-      {/* Tier summary — reach is the honest headline, cohesion alongside it. */}
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        {([result.track, result.data, result.voice] as const).map((t) => (
-          <div key={t.tier} className="store-panel-inner rounded-xl p-2.5">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full" style={{ background: TIER_COLOR[t.tier] }} />
-              <span className="text-[11px] font-mono uppercase store-text-muted">{TIER_LABEL[t.tier]}</span>
-            </div>
-            <p className="text-lg font-bold text-white font-mono tabular-nums mt-1">{t.reachPct}%</p>
-            <p className="text-[11px] store-text-muted font-mono">
-              reach · {t.coveragePct}% fitted · {t.islands.length} net{t.islands.length === 1 ? '' : 's'}
+      {/* Tier summary: reach is the honest headline, cohesion alongside it. */}
+      <div className="grid grid-cols-1 border-b border-[var(--store-line)] sm:grid-cols-3">
+        {([result.track, result.data, result.voice] as const).map((t, i) => (
+          <div
+            key={t.tier}
+            className={clsx('px-5 py-4', i > 0 && 'border-t border-[var(--store-line)] sm:border-l sm:border-t-0')}
+            title={TIER_HINT[t.tier]}
+          >
+            <p className="flex items-center gap-2 text-[12px] store-text-muted">
+              <i className="h-2 w-2 rounded-full" style={{ background: TIER_COLOR[t.tier] }} aria-hidden />
+              {TIER_LABEL[t.tier]} reach
+            </p>
+            <p
+              className="mt-1.5 store-display text-[34px] font-semibold leading-none tracking-[-0.02em] tabular-nums"
+              style={{ color: TIER_COLOR[t.tier] }}
+            >
+              {t.reachPct}
+              <span className="ml-0.5 text-[16px] font-medium store-text-muted">%</span>
+            </p>
+            <p className="mt-2 text-[12px] store-text-muted">
+              <span className="font-mono tabular-nums text-[var(--store-ink)]">{t.coveragePct}%</span> fitted ·{' '}
+              <span className="font-mono tabular-nums text-[var(--store-ink)]">{t.islands.length}</span> net
+              {t.islands.length === 1 ? '' : 's'}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Spectral placement — every net on the frequency axis. */}
-      <div className="relative mb-1" style={{ height: rows.length * 26 + 26 }}>
-        {/* Contention shading behind the bars. */}
-        {contention.map((c, i) => (
-          <div
-            key={`c${i}`}
-            title={`${c.netKeys.length} nets share ${formatMhz(c.loMhz)}–${formatMhz(c.hiMhz)}`}
-            className="absolute top-0 bottom-6 pointer-events-none"
-            style={{
-              left: `${xPct(c.loMhz)}%`,
-              width: `${Math.max(0.4, xPct(c.hiMhz) - xPct(c.loMhz))}%`,
-              background:
-                'repeating-linear-gradient(45deg, rgba(248,113,113,0.16) 0 4px, transparent 4px 8px)',
-              borderLeft: '1px solid rgba(248,113,113,0.35)',
-              borderRight: '1px solid rgba(248,113,113,0.35)',
-            }}
-          />
-        ))}
-
-        {rows.map(({ net, spec }, i) => {
-          const isSel = selectedNet === net.key
-          const island = islandOf.get(net.key) ?? 0
-          return (
-            <div key={net.key} className="absolute left-0 right-0" style={{ top: i * 26, height: 24 }}>
-              <span className="absolute left-0 top-1 text-[11px] font-mono store-text-muted truncate" style={{ width: `${PAD_L}%` }}>
-                {island === 0 ? '' : `#${island + 1}`}
-              </span>
-              {spec!.spans.map((sp, j) => (
-                <button
-                  key={j}
-                  type="button"
-                  onClick={() => setSelectedNet(isSel ? null : net.key)}
-                  title={`${spec!.label} · ${formatMhz(sp.loMhz)}–${formatMhz(sp.hiMhz)} · ${net.memberIds.length} platforms\n${spec!.note}`}
-                  className={clsx(
-                    'absolute top-0 h-5 rounded transition-all',
-                    isSel ? 'ring-2 ring-white' : 'hover:brightness-125',
-                  )}
-                  style={{
-                    left: `${xPct(sp.loMhz)}%`,
-                    width: `${Math.max(1.2, xPct(sp.hiMhz) - xPct(sp.loMhz))}%`,
-                    background: TIER_COLOR[net.tier],
-                    opacity: isSel ? 1 : 0.35 + Math.min(0.5, net.memberIds.length / 120),
-                  }}
-                />
-              ))}
-              <span className="absolute top-0.5 text-[11px] font-mono text-white pointer-events-none"
-                style={{ left: `${xPct(spec!.spans[0].loMhz) + 0.6}%` }}>
-                {spec!.label}
-                <span className="store-text-muted"> · {net.memberIds.length}</span>
-              </span>
-            </div>
-          )
-        })}
-
-        {/* Frequency axis */}
-        <div className="absolute left-0 right-0 bottom-0 h-5 border-t border-[var(--store-line)]">
-          {AXIS_TICKS.map((t) => (
-            <span key={t} className="absolute top-0.5 text-[11px] font-mono store-text-muted -translate-x-1/2"
-              style={{ left: `${xPct(t)}%` }}>
-              {formatMhz(t)}
-            </span>
-          ))}
+      {/* Spectral placement: every net on the frequency axis. */}
+      <div className="px-5 pb-4 pt-5">
+        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+          <p className="wb-pane-title">Nets on the spectrum</p>
+          <p className="text-[12px] store-text-muted">Click a net to list its members</p>
         </div>
-      </div>
 
-      <p className="text-[11px] store-text-muted font-mono mb-3">
-        Hatched stretches carry more than one net — shared spectrum is where friendly links contend,
-        and where one jammer reaches several at once.
-      </p>
+        {rows.length === 0 ? (
+          <p className="py-8 text-center text-[13px] store-text-muted">No nets with a known spectrum in this selection.</p>
+        ) : (
+          <div className="grid grid-cols-[minmax(150px,210px)_minmax(0,1fr)] gap-x-4">
+            {/* Net labels */}
+            <ul className="min-w-0">
+              {rows.map(({ net, spec }) => {
+                const isSel = selectedNet === net.key
+                const island = islandOf.get(net.key) ?? 0
+                return (
+                  <li key={net.key} style={{ height: ROW_H }}>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedNet(isSel ? null : net.key)}
+                      aria-pressed={isSel}
+                      className={clsx(
+                        'flex h-full w-full min-w-0 items-center gap-2.5 rounded-lg px-2 text-left transition-colors duration-150',
+                        isSel ? 'bg-[#0E2238]' : 'hover:bg-white/[0.04]',
+                      )}
+                    >
+                      <i className="h-2 w-2 shrink-0 rounded-full" style={{ background: TIER_COLOR[net.tier] }} aria-hidden />
+                      <span className="min-w-0">
+                        <span className="block truncate text-[13px] text-[var(--store-ink)]">{spec!.label}</span>
+                        <span className="block truncate text-[11.5px] store-text-muted">
+                          <span className="font-mono tabular-nums">{net.memberIds.length}</span> platforms
+                          {island > 0 ? (
+                            <span title="Not connected to the largest picture on this tier"> · island {island + 1}</span>
+                          ) : null}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+
+            {/* Plot */}
+            <div className="min-w-0">
+              <div className="relative" style={{ height: plotH }}>
+                {/* Decade grid */}
+                {AXIS_TICKS.map((t) => (
+                  <div
+                    key={`g${t}`}
+                    className="absolute top-0 bottom-0 w-px bg-white/[0.05]"
+                    style={{ left: `${xPct(t)}%` }}
+                    aria-hidden
+                  />
+                ))}
+                {/* Contention shading behind the bars. */}
+                {contention.map((c, i) => (
+                  <div
+                    key={`c${i}`}
+                    title={`${c.netKeys.length} nets share ${formatMhz(c.loMhz)} to ${formatMhz(c.hiMhz)}`}
+                    className="absolute top-0 bottom-0"
+                    style={{
+                      left: `${xPct(c.loMhz)}%`,
+                      width: `${Math.max(0.4, xPct(c.hiMhz) - xPct(c.loMhz))}%`,
+                      background: 'repeating-linear-gradient(45deg, rgba(251,191,36,0.14) 0 4px, transparent 4px 8px)',
+                      borderLeft: '1px solid rgba(251,191,36,0.35)',
+                      borderRight: '1px solid rgba(251,191,36,0.35)',
+                    }}
+                  />
+                ))}
+
+                {rows.map(({ net, spec }, i) => {
+                  const isSel = selectedNet === net.key
+                  return (
+                    <div key={net.key} className="absolute left-0 right-0" style={{ top: i * ROW_H, height: ROW_H }}>
+                      {isSel ? <div className="absolute inset-0 rounded-lg bg-[rgba(41,151,255,0.07)]" aria-hidden /> : null}
+                      {spec!.spans.map((sp, j) => (
+                        <button
+                          key={j}
+                          type="button"
+                          onClick={() => setSelectedNet(isSel ? null : net.key)}
+                          aria-label={`${spec!.label}, ${formatMhz(sp.loMhz)} to ${formatMhz(sp.hiMhz)}, ${net.memberIds.length} platforms`}
+                          title={`${spec!.label} · ${formatMhz(sp.loMhz)} to ${formatMhz(sp.hiMhz)} · ${net.memberIds.length} platforms\n${spec!.note}`}
+                          className={clsx(
+                            'absolute top-1/2 h-3.5 -translate-y-1/2 rounded-full transition-[filter,box-shadow] duration-150',
+                            isSel ? 'ring-2 ring-white/80' : 'hover:brightness-125',
+                          )}
+                          style={{
+                            left: `${xPct(sp.loMhz)}%`,
+                            width: `max(8px, ${Math.max(0.6, xPct(sp.hiMhz) - xPct(sp.loMhz))}%)`,
+                            background: TIER_COLOR[net.tier],
+                            opacity: isSel ? 1 : 0.45 + Math.min(0.5, net.memberIds.length / 120),
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Frequency axis */}
+              <div className="relative h-7 border-t border-[var(--store-line)]">
+                {AXIS_TICKS.map((t, i) => (
+                  <span
+                    key={t}
+                    className={clsx(
+                      'absolute top-1.5 whitespace-nowrap font-mono text-[11.5px] store-text-muted',
+                      i === 0 ? '' : '-translate-x-1/2',
+                    )}
+                    style={{ left: `${xPct(t)}%` }}
+                  >
+                    {formatMhz(t)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <p className="mt-3 flex items-center gap-2 text-[12px] store-text-muted">
+          <i
+            className="h-2.5 w-4 shrink-0 rounded-sm"
+            style={{ background: 'repeating-linear-gradient(45deg, rgba(251,191,36,0.6) 0 2px, transparent 2px 4px)' }}
+            aria-hidden
+          />
+          Hatched stretches carry more than one net. Shared spectrum is where friendly links contend, and where one
+          jammer reaches several at once.
+        </p>
+      </div>
 
       {/* Selected net membership */}
       {selected && (
-        <div className="store-panel-inner rounded-xl p-3">
-          <div className="flex items-baseline justify-between mb-2">
-            <p className="text-xs font-semibold text-white">{spectrumForNet(selected.key)?.label}</p>
-            <p className="text-[11px] font-mono store-text-muted">{selected.memberIds.length} platforms</p>
+        <div className="border-t border-[var(--store-line)] px-5 py-4">
+          <div className="mb-1.5 flex items-baseline justify-between gap-3">
+            <p className="text-[14px] font-medium text-[var(--store-ink)]">{spectrumForNet(selected.key)?.label}</p>
+            <p className="text-[12px] store-text-muted">
+              <span className="font-mono tabular-nums text-[var(--store-ink)]">{selected.memberIds.length}</span> platforms
+            </p>
           </div>
-          <p className="text-[11px] store-text-body mb-2">{spectrumForNet(selected.key)?.note}</p>
-          <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto">
-            {selected.memberIds.slice(0, 80).map((id) => (
-              <span key={id} className="px-1.5 py-0.5 rounded text-[11px] font-mono store-panel border border-[var(--store-line)] store-text-body">
-                {byId.get(id)?.label ?? id}
-                <span className="store-text-muted"> {byId.get(id)?.nationCode}</span>
-              </span>
-            ))}
-            {selected.memberIds.length > 80 && (
-              <span className="text-[11px] font-mono store-text-muted self-center">
-                +{selected.memberIds.length - 80} more
-              </span>
-            )}
-          </div>
+          <p className="mb-3 max-w-[80ch] text-[13px] leading-relaxed store-text-body">{spectrumForNet(selected.key)?.note}</p>
+          <ScrollArea frame={false} maxHeight="168px">
+            <div className="flex flex-wrap gap-1.5 pr-1">
+              {selected.memberIds.slice(0, 80).map((id) => (
+                <span key={id} className="tag">
+                  <span className="text-[var(--store-ink)]">{byId.get(id)?.label ?? id}</span>
+                  <span className="font-mono store-text-muted">{byId.get(id)?.nationCode}</span>
+                </span>
+              ))}
+              {selected.memberIds.length > 80 && (
+                <span className="self-center text-[12px] store-text-muted">
+                  +{selected.memberIds.length - 80} more
+                </span>
+              )}
+            </div>
+          </ScrollArea>
         </div>
       )}
 
       {denied && (
-        <p className="mt-3 text-[11px] font-mono text-red-300">
-          {delta.lostTrackIds.length} platforms lose machine tracks · track reach{' '}
-          {delta.nominal.track.reachPct}% → {delta.denied.track.reachPct}%. Pessimistic bound:
-          terminals hold net time for a period after GNSS loss.
+        <p className="border-t border-[var(--store-line)] px-5 py-3 text-[12px] leading-relaxed text-[#FF8A98]">
+          <span className="font-mono tabular-nums">{delta.lostTrackIds.length}</span> platforms lose machine tracks · track
+          reach <span className="font-mono tabular-nums">{delta.nominal.track.reachPct}%</span> to{' '}
+          <span className="font-mono tabular-nums">{delta.denied.track.reachPct}%</span>. Pessimistic bound: terminals hold
+          net time for a period after GNSS loss.
         </p>
       )}
     </div>

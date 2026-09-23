@@ -6,8 +6,9 @@ import { RotateCcw, X } from 'lucide-react'
 import type { ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
 import type { ConnTier } from '@/lib/coalition/datalink-matrix'
 import type { SensorsStatus } from '@/lib/force-catalog/spectrum-bands'
+import { ScrollArea } from '@/components/ui/ScrollArea'
 
-const TIER_MARK: Record<ConnTier, string> = { track: 'T', data: 'D', voice: 'V', none: '–' }
+const TIER_MARK: Record<ConnTier, string> = { track: 'Track', data: 'Data', voice: 'Voice', none: 'None' }
 const TIER_TITLE: Record<ConnTier, string> = {
   track: 'Track tier: machine-to-machine track exchange',
   data: 'Data tier: SATCOM data, no live track picture',
@@ -22,7 +23,35 @@ function sideDot(side: ForceCatalogPlatformFull['force_side']) {
   if (side === 'red') return 'var(--wb-red)'
   return 'var(--wb-neutral)'
 }
-const TIER_COLOR: Record<ConnTier, string> = { track: 'var(--wb-track)', data: 'var(--wb-data)', voice: 'var(--wb-voice)', none: 'var(--store-ink-faint)' }
+const TIER_COLOR: Record<ConnTier, string> = {
+  track: 'var(--wb-track)',
+  data: 'var(--wb-data)',
+  voice: 'var(--store-ink-soft)',
+  none: 'var(--store-ink-mute)',
+}
+
+function SortHeader({
+  k,
+  label,
+  sort,
+  setSort,
+  className = '',
+}: {
+  k: RosterSort
+  label: string
+  sort: RosterSort
+  setSort: (s: RosterSort) => void
+  className?: string
+}) {
+  return (
+    <th scope="col" aria-sort={sort === k ? 'ascending' : 'none'} className={className}>
+      <button type="button" onClick={() => setSort(k)} aria-label={`Sort roster by ${label}`} className="inline-flex items-center gap-1">
+        {label}
+        <span className="sort-ind" aria-hidden>{sort === k ? '▲' : ''}</span>
+      </button>
+    </th>
+  )
+}
 
 export function Roster({
   platforms,
@@ -70,73 +99,137 @@ export function Roster({
   }
 
   return (
-    <section className="border-r fc-hair last:border-r-0 flex flex-col min-h-0 wb-pane" aria-label="Roster">
-      <header className="flex items-center gap-2 px-3 py-2 border-b store-line">
+    <section className="store-panel flex min-h-0 flex-col overflow-hidden rounded-2xl" aria-label="Roster">
+      <header className="flex min-h-12 items-center gap-2 border-b border-[var(--store-line)] px-4">
         <span className="wb-pane-title">Roster</span>
-        <span className="text-[11px] font-mono tabular-nums store-text-muted">{active.length}</span>
-        <div className="ml-auto gap-1 shrink-0 wb-pane-tools" role="group" aria-label="Sort roster">
-          {(['name', 'nation', 'tier'] as const).map((k) => (
-            <button key={k} type="button" aria-pressed={sort === k} onClick={() => setSort(k)}
-              className="btn-e xs font-mono capitalize">
-              {k}
-            </button>
-          ))}
-        </div>
+        <span className="font-mono text-[12px] tabular-nums store-text-muted">{active.length}</span>
+        <span className="ml-auto truncate text-[12px] store-text-muted" title="Shift or Cmd click to select several, then bench them together">
+          Shift-click to multi-select
+        </span>
       </header>
 
-      <ul className="flex-1 overflow-y-auto min-h-0 py-1" role="list">
-        {sorted.map((p) => {
-          const tier = tierById[p.id] ?? 'none'
-          const gap = statusById[p.id] === 'gap'
-          const sel = selectedId === p.id
-          const inMulti = multi.has(p.id)
-          return (
-            <li key={p.id}
-              className={`group flex items-center gap-2 px-3 h-9 transition-[background-color,opacity] duration-200 ${sel ? 'bg-[var(--store-surface-2)] shadow-[inset_2px_0_0_var(--wb-blue)]' : inMulti ? 'bg-[var(--store-surface-2)]' : 'hover:bg-[var(--store-surface-2)]'}`}>
-              <button type="button" onClick={(e) => click(e, p)} className="flex-1 min-w-0 flex items-center gap-2 text-left cursor-pointer" title={`${p.designation} · ${p.nation_name}`}>
-                <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: sideDot(p.force_side) }} aria-hidden />
-                <span className={`text-[12px] truncate ${sel ? 'text-[var(--store-ink)]' : 'store-text-body'}`}>{p.short_name}</span>
-                <span className="text-[11px] font-mono store-text-muted shrink-0">{p.nation_code}</span>
-                {gap ? <span className="h-2 w-2 rounded-full border shrink-0" style={{ borderColor: 'var(--store-ink-mute)' }} title="No sensors listed (OSINT gap)" aria-label="No sensors listed" /> : null}
-                <span className="ml-auto text-[11px] font-mono w-3 text-center shrink-0" style={{ color: TIER_COLOR[tier] }} title={TIER_TITLE[tier]}>{TIER_MARK[tier]}</span>
-              </button>
-              <button type="button" onClick={() => onBench([p.id])} aria-label={`Bench ${p.short_name}`}
-                className="h-7 w-7 inline-flex items-center justify-center rounded store-text-muted opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:store-text-body hover:bg-[var(--store-surface-3)] transition-opacity duration-150">
-                <X className="h-3.5 w-3.5" aria-hidden />
-              </button>
-            </li>
-          )
-        })}
-        {sorted.length === 0 ? <li className="px-3 py-6 text-[11px] font-mono store-text-muted text-center">Everything is benched.</li> : null}
-      </ul>
+      <ScrollArea frame={false} height="100%" className="min-h-0 flex-1">
+        <table className="dt compact table-fixed">
+          <caption className="sr-only">Platforms in the package</caption>
+          <colgroup>
+            <col />
+            <col style={{ width: 54 }} />
+            <col style={{ width: 58 }} />
+            <col style={{ width: 32 }} />
+          </colgroup>
+          <thead>
+            <tr>
+              <SortHeader k="name" label="Platform" sort={sort} setSort={setSort} />
+              <SortHeader k="nation" label="Nation" sort={sort} setSort={setSort} />
+              <SortHeader k="tier" label="Tier" sort={sort} setSort={setSort} />
+              <th scope="col"><span className="sr-only">Bench</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((p) => {
+              const tier = tierById[p.id] ?? 'none'
+              const gap = statusById[p.id] === 'gap'
+              const sel = selectedId === p.id
+              const inMulti = multi.has(p.id)
+              return (
+                <tr key={p.id} aria-selected={sel || inMulti} className="group cursor-pointer" onClick={(e) => click(e, p)}>
+                  <td>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); click(e, p) }}
+                      className="flex w-full min-w-0 items-center gap-2 text-left"
+                      title={`${p.designation} · ${p.nation_name}`}
+                    >
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: sideDot(p.force_side) }} aria-hidden />
+                      <span className={`min-w-0 truncate ${sel ? 'text-[var(--store-ink)]' : 'store-text-body'}`}>{p.short_name}</span>
+                      {gap ? (
+                        <span
+                          className="h-2 w-2 shrink-0 rounded-full border border-[var(--store-ink-mute)]"
+                          title="No sensors listed (OSINT gap)"
+                          aria-label="No sensors listed"
+                        />
+                      ) : null}
+                    </button>
+                  </td>
+                  <td className="mono store-text-muted">{p.nation_code}</td>
+                  <td>
+                    <span className="text-[12px]" style={{ color: TIER_COLOR[tier] }} title={TIER_TITLE[tier]}>
+                      {TIER_MARK[tier]}
+                    </span>
+                  </td>
+                  <td className="!px-1 text-right">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); onBench([p.id]) }}
+                      aria-label={`Bench ${p.short_name}`}
+                      title="Bench"
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-md store-text-muted opacity-0 transition-opacity duration-150 hover:bg-white/[0.08] hover:text-[var(--store-ink)] focus-visible:opacity-100 group-hover:opacity-100"
+                    >
+                      <X className="h-3.5 w-3.5" aria-hidden />
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
+            {sorted.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="!py-8 text-center store-text-muted">Everything is benched.</td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
+      </ScrollArea>
 
       {multi.size > 0 ? (
-        <div className="px-3 py-2 border-t store-line flex items-center gap-2">
-          <span className="text-[11px] font-mono store-text-muted">{multi.size} selected</span>
-          <button type="button" onClick={() => { onBench([...multi]); setMulti(new Set()) }} className="ml-auto text-[11px] font-mono px-2.5 py-1 min-h-8 rounded border border-[var(--wb-blue)] text-[var(--wb-blue)]">Bench selected</button>
+        <div className="flex items-center gap-2 border-t border-[var(--store-line)] px-4 py-2.5">
+          <span className="text-[12px] store-text-muted">
+            <span className="font-mono tabular-nums text-[var(--store-ink)]">{multi.size}</span> selected
+          </span>
+          <button
+            type="button"
+            onClick={() => { onBench([...multi]); setMulti(new Set()) }}
+            className="btn-glass primary ml-auto !min-h-8 !px-3 !text-[12px]"
+          >
+            Bench selected
+          </button>
         </div>
       ) : null}
 
-      <details className="border-t store-line" open={out.length > 0 || undefined}>
-        <summary className="flex items-center gap-2 px-3 min-h-10 cursor-pointer list-none [&::-webkit-details-marker]:hidden select-none">
+      <details className="border-t border-[var(--store-line)]" open={out.length > 0 || undefined}>
+        <summary className="flex min-h-11 cursor-pointer select-none list-none items-center gap-2 px-4 [&::-webkit-details-marker]:hidden">
           <span className="wb-pane-title">Benched</span>
-          <span className="text-[11px] font-mono tabular-nums store-text-muted">{out.length}</span>
+          <span className="font-mono text-[12px] tabular-nums store-text-muted">{out.length}</span>
           {out.length ? (
-            <button type="button" onClick={(e) => { e.preventDefault(); onRestore(out.map((p) => p.id)) }} className="ml-auto inline-flex items-center gap-1 text-[11px] font-mono store-text-muted hover:store-text-body">
-              <RotateCcw className="h-3 w-3" aria-hidden /> Restore all
+            <button
+              type="button"
+              onClick={(e) => { e.preventDefault(); onRestore(out.map((p) => p.id)) }}
+              className="fc-action ml-auto"
+            >
+              <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Restore all
             </button>
           ) : null}
         </summary>
-        <ul className="max-h-40 overflow-y-auto pb-1" role="list">
-          {out.map((p) => (
-            <li key={p.id} className="flex items-center gap-2 px-3 h-8 opacity-70">
-              <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: sideDot(p.force_side) }} aria-hidden />
-              <span className="text-[12px] truncate line-through decoration-[var(--store-ink-mute)] store-text-muted">{p.short_name}</span>
-              <span className="text-[11px] font-mono store-text-muted">{p.nation_code}</span>
-              <button type="button" onClick={() => onRestore([p.id])} aria-label={`Restore ${p.short_name}`} className="ml-auto text-[11px] font-mono text-[var(--wb-blue)] hover:underline">Restore</button>
-            </li>
-          ))}
-        </ul>
+        {out.length ? (
+          <ScrollArea frame={false} maxHeight="160px">
+            <ul className="pb-2" role="list">
+              {out.map((p) => (
+                <li key={p.id} className="flex h-8 items-center gap-2 px-4">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full opacity-60" style={{ background: sideDot(p.force_side) }} aria-hidden />
+                  <span className="min-w-0 truncate text-[13px] line-through decoration-[var(--store-ink-mute)] store-text-muted">{p.short_name}</span>
+                  <span className="font-mono text-[12px] store-text-muted">{p.nation_code}</span>
+                  <button
+                    type="button"
+                    onClick={() => onRestore([p.id])}
+                    aria-label={`Restore ${p.short_name}`}
+                    className="ml-auto text-[12px] text-[var(--wb-blue)] hover:underline"
+                  >
+                    Restore
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </ScrollArea>
+        ) : null}
       </details>
     </section>
   )

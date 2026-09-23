@@ -26,21 +26,19 @@ export default async function ForceNationPage({ params }: PageProps) {
       subtitle={force.nation.note}
       headerAction={
         <div className="flex flex-wrap gap-2">
-          <Link
-            href={`/force/compare?a=${force.nation.code}&b=${compareDefault}`}
-            className="rounded-lg border border-[var(--store-line)] px-3 py-1.5 text-xs text-white"
-          >
-            Compare vs {compareDefault}
+          <Link href={`/force/compare?a=${force.nation.code}&b=${compareDefault}`} className="btn-glass">
+            Compare with {compareDefault}
           </Link>
-          <Link href="/force" className="rounded-lg border border-[var(--store-line)] px-3 py-1.5 text-xs store-text-body">
+          <Link href="/force" className="btn-glass">
             All nations
           </Link>
         </div>
       }
     >
-      <p className="mb-4 text-[11px] font-mono store-text-muted">
-        Date of information: August 2026 · {force.catalog_count} catalog types · UNCLASSIFIED · manufacturer sheets are
-        Assessed/Estimated, never Confirmed
+      <p className="mb-5 text-[12px] store-text-muted">
+        Date of information <span className="font-mono">August 2026</span> ·{' '}
+        <span className="font-mono tabular-nums">{force.catalog_count}</span> catalogue types · UNCLASSIFIED ·
+        manufacturer sheets are Assessed or Estimated, never Confirmed
       </p>
       {force.catalog_count === 0 ? (
         <p className="text-sm store-text-body">
@@ -50,12 +48,16 @@ export default async function ForceNationPage({ params }: PageProps) {
         <>
           <CountryOrbatClient force={force} compareDefault={compareDefault} />
 
-          <h2 className="text-sm font-semibold text-white mt-8 mb-1">Battle plan — package composition</h2>
-          <p className="text-xs store-text-body mb-3 max-w-3xl">
-            Toggle platforms in and out of the package. The rollup tracks how many platforms sit on
-            each comms band and which sensor bands stay covered, so dropping an airframe shows its
-            cost immediately — a band held by one platform is flagged before it is lost.
-          </p>
+          <div className="mt-12 mb-4 max-w-[80ch]">
+            <h2 className="store-display text-[18px] font-semibold tracking-[-0.01em] text-[var(--store-ink)]">
+              Battle plan: package composition
+            </h2>
+            <p className="mt-1.5 text-[13px] leading-relaxed store-text-body">
+              Toggle platforms in and out of the package. The rollup tracks how many platforms sit on each comms band
+              and which sensor bands stay covered, so dropping an airframe shows its cost immediately. A band held by
+              one platform is flagged before it is lost.
+            </p>
+          </div>
           <OrbatComposer
             nationLabel={force.nation.name}
             platforms={force.platforms.map((p) => ({

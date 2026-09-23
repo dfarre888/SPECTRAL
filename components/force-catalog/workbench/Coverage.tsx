@@ -2,8 +2,10 @@
 
 /** Coverage: one bar per capability, ghosted against its pre-bench length. */
 import type { CoverageResult, CoverageRow, CoverageSort } from '@/lib/force-catalog/coverage-model'
+import { ScrollArea } from '@/components/ui/ScrollArea'
 
 const TIER_LABEL = { track: 'track', data: 'data', voice: 'voice', none: '' } as const
+const LOST = '#C4B5FD'
 
 function bandState(row: CoverageRow, focus: string | null): 'focused' | 'dimmed' | 'neutral' {
   if (!focus) return 'neutral'
@@ -33,63 +35,98 @@ export function Coverage({
     : result.sections
 
   return (
-    <section className="border-r fc-hair last:border-r-0 flex flex-col min-h-0 wb-pane" aria-label="Coverage">
-      <header className="flex items-center gap-3 px-3 py-2 border-b store-line whitespace-nowrap overflow-hidden">
+    <section className="store-panel wb-pane flex min-h-0 flex-col overflow-hidden rounded-2xl" aria-label="Coverage">
+      <header className="flex min-h-12 items-center gap-3 border-b border-[var(--store-line)] px-4 whitespace-nowrap">
         <span className="wb-pane-title">Coverage</span>
-        <span className="text-[11px] font-mono tabular-nums store-text-muted truncate" title="Share of rows with at least one active holder">
-          <span className="text-[var(--store-ink)]">{result.coveragePct}%</span> · {result.activeCount} active
-          {result.benchedCount ? <> · <span className="text-[var(--wb-ir)]">{result.benchedCount} benched</span></> : null}
-          {result.sensorGapCount ? <> · {result.sensorGapCount} without sensor data</> : null}
+        <span className="min-w-0 truncate text-[12px] store-text-muted" title="Share of rows with at least one active holder">
+          <span className="font-mono tabular-nums text-[var(--store-ink)]">{result.coveragePct}%</span>
+          <span className="mx-1.5">·</span>
+          <span className="font-mono tabular-nums">{result.activeCount}</span> active
+          {result.benchedCount ? (
+            <>
+              <span className="mx-1.5">·</span>
+              <span className="font-mono tabular-nums text-[#FCD34D]">{result.benchedCount}</span> benched
+            </>
+          ) : null}
+          {result.sensorGapCount ? (
+            <>
+              <span className="mx-1.5">·</span>
+              <span className="font-mono tabular-nums">{result.sensorGapCount}</span> without sensor data
+            </>
+          ) : null}
         </span>
-        <div className="ml-auto gap-1 shrink-0 wb-pane-tools" role="group" aria-label="Sort rows">
-          {([['coverage', 'Coverage'], ['rarest', 'Rarest'], ['az', 'A–Z']] as const).map(([k, label]) => (
-            <button key={k} type="button" aria-pressed={sort === k} onClick={() => onSort(k)}
-              className="btn-e xs font-mono">
+        <div className="seg sm wb-pane-tools ml-auto shrink-0" role="group" aria-label="Sort rows">
+          {([['coverage', 'Coverage'], ['rarest', 'Rarest'], ['az', 'A to Z']] as const).map(([k, label]) => (
+            <button key={k} type="button" aria-pressed={sort === k} onClick={() => onSort(k)}>
               {label}
             </button>
           ))}
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <ScrollArea frame={false} height="100%" className="min-h-0 flex-1">
         {sections.map((s) => (
           <div key={s.kind}>
-            <div className="sticky top-0 z-[1] bg-[var(--store-surface)] px-3 pt-3 pb-1 text-[11px] tracking-[0.02em] store-text-muted flex items-baseline gap-2">
+            <div className="sticky top-0 z-[2] flex items-baseline gap-2 border-b border-[var(--store-line)] bg-[rgba(12,12,15,0.86)] px-4 py-2 text-[12px] font-medium text-[var(--store-ink)] backdrop-blur-xl">
               {s.label}
-              <span className="font-mono tabular-nums normal-case tracking-normal">{s.rows.filter((r) => !r.noData).length}</span>
+              <span className="font-mono text-[12px] font-normal tabular-nums store-text-muted">{s.rows.filter((r) => !r.noData).length}</span>
             </div>
-            <ul role="list">
+            <ul role="list" className="px-2 py-1">
               {s.rows.map((row) => {
                 const lost = row.active === 0 && row.ghost > 0
                 const sel = selectedRowId === row.id
                 const w = (n: number) => `${(n / max) * 100}%`
                 return (
-                  <li key={row.id} data-band-state={bandState(row, focusBand)} className={`px-2 ${lost ? 'py-1' : ''}`}>
+                  <li key={row.id} data-band-state={bandState(row, focusBand)}>
                     <button
                       type="button"
                       onClick={() => onSelectRow(row)}
                       disabled={row.noData}
                       aria-pressed={sel}
-                      className={`w-full text-left grid grid-cols-[minmax(140px,1fr)_minmax(160px,3fr)_76px] items-center gap-3 px-2 rounded-lg min-h-10 transition-colors duration-150 ${
-                        lost ? 'gloss-tile purple' : sel ? 'bg-[var(--store-surface-2)] ring-1 ring-[var(--store-line-strong)]' : row.noData ? 'cursor-default' : 'hover:bg-[var(--store-surface-2)]'
+                      className={`grid min-h-11 w-full grid-cols-[minmax(150px,3fr)_minmax(72px,2fr)_60px] items-center gap-3 rounded-lg px-2 text-left transition-colors duration-150 ${
+                        sel
+                          ? 'bg-[#0E2238] ring-1 ring-[rgba(41,151,255,0.45)]'
+                          : row.noData
+                            ? 'cursor-default'
+                            : 'hover:bg-white/[0.04]'
                       }`}
                     >
                       <span className="min-w-0">
-                        <span className={`block truncate text-[12px] ${lost ? 'text-[var(--store-ink)]' : 'store-text-body'}`} title={row.label}>{row.label}</span>
-                        <span className="block truncate text-[11px] font-mono store-text-muted">
+                        <span
+                          className={`block truncate text-[13px] ${lost ? 'text-[var(--store-ink)]' : 'store-text-body'}`}
+                          title={row.label}
+                        >
+                          {row.label}
+                        </span>
+                        <span className="block truncate text-[11.5px] store-text-muted">
                           {row.tier ? TIER_LABEL[row.tier] : ''}
-                          {row.tier && row.gateways ? ` · ${row.gateways} gw` : ''}
+                          {row.tier && row.gateways ? ` · ${row.gateways} gateways` : ''}
                           {!row.tier && row.subtitle ? row.subtitle : ''}
-                          {lost ? <span className="text-[var(--store-ink-soft)]"> · lost with {row.lostWith.slice(0, 3).join(', ')}{row.lostWith.length > 3 ? ` +${row.lostWith.length - 3}` : ''}</span> : null}
+                          {lost ? (
+                            <span style={{ color: LOST }}>
+                              {row.tier || row.subtitle ? ' · ' : ''}lost with {row.lostWith.slice(0, 3).join(', ')}
+                              {row.lostWith.length > 3 ? ` +${row.lostWith.length - 3}` : ''}
+                            </span>
+                          ) : null}
                         </span>
                       </span>
-                      <span className="relative block h-1.5 rounded-full" style={{ background: row.noData ? 'transparent' : 'var(--store-surface-3)' }}>
+                      <span className="relative block h-1.5 rounded-full" style={{ background: row.noData ? 'transparent' : 'rgba(255,255,255,0.06)' }}>
                         {row.noData ? (
                           <span className="absolute inset-0 rounded-sm" style={{ background: 'repeating-linear-gradient(45deg, transparent 0 4px, var(--store-line) 4px 5px)' }} />
                         ) : (
                           <>
-                            <span className="absolute inset-y-0 left-0 rounded-full" style={{ width: w(row.ghost), background: lost ? 'rgba(255,255,255,0.22)' : 'var(--store-line-strong)', transition: 'width 250ms cubic-bezier(0.22,1,0.36,1)' }} />
-                            <span className={`absolute inset-y-0 left-0 flex rounded-full overflow-hidden ${sel ? 'wb-glow-blue' : ''}`} style={{ width: w(row.active), transition: 'width 250ms cubic-bezier(0.22,1,0.36,1)' }}>
+                            <span
+                              className="absolute inset-y-0 left-0 rounded-full"
+                              style={{
+                                width: w(row.ghost),
+                                background: lost ? 'rgba(196,181,253,0.35)' : 'var(--store-line-strong)',
+                                transition: 'width 250ms cubic-bezier(0.22,1,0.36,1)',
+                              }}
+                            />
+                            <span
+                              className={`absolute inset-y-0 left-0 flex overflow-hidden rounded-full ${sel ? 'wb-glow-blue' : ''}`}
+                              style={{ width: w(row.active), transition: 'width 250ms cubic-bezier(0.22,1,0.36,1)' }}
+                            >
                               <span style={{ flex: row.bySide.blue, background: 'var(--wb-blue)' }} />
                               <span style={{ flex: row.bySide.red, background: 'var(--wb-red)' }} />
                               <span style={{ flex: row.bySide.neutral, background: 'var(--wb-neutral)' }} />
@@ -97,9 +134,14 @@ export function Coverage({
                           </>
                         )}
                       </span>
-                      <span className={`text-right text-[12px] font-mono tabular-nums ${lost ? 'text-[var(--store-ink)]' : 'store-text-body'}`}>
-                        {row.noData ? <span className="store-text-muted text-[11px]">no data</span> : (
-                          <>{row.active}{row.ghost !== row.active ? <span className="store-text-muted">/{row.ghost}</span> : null}</>
+                      <span className="text-right font-mono text-[13px] tabular-nums">
+                        {row.noData ? (
+                          <span className="text-[12px] store-text-muted">no data</span>
+                        ) : (
+                          <>
+                            <span style={{ color: lost ? LOST : 'var(--store-ink)' }}>{row.active}</span>
+                            {row.ghost !== row.active ? <span className="store-text-muted">/{row.ghost}</span> : null}
+                          </>
                         )}
                       </span>
                     </button>
@@ -109,8 +151,10 @@ export function Coverage({
             </ul>
           </div>
         ))}
-        {sections.length === 0 ? <p className="px-3 py-8 text-center text-[11px] font-mono store-text-muted">No rows in the selected bands.</p> : null}
-      </div>
+        {sections.length === 0 ? (
+          <p className="px-4 py-10 text-center text-[13px] store-text-muted">No rows in the selected bands.</p>
+        ) : null}
+      </ScrollArea>
     </section>
   )
 }

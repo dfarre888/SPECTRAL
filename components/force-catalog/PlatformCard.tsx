@@ -10,7 +10,7 @@
  */
 
 import type { ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
-import { ConfidenceBadge } from '@/components/platforms/ConfidenceBadge'
+import { ConfidenceTag } from '@/components/force/ConfidenceTag'
 import { tierForKind } from '@/lib/coalition/datalink-matrix'
 import { BAND_KIND, sensorBands } from '@/lib/force-catalog/spectrum-bands'
 
@@ -46,11 +46,11 @@ export function PlatformCard({
   const body = (
     <div
       className={[
-        'h-full rounded-xl border transition-[border-color,background-color] duration-150 ease-out',
-        compact ? 'px-3 py-2.5 space-y-1.5' : 'px-4 py-3.5 space-y-2.5',
+        'store-panel h-full rounded-2xl transition-[border-color,box-shadow] duration-150 ease-out',
+        compact ? 'px-3.5 py-2.5 space-y-1.5' : 'px-4 py-3.5 space-y-2.5',
         selected
-          ? 'border-[rgba(41,151,255,0.6)] bg-[rgba(41,151,255,0.06)]'
-          : 'border-[var(--store-line)] hover:border-[var(--btn-line)]',
+          ? '!border-[rgba(41,151,255,0.7)] ring-1 ring-[rgba(41,151,255,0.45)]'
+          : 'hover:!border-[rgba(255,255,255,0.22)]',
       ].join(' ')}
     >
       <div className="flex items-start gap-2.5">
@@ -59,22 +59,22 @@ export function PlatformCard({
           <p className={`${compact ? 'text-[13px]' : 'text-[15px]'} store-display font-semibold tracking-[-0.01em] text-[var(--store-ink)] truncate`}>
             {p.short_name}
           </p>
-          <p className="text-[11px] font-mono store-text-muted truncate">
+          <p className="text-[12px] font-mono store-text-muted truncate">
             {p.designation} · {p.nation_code} · {p.domain} · {p.role.replace(/_/g, ' ')}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[11px] store-text-muted capitalize">{statusLabel(p.service_status)}</span>
-          <ConfidenceBadge confidence={p.data_confidence} />
+          <span className="text-[12px] store-text-muted capitalize">{statusLabel(p.service_status)}</span>
+          <ConfidenceTag confidence={p.data_confidence} />
         </div>
       </div>
 
       {!compact ? (
-        <p className="text-[12px] store-text-body leading-snug line-clamp-2 text-pretty pl-4">{p.open_source_summary}</p>
+        <p className="text-[13px] store-text-body leading-snug line-clamp-2 text-pretty pl-4">{p.open_source_summary}</p>
       ) : null}
 
       {comms.length ? (
-        <p className="text-[11px] font-mono store-text-muted pl-4 flex flex-wrap gap-x-3 gap-y-1">
+        <p className="text-[12px] font-mono store-text-muted pl-4 flex flex-wrap gap-x-3 gap-y-1">
           {comms.map((c) => {
             const tier = tierForKind(c.kind, c.standard)
             return (
@@ -95,7 +95,7 @@ export function PlatformCard({
             const kind = bands[0] ? BAND_KIND[bands[0]] ?? 'rf' : 'rf'
             return (
               <li key={s.id} className="text-[11px] store-text-muted flex items-center gap-2 min-w-0">
-                <span className="text-[11px] font-mono shrink-0" style={{ color: KIND[kind] }}>{bands.join('/') || '—'}</span>
+                <span className="text-[11px] font-mono shrink-0" style={{ color: KIND[kind] }}>{bands.join('/') || 'no band'}</span>
                 <span className="truncate">{s.label}</span>
               </li>
             )
@@ -117,7 +117,7 @@ export function PlatformCard({
       aria-pressed={Boolean(selected)}
       aria-label={selected ? `Close detail for ${p.short_name}` : `Open detail for ${p.short_name}`}
       onClick={() => onSelect(p)}
-      className="w-full h-full text-left cursor-pointer rounded-xl border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--wb-blue)] focus-visible:outline-offset-2"
+      className="w-full h-full text-left cursor-pointer rounded-2xl border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--wb-blue)] focus-visible:outline-offset-2"
     >
       {body}
     </button>

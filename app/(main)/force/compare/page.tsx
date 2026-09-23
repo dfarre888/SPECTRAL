@@ -27,7 +27,7 @@ export default async function ForceComparePage({ searchParams }: PageProps) {
       eyebrow="Nation vs nation"
       eyebrowIcon={<GitCompare className="h-3.5 w-3.5" />}
       title={`${a.nation.shortName} vs ${b.nation.shortName}`}
-      subtitle="Effect matrix. No winner banner. Type counts are catalog depth, not a campaign result."
+      subtitle="Effect matrix by capability, with no winner banner. Type counts are catalogue depth, not a campaign result."
     >
       <NationCompareClient compare={compare} theatreId={theatre?.id ?? 'scs'} />
     </HubPageShell>

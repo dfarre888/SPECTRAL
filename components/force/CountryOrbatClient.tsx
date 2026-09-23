@@ -2,14 +2,14 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { Plane, Ship, Mountain } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { DataTable, type DataColumn } from '@/components/ui/DataTable'
 import { StorePanel } from '@/components/ui/store-surface'
+import { ConfidenceTag } from '@/components/force/ConfidenceTag'
 import { SendToMapBar } from '@/components/force/SendToMapBar'
-import { confidenceVariant } from '@/lib/force/effects'
 import { FORCE_EFFECT_LABEL, type ForceDomain, type ForcePlatform, type NationForce } from '@/lib/force/types'
 
-const DOMAIN_ICON = { air: Plane, ground: Mountain, maritime: Ship }
+const DOMAIN_LABEL: Record<ForceDomain, string> = { air: 'Air', ground: 'Ground', maritime: 'Maritime' }
+const CONF_RANK: Record<string, number> = { Confirmed: 0, Assessed: 1, Reported: 2, Suspected: 3, Estimated: 4 }
 
 interface CountryOrbatClientProps {
   force: NationForce
@@ -33,146 +33,209 @@ export function CountryOrbatClient({ force, compareDefault }: CountryOrbatClient
 
   const red = force.nation.side === 'red' ? force.nation.code : compareDefault
   const blue = force.nation.side === 'red' ? compareDefault : force.nation.code
+  const sideHue = force.nation.side === 'red' ? 'red' : 'blue'
+  const maxEffect = Math.max(1, ...force.effects.map((e) => e.count))
+
+  const columns = useMemo<DataColumn<ForcePlatform>[]>(
+    () => [
+      {
+        key: 'type',
+        header: 'Type',
+        width: 300,
+        sticky: true,
+        sortValue: (p) => p.designation,
+        cell: (p) => {
+          const on = selected.includes(p.id)
+          return (
+            <div className="flex min-w-0 items-center gap-3">
+              <input
+                type="checkbox"
+                checked={on}
+                onChange={() => toggle(p.id)}
+                aria-label={`Include ${p.short_name} in the package`}
+                className="h-3.5 w-3.5 shrink-0 cursor-pointer accent-[var(--wb-blue)]"
+              />
+              <div className="min-w-0">
+                <span className="primary block truncate" title={p.designation}>{p.designation}</span>
+                <span className="meta truncate font-mono">
+                  {p.short_name}
+                  {p.ioc_year ? ` · IOC ${p.ioc_year}` : ''}
+                  {p.program_stage ? ` · ${p.program_stage.replace(/_/g, ' ')}` : ''}
+                </span>
+              </div>
+            </div>
+          )
+        },
+      },
+      {
+        key: 'domain',
+        header: 'Domain',
+        width: 110,
+        sortValue: (p) => p.domain,
+        cell: (p) => <span className="mono">{p.domain}</span>,
+      },
+      {
+        key: 'effect',
+        header: 'Effect',
+        width: 210,
+        sortValue: (p) => FORCE_EFFECT_LABEL[p.effect],
+        cell: (p) => FORCE_EFFECT_LABEL[p.effect],
+      },
+      {
+        key: 'conf',
+        header: 'Confidence',
+        width: 130,
+        sortValue: (p) => CONF_RANK[p.nato_confidence] ?? 9,
+        cell: (p) => <ConfidenceTag nato={p.nato_confidence} />,
+      },
+      {
+        key: 'comms',
+        header: 'Comms',
+        width: 90,
+        align: 'right',
+        sortValue: (p) => p.comms.length,
+        cell: (p) => <span className={p.comms.length ? 'text-[var(--store-ink)]' : 'store-text-muted'}>{p.comms.length}</span>,
+      },
+      {
+        key: 'sensors',
+        header: 'Sensors',
+        width: 90,
+        align: 'right',
+        sortValue: (p) => p.sensors.length,
+        cell: (p) => <span className={p.sensors.length ? 'text-[var(--store-ink)]' : 'store-text-muted'}>{p.sensors.length}</span>,
+      },
+      {
+        key: 'linked',
+        header: 'Spectral library',
+        width: 150,
+        cell: (p) =>
+          p.linked_uas[0] ? (
+            <Link href={`/platforms/${p.linked_uas[0].id}`} className="text-[var(--wb-blue)] hover:underline">
+              Linked UAS
+            </Link>
+          ) : (
+            <span className="store-text-muted">Not linked</span>
+          ),
+      },
+    ],
+    // Selection drives the checkbox state; toggle only closes over setSelected.
+    [selected],
+  )
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-3">
-        {force.domain.map((d) => {
-          const Icon = DOMAIN_ICON[d.domain]
-          return (
-            <button
-              key={d.domain}
-              type="button"
-              onClick={() => setDomain(domain === d.domain ? 'all' : d.domain)}
-              className="text-left"
-            >
-              <StorePanel className={`p-4 ${domain === d.domain ? 'border-[rgba(41,151,255,0.5)]' : ''}`}>
-                <div className="mb-2 flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-[var(--wb-blue)]" />
-                  <p className="text-[11px] font-mono uppercase store-text-muted">{d.domain}</p>
-                </div>
-                <p className="font-mono text-2xl font-bold text-white tabular-nums">{d.count}</p>
-                <p className="text-[11px] font-mono store-text-muted">
-                  {d.high} high · {d.medium} med · {d.estimated} est
-                </p>
-              </StorePanel>
-            </button>
-          )
-        })}
+    <div className="space-y-6">
+      {/* Headline numbers: catalogue depth by domain, then linkage. */}
+      <div className="fc-inst border-y fc-hair" aria-label="Force instruments">
+        <div>
+          <div className="k">Catalogue types</div>
+          <div className={`v ${sideHue}`}>{force.catalog_count}</div>
+          <div className="d">{force.comms_count} comms rows · {force.sensors_count} sensors</div>
+        </div>
+        {force.domain.map((d) => (
+          <div key={d.domain}>
+            <div className="k">{DOMAIN_LABEL[d.domain]}</div>
+            <div className="v">{d.count}</div>
+            <div className="d">{d.high} high · {d.medium} med · {d.estimated} est</div>
+          </div>
+        ))}
+        <div>
+          <div className="k">Linked in Spectral</div>
+          <div className="v">{force.linked_uas.length}</div>
+          <div className="d">UAS · {force.linked_cuas.length} C-UAS systems</div>
+        </div>
       </div>
 
-      <StorePanel className="p-4">
-        <p className="mb-2 text-[11px] font-mono tracking-[0.02em] store-text-muted">Effects</p>
-        <div className="grid gap-2 md:grid-cols-2">
-          {force.effects.map((e) => (
-            <div key={e.effect} className="flex justify-between gap-3 text-xs">
-              <span className="store-text-body">{FORCE_EFFECT_LABEL[e.effect]}</span>
-              <span className="font-mono text-white tabular-nums">{e.count}</span>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <StorePanel className="p-5">
+          <div className="mb-3 flex items-baseline justify-between gap-3">
+            <p className="wb-pane-title">Effects</p>
+            <p className="text-[12px] store-text-muted">Type count is catalogue depth, not ORBAT strength</p>
+          </div>
+          <ul className="space-y-2.5">
+            {force.effects.map((e) => (
+              <li key={e.effect} className="grid grid-cols-[minmax(0,1fr)_minmax(80px,40%)_36px] items-center gap-3 text-[13px]">
+                <span className="truncate store-text-body">{FORCE_EFFECT_LABEL[e.effect]}</span>
+                <span className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+                  <span
+                    className="block h-full rounded-full"
+                    style={{ width: `${(e.count / maxEffect) * 100}%`, background: `var(--wb-${sideHue})` }}
+                  />
+                </span>
+                <span className="text-right font-mono tabular-nums text-[var(--store-ink)]">{e.count}</span>
+              </li>
+            ))}
+          </ul>
+        </StorePanel>
+
+        <StorePanel className="space-y-4 p-5">
+          <div>
+            <div className="mb-2.5 flex items-baseline justify-between gap-3">
+              <p className="wb-pane-title">Linked UAS</p>
+              <p className="text-[12px] store-text-muted">Spectral platform library</p>
             </div>
-          ))}
-        </div>
-        <p className="mt-3 text-[11px] store-text-muted">
-          {force.comms_count} comms rows · {force.sensors_count} sensors · type count is catalog depth, not ORBAT strength.
-        </p>
-      </StorePanel>
-
-      {force.linked_uas.length > 0 && (
-        <StorePanel className="p-4">
-          <p className="mb-2 text-[11px] font-mono tracking-[0.02em] store-text-muted">Linked UAS (Spectral library)</p>
-          <div className="flex flex-wrap gap-2">
-            {force.linked_uas.slice(0, 16).map((u) => (
-              <Link
-                key={u.id}
-                href={`/platforms/${u.id}`}
-                className="rounded-md border border-[var(--store-line)] px-2 py-1 text-[11px] text-cyan hover:underline"
-              >
-                {u.name}
-              </Link>
-            ))}
+            {force.linked_uas.length ? (
+              <div className="flex flex-wrap gap-1.5">
+                {force.linked_uas.slice(0, 16).map((u) => (
+                  <Link key={u.id} href={`/platforms/${u.id}`} className="btn-e xs" title={u.name}>
+                    <span className="max-w-[240px] truncate">{u.name}</span>
+                  </Link>
+                ))}
+                {force.linked_uas.length > 16 ? (
+                  <span className="self-center text-[12px] store-text-muted">+{force.linked_uas.length - 16} more</span>
+                ) : null}
+              </div>
+            ) : (
+              <p className="text-[12px] store-text-muted">No UAS linked to this nation yet.</p>
+            )}
+          </div>
+          <div className="border-t border-[var(--store-line)] pt-4">
+            <p className="wb-pane-title mb-2.5">Linked C-UAS</p>
+            {force.linked_cuas.length ? (
+              <div className="flex flex-wrap gap-1.5">
+                {force.linked_cuas.slice(0, 12).map((u) => (
+                  <Link key={u.id} href={`/defeat?system=${u.id}`} className="btn-e xs" title={u.name}>
+                    <span className="max-w-[240px] truncate">{u.name}</span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[12px] store-text-muted">No C-UAS systems linked to this nation yet.</p>
+            )}
           </div>
         </StorePanel>
-      )}
-
-      {force.linked_cuas.length > 0 && (
-        <StorePanel className="p-4">
-          <p className="mb-2 text-[11px] font-mono tracking-[0.02em] store-text-muted">Linked C-UAS</p>
-          <div className="flex flex-wrap gap-2">
-            {force.linked_cuas.slice(0, 12).map((u) => (
-              <Link
-                key={u.id}
-                href={`/defeat?system=${u.id}`}
-                className="rounded-md border border-[var(--store-line)] px-2 py-1 text-[11px] text-white"
-              >
-                {u.name}
-              </Link>
-            ))}
-          </div>
-        </StorePanel>
-      )}
+      </div>
 
       <SendToMapBar blue={blue} red={red} selectedIds={selected} />
 
-      <div className="overflow-x-auto rounded-2xl border border-[var(--store-line)]">
-        <table className="w-full min-w-[720px] text-left text-xs">
-          <thead className="bg-[var(--store-surface-2)] font-mono text-[11px] uppercase store-text-muted">
-            <tr>
-              <th className="px-3 py-2">Pkg</th>
-              <th className="px-3 py-2">Type</th>
-              <th className="px-3 py-2">Domain</th>
-              <th className="px-3 py-2">Effect</th>
-              <th className="px-3 py-2">Conf</th>
-              <th className="px-3 py-2">Comms / sensors</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((p) => (
-              <PlatformRow key={p.id} platform={p} checked={selected.includes(p.id)} onToggle={() => toggle(p.id)} />
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="seg sm" role="group" aria-label="Filter by domain">
+            <button type="button" aria-pressed={domain === 'all'} onClick={() => setDomain('all')}>
+              All <span className="font-mono tabular-nums opacity-70">{force.platforms.length}</span>
+            </button>
+            {force.domain.map((d) => (
+              <button
+                key={d.domain}
+                type="button"
+                aria-pressed={domain === d.domain}
+                onClick={() => setDomain(d.domain)}
+              >
+                {DOMAIN_LABEL[d.domain]} <span className="font-mono tabular-nums opacity-70">{d.count}</span>
+              </button>
             ))}
-          </tbody>
-        </table>
+          </div>
+          <p className="ml-auto text-[12px] store-text-muted">
+            <span className="font-mono tabular-nums text-[var(--store-ink)]">{selected.length}</span> in the package · tick a row to add or remove it
+          </p>
+        </div>
+        <DataTable
+          rows={rows}
+          columns={columns}
+          rowKey={(p) => p.id}
+          caption={`${force.nation.name} catalogue types`}
+          compact
+        />
       </div>
     </div>
-  )
-}
-
-function PlatformRow({
-  platform,
-  checked,
-  onToggle,
-}: {
-  platform: ForcePlatform
-  checked: boolean
-  onToggle: () => void
-}) {
-  return (
-    <tr className="border-t border-[var(--store-line)]">
-      <td className="px-3 py-2">
-        <input type="checkbox" checked={checked} onChange={onToggle} aria-label={`Select ${platform.short_name}`} />
-      </td>
-      <td className="px-3 py-2">
-        <p className="font-medium text-white">{platform.designation}</p>
-        <p className="font-mono text-[11px] store-text-muted">
-          {platform.short_name}
-          {platform.ioc_year ? ` · IOC ${platform.ioc_year}` : ''}
-          {platform.program_stage ? ` · ${platform.program_stage}` : ''}
-        </p>
-      </td>
-      <td className="px-3 py-2 font-mono store-text-body">{platform.domain}</td>
-      <td className="px-3 py-2 store-text-body">{FORCE_EFFECT_LABEL[platform.effect]}</td>
-      <td className="px-3 py-2">
-        <Badge variant={confidenceVariant(platform.nato_confidence)}>{platform.nato_confidence}</Badge>
-      </td>
-      <td className="px-3 py-2 font-mono store-text-muted">
-        {platform.comms.length}/{platform.sensors.length}
-        {platform.linked_uas[0] ? (
-          <>
-            {' · '}
-            <Link href={`/platforms/${platform.linked_uas[0].id}`} className="text-cyan hover:underline">
-              UAS
-            </Link>
-          </>
-        ) : null}
-      </td>
-    </tr>
   )
 }

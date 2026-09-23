@@ -30,26 +30,28 @@ export function SendToMapBar({ blue, red, selectedIds, theatreId = 'north-aus' }
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] p-3 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <p className="text-xs font-medium text-white">Send package to map</p>
-        <p className="text-[11px] font-mono store-text-muted">
-          {selectedIds.length} selected · {blue} vs {red} · unmapped types list as ORBAT-only
+    <div className="store-panel flex flex-col gap-3 rounded-2xl px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
+        <p className="wb-pane-title">Send package to map</p>
+        <p className="mt-1 text-[12px] store-text-muted">
+          <span className="font-mono tabular-nums text-[var(--store-ink)]">{selectedIds.length}</span> selected
+          <span className="mx-1.5">·</span>
+          <span className="font-mono text-[var(--wb-blue)]">{blue}</span>
+          <span className="mx-1">vs</span>
+          <span className="font-mono text-[var(--wb-red)]">{red}</span>
+          <span className="mx-1.5">·</span>
+          types without a map model list as ORBAT only
         </p>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Send to theatre">
         {FORCE_THEATRES.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => send(t.id)}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] ${
-              t.id === theatre.id
-                ? 'bg-[var(--store-accent)] font-medium text-black'
-                : 'border border-[rgba(41,151,255,0.5)] bg-[var(--store-surface)] text-white hover:bg-[var(--store-surface-2)]'
-            }`}
+            className={t.id === theatre.id ? 'btn-glass primary' : 'btn-glass'}
           >
-            <Map className="h-3 w-3" />
+            <Map className="h-3.5 w-3.5" aria-hidden />
             {t.name}
           </button>
         ))}

@@ -17,6 +17,8 @@ import {
   Rocket,
   Shield,
   SlidersHorizontal,
+  Table2,
+  X,
 } from 'lucide-react'
 import type {
   Bloc,
@@ -36,6 +38,7 @@ import { buildForceInstruments } from '@/lib/force-catalog/force-instruments'
 import { ForceCatalogFilters } from '@/components/force-catalog/ForceCatalogFilters'
 import { ForceCatalogOverview } from '@/components/force-catalog/ForceCatalogOverview'
 import { ForceCatalogGrid } from '@/components/force-catalog/ForceCatalogGrid'
+import { ForceCatalogTable } from '@/components/force-catalog/ForceCatalogTable'
 import { ForceCatalogFuture } from '@/components/force-catalog/ForceCatalogFuture'
 import { Workbench } from '@/components/force-catalog/workbench/Workbench'
 import { ForceCatalogDetail } from '@/components/force-catalog/ForceCatalogDetail'
@@ -47,6 +50,18 @@ import {
 } from '@/lib/force-catalog/battle-picture-model'
 import { toggle } from '@/components/force-catalog/force-catalog-ui'
 import type { CatalogDensity } from '@/components/force-catalog/PlatformCard'
+
+const CHIP_LABEL: Record<string, string> = {
+  side: 'Side',
+  bloc: 'Bloc',
+  nation: 'Nation',
+  domain: 'Domain',
+  role: 'Role',
+  status: 'Status',
+  stage: 'Stage',
+  conf: 'Confidence',
+  search: 'Search',
+}
 
 const TABS: HubTabDef[] = [
   { key: 'battle', label: 'Battle Picture', icon: Crosshair },
@@ -66,7 +81,9 @@ export function ForceCatalogClient({ bundle }: Props) {
   const isPopout = searchParams.get('popout') === '1'
 
   const [search, setSearch] = useState('')
-  const [density, setDensity] = useState<CatalogDensity>('grid')
+  /** Force and By Nation views: one sortable table, or the card wall. */
+  const [layout, setLayout] = useState<'table' | CatalogDensity>('table')
+  const density: CatalogDensity = layout === 'compact' ? 'compact' : 'grid'
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const selectedIdRef = useRef<string | null>(null)
   const cardRefs = useRef(new Map<string, HTMLButtonElement>())
@@ -81,6 +98,7 @@ export function ForceCatalogClient({ bundle }: Props) {
   const [confidence, setConfidence] = useState<DataConfidence[]>([])
   const [activePreset, setActivePreset] = useState<ScenarioPresetId | null>(null)
   const [compareScopeIds, setCompareScopeIds] = useState<string[] | null>(null)
+  const [railOpen, setRailOpen] = useState(false)
 
   const nationByCode = useMemo(() => {
     return new Map(CATALOG_NATIONS.map((n) => [n.code, n]))
@@ -253,6 +271,8 @@ export function ForceCatalogClient({ bundle }: Props) {
   }, [selectedId, selected])
 
   const onSelect = useCallback((p: ForceCatalogPlatformFull) => {
+    // Opening a dossier needs the width more than the rail does.
+    if (selectedIdRef.current !== p.id) setRailOpen(false)
     setSelectedId((prev) => (prev === p.id ? null : p.id))
   }, [])
 
@@ -269,24 +289,24 @@ export function ForceCatalogClient({ bundle }: Props) {
     else cardRefs.current.delete(id)
   }, [])
 
-  // Compare needs the width for three panes; the rail collapses to a strip there.
-  const [railOpen, setRailOpen] = useState(false)
-  const hideFilterRail = activeTab === 'battle' || isPopout || (activeTab === 'compare' && !railOpen)
+  // Tables and the workbench need the width; the rail collapses to a strip
+  // and opens on demand. Battle Picture carries its own scenario row.
+  const hideFilterRail = activeTab === 'battle' || isPopout || !railOpen
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 min-h-0" data-testid="force-catalog-client">
-      {activeTab === 'compare' && !isPopout ? (
+      {activeTab !== 'battle' && !isPopout ? (
         <button
           type="button"
           onClick={() => setRailOpen((v) => !v)}
           aria-expanded={railOpen}
           aria-controls="force-catalog-filter-rail"
-          className="hidden lg:flex shrink-0 w-9 self-start sticky top-4 flex-col items-center gap-2 py-3 rounded-2xl store-panel store-text-muted hover:store-text-body transition-colors duration-150"
+          className="hidden lg:flex shrink-0 w-10 self-start sticky top-2 flex-col items-center gap-2.5 py-3.5 rounded-2xl store-panel store-text-body hover:text-[var(--store-ink)] transition-colors duration-150"
           title={railOpen ? 'Hide filters' : 'Show filters'}
         >
           <SlidersHorizontal className="h-4 w-4" aria-hidden />
-          {activeChips.length > 0 ? <span className="text-[11px] font-mono tabular-nums store-accent">{activeChips.length}</span> : null}
-          <span className="text-[11px] font-mono [writing-mode:vertical-rl] rotate-180">Filters</span>
+          {activeChips.length > 0 ? <span className="text-[12px] font-mono tabular-nums text-[var(--wb-blue)]">{activeChips.length}</span> : null}
+          <span className="text-[12px] [writing-mode:vertical-rl] rotate-180">{railOpen ? 'Hide filters' : 'Filters'}</span>
         </button>
       ) : null}
       {!hideFilterRail ? (
@@ -345,73 +365,82 @@ export function ForceCatalogClient({ bundle }: Props) {
         />
       ) : null}
 
-      <div className="flex-1 min-w-0 space-y-3">
+      <div className="flex-1 min-w-0 space-y-4">
         {!isPopout ? <InstrumentRow inst={instruments} /> : null}
-        <div className="flex items-center border-b fc-hair gap-6 pb-3">
-        <nav className="fc-tabs" role="tablist" aria-label="Force catalogue sections">
-          {TABS.filter((t) => t.visible !== false).map((t) => {
-            return (
-              <button
-                key={t.key}
-                type="button"
-                role="tab"
-                aria-selected={activeTab === t.key}
-                data-testid={`force-catalog-tab-${t.key}`}
-                onClick={() => {
-                  if (t.key !== 'compare') setCompareScopeIds(null)
-                  setTab(t.key)
-                }}
-                className="fc-tab"
-              >
-                {t.label}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
+          <nav className="seg" role="tablist" aria-label="Force catalogue sections">
+            {TABS.filter((t) => t.visible !== false).map((t) => {
+              const Icon = t.icon
+              return (
+                <button
+                  key={t.key}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === t.key}
+                  data-testid={`force-catalog-tab-${t.key}`}
+                  onClick={() => {
+                    if (t.key !== 'compare') setCompareScopeIds(null)
+                    setTab(t.key)
+                  }}
+                >
+                  {Icon ? <Icon className="h-3.5 w-3.5 opacity-80" aria-hidden /> : null}
+                  {t.label}
+                </button>
+              )
+            })}
+          </nav>
+          <div className="ml-auto flex items-center gap-4">
+            {activeTab === 'force' || activeTab === 'nation' ? (
+              <div className="seg sm" role="group" aria-label="Layout">
+                <button type="button" aria-pressed={layout === 'table'} onClick={() => setLayout('table')}>
+                  <Table2 className="h-3.5 w-3.5" aria-hidden />
+                  Table
+                </button>
+                <button type="button" aria-pressed={layout === 'grid'} onClick={() => setLayout('grid')}>
+                  <LayoutGrid className="h-3.5 w-3.5" aria-hidden />
+                  Cards
+                </button>
+                <button type="button" aria-pressed={layout === 'compact'} onClick={() => setLayout('compact')}>
+                  <List className="h-3.5 w-3.5" aria-hidden />
+                  Compact
+                </button>
+              </div>
+            ) : null}
+            {activeTab === 'compare' || isPopout ? (
+              <button type="button" onClick={openPopout} className="fc-action" aria-label={isPopout ? 'Re-open pop out window' : 'Pop out current tab into a second window'} data-testid="pcm-popout">
+                <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                Pop out
               </button>
-            )
-          })}
-        </nav>
-        <div className="ml-auto flex items-center gap-5">
-          {activeTab === 'force' || activeTab === 'nation' ? (
-            <div className="flex items-center gap-3" role="group" aria-label="Card density">
-              <button type="button" aria-pressed={density === 'grid'} aria-label="Comfortable grid density" onClick={() => setDensity('grid')} className="fc-action">
-                <LayoutGrid className="h-3.5 w-3.5" aria-hidden />
-              </button>
-              <button type="button" aria-pressed={density === 'compact'} aria-label="Compact list density" onClick={() => setDensity('compact')} className="fc-action">
-                <List className="h-3.5 w-3.5" aria-hidden />
-              </button>
-            </div>
-          ) : null}
-          {activeTab === 'compare' || isPopout ? (
-            <button type="button" onClick={openPopout} className="fc-action" aria-label={isPopout ? 'Re-open pop out window' : 'Pop out current tab into a second window'} data-testid="pcm-popout">
-              <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-              Pop out
-            </button>
-          ) : null}
-        </div>
+            ) : null}
+          </div>
         </div>
 
         {activeChips.length > 0 && activeTab !== 'battle' ? (
-          <div className="flex flex-wrap gap-1 items-center">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="mr-1 text-[12px] store-text-muted">
+              <span className="font-mono tabular-nums text-[var(--store-ink)]">{filtered.length}</span> of{' '}
+              <span className="font-mono tabular-nums">{bundle.platforms.length}</span> platforms
+            </span>
             {activeChips.map((c) => (
               <button
                 key={`${c.type}-${c.value}`}
                 type="button"
                 onClick={() => clearChip(c.type, c.value)}
                 aria-label={`Remove ${c.type} filter ${c.value}`}
-                className="text-[11px] font-mono px-2 py-1 min-h-10 rounded border store-line store-text-muted hover:store-text-body transition-[color,border-color] duration-150 ease-out"
+                className="btn-e xs"
               >
-                {c.type}:{c.value} ×
+                <span className="store-text-muted">{CHIP_LABEL[c.type] ?? c.type}</span>
+                <span className="text-[var(--store-ink)]">{c.value.replace(/_/g, ' ')}</span>
+                <X className="h-3 w-3" aria-hidden />
               </button>
             ))}
-            <button
-              type="button"
-              onClick={clearAll}
-              className="text-[11px] font-mono px-2 py-1 min-h-10 rounded border store-accent-border store-accent"
-            >
+            <button type="button" onClick={clearAll} className="fc-action ml-1">
               Clear all
             </button>
           </div>
         ) : null}
 
-        <div className="flex flex-col xl:flex-row gap-4 min-h-0">
+        <div className="flex flex-col xl:flex-row gap-4 min-h-0 pt-1">
           <div
             className="flex-1 min-w-0"
             role="tabpanel"
@@ -437,7 +466,28 @@ export function ForceCatalogClient({ bundle }: Props) {
                 futureCount={filteredFuture.length}
               />
             ) : null}
-            {activeTab === 'force' ? (
+            {activeTab === 'force' && layout === 'table' ? (
+              <ForceCatalogTable
+                platforms={filtered}
+                nationByCode={nationByCode}
+                selectedId={selectedId}
+                onSelect={onSelect}
+                onClear={clearAll}
+                registerCardRef={registerCardRef}
+              />
+            ) : null}
+            {activeTab === 'nation' && layout === 'table' ? (
+              <ForceCatalogTable
+                platforms={filtered}
+                nationByCode={nationByCode}
+                selectedId={selectedId}
+                onSelect={onSelect}
+                onClear={clearAll}
+                registerCardRef={registerCardRef}
+                byNation
+              />
+            ) : null}
+            {activeTab === 'force' && layout !== 'table' ? (
               <ForceCatalogGrid
                 groups={byNation}
                 nationByCode={nationByCode}
@@ -465,7 +515,7 @@ export function ForceCatalogClient({ bundle }: Props) {
                 registerCardRef={registerCardRef}
               />
             ) : null}
-            {activeTab === 'nation' ? (
+            {activeTab === 'nation' && layout !== 'table' ? (
               <ForceCatalogGrid
                 groups={byNation}
                 nationByCode={nationByCode}

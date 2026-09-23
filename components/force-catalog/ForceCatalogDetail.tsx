@@ -4,15 +4,34 @@
  * Callers: ForceCatalogClient
  * Purpose: Selected platform detail aside with Escape / focus management
  * API/schema: ForceCatalogPlatformFull (read-only display)
- * User: Force Catalogue UI polish v2 — React review HIGH fixes (focus steal / return)
  */
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 import type { ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'
-import { ConfidenceBadge } from '@/components/platforms/ConfidenceBadge'
+import { ScrollArea } from '@/components/ui/ScrollArea'
 import { StorePanel } from '@/components/ui/store-surface'
-import { CommsChip, SensorChip, sideEdgeClass } from '@/components/force-catalog/force-catalog-ui'
+import { ConfidenceTag } from '@/components/force/ConfidenceTag'
+import { CommsChip, SensorChip, SideDot } from '@/components/force-catalog/force-catalog-ui'
+import { pretty } from '@/components/force-catalog/ForceCatalogFilters'
+
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex items-baseline gap-3 py-1.5">
+      <dt className="w-20 shrink-0 text-[12px] store-text-muted">{label}</dt>
+      <dd className="min-w-0 text-[13px] text-[var(--store-ink)]">{children}</dd>
+    </div>
+  )
+}
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="space-y-2 border-t border-[var(--store-line)] pt-4">
+      <h2 className="text-[12px] font-medium store-text-muted">{title}</h2>
+      {children}
+    </section>
+  )
+}
 
 export function ForceCatalogDetail({
   platform,
@@ -36,107 +55,111 @@ export function ForceCatalogDetail({
 
   return (
     <aside
-      className="w-full lg:w-[320px] shrink-0 lg:sticky lg:top-4 lg:self-start"
+      className="w-full shrink-0 lg:sticky lg:top-2 lg:w-[340px] lg:self-start"
       aria-label="Platform detail"
     >
-      <StorePanel className={`p-4 space-y-3 ${sideEdgeClass(platform.force_side)}`}>
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <p className="text-sm font-semibold store-display store-text-body text-balance">
+      <StorePanel className="overflow-hidden">
+        <div className="flex items-start gap-3 border-b border-[var(--store-line)] px-5 py-4">
+          <SideDot side={platform.force_side} className="mt-2" />
+          <div className="min-w-0 flex-1">
+            <p className="store-display text-[17px] font-semibold leading-tight tracking-[-0.01em] text-[var(--store-ink)] text-balance">
               {platform.short_name}
             </p>
-            <p className="text-[11px] font-mono store-text-muted">{platform.designation}</p>
+            <p className="mt-1 font-mono text-[12px] store-text-muted">{platform.designation}</p>
           </div>
           <button
             ref={closeRef}
             type="button"
             onClick={onClose}
             aria-label="Close platform detail"
-            className="shrink-0 rounded border store-line p-2 min-h-10 min-w-10 inline-flex items-center justify-center store-text-muted hover:store-text-body transition-[color,border-color] duration-150 ease-out"
+            className="glass-icon-btn shrink-0"
           >
             <X className="h-4 w-4" aria-hidden />
           </button>
         </div>
 
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-[11px] font-mono uppercase px-1.5 py-0.5 rounded border store-line store-panel-inner">
-            {platform.service_status}
-          </span>
-          <span className="text-[11px] font-mono store-text-muted">
-            {platform.nation_code} · {platform.domain} · {platform.role} · {platform.force_side}
-          </span>
-          <ConfidenceBadge confidence={platform.data_confidence} />
-        </div>
+        <ScrollArea frame={false} maxHeight="calc(100vh - 190px)">
+          <div className="space-y-4 px-5 py-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="tag">{pretty(platform.service_status)}</span>
+              <ConfidenceTag confidence={platform.data_confidence} />
+              <span className={`tag ${platform.force_side === 'blue' ? 'blue' : platform.force_side === 'red' ? 'red' : ''}`}>
+                {pretty(platform.force_side)}
+              </span>
+            </div>
 
-        <p className="text-[11px] store-text-muted leading-relaxed text-pretty">
-          {platform.open_source_summary}
-        </p>
+            <p className="text-[13px] leading-relaxed store-text-body text-pretty">{platform.open_source_summary}</p>
 
-        {platform.manufacturer ? (
-          <p className="text-[11px] font-mono store-text-muted">OEM · {platform.manufacturer}</p>
-        ) : null}
-        {platform.ioc_year != null ? (
-          <p className="text-[11px] font-mono store-text-muted tabular-nums">IOC · {platform.ioc_year}</p>
-        ) : null}
+            <dl>
+              <Field label="Nation">
+                <span className="font-mono">{platform.nation_code}</span>
+                <span className="store-text-muted"> · {platform.nation_name}</span>
+              </Field>
+              <Field label="Domain">{pretty(platform.domain)}</Field>
+              <Field label="Role">{pretty(platform.role)}</Field>
+              {platform.manufacturer ? <Field label="OEM">{platform.manufacturer}</Field> : null}
+              {platform.ioc_year != null ? (
+                <Field label="IOC">
+                  <span className="font-mono tabular-nums">{platform.ioc_year}</span>
+                </Field>
+              ) : null}
+            </dl>
 
-        <div className="space-y-1">
-          <h2 className="text-[11px] font-mono tracking-[0.02em] store-text-muted">Comms</h2>
-          <div className="flex flex-wrap gap-1">
-            {platform.comms.length ? (
-              platform.comms.map((c) => <CommsChip key={c.id} label={c.standard ?? c.label} />)
-            ) : (
-              <span className="text-[11px] font-mono store-text-muted">None listed</span>
-            )}
-          </div>
-        </div>
+            <Section title={`Comms · ${platform.comms.length}`}>
+              <div className="flex flex-wrap gap-1.5">
+                {platform.comms.length ? (
+                  platform.comms.map((c) => <CommsChip key={c.id} label={c.standard ?? c.label} />)
+                ) : (
+                  <span className="text-[12px] store-text-muted">None listed</span>
+                )}
+              </div>
+            </Section>
 
-        <div className="space-y-1">
-          <h2 className="text-[11px] font-mono tracking-[0.02em] store-text-muted">Sensors</h2>
-          <div className="flex flex-wrap gap-1">
-            {platform.sensors.length ? (
-              platform.sensors.map((s) => <SensorChip key={s.id} sensor={s} />)
-            ) : (
-              <span className="text-[11px] font-mono store-text-muted">None listed</span>
-            )}
-          </div>
-        </div>
+            <Section title={`Sensors · ${platform.sensors.length}`}>
+              <div className="flex flex-wrap gap-1.5">
+                {platform.sensors.length ? (
+                  platform.sensors.map((s) => <SensorChip key={s.id} sensor={s} />)
+                ) : (
+                  <span className="text-[12px] store-text-muted">None listed in the open-source dossier</span>
+                )}
+              </div>
+            </Section>
 
-        {platform.sources?.length ? (
-          <div className="space-y-1">
-            <h2 className="text-[11px] font-mono tracking-[0.02em] store-text-muted">Sources</h2>
-            <ul className="space-y-1">
-              {platform.sources.map((s) => (
-                <li key={s} className="text-[11px] font-mono store-text-muted text-pretty">
-                  {s}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-
-        {platform.future ? (
-          <div className="space-y-1 border-t store-line pt-3">
-            <h2 className="text-[11px] font-mono tracking-[0.02em] store-text-muted">
-              Future program
-            </h2>
-            <p className="text-sm store-display store-text-body text-balance">
-              {platform.future.program_name}
-            </p>
-            <p className="text-[11px] font-mono store-text-muted">
-              {platform.future.lead_contractor ?? '—'} · IOC {platform.future.ioc_est ?? 'TBD'}
-            </p>
-            {platform.future.partner_nations?.length ? (
-              <p className="text-[11px] font-mono store-text-muted">
-                Partners: {platform.future.partner_nations.join(', ')}
-              </p>
+            {platform.future ? (
+              <Section title="Future program">
+                <p className="text-[14px] font-medium text-[var(--store-ink)] text-balance">{platform.future.program_name}</p>
+                <dl>
+                  <Field label="Lead">{platform.future.lead_contractor ?? 'Not stated'}</Field>
+                  <Field label="IOC">
+                    <span className="font-mono">{platform.future.ioc_est ?? 'TBD'}</span>
+                  </Field>
+                  {platform.future.partner_nations?.length ? (
+                    <Field label="Partners">
+                      <span className="font-mono">{platform.future.partner_nations.join(', ')}</span>
+                    </Field>
+                  ) : null}
+                </dl>
+                {platform.future.status_note ? (
+                  <p className="text-[12px] leading-relaxed store-text-body text-pretty">{platform.future.status_note}</p>
+                ) : null}
+              </Section>
             ) : null}
-            {platform.future.status_note ? (
-              <p className="text-[11px] store-text-muted text-pretty">{platform.future.status_note}</p>
-            ) : null}
-          </div>
-        ) : null}
 
-        <p className="text-[11px] font-mono store-text-muted break-all">{platform.id}</p>
+            {platform.sources?.length ? (
+              <Section title="Sources">
+                <ul className="space-y-1">
+                  {platform.sources.map((s) => (
+                    <li key={s} className="break-words font-mono text-[11.5px] leading-relaxed store-text-muted">
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </Section>
+            ) : null}
+
+            <p className="break-all border-t border-[var(--store-line)] pt-3 font-mono text-[11px] store-text-muted">{platform.id}</p>
+          </div>
+        </ScrollArea>
       </StorePanel>
     </aside>
   )

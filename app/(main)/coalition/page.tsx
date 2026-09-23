@@ -17,7 +17,7 @@ export default function CoalitionPage() {
     <HubPageShell
       eyebrow="Coalition"
       title="Comms Linkage"
-      subtitle="Who can actually share a picture — track, data and voice connectivity across a coalition, placed on the spectrum they occupy."
+      subtitle="Who can actually share a picture: track, data and voice connectivity across a coalition, placed on the spectrum it occupies."
     >
       <CoalitionWorkspace platforms={platforms} nations={nations} />
     </HubPageShell>

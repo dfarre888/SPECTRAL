@@ -2,12 +2,15 @@
 
 import { useMemo, useState } from 'react'
 import { clsx } from 'clsx'
+import { AlertTriangle, Check } from 'lucide-react'
+import { ScrollArea } from '@/components/ui/ScrollArea'
 import {
   composeOrbat,
   diffRollups,
   type ComposerPlatform,
 } from '@/lib/force-catalog/orbat-composer'
 import { focusState, multiFocusState } from '@/lib/ui/band-focus'
+import { pretty } from '@/components/force-catalog/ForceCatalogFilters'
 
 interface OrbatComposerProps {
   platforms: ComposerPlatform[]
@@ -15,20 +18,70 @@ interface OrbatComposerProps {
 }
 
 const TIER_META = [
-  { key: 'track', label: 'Track', hint: 'Machine track exchange', color: 'var(--store-accent)' },
-  { key: 'data', label: 'Data', hint: 'Digital, not track quality', color: '#22d3ee' },
-  { key: 'voice', label: 'Voice', hint: 'Human relay only', color: '#4ade80' },
-  { key: 'none', label: 'No fit', hint: 'Nothing recorded', color: '#71717a' },
+  { key: 'track', label: 'Track', hint: 'Machine track exchange', color: 'var(--wb-track)' },
+  { key: 'data', label: 'Data', hint: 'Digital, not track quality', color: 'var(--wb-data)' },
+  { key: 'voice', label: 'Voice', hint: 'Human relay only', color: '#4ADE80' },
+  { key: 'none', label: 'No fit', hint: 'Nothing recorded', color: 'var(--store-ink-mute)' },
 ] as const
 
+// Band hues are data colour. Orange is reserved for the IR family.
 const BAND_TONE: Record<string, string> = {
-  HF: '#f472b6', VHF: '#fb923c', UHF: '#facc15', L: '#4ade80',
+  HF: '#f472b6', VHF: '#a3e635', UHF: '#facc15', L: '#4ade80',
   S: '#22d3ee', C: '#60a5fa', X: '#a78bfa', Ku: '#e879f9', Ka: '#f87171',
   IR: '#fb7185', EO: '#94a3b8', VIS: '#cbd5e1', UV: '#c084fc',
 }
 
 function bandTone(b: string): string {
   return BAND_TONE[b] ?? '#94a3b8'
+}
+
+function BandBars({
+  rows,
+  max,
+  band,
+  setBand,
+  singlePoint = [],
+}: {
+  rows: { band: string; platformCount: number; kinds: string[] }[]
+  max: number
+  band: string | null
+  setBand: (b: string | null) => void
+  singlePoint?: string[]
+}) {
+  return (
+    <div className="space-y-1">
+      {rows.map((b) => {
+        const spof = singlePoint.includes(b.band)
+        return (
+          <div
+            key={b.band}
+            className="band-row -mx-1.5 flex min-h-7 cursor-default items-center gap-3 rounded-md px-1.5"
+            title={b.kinds.join(', ')}
+            data-band-state={focusState(b.band, band)}
+            onMouseEnter={() => setBand(b.band)}
+            onMouseLeave={() => setBand(null)}
+            onFocus={() => setBand(b.band)}
+            onBlur={() => setBand(null)}
+            tabIndex={0}
+          >
+            <span className="w-9 shrink-0 font-mono text-[12px]" style={{ color: bandTone(b.band) }}>{b.band}</span>
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
+              <div
+                className="h-full rounded-full"
+                style={{ width: `${(b.platformCount / max) * 100}%`, background: bandTone(b.band), opacity: 0.85 }}
+              />
+            </div>
+            <span className="w-7 text-right font-mono text-[12px] tabular-nums text-[var(--store-ink)]">{b.platformCount}</span>
+            <span className="w-4 shrink-0">
+              {spof ? (
+                <AlertTriangle className="h-3.5 w-3.5 text-[#FBBF24]" aria-label="Only one platform holds this band" />
+              ) : null}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
@@ -62,37 +115,37 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
   }, [platforms])
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
-      {/* ── Package composition ───────────────────────────────────────────── */}
-      <div className="store-panel rounded-2xl p-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-          <div>
-            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)]">
-              Package composition
+    <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
+      {/* Package composition */}
+      <div className="store-panel flex min-h-0 flex-col overflow-hidden rounded-2xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--store-line)] px-4 py-3">
+          <div className="min-w-0">
+            <p className="wb-pane-title">{nationLabel} ORBAT</p>
+            <p className="text-[12px] store-text-muted">
+              <span className="font-mono tabular-nums text-[var(--store-ink)]">{current.selectedCount}</span> of{' '}
+              <span className="font-mono tabular-nums">{current.totalCount}</span> in the package
             </p>
-            <h3 className="store-display text-sm font-semibold text-white mt-0.5">
-              {nationLabel} ORBAT
-            </h3>
           </div>
           <div className="flex gap-1.5">
-            <button type="button" onClick={() => setSelected(new Set(allIds))}
-              className="px-2 py-1 rounded-lg text-[11px] font-mono store-panel-inner text-[var(--store-ink)] hover:border-[rgba(41,151,255,0.5)] border border-transparent">
-              All
+            <button type="button" onClick={() => setSelected(new Set(allIds))} className="btn-e sm">
+              Select all
             </button>
-            <button type="button" onClick={() => setSelected(new Set())}
-              className="px-2 py-1 rounded-lg text-[11px] font-mono store-panel-inner text-[var(--store-ink)] hover:border-[rgba(41,151,255,0.5)] border border-transparent">
-              None
+            <button type="button" onClick={() => setSelected(new Set())} className="btn-e sm">
+              Clear
             </button>
           </div>
         </div>
 
-        <div className="max-h-[520px] overflow-y-auto pr-1 space-y-3">
+        <ScrollArea frame={false} maxHeight="min(680px, calc(100vh - 200px))">
           {byDomain.map(([domain, list]) => (
             <div key={domain}>
-              <p className="text-[11px] font-mono tracking-[0.02em] store-text-muted mb-1 sticky top-0 bg-[var(--store-surface)] py-1">
-                {domain} · {list.filter((p) => selected.has(p.id)).length}/{list.length}
+              <p className="sticky top-0 z-[2] flex items-baseline gap-2 border-b border-[var(--store-line)] bg-[rgba(12,12,15,0.86)] px-4 py-2 text-[12px] font-medium capitalize text-[var(--store-ink)] backdrop-blur-xl">
+                {domain}
+                <span className="font-mono text-[11px] font-normal tabular-nums store-text-muted">
+                  {list.filter((p) => selected.has(p.id)).length}/{list.length}
+                </span>
               </p>
-              <div className="space-y-1">
+              <ul className="px-2 py-1.5">
                 {list.map((p) => {
                   const on = selected.has(p.id)
                   const bands = [
@@ -103,181 +156,132 @@ export function OrbatComposer({ platforms, nationLabel }: OrbatComposerProps) {
                     ),
                   ]
                   return (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => toggle(p.id)}
-                      data-band-state={on ? multiFocusState(bands, band) : 'neutral'}
-                      className={clsx(
-                        'w-full flex items-center gap-2.5 rounded-lg px-2.5 py-2 border text-left transition-colors',
-                        on
-                          ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
-                          : 'border-[var(--store-line)] opacity-45 hover:opacity-70',
-                      )}
-                    >
-                      <span
+                    <li key={p.id}>
+                      <button
+                        type="button"
+                        onClick={() => toggle(p.id)}
+                        aria-pressed={on}
+                        data-band-state={on ? multiFocusState(bands, band) : 'neutral'}
                         className={clsx(
-                          'w-3.5 h-3.5 rounded-[3px] border shrink-0 flex items-center justify-center text-[11px]',
-                          on
-                            ? 'bg-[var(--store-accent)] border-[var(--wb-blue)] text-black'
-                            : 'border-slate-500',
+                          'flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left transition-[background-color,opacity] duration-150 hover:bg-white/[0.04]',
+                          !on && 'opacity-50 hover:opacity-80',
                         )}
                       >
-                        {on ? '✓' : ''}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        {/* Readability: names are near-white, not muted grey. */}
-                        <span className="block text-[13px] text-[var(--store-ink)] font-medium truncate" title={p.label}>
-                          {p.label}
+                        <span
+                          className={clsx(
+                            'flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border',
+                            on ? 'border-[var(--wb-blue)] bg-[var(--wb-blue)] text-white' : 'border-[var(--store-ink-mute)]',
+                          )}
+                          aria-hidden
+                        >
+                          {on ? <Check className="h-3 w-3" strokeWidth={3} /> : null}
                         </span>
-                        <span className="block text-[11px] font-mono store-text-muted truncate">
-                          {p.role} · {p.comms.length} comms · {p.sensors.length} sensors
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[13px] font-medium text-[var(--store-ink)]" title={p.label}>
+                            {p.label}
+                          </span>
+                          <span className="block truncate text-[11.5px] store-text-muted">
+                            {pretty(p.role)} · {p.comms.length} comms · {p.sensors.length} sensors
+                          </span>
                         </span>
-                      </span>
-                      <span className="flex gap-0.5 shrink-0">
-                        {bands.slice(0, 4).map((b) => (
-                          <span
-                            key={b}
-                            className="w-1.5 h-4 rounded-sm"
-                            style={{ background: bandTone(b) }}
-                            title={b}
-                            onMouseEnter={() => setBand(b)}
-                            onMouseLeave={() => setBand(null)}
-                          />
-                        ))}
-                      </span>
-                    </button>
+                        <span className="flex shrink-0 gap-2 font-mono text-[11px]">
+                          {bands.slice(0, 4).map((b) => (
+                            <span
+                              key={b}
+                              style={{ color: bandTone(b) }}
+                              title={`${b} band`}
+                              onMouseEnter={() => setBand(b)}
+                              onMouseLeave={() => setBand(null)}
+                            >
+                              {b}
+                            </span>
+                          ))}
+                        </span>
+                      </button>
+                    </li>
                   )
                 })}
-              </div>
+              </ul>
             </div>
           ))}
-        </div>
+        </ScrollArea>
       </div>
 
-      {/* ── Live rollup ───────────────────────────────────────────────────── */}
+      {/* Live rollup */}
       <div className="space-y-4">
-        <div className="store-panel rounded-2xl p-4">
-          <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)] mb-2">
-            Connectivity
-          </p>
-          <p className="text-2xl font-bold text-white font-mono tabular-nums">
+        <div className="store-panel rounded-2xl p-5">
+          <p className="wb-pane-title">Connectivity</p>
+          <p className="mt-2 store-display text-[32px] font-semibold leading-none tracking-[-0.02em] tabular-nums text-[var(--store-ink)]">
             {current.selectedCount}
-            <span className="text-sm store-text-muted"> / {current.totalCount}</span>
+            <span className="ml-1 text-[15px] font-medium store-text-muted">/ {current.totalCount}</span>
           </p>
-          <div className="grid grid-cols-4 gap-1.5 mt-3">
-            {TIER_META.map((t) => (
-              <div key={t.key} className="store-panel-inner rounded-lg p-2 text-center" title={t.hint}>
-                <p className="text-base font-bold font-mono tabular-nums" style={{ color: t.color }}>
+          <div className="mt-4 grid grid-cols-4 border-t border-[var(--store-line)] pt-3">
+            {TIER_META.map((t, i) => (
+              <div key={t.key} className={clsx('px-2', i > 0 && 'border-l border-[var(--store-line)]')} title={t.hint}>
+                <p className="font-mono text-[18px] font-semibold tabular-nums" style={{ color: t.color }}>
                   {current.tiers[t.key]}
                 </p>
-                <p className="text-[11px] font-mono store-text-muted">{t.label}</p>
+                <p className="text-[12px] store-text-muted">{t.label}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="store-panel rounded-2xl p-4">
-          <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)] mb-2">
-            Platforms per comms band
-          </p>
+        <div className="store-panel rounded-2xl p-5">
+          <p className="wb-pane-title mb-3">Platforms per comms band</p>
           {current.commsBands.length === 0 ? (
-            <p className="text-xs store-text-muted">No comms fit in the current package.</p>
+            <p className="text-[12px] store-text-muted">No comms fit in the current package.</p>
           ) : (
-            <div className="space-y-1.5">
-              {current.commsBands.map((b) => {
-                const spof = current.singlePointBands.includes(b.band)
-                return (
-                  <div
-                    key={b.band}
-                    className="flex items-center gap-2 band-row rounded px-1 -mx-1 cursor-default"
-                    title={b.kinds.join(', ')}
-                    data-band-state={focusState(b.band, band)}
-                    onMouseEnter={() => setBand(b.band)}
-                    onMouseLeave={() => setBand(null)}
-                    onFocus={() => setBand(b.band)}
-                    onBlur={() => setBand(null)}
-                    tabIndex={0}
-                  >
-                    <span className="w-10 text-[11px] font-mono text-[var(--store-ink)] shrink-0">{b.band}</span>
-                    <div className="flex-1 h-4 rounded bg-black/30 overflow-hidden">
-                      <div className="h-full rounded" style={{
-                        width: `${(b.platformCount / maxBandCount) * 100}%`,
-                        background: bandTone(b.band),
-                        opacity: 0.75,
-                      }} />
-                    </div>
-                    <span className="w-7 text-right text-[11px] font-mono text-[var(--store-ink)]">{b.platformCount}</span>
-                    {spof && <span className="text-[11px] font-mono text-amber-400" title="Only one platform holds this band">⚠</span>}
-                  </div>
-                )
-              })}
-            </div>
+            <BandBars
+              rows={current.commsBands}
+              max={maxBandCount}
+              band={band}
+              setBand={setBand}
+              singlePoint={current.singlePointBands}
+            />
           )}
           {current.singlePointBands.length > 0 && (
-            <p className="mt-2 text-[11px] text-amber-300 leading-snug">
-              ⚠ {current.singlePointBands.join(', ')} held by a single platform — losing it removes the band.
+            <p className="mt-3 text-[12px] leading-snug text-[#FCD34D]">
+              <span className="font-mono">{current.singlePointBands.join(', ')}</span> held by a single platform. Losing it
+              removes the band.
             </p>
           )}
         </div>
 
-        <div className="store-panel rounded-2xl p-4">
-          <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)] mb-2">
-            Sensor bands covered
-          </p>
+        <div className="store-panel rounded-2xl p-5">
+          <p className="wb-pane-title mb-3">Sensor bands covered</p>
           {current.sensorBands.length === 0 ? (
-            <p className="text-xs store-text-muted">No sensor fit recorded in the current package.</p>
+            <p className="text-[12px] store-text-muted">No sensor fit recorded in the current package.</p>
           ) : (
-            <div className="space-y-1.5">
-              {current.sensorBands.map((b) => (
-                <div
-                  key={b.band}
-                  className="flex items-center gap-2 band-row rounded px-1 -mx-1 cursor-default"
-                  title={b.kinds.join(', ')}
-                  data-band-state={focusState(b.band, band)}
-                  onMouseEnter={() => setBand(b.band)}
-                  onMouseLeave={() => setBand(null)}
-                  onFocus={() => setBand(b.band)}
-                  onBlur={() => setBand(null)}
-                  tabIndex={0}
-                >
-                  <span className="w-10 text-[11px] font-mono text-[var(--store-ink)] shrink-0">{b.band}</span>
-                  <div className="flex-1 h-4 rounded bg-black/30 overflow-hidden">
-                    <div className="h-full rounded" style={{
-                      width: `${(b.platformCount / maxSensorCount) * 100}%`,
-                      background: bandTone(b.band),
-                      opacity: 0.75,
-                    }} />
-                  </div>
-                  <span className="w-7 text-right text-[11px] font-mono text-[var(--store-ink)]">{b.platformCount}</span>
-                </div>
-              ))}
-            </div>
+            <BandBars rows={current.sensorBands} max={maxSensorCount} band={band} setBand={setBand} />
           )}
         </div>
 
         {(delta.bandsLost.length > 0 || delta.trackDelta !== 0) && (
-          <div className="store-panel rounded-2xl p-4 border border-red-500/25">
-            <p className="text-[11px] font-mono tracking-[0.02em] text-red-300 mb-1.5">
-              Versus full ORBAT
-            </p>
+          <div className="store-panel rounded-2xl p-5">
+            <p className="wb-pane-title mb-2">Versus full ORBAT</p>
             {delta.bandsLost.length > 0 && (
-              <p className="text-xs text-red-200 leading-snug">
-                Lost bands: <span className="font-mono">{delta.bandsLost.join(', ')}</span>
+              <p className="text-[13px] leading-snug store-text-body">
+                Lost bands: <span className="font-mono text-[var(--wb-red)]">{delta.bandsLost.join(', ')}</span>
               </p>
             )}
             {delta.trackDelta !== 0 && (
-              <p className="text-xs store-text-body mt-1">
-                Track-capable platforms {delta.trackDelta > 0 ? '+' : ''}{delta.trackDelta}
+              <p className="mt-1 text-[13px] store-text-body">
+                Track-capable platforms{' '}
+                <span className={clsx('font-mono tabular-nums', delta.trackDelta < 0 ? 'text-[var(--wb-red)]' : 'text-[var(--wb-blue)]')}>
+                  {delta.trackDelta > 0 ? '+' : ''}
+                  {delta.trackDelta}
+                </span>
               </p>
             )}
           </div>
         )}
 
         {(current.noCommsIds.length > 0 || current.noSensorIds.length > 0) && (
-          <p className="text-[11px] font-mono store-text-muted leading-relaxed">
-            {current.noCommsIds.length} selected with no comms fit ·{' '}
-            {current.noSensorIds.length} with no sensor fit. Absent data, not absent capability.
+          <p className="text-[12px] leading-relaxed store-text-muted">
+            <span className="font-mono tabular-nums">{current.noCommsIds.length}</span> selected with no comms fit ·{' '}
+            <span className="font-mono tabular-nums">{current.noSensorIds.length}</span> with no sensor fit. Absent data,
+            not absent capability.
           </p>
         )}
       </div>

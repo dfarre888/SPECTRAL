@@ -1,18 +1,19 @@
 import { cn } from '@/lib/utils'
 import type { CurrencyDot, OperationalStatus } from '@/lib/dashboard/types'
 
+// Tag tones from the Obsidian system: text + hairline, never a filled slab.
 const STATUS_STYLES: Record<OperationalStatus, string> = {
-  'in-flight': 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400',
-  'pre-flight': 'border-indigo-500/40 bg-indigo-500/10 text-indigo-300',
-  idle: 'border-slate-500/40 bg-slate-500/10 store-text-body',
-  grounded: 'border-red-500/40 bg-red-500/10 text-red-400',
-  pending: 'border-amber-500/40 bg-amber-500/10 text-amber-400',
-  alert: 'border-red-500/50 bg-red-500/15 text-red-300',
+  'in-flight': 'green',
+  'pre-flight': 'violet',
+  idle: '',
+  grounded: 'red',
+  pending: 'amber',
+  alert: 'red',
 }
 
 const STATUS_LABEL: Record<OperationalStatus, string> = {
-  'in-flight': 'In-Flight',
-  'pre-flight': 'Pre-Flight',
+  'in-flight': 'In flight',
+  'pre-flight': 'Pre-flight',
   idle: 'Idle',
   grounded: 'Grounded',
   pending: 'Pending',
@@ -23,7 +24,7 @@ export function StatusBadge({ status, className }: { status: OperationalStatus; 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-mono font-semibold uppercase tracking-wide',
+        'tag shrink-0',
         STATUS_STYLES[status],
         className,
       )}

@@ -66,7 +66,7 @@ export function HubTabBar({
 
   return (
     <div
-      className={cn('hub-tab-bar', className)}
+      className={cn('seg max-w-full overflow-x-auto', className)}
       role="tablist"
       aria-label="Section navigation"
     >
@@ -80,7 +80,7 @@ export function HubTabBar({
             aria-selected={active}
             data-testid={`${testIdPrefix}-${key}`}
             onClick={() => onTabChange(key)}
-            className={cn('inline-flex items-center', active ? 'hub-tab-active' : 'hub-tab-inactive')}
+            className="inline-flex items-center"
           >
             {label}
           </button>

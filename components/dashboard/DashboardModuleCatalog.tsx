@@ -1,6 +1,6 @@
 import {
   Database, Satellite, Shield, Globe,
-  TrendingUp, AlertTriangle, CheckCircle,
+  AlertTriangle, CheckCircle,
 } from 'lucide-react'
 import Link from 'next/link'
 import { ModuleCard } from '@/components/catalog/ModuleCard'
@@ -60,39 +60,30 @@ export function DashboardModuleCatalog({ stats }: DashboardModuleCatalogProps) {
         <StoreFilterSidebar>
           <StoreFilterSection label="Status">
             {sidebarStats.map(({ label, value, sub, icon: Icon, trend }) => (
-              <StorePanel key={label} className="p-3 mb-2 last:mb-0">
-                <div className="flex items-start justify-between mb-2">
-                  <Icon className="w-4 h-4 text-[var(--wb-blue)]" />
-                  <span className="text-[11px] font-mono text-[var(--store-success)] flex items-center gap-1">
-                    <TrendingUp className="w-2.5 h-2.5" />
-                    {trend}
-                  </span>
+              <div key={label} className="flex items-center gap-3 px-1 py-2.5 border-b fc-hair last:border-0">
+                <Icon className="w-4 h-4 store-text-muted shrink-0" aria-hidden />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13px] text-[var(--store-ink)]">{label}</p>
+                  <p className="text-[11.5px] store-text-muted">{sub} · {trend}</p>
                 </div>
-                <p className="text-xl font-bold text-white font-mono tabular-nums">{value}</p>
-                <p className="text-[11px] store-text-body">{label}</p>
-                <p className="text-[11px] store-text-muted font-mono">{sub}</p>
-              </StorePanel>
+                <p className="text-[18px] font-semibold store-display text-[var(--store-ink)] tabular-nums">{value}</p>
+              </div>
             ))}
           </StoreFilterSection>
 
           <StoreFilterSection label="Threat alert">
-            <StorePanel className="p-3 border-[rgba(41,151,255,0.5)]">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="w-3.5 h-3.5 text-[var(--wb-blue)]" />
-                <span className="text-[11px] font-semibold text-[var(--wb-blue)] tracking-[0.02em]">
-                  COTS jammer risk
-                </span>
+            <div className="store-panel-inner rounded-xl p-3.5">
+              <div className="flex items-center gap-2 mb-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-[#FBBF24]" aria-hidden />
+                <span className="text-[13px] font-semibold text-[var(--store-ink)]">COTS jammer risk</span>
               </div>
-              <p className="text-[11px] store-text-body leading-relaxed">
+              <p className="text-[12.5px] store-text-body leading-relaxed">
                 Tier 3 COTS jammers defeat commercial UAS at &lt;$100 exchange ratio.
               </p>
-              <Link
-                href="/gnss"
-                className="mt-2 block text-[11px] font-mono text-cyan hover:opacity-80"
-              >
-                → GNSS jammer database
+              <Link href="/gnss" className="mt-2 inline-block text-[12.5px] text-[var(--wb-blue)] hover:underline underline-offset-2">
+                GNSS jammer database
               </Link>
-            </StorePanel>
+            </div>
           </StoreFilterSection>
         </StoreFilterSidebar>
       }
@@ -128,17 +119,16 @@ export function DashboardModuleCatalog({ stats }: DashboardModuleCatalogProps) {
             <Link
               key={id}
               href="/conflicts"
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--store-surface-2)] transition-colors group"
+              className="flex items-center gap-3 px-2.5 py-2.5 rounded-lg hover:bg-[rgba(255,255,255,0.05)] transition-colors group"
             >
               {status === 'ongoing' ? (
-                <AlertTriangle className="w-3.5 h-3.5 text-[var(--wb-blue)] shrink-0" />
+                <AlertTriangle className="w-3.5 h-3.5 text-[#FBBF24] shrink-0" aria-label="Ongoing" />
               ) : (
-                <CheckCircle className="w-3.5 h-3.5 text-[var(--store-success)] shrink-0" />
+                <CheckCircle className="w-3.5 h-3.5 text-[#4ADE80] shrink-0" aria-label="Closed" />
               )}
-              <p className="text-xs store-text-body group-hover:text-white flex-1">{label}</p>
-              <span className="text-[11px] font-mono store-text-muted store-panel-inner px-2 py-0.5 rounded">
-                {type}
-              </span>
+              <p className="text-[13px] store-text-body group-hover:text-[var(--store-ink)] flex-1">{label.replace(' — ', ': ')}</p>
+              <span className="tag capitalize">{status}</span>
+              <span className="tag">{type}</span>
             </Link>
           ))}
         </div>

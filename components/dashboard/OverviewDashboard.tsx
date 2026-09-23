@@ -17,6 +17,8 @@ export interface OverviewDashboardProps {
   onSelectAsset?: (id: string) => void
   recentPlanId?: string
   mapCenter?: { lon: number; lat: number }
+  /** The page already shows the instruments (home hero); skip the metric row. */
+  instrumentsElsewhere?: boolean
 }
 
 export function OverviewDashboard({
@@ -29,20 +31,21 @@ export function OverviewDashboard({
   onSelectAsset,
   recentPlanId,
   mapCenter,
+  instrumentsElsewhere = false,
 }: OverviewDashboardProps) {
   const activeId = selectedAssetId ?? assets[0]?.id ?? ''
   const selected = assets.find((a) => a.id === activeId) ?? assets[0]
 
   return (
     <section aria-label="Command center overview">
-      <div className="mb-6">
-        <h2 className="text-[18px] store-display font-semibold tracking-[-0.01em] text-[var(--store-ink)] m-0">{copy.commandTitle}</h2>
-        <p className="text-xs store-text-body mt-1 max-w-2xl">{copy.commandSubtitle}</p>
+      <div className={instrumentsElsewhere ? 'mb-4' : 'mb-6'}>
+        <h2 className="text-[19px] store-display font-semibold tracking-[-0.02em] text-[var(--store-ink)] m-0">{copy.commandTitle}</h2>
+        <p className="text-[13px] store-text-body mt-1 max-w-2xl">{copy.commandSubtitle.replace(' — ', ': ')}</p>
       </div>
 
-      <MetricSummaryBar metrics={metrics} copy={copy} />
+      {!instrumentsElsewhere && <MetricSummaryBar metrics={metrics} copy={copy} />}
 
-      <div className="mt-6 grid grid-cols-1 xl:grid-cols-12 gap-4 items-stretch">
+      <div className={instrumentsElsewhere ? 'grid grid-cols-1 xl:grid-cols-12 gap-4 items-stretch' : 'mt-6 grid grid-cols-1 xl:grid-cols-12 gap-4 items-stretch'}>
         <div className="xl:col-span-4 min-h-[420px]">
           <OperatorReadinessPanel operators={operators} copy={copy} />
         </div>
@@ -55,7 +58,7 @@ export function OverviewDashboard({
           />
         </div>
         <div className="xl:col-span-3 min-h-[420px] flex flex-col gap-3">
-          <div className="flex flex-col gap-1.5 max-h-[120px] overflow-y-auto pr-0.5">
+          <div className="flex flex-col gap-1 max-h-[132px] overflow-y-auto pr-0.5" role="listbox" aria-label="Tracked assets">
             {assets.map((a) => {
               const batteryColor =
                 a.batteryHealthPct >= 80
@@ -69,21 +72,17 @@ export function OverviewDashboard({
                   key={a.id}
                   type="button"
                   onClick={() => onSelectAsset?.(a.id)}
-                  className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
-                    isActive
-                      ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
-                      : 'border-[var(--store-line)] bg-[var(--store-surface-2)] hover:border-[rgba(41,151,255,0.5)]/50'
-                  }`}
+                  role="option"
+                  aria-selected={isActive}
+                  className="shell-nav-item !mx-0 !min-h-[40px] justify-between text-left"
                 >
                   <div className="min-w-0">
-                    <p
-                      className={`text-[11px] font-medium truncate ${isActive ? 'text-[var(--wb-blue)]' : 'text-white'}`}
-                    >
+                    <p className="text-[13px] font-medium truncate">
                       {a.designation}
                     </p>
-                    <p className="text-[11px] font-mono store-text-muted truncate">{a.serialNumber}</p>
+                    <p className={`text-[11px] font-mono truncate ${isActive ? 'text-white/75' : 'store-text-muted'}`}>{a.serialNumber}</p>
                   </div>
-                  <span className={`text-[11px] font-mono font-semibold shrink-0 ${batteryColor}`}>
+                  <span className={`text-[12px] font-mono font-semibold shrink-0 ${isActive ? 'text-white' : batteryColor}`} title="Battery health">
                     {a.batteryHealthPct}%
                   </span>
                 </button>

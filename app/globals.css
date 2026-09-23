@@ -68,9 +68,10 @@
   --store-ink-mute:       #86868B;
   --store-ink-faint:      #6E6E73;  /* ~4.1:1 — large text only */
 
-  --store-accent:         #F97316;
-  --store-accent-glow:    rgba(249, 115, 22, 0.12);
-  --store-accent-border:  rgba(249, 115, 22, 0.35);
+  /* Chrome accent is blue (variant E). Orange is reserved for IR-band data. */
+  --store-accent:         #2997FF;
+  --store-accent-glow:    rgba(41, 151, 255, 0.12);
+  --store-accent-border:  rgba(41, 151, 255, 0.40);
   --store-link:           #2997FF;
   --store-success:        #4ADE80;
 
@@ -91,6 +92,37 @@
 
   /* Grain flattens true black into matte paper. Off, deliberately. */
   --store-grain: 0;
+
+  /* ---- Obsidian: deep glossy black + Liquid Glass control layer ----------
+     Two materials, never mixed up (HIG materials):
+       lacquer = content layer. Piano-black enamel lit from above: a top-edge
+                 highlight and a faint vertical sheen, no blur.
+       glass   = control layer. Sidebar, top bar, toolbars, segmented
+                 controls, table headers. Blurs and saturates what scrolls
+                 beneath it; the regular (legible) variant throughout. */
+  --lacquer:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.018) 22%, rgba(255, 255, 255, 0.008) 100%),
+    #030304;
+  --lacquer-line: rgba(255, 255, 255, 0.085);
+  --lacquer-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    0 1px 0 rgba(0, 0, 0, 0.9),
+    0 24px 48px -24px rgba(0, 0, 0, 0.9);
+
+  --glass-fill: linear-gradient(180deg, rgba(38, 38, 44, 0.62) 0%, rgba(20, 20, 24, 0.58) 100%);
+  --glass-blur: blur(26px) saturate(185%);
+  --glass-line: rgba(255, 255, 255, 0.12);
+  --glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+    0 16px 44px -12px rgba(0, 0, 0, 0.75);
+
+  /* The one ambient light in the room. Glass needs something to refract or
+     it reads as grey plastic; this is it. Cool, very low, top of frame. */
+  --ambient:
+    radial-gradient(1100px 520px at 72% -12%, rgba(41, 151, 255, 0.10), transparent 70%),
+    radial-gradient(800px 480px at -6% -8%, rgba(124, 92, 255, 0.07), transparent 65%),
+    #000;
 
   color-scheme: dark;
 }
@@ -195,9 +227,9 @@
   --store-ink:            rgba(9, 9, 11, 0.92);
   --store-ink-soft:       rgba(9, 9, 11, 0.68);
   --store-ink-mute:       rgba(9, 9, 11, 0.45);
-  --store-accent:         #ea580c;
-  --store-accent-glow:    rgba(234, 88, 12, 0.10);
-  --store-accent-border:  rgba(234, 88, 12, 0.40);
+  --store-accent:         #0A6CD6;
+  --store-accent-glow:    rgba(10, 108, 214, 0.10);
+  --store-accent-border:  rgba(10, 108, 214, 0.40);
   --store-success:        #16a34a;
   --store-material:       rgba(255, 255, 255, 0.82);
   --store-material-float: rgba(255, 255, 255, 0.72);
@@ -397,16 +429,22 @@ p {
 }
 
 .store-panel {
-  /* Black canvas: panels are hairline outlines on the ground, not raised cards.
-     Nested panels step up to a matte surface so depth still reads. */
-  background: var(--store-bg);
-  border: 1px solid var(--store-line);
+  /* Obsidian lacquer: a panel is black glass-like enamel, lit from above.
+     The top edge catches the light, the body stays black. Content layer, so
+     no blur (HIG: glass is for controls, standard materials for content). */
+  background: var(--lacquer);
+  border: 1px solid var(--lacquer-line);
+  box-shadow: var(--lacquer-shadow);
 }
-.store-panel .store-panel { background: var(--store-surface); }
+.store-panel .store-panel {
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
 
 .store-panel-inner {
-  background: var(--store-surface);
-  border: 1px solid var(--store-line);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--lacquer-line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .store-btn-primary {
@@ -457,11 +495,18 @@ p {
   outline-offset: 2px;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--surf1); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #3A3A5A; }
+/* Scrollbars: overlay-style, invisible track, a thin pill that only
+   brightens under the pointer — the macOS behaviour, on black. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.32); }
 
 /* Mono data values */
 .data-value {
@@ -478,14 +523,19 @@ p {
 
 /* Classification banner */
 .classification-banner {
-  background: linear-gradient(90deg, #1a1a0a 0%, #2a2a0a 50%, #1a1a0a 100%);
-  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+  /* Non-removable, never animated. 20px tall so the shell can subtract it. */
+  height: 20px;
+  line-height: 20px;
+  background: #0B0903;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.28);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  color: #F59E0B;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: #F5B94A;
   text-align: center;
-  padding: 2px 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 /* Tier badge colours */
@@ -658,14 +708,12 @@ p {
    with a dimming layer because satellite imagery is bright.
  * ------------------------------------------------------------------ */
 .lg-glass {
-  background: rgba(16, 16, 18, 0.62);
-  -webkit-backdrop-filter: blur(22px) saturate(160%);
-  backdrop-filter: blur(22px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-line);
   border-radius: 14px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    0 10px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--glass-shadow);
 }
 .lg-glass .btn-e, .lg-btn {
   display: inline-flex; align-items: center; gap: 6px;
@@ -695,3 +743,378 @@ p {
 }
 .lg-pill:hover { background: rgba(28, 28, 30, 0.78); }
 .lg-pill[data-on="false"] { text-decoration: line-through; text-decoration-color: rgba(255,255,255,0.4); }
+
+/* ======================================================================
+   OBSIDIAN SYSTEM — shell, glass controls, data tables, scroll edges.
+   Every module builds from these; page-level code should not restyle them.
+   ====================================================================== */
+
+/* ---- Shell ---------------------------------------------------------- */
+.app-shell {
+  background: var(--ambient);
+  background-attachment: fixed;
+}
+.shell-sidebar {
+  position: relative;
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-line);
+  border-radius: 18px;
+  box-shadow: var(--glass-shadow);
+  transition: width 220ms var(--ease-out);
+}
+/* Specular sweep across the top of the glass. */
+.shell-sidebar::before,
+.shell-topbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, transparent 34%);
+}
+.shell-nav-item {
+  position: relative;
+  display: flex; align-items: center; gap: 10px;
+  min-height: 34px; padding: 0 10px; margin: 1px 8px;
+  border-radius: 10px;
+  font-size: 13px; color: var(--store-ink-soft);
+  transition: background-color 150ms ease-out, color 150ms ease-out, box-shadow 150ms ease-out;
+}
+.shell-nav-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--store-ink); }
+.shell-nav-item[aria-current="page"], .shell-nav-item[aria-selected="true"] {
+  color: #fff;
+  background: linear-gradient(180deg, rgba(41, 151, 255, 0.34), rgba(41, 151, 255, 0.20));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(41, 151, 255, 0.45), 0 6px 18px -8px rgba(41, 151, 255, 0.8);
+}
+.shell-nav-item[aria-current="page"] .nav-icon, .shell-nav-item[aria-selected="true"] .nav-icon { color: #fff; }
+.shell-nav-item .nav-icon { color: var(--store-ink-mute); flex-shrink: 0; }
+.shell-nav-item:hover .nav-icon { color: var(--store-ink-soft); }
+.shell-group-label {
+  display: flex; align-items: center; gap: 6px; width: 100%;
+  padding: 14px 18px 6px; font-size: 11px; font-weight: 600;
+  color: var(--store-ink-mute); letter-spacing: 0.01em;
+}
+.shell-group-label:hover { color: var(--store-ink-soft); }
+
+.shell-topbar {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 30;
+  height: 56px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 16px 0 20px;
+  /* At rest the bar is barely there; content has not moved under it. */
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color 220ms var(--ease-out), border-color 220ms var(--ease-out), box-shadow 220ms var(--ease-out);
+}
+.shell-topbar::before { opacity: 0; transition: opacity 220ms var(--ease-out); }
+/* Scroll edge effect: once content scrolls beneath, the bar becomes glass. */
+[data-scrolled="true"] .shell-topbar {
+  background: rgba(10, 10, 12, 0.62);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-bottom-color: var(--glass-line);
+  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.9);
+}
+[data-scrolled="true"] .shell-topbar::before { opacity: 1; }
+/* The page title rides up into the bar once its large title has scrolled away. */
+.shell-title {
+  font-size: 13px; font-weight: 600; color: var(--store-ink);
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+  white-space: nowrap;
+}
+[data-scrolled-title="true"] .shell-title { opacity: 1; transform: none; }
+
+.glass-field {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.35);
+  border-radius: 10px;
+  color: var(--store-ink);
+  transition: border-color 150ms ease-out, background-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+.glass-field::placeholder { color: var(--store-ink-mute); }
+.glass-field:focus { outline: none; border-color: rgba(41, 151, 255, 0.7); background: rgba(255, 255, 255, 0.07); box-shadow: 0 0 0 3px rgba(41, 151, 255, 0.22); }
+
+.glass-icon-btn {
+  width: 32px; height: 32px; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--store-ink-soft);
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+.glass-icon-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--store-ink); }
+
+.glass-popover {
+  background: rgba(22, 22, 26, 0.78);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-line);
+  border-radius: 14px;
+  box-shadow: var(--glass-shadow);
+}
+
+/* ---- Segmented control (HIG): one glass track, the selection is a lit lens.
+   Use for mutually exclusive views: Table / Heat map, Blue / Red, tabs. ---- */
+.seg {
+  display: inline-flex; align-items: center; gap: 2px; padding: 3px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.seg > button, .seg > a {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 30px; padding: 0 12px; border-radius: 9px;
+  font-size: 13px; font-weight: 500; color: var(--store-ink-soft);
+  transition: background-color 160ms ease-out, color 160ms ease-out, box-shadow 160ms ease-out;
+  white-space: nowrap;
+}
+.seg > button:hover, .seg > a:hover { color: var(--store-ink); }
+.seg > [aria-selected="true"], .seg > [aria-pressed="true"], .seg > [aria-current="page"], .seg > .on {
+  color: #fff;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.20), rgba(255, 255, 255, 0.10));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.18);
+}
+.seg.accent > [aria-selected="true"], .seg.accent > [aria-pressed="true"], .seg.accent > .on {
+  background: linear-gradient(180deg, #3AA2FF, #1F86EE);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 14px -4px rgba(41, 151, 255, 0.9);
+}
+.seg.sm > button, .seg.sm > a { min-height: 26px; padding: 0 10px; font-size: 12px; border-radius: 8px; }
+
+/* ---- Page head: one large title, a line of context, nothing else. ------ */
+.page-title {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(26px, 2.4vw, 34px); line-height: 1.1; font-weight: 600;
+  letter-spacing: -0.025em; color: var(--store-ink);
+}
+.page-lede { margin-top: 8px; font-size: 14px; line-height: 1.55; color: var(--store-ink-soft); max-width: 72ch; }
+
+/* ---- Data tables ------------------------------------------------------
+   One scroller per table, sized to the viewport, so the header and first
+   column can stick and the page never grows a second scrollbar. Wide tables
+   get alternating rows (HIG macOS) so a row can be tracked across columns. */
+.dt-frame {
+  position: relative;
+  border-radius: 16px;
+  background: var(--lacquer);
+  border: 1px solid var(--lacquer-line);
+  box-shadow: var(--lacquer-shadow);
+  overflow: hidden;
+}
+.dt-scroll {
+  overflow: auto;
+  max-height: var(--dt-max, calc(100vh - 240px));
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.dt { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; color: var(--store-ink-soft); }
+.dt thead th {
+  position: sticky; top: 0; z-index: 3;
+  padding: 11px 14px; text-align: left; white-space: nowrap;
+  font-size: 12px; font-weight: 600; color: var(--store-ink);
+  background: rgba(18, 18, 21, 0.82);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.dt thead th[aria-sort] { cursor: pointer; user-select: none; }
+.dt thead th[aria-sort]:hover { color: #fff; }
+.dt thead th .sort-ind { display: inline-block; margin-left: 4px; color: var(--wb-blue); font-size: 10px; }
+.dt tbody td {
+  padding: 10px 14px; vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+  background: #030304;
+}
+.dt tbody tr:nth-child(even) > td { background: #0A0A0C; }
+.dt tbody tr { transition: none; }
+.dt tbody tr:hover > td { background: #0F1824; }
+.dt tbody tr[aria-selected="true"] > td { background: #0E2238; }
+.dt tbody tr:last-child > td { border-bottom: 0; }
+.dt .num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dt .mono { font-family: var(--font-mono); font-size: 12px; }
+.dt .primary { color: var(--store-ink); font-weight: 500; }
+.dt .meta { display: block; margin-top: 2px; font-size: 11.5px; color: var(--store-ink-mute); }
+.dt .clip { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Sticky leading column: the row's name never scrolls away. */
+.dt .stick { position: sticky; left: 0; z-index: 2; }
+.dt thead .stick { z-index: 4; }
+.dt tbody .stick { box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.10); }
+.dt.compact thead th { padding: 9px 12px; }
+.dt.compact tbody td { padding: 7px 12px; }
+
+/* Scroll-edge fades: drawn by ScrollArea only when there is more to see. */
+.edge-fade { position: absolute; pointer-events: none; z-index: 5; opacity: 0; transition: opacity 180ms ease-out; }
+.edge-fade.l { top: 0; bottom: 0; left: 0; width: 28px; background: linear-gradient(90deg, rgba(0, 0, 0, 0.85), transparent); }
+.edge-fade.r { top: 0; bottom: 0; right: 0; width: 36px; background: linear-gradient(270deg, rgba(0, 0, 0, 0.85), transparent); }
+.edge-fade.b { left: 0; right: 0; bottom: 0; height: 32px; background: linear-gradient(0deg, rgba(0, 0, 0, 0.85), transparent); }
+.edge-fade.on { opacity: 1; }
+
+/* ---- Tags and status: text + hairline, never a filled slab. ---------- */
+.tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 22px; padding: 0 8px; border-radius: 999px;
+  font-size: 11px; font-weight: 500; white-space: nowrap;
+  color: var(--store-ink-soft);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+}
+.tag.blue { color: #6CB8FF; border-color: rgba(41, 151, 255, 0.45); background: rgba(41, 151, 255, 0.08); }
+.tag.red { color: #FF8A98; border-color: rgba(255, 92, 110, 0.45); background: rgba(255, 92, 110, 0.08); }
+.tag.green { color: #6EE7A0; border-color: rgba(74, 222, 128, 0.40); background: rgba(74, 222, 128, 0.07); }
+.tag.amber { color: #FCD34D; border-color: rgba(251, 191, 36, 0.40); background: rgba(251, 191, 36, 0.07); }
+.tag.violet { color: #C4B5FD; border-color: rgba(167, 139, 250, 0.45); background: rgba(167, 139, 250, 0.08); }
+
+/* ---- Buttons that are not variant E ---------------------------------- */
+.btn-glass {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 34px; padding: 0 14px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; color: var(--store-ink);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 2px 8px -2px rgba(0, 0, 0, 0.6);
+  transition: background-color 150ms ease-out, border-color 150ms ease-out, transform 120ms var(--ease-out);
+}
+.btn-glass:hover { border-color: rgba(255, 255, 255, 0.28); background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07)); }
+.btn-glass:active { transform: scale(0.98); }
+.btn-glass.primary {
+  color: #fff; border-color: rgba(120, 190, 255, 0.55);
+  background: linear-gradient(180deg, #3AA2FF, #1F86EE);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 6px 18px -6px rgba(41, 151, 255, 0.85);
+}
+.btn-glass.primary:hover { filter: brightness(1.07); }
+
+@media (prefers-reduced-motion: reduce) {
+  .shell-sidebar, .shell-topbar, .shell-topbar::before, .shell-title, .edge-fade,
+  .seg > button, .seg > a, .btn-glass { transition: none; }
+  .btn-glass:active { transform: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .shell-sidebar, [data-scrolled="true"] .shell-topbar, .glass-popover, .dt thead th {
+    -webkit-backdrop-filter: none; backdrop-filter: none; background: #141416;
+  }
+}
+@media (prefers-contrast: more) {
+  :root { --lacquer-line: rgba(255, 255, 255, 0.3); --glass-line: rgba(255, 255, 255, 0.4); }
+}
+
+/* ---- Home hero: stars, globe, glass ------------------------------------
+   --hp (0..1) is written by CommandHero as the page scrolls. Each plane
+   takes a different share of it, which is where the depth comes from. */
+.cmd-hero { --hp: 0; min-height: 600px; }
+.cmd-hero-stars {
+  background: url('/assets/home/stars.webp') center / cover no-repeat;
+  opacity: 0.7;
+  transform: translate3d(0, calc(var(--hp) * 40px), 0);
+  will-change: transform;
+}
+.cmd-hero-globe-wrap {
+  width: clamp(500px, 48vw, 780px);
+  aspect-ratio: 1;
+  right: clamp(-150px, -7vw, -40px);
+  top: 64px;
+  transform: translate3d(0, calc(var(--hp) * -90px), 0) scale(calc(1 + var(--hp) * 0.06));
+  transform-origin: 50% 30%;
+  will-change: transform;
+}
+.cmd-hero-globe { position: relative; width: 100%; height: 100%; border-radius: 50%; }
+.cmd-hero-earth {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border-radius: 50%; user-select: none;
+  filter: saturate(0.9) brightness(0.95);
+}
+/* Terminator: lit from the upper left, night toward the lower right. */
+.cmd-hero-night {
+  position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(0, 0, 0, 0) 30%, rgba(0, 4, 12, 0.45) 55%, rgba(0, 2, 8, 0.86) 74%, rgba(0, 0, 0, 0.97) 88%),
+    radial-gradient(circle at 50% 50%, transparent 62%, rgba(0, 0, 0, 0.5) 100%);
+}
+/* Atmosphere: a thin blue limb and a soft outer glow. */
+.cmd-hero-atmo {
+  position: absolute; inset: -2px; border-radius: 50%; pointer-events: none;
+  box-shadow:
+    0 0 0 1px rgba(120, 190, 255, 0.28),
+    0 0 42px 6px rgba(41, 151, 255, 0.30),
+    0 0 140px 30px rgba(41, 151, 255, 0.12);
+}
+.cmd-hero-dot {
+  position: absolute; z-index: 2;
+  width: var(--sz, 6px); height: var(--sz, 6px);
+  margin: calc(var(--sz, 6px) / -2) 0 0 calc(var(--sz, 6px) / -2);
+  border-radius: 50%;
+  background: var(--dot);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55), 0 0 12px 2px var(--dot);
+  pointer-events: auto;
+}
+.cmd-hero-copy {
+  transform: translate3d(0, calc(var(--hp) * 36px), 0);
+  opacity: calc(1 - var(--hp) * 0.7);
+  will-change: transform, opacity;
+}
+.cmd-hero-copy .page-title { text-shadow: 0 2px 24px rgba(0, 0, 0, 0.8); }
+.cmd-hero-instruments .fc-inst { border-bottom: 0; }
+.cmd-hero-instruments .fc-inst > a { padding: 18px 20px 16px 0; border-right: 1px solid rgba(255, 255, 255, 0.12); min-width: 0; }
+.cmd-hero-instruments .fc-inst > a + a { padding-left: 22px; }
+.cmd-hero-instruments .fc-inst > a:last-child { border-right: 0; }
+@media (max-width: 1023px) {
+  .cmd-hero-globe-wrap { opacity: 0.55; right: -30%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cmd-hero-stars, .cmd-hero-globe-wrap, .cmd-hero-copy { transform: none; opacity: 1; }
+  .cmd-hero-stars { opacity: 0.7; }
+}
+
+/* ---- Obsidian in daylight ----------------------------------------------
+   Same two materials on paper: lacquer becomes white enamel, glass becomes
+   frosted white. The home hero stays night: it is a picture of space. */
+[data-theme="light"] {
+  --lacquer: linear-gradient(180deg, #FFFFFF 0%, #FBFBFC 100%);
+  --lacquer-line: rgba(9, 9, 11, 0.10);
+  --lacquer-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 1px 2px rgba(9, 9, 11, 0.06), 0 12px 32px -18px rgba(9, 9, 11, 0.18);
+  --glass-fill: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(248, 248, 250, 0.70));
+  --glass-line: rgba(9, 9, 11, 0.10);
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 12px 36px -14px rgba(9, 9, 11, 0.22);
+  --ambient:
+    radial-gradient(1100px 520px at 72% -12%, rgba(41, 151, 255, 0.10), transparent 70%),
+    #F4F4F5;
+  --btn-line: rgba(9, 9, 11, 0.22);
+}
+[data-theme="light"] [data-scrolled="true"] .shell-topbar { background: rgba(255, 255, 255, 0.72); }
+[data-theme="light"] .shell-nav-item:hover,
+[data-theme="light"] .glass-icon-btn:hover { background: rgba(9, 9, 11, 0.05); }
+[data-theme="light"] .glass-field { background: rgba(255, 255, 255, 0.9); border-color: rgba(9, 9, 11, 0.14); box-shadow: inset 0 1px 1px rgba(9, 9, 11, 0.04); }
+[data-theme="light"] .glass-popover { background: rgba(255, 255, 255, 0.86); }
+[data-theme="light"] .seg { background: rgba(9, 9, 11, 0.05); border-color: rgba(9, 9, 11, 0.08); box-shadow: inset 0 1px 2px rgba(9, 9, 11, 0.06); }
+[data-theme="light"] .seg > [aria-selected="true"], [data-theme="light"] .seg > [aria-pressed="true"],
+[data-theme="light"] .seg > [aria-current="page"], [data-theme="light"] .seg > .on {
+  color: var(--store-ink); background: #FFFFFF; box-shadow: 0 1px 3px rgba(9, 9, 11, 0.16), 0 0 0 0.5px rgba(9, 9, 11, 0.08);
+}
+[data-theme="light"] .btn-glass { color: var(--store-ink); background: linear-gradient(180deg, #FFFFFF, #F4F4F6); border-color: rgba(9, 9, 11, 0.14); box-shadow: 0 1px 2px rgba(9, 9, 11, 0.08); }
+[data-theme="light"] .btn-glass.primary { color: #fff; background: linear-gradient(180deg, #3AA2FF, #1F86EE); border-color: rgba(10, 108, 214, 0.6); }
+[data-theme="light"] .dt thead th { background: rgba(250, 250, 252, 0.88); color: var(--store-ink); border-bottom-color: rgba(9, 9, 11, 0.12); box-shadow: none; }
+[data-theme="light"] .dt tbody td { background: #FFFFFF; border-bottom-color: rgba(9, 9, 11, 0.06); }
+[data-theme="light"] .dt tbody tr:nth-child(even) > td { background: #F7F7F9; }
+[data-theme="light"] .dt tbody tr:hover > td { background: #EEF5FF; }
+[data-theme="light"] .dt tbody tr[aria-selected="true"] > td { background: #E1EEFF; }
+[data-theme="light"] .dt tbody .stick { box-shadow: inset -1px 0 0 rgba(9, 9, 11, 0.10); }
+[data-theme="light"] .edge-fade.l { background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), transparent); }
+[data-theme="light"] .edge-fade.r { background: linear-gradient(270deg, rgba(255, 255, 255, 0.9), transparent); }
+[data-theme="light"] .edge-fade.b { background: linear-gradient(0deg, rgba(255, 255, 255, 0.9), transparent); }
+[data-theme="light"] .tag { color: var(--store-ink-soft); border-color: rgba(9, 9, 11, 0.14); background: rgba(9, 9, 11, 0.03); }
+[data-theme="light"] .tag.blue { color: #0A5FC0; }
+[data-theme="light"] .tag.red { color: #C21F37; }
+[data-theme="light"] .tag.green { color: #15803D; }
+[data-theme="light"] .tag.amber { color: #A16207; }
+[data-theme="light"] .tag.violet { color: #6D28D9; }
+[data-theme="light"] .cmd-hero {
+  color-scheme: dark;
+  background: #000;
+  --store-ink: #F5F5F7; --store-ink-soft: #A1A1A6; --store-ink-mute: #86868B;
+  --glass-fill: linear-gradient(180deg, rgba(38, 38, 44, 0.62), rgba(20, 20, 24, 0.58));
+  --glass-line: rgba(255, 255, 255, 0.12);
+}
+[data-theme="light"] .cmd-hero .seg { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.1); }
+[data-theme="light"] .cmd-hero .seg > [aria-selected="true"] { color: #fff; background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)); }

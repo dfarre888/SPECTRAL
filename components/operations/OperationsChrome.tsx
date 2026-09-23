@@ -1,15 +1,19 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { EditionBadge } from '@/components/operations/EditionBadge'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 
+/**
+ * Edition, tenant and role as one quiet capsule. Tenant id and role detail
+ * live in the tooltip; the bar only needs to say which edition is live.
+ */
 export function OperationsChrome() {
   const [tenantId, setTenantId] = useState<string | null>(null)
   const [role, setRole] = useState<string | null>(null)
+  const operations = isOperationsEditionClient()
 
   useEffect(() => {
-    if (!isOperationsEditionClient()) return
+    if (!operations) return
     fetch('/api/v1/session/classification')
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
@@ -17,27 +21,33 @@ export function OperationsChrome() {
         if (j?.role) setRole(j.role)
       })
       .catch(() => {})
-  }, [])
+  }, [operations])
+
+  const detail = [
+    operations
+      ? 'Operations edition: server-side ITU-R propagation and tenant adjudication'
+      : 'Training edition: OSINT band overlap only, no server propagation',
+    tenantId ? `Tenant ${tenantId} (customer data isolated)` : null,
+    role === 'admin' ? 'WOPR administrator: full scenario control' : null,
+  ]
+    .filter(Boolean)
+    .join('\n')
 
   return (
-    <div className="flex items-center gap-2">
-      <EditionBadge />
-      {tenantId && (
-        <span
-          className="text-[11px] font-mono store-text-muted px-2 py-0.5 rounded-md border border-[var(--store-line)]"
-          title="Tenant scope — customer data isolated"
-        >
-          TNT {tenantId}
-        </span>
-      )}
-      {role === 'admin' && (
-        <span
-          className="text-[11px] font-mono text-[var(--wb-blue)] px-2 py-0.5 rounded-md border border-[rgba(41,151,255,0.5)]"
-          title="WOPR administrator — full scenario control"
-        >
-          WOPR ADMIN
-        </span>
-      )}
-    </div>
+    <span
+      className="hidden sm:inline-flex items-center gap-2 h-8 pl-2.5 pr-3 rounded-full text-[12px] font-medium text-[var(--store-ink-soft)] border border-[var(--glass-line)] bg-[rgba(255,255,255,0.04)]"
+      title={detail}
+    >
+      <span
+        className={
+          operations
+            ? 'w-2 h-2 rounded-full bg-[#22D3EE] shadow-[0_0_8px_rgba(34,211,238,0.9)]'
+            : 'w-2 h-2 rounded-full bg-[var(--store-ink-mute)]'
+        }
+        aria-hidden
+      />
+      <span className="text-[var(--store-ink)]">{operations ? 'Operations' : 'Training'}</span>
+      {role === 'admin' && <span className="store-text-muted">· Admin</span>}
+    </span>
   )
 }

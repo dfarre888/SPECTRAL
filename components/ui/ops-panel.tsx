@@ -24,21 +24,17 @@ export function OpsPanel({
 }: OpsPanelProps) {
   return (
     <StorePanel className={cn('overflow-hidden', className)}>
-      <div className="flex flex-col gap-3 border-b border-[var(--store-line)] px-4 py-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-[var(--store-line)] px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          {kicker ? (
-            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)] mb-1">
-              {kicker}
-            </p>
-          ) : null}
-          <h2 className="store-display text-sm font-semibold text-white">{title}</h2>
+          {kicker ? <p className="text-[12px] store-text-muted mb-1">{kicker}</p> : null}
+          <h2 className="store-display text-[15px] font-semibold text-[var(--store-ink)]">{title}</h2>
           {description ? (
-            <p className="text-xs store-text-body mt-1 max-w-2xl">{description}</p>
+            <p className="text-[13px] store-text-body mt-1 max-w-2xl">{description}</p>
           ) : null}
         </div>
         {actions ? <div className="flex shrink-0 flex-wrap gap-2">{actions}</div> : null}
       </div>
-      <div className={cn('p-4', bodyClassName)}>{children}</div>
+      <div className={cn('p-5', bodyClassName)}>{children}</div>
     </StorePanel>
   )
 }

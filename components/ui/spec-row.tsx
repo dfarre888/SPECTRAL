@@ -16,19 +16,19 @@ export function SpecRow({ label, value, unit, mono = true, confidence, className
   return (
     <div
       className={cn(
-        'flex items-baseline justify-between gap-4 py-1.5 border-b border-[var(--store-line)] last:border-0',
+        'flex items-baseline justify-between gap-4 py-2 border-b border-[var(--store-line)] last:border-0',
         className,
       )}
     >
-      <span className="text-[11px] store-text-muted shrink-0">{label}</span>
+      <span className="text-[12.5px] store-text-muted shrink-0">{label}</span>
       <span
         className={cn(
-          'text-xs text-white text-right flex items-center gap-2 justify-end min-w-0',
+          'text-[13px] text-[var(--store-ink)] text-right flex items-center gap-2 justify-end min-w-0',
           mono && 'font-mono tabular-nums',
         )}
       >
         {confidence != null ? (
-          <ConfidenceBadge confidence={confidence} className="shrink-0 scale-[0.85] origin-right" />
+          <ConfidenceBadge confidence={confidence} className="shrink-0" />
         ) : null}
         <span className="min-w-0">
           {value}

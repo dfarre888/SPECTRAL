@@ -13,12 +13,12 @@ export function StoreFilterSidebar({ children, className }: StoreFilterSidebarPr
   return (
     <aside
       className={cn(
-        'store-panel rounded-2xl p-5 lg:sticky lg:top-5 hidden lg:block',
+        'store-panel rounded-2xl p-4 lg:sticky lg:top-[68px] hidden lg:block lg:max-h-[calc(100vh-100px)] lg:overflow-y-auto',
         className,
       )}
     >
-      <div className="flex items-center gap-2 font-semibold text-sm mb-4 store-display text-white">
-        <SlidersHorizontal size={16} className="text-[var(--wb-blue)]" />
+      <div className="flex items-center gap-2 font-semibold text-[14px] mb-4 px-1 store-display text-[var(--store-ink)]">
+        <SlidersHorizontal size={15} className="store-text-muted" />
         Filters
       </div>
       {children}
@@ -35,7 +35,7 @@ interface StoreFilterSectionProps {
 export function StoreFilterSection({ label, children, className }: StoreFilterSectionProps) {
   return (
     <div className={cn('mb-5 last:mb-0', className)}>
-      <div className="text-[11px] font-semibold tracking-[0.02em] mb-2.5 store-text-muted">
+      <div className="text-[11.5px] font-semibold mb-1.5 px-1 store-text-muted">
         {label}
       </div>
       {children}
@@ -63,10 +63,10 @@ export function StoreFilterNavItem({
       type="button"
       onClick={onClick}
       className={cn(
-        'w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[13px] text-left transition-all',
+        'w-full flex items-center justify-between min-h-[32px] px-2.5 rounded-[9px] text-[13px] text-left transition-colors duration-150',
         active
-          ? 'bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)] font-semibold'
-          : 'store-text-body hover:bg-[var(--store-surface-2)] hover:text-white',
+          ? 'text-white bg-[linear-gradient(180deg,rgba(41,151,255,0.30),rgba(41,151,255,0.18))] shadow-[inset_0_1px_0_rgba(255,255,255,0.14),inset_0_0_0_1px_rgba(41,151,255,0.4)]'
+          : 'store-text-body hover:bg-[rgba(255,255,255,0.06)] hover:text-[var(--store-ink)]',
       )}
     >
       <span className="flex items-center gap-2 min-w-0">
@@ -77,7 +77,7 @@ export function StoreFilterNavItem({
         <span
           className={cn(
             'font-mono text-[11px] shrink-0',
-            active ? 'text-[var(--wb-blue)]' : 'store-text-muted',
+            active ? 'text-white/80' : 'store-text-muted',
           )}
         >
           {count}

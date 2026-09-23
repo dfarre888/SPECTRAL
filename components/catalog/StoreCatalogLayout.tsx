@@ -38,12 +38,12 @@ export function StoreCatalogHeader({ title, meta, action }: StoreCatalogHeaderPr
     <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
       <div>
         <h2
-          className="store-display font-semibold text-xl text-white"
+          className="store-display font-semibold text-[19px] text-[var(--store-ink)]"
           style={{ letterSpacing: '-0.02em' }}
         >
           {title}
         </h2>
-        {meta ? <div className="mt-1 text-xs font-mono store-text-muted">{meta}</div> : null}
+        {meta ? <div className="mt-1 text-[12px] font-mono store-text-muted">{meta}</div> : null}
       </div>
       {action}
     </div>

@@ -14,13 +14,13 @@ SPECTRAL is a drone-threat and counter-UAS intelligence workbench: platform libr
 
 ## Brand Personality
 
-Composed, exact, quiet. The interface is matte black chrome (Dark Frame) and the colour belongs to the data, never to the chrome. Gloss and purple hints are rationed to attention states. Voice is terse military-technical English: nouns and units, no marketing. Reference feel: Apple Pro apps (Logic, Final Cut) for restraint and density; Bloomberg terminal for information per pixel without shouting.
+Composed, exact, quiet. The interface is deep glossy black (Obsidian, see DESIGN.md): content sits on piano-black lacquer lit from above, and every control (sidebar, top bar, toolbars, segmented controls, table headers) is Apple Liquid Glass floating over it. The colour belongs to the data, never to the chrome; the only chrome accent is blue. Voice is terse military-technical English: nouns and units, no marketing. Reference feel: Apple Pro apps (Logic, Final Cut) and macOS Tahoe's glass for restraint and material; Bloomberg terminal for information per pixel without shouting.
 
 ## Anti-references
 
 - The current `/force-catalog?tab=compare`: 2,000+ simultaneous controls, 9px text, every filter visible at once, banners stacked above the data.
 - Palantir-style dashboards with a KPI tile row and gradient accents.
-- Neon cyber/hacker green-on-black, glassmorphism panels, gradient text, side-stripe alerts.
+- Neon cyber/hacker green-on-black, glass on content panels (glass is for controls only), gradient text, side-stripe alerts.
 - Orchestrated page-load animation sequences; anything that moves when the user did not act.
 
 ## Design Principles

@@ -50,7 +50,7 @@ export function MiniCesiumPreview({ center, tracks, className }: MiniCesiumPrevi
           polyline: {
             positions,
             width: 3,
-            material: Cesium.Color.fromCssColorString('#F97316').withAlpha(0.9),
+            material: Cesium.Color.fromCssColorString('#2997FF').withAlpha(0.9),
           },
         })
       }

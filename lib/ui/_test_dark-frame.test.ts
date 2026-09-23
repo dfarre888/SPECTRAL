@@ -89,9 +89,18 @@ describe('Dark Frame — text', () => {
 
 describe('Dark Frame — material', () => {
   it('keeps the working palette — hue is load-bearing in a data app', () => {
-    expect(rootToken('--store-accent').toUpperCase()).toBe('#F97316')
+    // Chrome accent is blue (variant E); orange survives only as the IR data hue.
+    expect(rootToken('--store-accent').toUpperCase()).toBe('#2997FF')
+    expect(css).toMatch(/--wb-ir:\s*#F97316/)
     expect(rootToken('--cyan').toUpperCase()).toBe('#06B6D4')
     expect(css).toContain('COLOUR BELONGS TO THE DATA, NOT TO THE CHROME')
+  })
+
+  it('splits the two Obsidian materials: lacquer for content, glass for controls', () => {
+    expect(css).toMatch(/--lacquer:/)
+    expect(css).toMatch(/--glass-blur:\s*blur\(/)
+    expect(css).toMatch(/\.store-panel \{[^}]*var\(--lacquer\)/)
+    expect(css).toMatch(/\.lg-glass \{[^}]*backdrop-filter: var\(--glass-blur\)/)
   })
 
   it('carries the single link hue from the brief', () => {

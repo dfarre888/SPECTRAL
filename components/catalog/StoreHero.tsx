@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Sparkles, type LucideIcon } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface StoreTrustItem {
@@ -32,37 +32,14 @@ export function StoreHero({
 
   return (
     <section className={cn('relative z-10', compact ? 'pb-3' : 'pb-6', className)}>
-      <span
-        className={cn(
-          'inline-flex items-center gap-2 store-text-muted',
-          compact ? 'text-[11px] mb-1.5' : 'text-[12px] mb-2',
-        )}
-      >
-        {!compact ? <Sparkles size={12} /> : null}
-        {eyebrow}
-      </span>
-      <h1
-        className="store-display font-bold tracking-tight leading-tight text-white text-balance"
-        style={{
-          fontSize: compact ? 'clamp(20px, 2.4vw, 28px)' : 'clamp(28px, 3.6vw, 44px)',
-          letterSpacing: '-0.03em',
-        }}
-      >
-        {title}
-      </h1>
-      <p
-        className={cn(
-          'max-w-2xl store-text-body',
-          compact ? 'mt-1.5 text-xs sm:text-sm' : 'mt-3 text-sm sm:text-base',
-        )}
-      >
-        {subtitle}
-      </p>
+      <span className="block text-[12px] mb-1.5 store-text-muted">{eyebrow}</span>
+      <h1 className="page-title">{title}</h1>
+      <p className="page-lede">{subtitle}</p>
       {trustChip ? (
         <div
           className={cn(
-            'inline-flex items-center gap-2.5 text-xs rounded-xl store-panel-inner store-text-body',
-            compact ? 'mt-2 px-3 py-1.5' : 'mt-4 px-3.5 py-2.5',
+            'inline-flex items-center gap-2.5 text-[12px] rounded-full store-text-body border border-[var(--glass-line)] bg-[rgba(255,255,255,0.04)]',
+            compact ? 'mt-3 px-3 py-1' : 'mt-4 px-3.5 py-1.5',
           )}
         >
           {trustChip}
@@ -71,13 +48,13 @@ export function StoreHero({
       {trustItems && trustItems.length > 0 ? (
         <div
           className={cn(
-            'flex flex-wrap gap-x-4 gap-y-1 text-[11px] store-text-muted',
-            compact ? 'mt-2' : 'mt-5 text-xs',
+            'flex flex-wrap gap-x-4 gap-y-1 text-[12px] store-text-muted',
+            compact ? 'mt-2' : 'mt-4',
           )}
         >
           {trustItems.map(({ icon: Icon, label }) => (
             <span key={label} className="inline-flex items-center gap-1.5">
-              <Icon size={compact ? 12 : 14} className="text-[var(--wb-blue)]" />
+              <Icon size={13} className="store-text-muted" />
               {label}
             </span>
           ))}

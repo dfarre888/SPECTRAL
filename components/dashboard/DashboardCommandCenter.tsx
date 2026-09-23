@@ -15,10 +15,12 @@ import { OverviewDashboard } from '@/components/dashboard/OverviewDashboard'
 /** Caller: app/(main)/page.tsx via DashboardHomeTabs — merges live API + sessionStorage laydown. */
 interface DashboardCommandCenterProps extends BuiltDashboardData {
   copy: DashboardCopy
+  /** Instruments are already on the page (home hero). */
+  instrumentsElsewhere?: boolean
 }
 
 export function DashboardCommandCenter(props: DashboardCommandCenterProps) {
-  const { copy, metrics, operators, assets: serverAssets, mapContext, recentPlanId, mapCenter } = props
+  const { copy, metrics, operators, assets: serverAssets, mapContext, recentPlanId, mapCenter, instrumentsElsewhere } = props
   const searchParams = useSearchParams()
   const urlAsset = searchParams.get('asset')
 
@@ -64,6 +66,7 @@ export function DashboardCommandCenter(props: DashboardCommandCenterProps) {
       onSelectAsset={handleSelectAsset}
       recentPlanId={recentPlanId}
       mapCenter={mapCenter}
+      instrumentsElsewhere={instrumentsElsewhere}
     />
   )
 }

@@ -15,16 +15,14 @@ export function OperatorReadinessPanel({
   copy: DashboardCopy
 }) {
   return (
-    <StorePanel className="p-6 h-full flex flex-col border-[var(--store-line)]">
-      <div className="mb-4">
-        <p className="text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)]">
-          {copy.crewPanelTitle}
-        </p>
-        <p className="text-xs store-text-body mt-1">{copy.crewPanelSubtitle}</p>
+    <StorePanel className="p-5 h-full flex flex-col">
+      <div className="mb-3">
+        <p className="wb-pane-title !text-[15px]">{copy.crewPanelTitle}</p>
+        <p className="text-[12.5px] store-text-muted mt-0.5">{copy.crewPanelSubtitle}</p>
       </div>
-      <ul className="space-y-3 flex-1">
+      <ul className="flex-1">
         {operators.length === 0 ? (
-          <li className="flex items-center justify-center h-24 rounded-xl border border-dashed border-[var(--store-line)] text-[11px] font-mono store-text-muted">
+          <li className="flex items-center justify-center h-24 rounded-xl border border-dashed border-[var(--store-line)] text-[12px] store-text-muted">
             No operators on duty
           </li>
         ) : (
@@ -32,19 +30,19 @@ export function OperatorReadinessPanel({
           <li key={op.id}>
             <Link
               href={op.href ?? '#'}
-              className="group flex gap-3 border-b fc-hair px-1 py-3 hover:bg-[var(--store-surface)] transition-colors"
+              className="group flex gap-3 border-b fc-hair px-2 py-3 -mx-2 rounded-lg hover:bg-[rgba(255,255,255,0.04)] transition-colors"
             >
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--wb-blue)]" aria-hidden />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-medium text-white truncate">{op.name}</p>
+                  <p className="text-[13px] font-medium text-[var(--store-ink)] truncate">{op.name}</p>
                   <div className="flex items-center gap-1.5 shrink-0" title={copy.crewCurrencyHint}>
                     <CurrencyDot status={op.flightCurrency} title={`Flight: ${op.flightCurrency}`} />
                     <CurrencyDot status={op.medicalCurrency} title={`Medical: ${op.medicalCurrency}`} />
                   </div>
                 </div>
-                <p className="text-[11px] font-mono store-text-muted mt-0.5">{op.role}</p>
-                <p className="text-[11px] store-text-body mt-1.5 line-clamp-2 group-hover:text-white transition-colors">
+                <p className="text-[12px] store-text-muted mt-0.5">{op.role}</p>
+                <p className="text-[12.5px] store-text-body mt-1 line-clamp-2 group-hover:text-[var(--store-ink)] transition-colors">
                   {op.currentTask}
                 </p>
               </div>
@@ -55,7 +53,7 @@ export function OperatorReadinessPanel({
       </ul>
       <Link
         href="/currency"
-        className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-mono text-cyan hover:opacity-80"
+        className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-[var(--wb-blue)] hover:underline underline-offset-2"
       >
         <CheckCircle2 className="w-3 h-3" />
         Open currency queue

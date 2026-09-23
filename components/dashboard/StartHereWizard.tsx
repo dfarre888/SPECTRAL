@@ -34,30 +34,27 @@ const TASKS: {
 
 export function StartHereWizard() {
   return (
-    <StorePanel className="p-4 mb-6 border-[rgba(41,151,255,0.5)]">
+    <StorePanel className="p-5 mb-8">
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <p className="text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)] mb-1">
-            Start here
-          </p>
-          <p className="text-xs store-text-body max-w-xl">
-            Choose a task — each route opens the right module. Compare and SAM engagement are different tools.
+          <p className="wb-pane-title !text-[15px]">Start here</p>
+          <p className="text-[13px] store-text-body max-w-xl mt-0.5">
+            Pick a task and it opens the right module. Compare and SAM engagement are different tools.
           </p>
         </div>
-        <Globe className="w-4 h-4 text-[var(--wb-blue)] shrink-0 mt-0.5" />
+        <Globe className="w-4 h-4 store-text-muted shrink-0 mt-0.5" aria-hidden />
       </div>
-      <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+      <div className="grid gap-x-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
         {TASKS.map(({ href, label, subtitle, icon: Icon, accent }) => (
           <Link
             key={href}
             href={href}
-            className="group flex items-start gap-3 rounded-lg border border-[var(--store-line)] bg-[var(--store-surface-2)] p-3 hover:border-[rgba(41,151,255,0.5)] transition-colors"
+            className="group flex items-center gap-3 rounded-lg px-2.5 py-2.5 border-b fc-hair hover:bg-[rgba(255,255,255,0.05)] transition-colors"
           >
-            <Icon className={`w-4 h-4 shrink-0 mt-0.5 ${accent}`} />
+            <Icon className={`w-4 h-4 shrink-0 ${accent}`} aria-hidden />
             <div className="min-w-0">
-              <p className="text-xs font-medium text-white group-hover:text-[var(--wb-blue)] transition-colors">{label}</p>
-              <p className="text-[11px] store-text-muted mt-0.5">{subtitle}</p>
-              <p className="text-[11px] font-mono text-cyan mt-1 opacity-70 group-hover:opacity-100">{href}</p>
+              <p className="text-[13px] font-medium text-[var(--store-ink)] group-hover:text-white">{label}</p>
+              <p className="text-[12px] store-text-muted mt-0.5 truncate">{subtitle}</p>
             </div>
           </Link>
         ))}

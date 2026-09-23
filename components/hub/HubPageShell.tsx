@@ -17,7 +17,8 @@ interface HubPageShellProps {
 }
 
 /**
- * Standard layout for (main) hub routes — zinc canvas, orange accent, Space Grotesk titles.
+ * Standard layout for (main) hub routes: one large title, one line of
+ * context, an optional view switch, then the content.
  */
 export function HubPageShell({
   title,
@@ -39,20 +40,14 @@ export function HubPageShell({
         )}
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0 space-y-3">
+          <div className="min-w-0">
             {eyebrow ? (
-              <StoreEyebrow icon={eyebrowIcon}>{eyebrow}</StoreEyebrow>
+              <StoreEyebrow icon={eyebrowIcon} className="mb-1.5">{eyebrow}</StoreEyebrow>
             ) : null}
-            <h1
-              className="store-display text-2xl font-bold tracking-tight text-white md:text-3xl"
-              style={{ letterSpacing: '-0.02em' }}
-              data-testid="hub-page-title"
-            >
+            <h1 className="page-title" data-testid="hub-page-title">
               {title}
             </h1>
-            {subtitle ? (
-              <p className="text-sm store-text-body max-w-2xl">{subtitle}</p>
-            ) : null}
+            {subtitle ? <p className="page-lede">{subtitle}</p> : null}
           </div>
           {headerAction ? (
             <div className="flex shrink-0 flex-wrap items-center gap-2">

@@ -24,17 +24,17 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <StorePanel className={cn('p-10 flex flex-col items-center text-center', className)}>
-      <div className="w-12 h-12 rounded-2xl border border-[var(--store-line)] bg-[var(--store-surface-2)] flex items-center justify-center mb-4">
-        <Icon className="h-6 w-6 text-[var(--wb-blue)]" aria-hidden />
+      <div className="w-12 h-12 rounded-2xl lg-glass !rounded-2xl flex items-center justify-center mb-4">
+        <Icon className="h-5 w-5 text-[var(--store-ink-soft)]" aria-hidden />
       </div>
-      <h2 className="store-display text-lg font-semibold text-white">{title}</h2>
-      <p className="text-sm store-text-body mt-2 max-w-md font-mono">{description}</p>
+      <h2 className="store-display text-[18px] font-semibold text-[var(--store-ink)]">{title}</h2>
+      <p className="text-[13.5px] leading-relaxed store-text-body mt-2 max-w-md">{description}</p>
       {(primaryAction || secondaryAction) && (
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           {primaryAction ? (
             <Link
               href={primaryAction.href}
-              className="store-btn-primary px-4 py-2 text-sm inline-flex items-center gap-2"
+              className="btn-glass primary"
             >
               {primaryAction.label}
             </Link>
@@ -42,7 +42,7 @@ export function EmptyState({
           {secondaryAction ? (
             <Link
               href={secondaryAction.href}
-              className="text-sm font-mono text-cyan hover:opacity-80"
+              className="text-[13px] text-[var(--wb-blue)] hover:underline underline-offset-2"
             >
               {secondaryAction.label}
             </Link>

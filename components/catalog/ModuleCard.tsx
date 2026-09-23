@@ -1,8 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { MODULE_ICONS } from '@/components/navigation/module-presentation'
 import type { ModuleIconName } from '@/lib/navigation/modules'
@@ -21,72 +19,39 @@ interface ModuleCardProps {
   index?: number
 }
 
-export function ModuleCard({
-  href,
-  icon: iconName,
-  kicker,
-  title,
-  blurb,
-  count,
-  unit,
-  accentClass,
-  index = 0,
-}: ModuleCardProps) {
-  const router = useRouter()
+/**
+ * One module in the catalogue. The whole card is the link; content is
+ * visible at rest (no entrance animation gating it), and the hover is a
+ * hairline lift, not a jump.
+ */
+export function ModuleCard({ href, icon: iconName, kicker, title, blurb, count, unit, accentClass }: ModuleCardProps) {
   const Icon = MODULE_ICONS[iconName]
 
   return (
-    <motion.article
-      layout
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        delay: Math.min(index * 0.035, 0.35),
-        duration: 0.32,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      whileHover={{ y: -4 }}
-      className="store-panel rounded-xl overflow-hidden flex flex-col cursor-pointer"
-      onClick={() => router.push(href)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') router.push(href)
-      }}
-      role="link"
-      tabIndex={0}
+    <Link
+      href={href}
+      className="group store-panel rounded-2xl p-5 flex flex-col gap-3 transition-[border-color,box-shadow] duration-200 hover:border-[rgba(255,255,255,0.22)] focus-visible:border-[rgba(41,151,255,0.6)]"
     >
-      <div className="relative aspect-[4/3] store-panel-inner rounded-none border-0 border-b border-[var(--store-line)] flex items-center justify-center">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              'radial-gradient(60% 60% at 50% 110%, rgba(249,115,22,0.12), transparent 65%)',
-          }}
-        />
-        <div
+      <div className="flex items-center justify-between gap-3">
+        <span
           className={cn(
-            'relative w-16 h-16 rounded-2xl border flex items-center justify-center',
+            'w-10 h-10 rounded-xl border flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]',
             accentClass,
           )}
+          aria-hidden
         >
-          <Icon size={28} />
-        </div>
+          <Icon size={19} strokeWidth={1.75} />
+        </span>
+        <span className="text-[12px] store-text-muted">{kicker}</span>
       </div>
-
-      <div className="p-4 flex flex-col flex-1 gap-2">
-        <div className="text-[10.5px] font-semibold tracking-[0.02em] store-text-muted">
-          {kicker}
-        </div>
-        <h3 className="font-semibold text-[15px] leading-snug text-white">
-          <Link href={href} onClick={(e) => e.stopPropagation()} className="hover:underline">
-            {title}
-          </Link>
-        </h3>
-        <p className="text-[13px] leading-relaxed line-clamp-2 store-text-body">{blurb}</p>
-        <p className="font-mono text-sm mt-auto pt-2 tabular-nums">
-          <span className="text-[var(--wb-blue)] font-bold">{count}</span>{' '}
-          <span className="store-text-muted text-xs">{unit}</span>
-        </p>
+      <div>
+        <h3 className="font-semibold text-[15px] leading-snug text-[var(--store-ink)] group-hover:text-white">{title}</h3>
+        <p className="mt-1 text-[13px] leading-relaxed line-clamp-2 store-text-body">{blurb}</p>
       </div>
-    </motion.article>
+      <p className="mt-auto pt-1 tabular-nums">
+        <span className="font-semibold store-display text-[20px] text-[var(--store-ink)]">{count}</span>{' '}
+        <span className="store-text-muted text-[12px]">{unit}</span>
+      </p>
+    </Link>
   )
 }

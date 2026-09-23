@@ -29,17 +29,14 @@ export function LiveOperationsMap({
   const mapHref = recentPlanId ? `/map?plan=${recentPlanId}` : '/map'
 
   return (
-    <StorePanel className="p-6 h-full flex flex-col border-[var(--store-line)] overflow-hidden">
-      <div className="flex items-start justify-between gap-3 mb-4">
+    <StorePanel className="p-5 h-full flex flex-col overflow-hidden">
+      <div className="flex items-start justify-between gap-3 mb-3">
         <div>
-          <p className="text-[11px] font-semibold tracking-[0.02em] text-cyan">{copy.mapPanelTitle}</p>
-          <p className="text-xs store-text-body mt-1">{copy.mapPanelSubtitle}</p>
+          <p className="wb-pane-title !text-[15px]">{copy.mapPanelTitle}</p>
+          <p className="text-[12.5px] store-text-muted mt-0.5">{copy.mapPanelSubtitle}</p>
         </div>
-        <Link
-          href={mapHref}
-          className="inline-flex items-center gap-1 rounded-lg border border-cyan/30 bg-cyan/10 px-2 py-1 text-[11px] font-mono text-cyan hover:bg-cyan/15 transition-colors"
-        >
-          <Maximize2 className="w-3 h-3" />
+        <Link href={mapHref} className="btn-glass !min-h-[30px] !px-3 !text-[12px]">
+          <Maximize2 className="w-3.5 h-3.5" />
           Open Map Intel
         </Link>
       </div>
@@ -61,40 +58,35 @@ export function LiveOperationsMap({
             <polyline
               points="40,180 120,140 200,100 280,90 360,70"
               fill="none"
-              stroke="rgba(249,115,22,0.85)"
+              stroke="rgba(41,151,255,0.85)"
               strokeWidth="2"
               strokeDasharray="6 4"
             />
-            <circle cx="360" cy="70" r="6" fill="#F97316" />
+            <circle cx="360" cy="70" r="6" fill="#2997FF" />
           </svg>
         )}
         <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-2 z-10">
           <StatusBadge status="in-flight" />
-          <span className="inline-flex items-center gap-1 rounded-md border border-[var(--store-line)] bg-black/50 px-2 py-0.5 text-[11px] font-mono store-text-muted">
-            <MapPin className="w-3 h-3 text-cyan" />
-            {context.geofenceCount} geofences
+          <span className="tag lg-glass !rounded-full">
+            <MapPin className="w-3 h-3 text-[#22D3EE]" />
+            <span className="font-mono">{context.geofenceCount}</span> geofences
           </span>
-          {recentPlanId && (
-            <span className="text-[11px] font-mono store-text-muted bg-black/40 px-2 py-0.5 rounded border border-[var(--store-line)]">
-              Plan linked
-            </span>
-          )}
+          {recentPlanId && <span className="tag lg-glass !rounded-full">Plan linked</span>}
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-2">
+      <div className="mt-4 grid grid-cols-3 border-t fc-hair">
         {[
-          { label: 'In-Flight', value: context.inFlight, status: 'in-flight' as const },
-          { label: 'Pre-Flight', value: context.preFlight, status: 'pre-flight' as const },
+          { label: 'In flight', value: context.inFlight, status: 'in-flight' as const },
+          { label: 'Pre-flight', value: context.preFlight, status: 'pre-flight' as const },
           { label: 'Idle', value: context.idle, status: 'idle' as const },
         ].map(({ label, value, status }) => (
-          <div
-            key={label}
-            className="rounded-lg border border-[var(--store-line)] bg-[var(--store-surface-2)] px-3 py-2 text-center"
-          >
-            <p className="text-lg font-bold font-mono text-white">{value}</p>
-            <StatusBadge status={status} className="mt-1 mx-auto" />
-            <p className="text-[11px] font-mono store-text-muted mt-1">{label}</p>
+          <div key={label} className="pt-3 pb-1 pl-3 first:pl-0 border-l first:border-l-0 fc-hair">
+            <p className="text-[24px] leading-none font-semibold store-display tabular-nums text-[var(--store-ink)]">{value}</p>
+            <p className="mt-1.5 text-[12px] store-text-muted inline-flex items-center gap-1.5">
+              <span className={status === 'in-flight' ? 'w-1.5 h-1.5 rounded-full bg-[#4ADE80]' : status === 'pre-flight' ? 'w-1.5 h-1.5 rounded-full bg-[#A78BFA]' : 'w-1.5 h-1.5 rounded-full bg-[var(--store-ink-mute)]'} aria-hidden />
+              {label}
+            </p>
           </div>
         ))}
       </div>

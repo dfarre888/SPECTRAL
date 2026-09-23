@@ -63,32 +63,19 @@ export function PcmExerciseWorkspace({ exerciseId }: { exerciseId: string }) {
   const subtitle = meta
     ? exerciseId === SHOWCASE_EXERCISE_ID || meta.readOnly
       ? SHOWCASE_EXERCISE_SUBTITLE
-      : 'Live globe — fog of war, detection envelopes, engagement geometry.'
+      : 'Live globe: fog of war, detection envelopes and engagement geometry.'
     : loaded
-      ? 'Start an exercise from Scenario Generator or sign in if this session expired.'
+      ? 'Start an exercise from Scenario Generator, or sign in again if this session expired.'
       : 'Fetching exercise metadata…'
 
   return (
     <HubPageShell
       eyebrow={PCM_EYEBROW}
-      title={
-        !loaded
-          ? 'Loading exercise…'
-          : meta
-            ? `Turn ${meta.current_turn}`
-            : 'Exercise unavailable'
-      }
+      title={!loaded ? 'Loading exercise' : meta ? 'Live exercise' : 'Exercise unavailable'}
       subtitle={subtitle}
       headerAction={
-        meta ? (
-          <Link
-            href={`/pcm/exercise/${exerciseId}/aar`}
-            className="text-xs font-mono text-[var(--wb-blue)] hover:underline"
-          >
-            View AAR
-          </Link>
-        ) : loaded ? (
-          <Link href="/pcm/scenario" className="store-btn-primary px-3 py-1.5 text-xs font-semibold">
+        loaded && !meta ? (
+          <Link href="/pcm/scenario" className="btn-glass primary">
             New exercise
           </Link>
         ) : null
@@ -101,7 +88,7 @@ export function PcmExerciseWorkspace({ exerciseId }: { exerciseId: string }) {
         readOnly={exerciseId === SHOWCASE_EXERCISE_ID || meta?.readOnly}
         onTurnAdvanced={refreshMeta}
       />
-      <div className="h-[min(72vh,720px)] rounded-xl overflow-hidden border border-[var(--store-line)]">
+      <div className="dt-frame h-[min(70vh,720px)] min-h-[420px]">
         <SpectralGlobe exerciseId={exerciseId} playerRole="ref" />
       </div>
     </HubPageShell>

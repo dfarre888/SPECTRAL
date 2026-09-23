@@ -1,17 +1,32 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { Check, FileUp, Grid3X3, Upload } from 'lucide-react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import { AlertTriangle, Check, FileUp, Grid3X3, Upload } from 'lucide-react'
 import { EditionBadge } from '@/components/operations/EditionBadge'
 import { HubPageShell } from '@/components/hub/HubPageShell'
-import { StoreFilterSection } from '@/components/catalog/StoreFilterSidebar'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { DataTable, type DataColumn } from '@/components/ui/DataTable'
 import { StorePanel } from '@/components/ui/store-surface'
 import type { ImportJob } from '@/lib/operations/import'
 import type { CatalogueDataGap } from '@/lib/operations/tenant-performance'
 
 const CONFIDENCE_OPTIONS = ['Confirmed', 'Assessed', 'Estimated', 'Reported', 'Suspected'] as const
+
+type FormId = 'platform' | 'defeat' | 'document'
+type Notice = { form: FormId; ok: boolean; text: string }
+
+const JOB_TYPE_LABEL: Record<ImportJob['job_type'], string> = {
+  platform: 'Platform',
+  document: 'Document',
+  buildings: 'Buildings',
+  defeat_matrix: 'Defeat matrix',
+}
+
+const JOB_STATUS_TONE: Record<ImportJob['status'], string> = {
+  queued: 'blue',
+  processing: 'amber',
+  completed: 'green',
+  failed: 'red',
+}
 
 function jobLabel(job: ImportJob): string {
   if (job.job_type === 'defeat_matrix') {
@@ -28,13 +43,98 @@ function jobLabel(job: ImportJob): string {
 
 function resolutionHint(path: CatalogueDataGap['resolution_path']): string {
   if (path === 'tenant_platform_extensions') {
-    return 'Add a proprietary platform stub via platform import above.'
+    return 'Add a proprietary platform stub with the platform import form.'
   }
   if (path === 'accredited_resolver') {
-    return 'Requires accredited propagation resolver under contract — contact Spectral Operations support.'
+    return 'Requires the accredited propagation resolver under contract. Contact Spectral Operations support.'
   }
-  return 'Submit tenant Pd/Pk via the defeat matrix import form below.'
+  return 'Submit tenant Pd/Pk with the defeat matrix form.'
 }
+
+const GAP_COLUMNS: DataColumn<CatalogueDataGap>[] = [
+  {
+    key: 'gap',
+    header: 'Gap',
+    width: 260,
+    cell: (g) => (
+      <>
+        <span className="primary">{g.label}</span>
+        {g.related_system_id || g.related_platform_id ? (
+          <span className="meta font-mono">{g.related_system_id ?? g.related_platform_id}</span>
+        ) : null}
+      </>
+    ),
+    sortValue: (g) => g.label,
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    width: 150,
+    cell: (g) =>
+      g.resolved ? (
+        <>
+          <span className="tag amber">Analogue fill</span>
+          {g.supplement_count ? <span className="meta">{g.supplement_count} supplements</span> : null}
+        </>
+      ) : (
+        <span className="tag">Open</span>
+      ),
+    sortValue: (g) => (g.resolved ? 1 : 0),
+  },
+  { key: 'reason', header: 'Reason', cell: (g) => <span className="leading-relaxed">{g.reason}</span> },
+  {
+    key: 'resolution',
+    header: 'Resolution',
+    cell: (g) => (
+      <>
+        <span className="leading-relaxed text-[var(--store-ink-soft)]">{resolutionHint(g.resolution_path)}</span>
+        {g.caveat ? <span className="meta leading-relaxed">{g.caveat}</span> : null}
+      </>
+    ),
+  },
+]
+
+function Field({ id, label, hint, children }: { id: string; label: ReactNode; hint?: string; children: ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <label htmlFor={id} className="mb-1.5 block text-[12px] font-medium store-text-body">
+        {label}
+      </label>
+      {children}
+      {hint ? <p className="mt-1.5 text-[12px] store-text-muted">{hint}</p> : null}
+    </div>
+  )
+}
+
+function FormPanel({
+  icon,
+  title,
+  description,
+  children,
+}: {
+  icon: ReactNode
+  title: string
+  description: string
+  children: ReactNode
+}) {
+  return (
+    <StorePanel className="p-5">
+      <div className="flex items-start gap-3">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] border border-[var(--lacquer-line)] bg-white/[0.04]">
+          {icon}
+        </span>
+        <div className="min-w-0">
+          <h2 className="text-[15px] font-semibold text-[var(--store-ink)]">{title}</h2>
+          <p className="mt-0.5 text-[13px] store-text-body">{description}</p>
+        </div>
+      </div>
+      <div className="mt-5">{children}</div>
+    </StorePanel>
+  )
+}
+
+const FIELD = 'glass-field h-10 w-full px-3 text-[13px]'
+const SUBMIT = 'btn-glass primary disabled:cursor-not-allowed disabled:opacity-40'
 
 export default function OperationsImportPage() {
   const [jobs, setJobs] = useState<ImportJob[]>([])
@@ -52,6 +152,7 @@ export default function OperationsImportPage() {
   const [loading, setLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(true)
   const [accessError, setAccessError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<Notice | null>(null)
 
   const refresh = useCallback(async () => {
     setRefreshing(true)
@@ -86,15 +187,24 @@ export default function OperationsImportPage() {
     refresh()
   }, [refresh])
 
+  function report(form: FormId, res: Response) {
+    setNotice(
+      res.ok
+        ? { form, ok: true, text: 'Queued. An analyst must approve it before it reaches the tenant catalogue.' }
+        : { form, ok: false, text: `Import was not queued (${res.status}).` },
+    )
+  }
+
   async function queuePlatform(e: React.FormEvent) {
     e.preventDefault()
     if (!platformName.trim()) return
     setLoading(true)
-    await fetch('/api/v1/platforms/import', {
+    const res = await fetch('/api/v1/platforms/import', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: platformName.trim(), category: 'uas' }),
     })
+    report('platform', res)
     setPlatformName('')
     await refresh()
     setLoading(false)
@@ -116,11 +226,12 @@ export default function OperationsImportPage() {
     if (kineticPct !== '') body.kinetic_pct = Number(kineticPct)
     if (dewPct !== '') body.dew_pct = Number(dewPct)
 
-    await fetch('/api/v1/defeat-effectiveness/import', {
+    const res = await fetch('/api/v1/defeat-effectiveness/import', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
+    report('defeat', res)
     setDefeatPlatformId('')
     setDefeatSystemId('')
     setPdDetect('')
@@ -137,11 +248,12 @@ export default function OperationsImportPage() {
     e.preventDefault()
     if (!docTitle.trim()) return
     setLoading(true)
-    await fetch('/api/v1/documents/import', {
+    const res = await fetch('/api/v1/documents/import', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title: docTitle.trim() }),
     })
+    report('document', res)
     setDocTitle('')
     await refresh()
     setLoading(false)
@@ -152,186 +264,277 @@ export default function OperationsImportPage() {
     await refresh()
   }
 
+  const noticeFor = (form: FormId) =>
+    notice?.form === form ? (
+      <p role="status" className={`mt-3 text-[12.5px] ${notice.ok ? 'text-[#6EE7A0]' : 'text-[#FF8A98]'}`}>
+        {notice.text}
+      </p>
+    ) : null
+
+  const jobColumns: DataColumn<ImportJob>[] = [
+    {
+      key: 'type',
+      header: 'Type',
+      width: 150,
+      cell: (j) => JOB_TYPE_LABEL[j.job_type] ?? j.job_type,
+      sortValue: (j) => j.job_type,
+    },
+    {
+      key: 'item',
+      header: 'Item',
+      cell: (j) => (
+        <span className="primary block max-w-[420px] truncate" title={jobLabel(j)}>
+          {jobLabel(j)}
+        </span>
+      ),
+      sortValue: (j) => jobLabel(j),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      width: 130,
+      cell: (j) => <span className={`tag capitalize ${JOB_STATUS_TONE[j.status] ?? ''}`}>{j.status}</span>,
+      sortValue: (j) => j.status,
+    },
+    {
+      key: 'created',
+      header: 'Queued',
+      width: 170,
+      className: 'mono',
+      cell: (j) => (j.created_at ? j.created_at.slice(0, 16).replace('T', ' ') : ''),
+      sortValue: (j) => j.created_at,
+    },
+    {
+      key: 'action',
+      header: <span className="sr-only">Action</span>,
+      width: 120,
+      align: 'right',
+    headerClassName: '!text-right',
+      cell: (j) =>
+        j.status === 'queued' ? (
+          <button type="button" onClick={() => approve(j.id)} className="btn-glass !min-h-[30px] !px-3 !text-[12px]">
+            <Check className="h-3.5 w-3.5 text-[#4ADE80]" aria-hidden />
+            Approve
+          </button>
+        ) : null,
+    },
+  ]
+
   return (
     <HubPageShell
-      eyebrow="Operations"
-      title="Customer Import"
-      subtitle="Tenant-scoped platform, Pd/Pk defeat matrix, and document ingestion with human approval"
+      eyebrow="Administration"
+      title="Data Import"
+      subtitle="Tenant-scoped platform, Pd/Pk defeat matrix and document ingestion. Every import waits for analyst approval."
       headerAction={
-        <p className="text-[11px] font-mono store-text-muted">Date of information: Jul 2026</p>
-      }
-    >
-      <div className="grid gap-6 max-w-3xl">
         <div className="flex items-center gap-3">
           <EditionBadge />
-          {accessError && (
-            <p className="text-xs font-mono text-amber">{accessError}</p>
-          )}
+          <p className="text-[11px] font-mono store-text-muted">Date of information: Jul 2026</p>
+        </div>
+      }
+    >
+      <div className="space-y-6">
+        {accessError && (
+          <p role="alert" className="flex items-center gap-2 text-[13px] text-[#FCD34D]">
+            <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
+            {accessError}
+          </p>
+        )}
+
+        <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
+          <div className="space-y-5">
+            <FormPanel
+              icon={<Upload className="h-4 w-4 text-[var(--wb-blue)]" aria-hidden />}
+              title="Platform import"
+              description="Add a proprietary platform stub to this tenant’s catalogue."
+            >
+              <form onSubmit={queuePlatform}>
+                <Field id="imp-platform-name" label="Platform name">
+                  <input
+                    id="imp-platform-name"
+                    className={FIELD}
+                    placeholder="Proprietary platform name"
+                    autoComplete="off"
+                    value={platformName}
+                    onChange={(e) => setPlatformName(e.target.value)}
+                  />
+                </Field>
+                <button type="submit" disabled={loading || !platformName.trim()} className={`${SUBMIT} mt-4`}>
+                  Submit for approval
+                </button>
+                {noticeFor('platform')}
+              </form>
+            </FormPanel>
+
+            <FormPanel
+              icon={<FileUp className="h-4 w-4 text-[var(--wb-blue)]" aria-hidden />}
+              title="Document import"
+              description="Queue a source document for tenant ingestion."
+            >
+              <form onSubmit={queueDocument}>
+                <Field id="imp-doc-title" label="Document title">
+                  <input
+                    id="imp-doc-title"
+                    className={FIELD}
+                    placeholder="Title as it should appear in the library"
+                    autoComplete="off"
+                    value={docTitle}
+                    onChange={(e) => setDocTitle(e.target.value)}
+                  />
+                </Field>
+                <button type="submit" disabled={loading || !docTitle.trim()} className={`${SUBMIT} mt-4`}>
+                  Submit for approval
+                </button>
+                {noticeFor('document')}
+              </form>
+            </FormPanel>
+          </div>
+
+          <FormPanel
+            icon={<Grid3X3 className="h-4 w-4 text-[#4ADE80]" aria-hidden />}
+            title="Defeat matrix row (Pd/Pk)"
+            description="Tenant detection and defeat percentages for one platform against one defeat system."
+          >
+            <form onSubmit={queueDefeatMatrix} className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field id="imp-dm-platform" label="Platform ID">
+                  <input
+                    id="imp-dm-platform"
+                    className={`${FIELD} font-mono`}
+                    placeholder="Catalogue platform ID"
+                    autoComplete="off"
+                    spellCheck={false}
+                    value={defeatPlatformId}
+                    onChange={(e) => setDefeatPlatformId(e.target.value)}
+                  />
+                </Field>
+                <Field id="imp-dm-system" label="Defeat system ID">
+                  <input
+                    id="imp-dm-system"
+                    className={`${FIELD} font-mono`}
+                    placeholder="Catalogue defeat system ID"
+                    autoComplete="off"
+                    spellCheck={false}
+                    value={defeatSystemId}
+                    onChange={(e) => setDefeatSystemId(e.target.value)}
+                  />
+                </Field>
+              </div>
+
+              <fieldset className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <legend className="sr-only">Effectiveness percentages</legend>
+                {(
+                  [
+                    ['imp-dm-pd', 'Pd detect (%)', pdDetect, setPdDetect],
+                    ['imp-dm-rf', 'RF jamming (%)', rfPct, setRfPct],
+                    ['imp-dm-kinetic', 'Kinetic (%)', kineticPct, setKineticPct],
+                    ['imp-dm-dew', 'DEW (%)', dewPct, setDewPct],
+                  ] as const
+                ).map(([id, label, value, set]) => (
+                  <Field key={id} id={id} label={label}>
+                    <input
+                      id={id}
+                      type="number"
+                      inputMode="decimal"
+                      min={0}
+                      max={100}
+                      placeholder="0 to 100"
+                      className={`${FIELD} text-right font-mono tabular-nums`}
+                      value={value}
+                      onChange={(e) => set(e.target.value)}
+                    />
+                  </Field>
+                ))}
+              </fieldset>
+
+              <div className="grid gap-4 sm:grid-cols-[180px_minmax(0,1fr)]">
+                <Field id="imp-dm-confidence" label="Confidence">
+                  <select
+                    id="imp-dm-confidence"
+                    value={confidence}
+                    onChange={(e) =>
+                      setConfidence(e.target.value as (typeof CONFIDENCE_OPTIONS)[number])
+                    }
+                    className={`${FIELD} px-2.5`}
+                  >
+                    {CONFIDENCE_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field id="imp-dm-notes" label={<>Source notes <span className="font-normal store-text-muted">(optional)</span></>}>
+                  <input
+                    id="imp-dm-notes"
+                    className={FIELD}
+                    placeholder="Where these figures come from"
+                    autoComplete="off"
+                    value={defeatNotes}
+                    onChange={(e) => setDefeatNotes(e.target.value)}
+                  />
+                </Field>
+              </div>
+
+              <div>
+                <button
+                  type="submit"
+                  disabled={loading || !defeatPlatformId.trim() || !defeatSystemId.trim()}
+                  className={SUBMIT}
+                >
+                  Submit for approval
+                </button>
+                {noticeFor('defeat')}
+              </div>
+            </form>
+          </FormPanel>
         </div>
 
-        <StorePanel inner className="p-5 space-y-4">
-          <form onSubmit={queuePlatform} className="space-y-3">
-            <div className="flex items-center gap-2 text-sm text-white font-medium">
-              <Upload className="w-4 h-4 text-[var(--wb-blue)]" />
-              Queue platform import
-            </div>
-            <Input
-              placeholder="Platform name (proprietary)"
-              value={platformName}
-              onChange={(e) => setPlatformName(e.target.value)}
-            />
-            <Button type="submit" disabled={loading} className="store-btn-primary">
-              Submit for approval
-            </Button>
-          </form>
+        <section aria-labelledby="imp-jobs" className="space-y-3">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 id="imp-jobs" className="text-[15px] font-semibold text-[var(--store-ink)]">
+              Import jobs
+            </h2>
+            {!refreshing ? (
+              <span className="font-mono text-[12px] tabular-nums store-text-muted">
+                {jobs.length} {jobs.length === 1 ? 'job' : 'jobs'}
+              </span>
+            ) : null}
+          </div>
+          <DataTable
+            rows={jobs}
+            columns={jobColumns}
+            rowKey={(j) => j.id}
+            defaultSort={{ key: 'created', dir: 'desc' }}
+            maxHeight="480px"
+            caption="Import jobs"
+            empty={
+              refreshing
+                ? 'Loading jobs…'
+                : 'No import jobs yet. Queue a platform, defeat matrix row or document above. Each needs analyst approval before tenant commit.'
+            }
+          />
+        </section>
 
-        </StorePanel>
-
-        <StorePanel inner className="p-5 space-y-4">
-          <form onSubmit={queueDefeatMatrix} className="space-y-3">
-            <div className="flex items-center gap-2 text-sm text-white font-medium">
-              <Grid3X3 className="w-4 h-4 text-[var(--store-success)]" />
-              Queue defeat matrix (Pd/Pk)
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Input
-                placeholder="Platform ID"
-                value={defeatPlatformId}
-                onChange={(e) => setDefeatPlatformId(e.target.value)}
-              />
-              <Input
-                placeholder="Defeat system ID"
-                value={defeatSystemId}
-                onChange={(e) => setDefeatSystemId(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Input
-                type="number"
-                min={0}
-                max={100}
-                placeholder="Pd detect %"
-                value={pdDetect}
-                onChange={(e) => setPdDetect(e.target.value)}
-              />
-              <Input
-                type="number"
-                min={0}
-                max={100}
-                placeholder="RF jamming %"
-                value={rfPct}
-                onChange={(e) => setRfPct(e.target.value)}
-              />
-              <Input
-                type="number"
-                min={0}
-                max={100}
-                placeholder="Kinetic %"
-                value={kineticPct}
-                onChange={(e) => setKineticPct(e.target.value)}
-              />
-              <Input
-                type="number"
-                min={0}
-                max={100}
-                placeholder="DEW %"
-                value={dewPct}
-                onChange={(e) => setDewPct(e.target.value)}
-              />
-            </div>
-            <select
-              value={confidence}
-              onChange={(e) =>
-                setConfidence(e.target.value as (typeof CONFIDENCE_OPTIONS)[number])
-              }
-              className="flex h-9 w-full rounded-xl store-panel-inner px-3 py-1 text-sm text-white shadow-sm transition-colors focus-visible:outline-none focus-visible:border-[rgba(41,151,255,0.5)] font-mono"
-            >
-              {CONFIDENCE_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-            <Input
-              placeholder="Source notes (optional)"
-              value={defeatNotes}
-              onChange={(e) => setDefeatNotes(e.target.value)}
-            />
-            <Button type="submit" disabled={loading} className="store-btn-primary">
-              Submit for approval
-            </Button>
-          </form>
-        </StorePanel>
-
-        <StorePanel inner className="p-5 space-y-4">
-          <form onSubmit={queueDocument} className="space-y-3">
-            <div className="flex items-center gap-2 text-sm text-white font-medium">
-              <FileUp className="w-4 h-4 text-[var(--wb-blue)]" />
-              Queue document import
-            </div>
-            <Input
-              placeholder="Document title"
-              value={docTitle}
-              onChange={(e) => setDocTitle(e.target.value)}
-            />
-            <Button type="submit" disabled={loading} variant="outline">
-              Submit for approval
-            </Button>
-          </form>
-        </StorePanel>
-
-
-        <StoreFilterSection label="Catalogue data gaps">
-          {refreshing ? (
-            <p className="text-sm store-text-muted font-mono">Loading gaps…</p>
-          ) : gaps.length === 0 ? (
-            <p className="text-sm store-text-body">No catalogue gaps reported.</p>
-          ) : (
-            <ul className="space-y-2">
-              {gaps.map((gap) => (
-                <li key={gap.id} className="store-panel-inner rounded-xl px-3 py-2.5 text-xs space-y-1">
-                  <p className="store-text-body font-medium">{gap.label}</p>
-                  <p className="store-text-muted leading-relaxed">{gap.reason}</p>
-                  <p className="font-mono text-cyan text-[11px]">{resolutionHint(gap.resolution_path)}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </StoreFilterSection>
-
-        <StoreFilterSection label="Import jobs">
-          {refreshing ? (
-            <p className="text-sm store-text-muted font-mono">Loading jobs…</p>
-          ) : jobs.length === 0 ? (
-            <p className="text-sm store-text-body">
-              No import jobs yet. Queue a platform, defeat matrix row, or document above — analyst approval required
-              before tenant commit.
-            </p>
-          ) : (
-            <ul className="space-y-2">
-              {jobs.map((job) => (
-                <li
-                  key={job.id}
-                  className="flex items-center justify-between store-panel-inner rounded-xl px-3 py-2.5 text-xs"
-                >
-                  <span className="store-text-body">
-                    {job.job_type} — {job.status} — {jobLabel(job)}
-                  </span>
-                  {job.status === 'queued' && (
-                    <button
-                      type="button"
-                      onClick={() => approve(job.id)}
-                      className="flex items-center gap-1 text-[var(--store-success)] hover:opacity-80 text-xs font-semibold"
-                    >
-                      <Check className="w-3.5 h-3.5" />
-                      Approve
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </StoreFilterSection>
+        <section aria-labelledby="imp-gaps" className="space-y-3">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 id="imp-gaps" className="text-[15px] font-semibold text-[var(--store-ink)]">
+              Catalogue data gaps
+            </h2>
+            {!refreshing ? (
+              <span className="font-mono text-[12px] tabular-nums store-text-muted">
+                {gaps.length} {gaps.length === 1 ? 'gap' : 'gaps'}
+              </span>
+            ) : null}
+          </div>
+          <DataTable
+            rows={gaps}
+            columns={GAP_COLUMNS}
+            rowKey={(g) => g.id}
+            maxHeight="520px"
+            caption="Catalogue data gaps"
+            empty={refreshing ? 'Loading gaps…' : 'No catalogue gaps reported.'}
+          />
+        </section>
       </div>
     </HubPageShell>
   )

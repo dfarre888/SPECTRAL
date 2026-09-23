@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { FileBarChart, Play, SkipForward } from "lucide-react";
 
 interface TurnControlPanelProps {
   exerciseId: string;
@@ -11,13 +12,23 @@ interface TurnControlPanelProps {
   onTurnAdvanced?: () => void;
 }
 
+const STATUS_TONE: Record<string, string> = {
+  active: "green",
+  running: "green",
+  setup: "blue",
+  paused: "amber",
+  complete: "",
+  completed: "",
+  unavailable: "red",
+};
+
 export function TurnControlPanel({ exerciseId, currentTurn, status, readOnly, onTurnAdvanced }: TurnControlPanelProps) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
   const advanceTurn = async () => {
     if (readOnly) {
-      setMsg("Turn locked — published snapshot");
+      setMsg("Turn locked: published snapshot");
       return;
     }
     setBusy(true);
@@ -40,7 +51,7 @@ export function TurnControlPanel({ exerciseId, currentTurn, status, readOnly, on
 
   const startExercise = async () => {
     if (readOnly) {
-      setMsg("Exercise active — snapshot loaded");
+      setMsg("Exercise active: snapshot loaded");
       return;
     }
     setBusy(true);
@@ -55,27 +66,42 @@ export function TurnControlPanel({ exerciseId, currentTurn, status, readOnly, on
     }
   };
 
-  const turnLabel = currentTurn > 0 ? currentTurn : status === 'loading' ? '…' : '—';
+  const turnLabel = currentTurn > 0 ? String(currentTurn) : status === "loading" ? "…" : "none";
+  const tone = STATUS_TONE[status] ?? "";
 
   return (
-    <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] px-3 py-2">
-      <span className="text-[11px] font-mono store-text-muted">
-        Turn <span className="text-white tabular-nums">{turnLabel}</span> · {status}
-      </span>
-      {status === "setup" && !readOnly && (
-        <button type="button" disabled={busy} onClick={startExercise} className="rounded border border-[rgba(41,151,255,0.5)] px-2 py-1 text-[11px] font-mono text-[var(--wb-blue)]">
-          Start exercise
-        </button>
+    <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-3">
+      <div className="flex items-baseline gap-2">
+        <span className="text-[12px] store-text-muted">Turn</span>
+        <span className="font-mono text-[22px] font-semibold leading-none tabular-nums text-[var(--store-ink)]">{turnLabel}</span>
+      </div>
+      {status !== "loading" ? <span className={`tag ${tone} capitalize`}>{status}</span> : null}
+      {readOnly ? <span className="tag">Read-only snapshot</span> : null}
+      <span className="hidden font-mono text-[12px] store-text-muted sm:inline">{exerciseId}</span>
+
+      <div className="ml-auto flex flex-wrap items-center gap-2">
+        {status === "setup" && !readOnly && (
+          <button type="button" disabled={busy} onClick={startExercise} className="btn-glass disabled:opacity-50">
+            <Play className="h-3.5 w-3.5" aria-hidden />
+            Start exercise
+          </button>
+        )}
+        {!readOnly && (
+          <button type="button" disabled={busy} onClick={advanceTurn} className="btn-glass primary disabled:opacity-50">
+            <SkipForward className="h-3.5 w-3.5" aria-hidden />
+            Advance turn
+          </button>
+        )}
+        <Link href={`/pcm/exercise/${exerciseId}/aar`} className="btn-glass">
+          <FileBarChart className="h-3.5 w-3.5" aria-hidden />
+          After action review
+        </Link>
+      </div>
+      {msg && (
+        <p role="status" className="w-full text-[12px] text-[#06B6D4]">
+          {msg}
+        </p>
       )}
-      {!readOnly && (
-        <button type="button" disabled={busy} onClick={advanceTurn} className="rounded border border-[var(--store-line)] px-2 py-1 text-[11px] font-mono text-white hover:border-[rgba(41,151,255,0.5)]">
-          Advance turn
-        </button>
-      )}
-      <Link href={`/pcm/exercise/${exerciseId}/aar`} className="text-[11px] font-mono text-[var(--wb-blue)] hover:underline ml-auto">
-        View AAR
-      </Link>
-      {msg && <span className="text-[11px] font-mono text-cyan w-full">{msg}</span>}
     </div>
   );
 }

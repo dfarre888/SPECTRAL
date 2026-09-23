@@ -99,27 +99,64 @@ export default function SpectralGlobe({ exerciseId, playerRole = 'ref' }: Props)
   const pct = maxTurns > 0 ? Math.round((turn / maxTurns) * 100) : 0
 
   return (
-    <div className="relative w-full h-full">
+    <div className="pcm-globe relative w-full h-full">
       <div ref={containerRef} className="absolute inset-0" />
-      <div className="absolute bottom-3 left-3 z-10 rounded-lg bg-black/70 border border-[var(--store-line)] px-3 py-2 font-mono text-[11px] text-[#F97316]">
-        TURN {String(turn).padStart(2, '0')} / {maxTurns}
-        <div className="mt-1 h-1.5 w-32 bg-white/10 rounded overflow-hidden">
-          <div className="h-full bg-[#F97316]" style={{ width: `${pct}%` }} />
+
+      <fieldset className="lg-glass absolute left-3 top-3 z-10 px-3 pb-2.5 pt-2">
+        <legend className="sr-only">Globe layers</legend>
+        <p aria-hidden className="mb-1.5 text-[11px] font-medium store-text-muted">Layers</p>
+        <div className="space-y-1">
+          {LAYER_KEYS.map((k) => (
+            <label key={k} className="flex min-h-[24px] cursor-pointer items-center gap-2.5 text-[12px] text-[var(--store-ink)]">
+              <input
+                type="checkbox"
+                className="h-3.5 w-3.5 accent-[var(--wb-blue)]"
+                checked={layers[k]}
+                onChange={() => setLayers((s) => ({ ...s, [k]: !s[k] }))}
+              />
+              {LAYER_LABEL[k]}
+            </label>
+          ))}
         </div>
-      </div>
+      </fieldset>
+
       {feedLabel && (
-        <div className="absolute top-3 right-3 z-10 rounded-lg bg-black/70 border border-cyan/30 px-2 py-1 font-mono text-[11px] text-cyan max-w-[220px]">
+        <div className="lg-glass absolute right-3 top-3 z-10 max-w-[240px] px-3 py-1.5 font-mono text-[11.5px] text-[#06B6D4]">
           {feedLabel}
         </div>
       )}
-      <div className="absolute top-3 left-3 z-10 rounded-lg bg-black/70 border border-[var(--store-line)] p-2 space-y-1 text-[11px] font-mono text-white/70">
-        {(['platforms', 'contacts', 'envelopes', 'fog', 'engagement'] as const).map((k) => (
-          <label key={k} className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={layers[k]} onChange={() => setLayers((s) => ({ ...s, [k]: !s[k] }))} />
-            {k}
-          </label>
-        ))}
+
+      <div className="lg-glass absolute bottom-3 right-3 z-10 px-3.5 py-2.5" aria-label={`Turn ${turn} of ${maxTurns}`}>
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-[11px] store-text-muted">Turn</span>
+          <span className="font-mono text-[15px] font-semibold tabular-nums text-[var(--store-ink)]">
+            {String(turn).padStart(2, '0')}
+          </span>
+          <span className="font-mono text-[12px] tabular-nums store-text-muted">/ {maxTurns}</span>
+        </div>
+        <div className="mt-1.5 h-1 w-36 overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full rounded-full bg-[var(--wb-blue)] transition-[width] duration-200 ease-out motion-reduce:transition-none"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
       </div>
+
+      {/* Cesium ships its attribution at 10px; lift it to the 11px floor without hiding it. */}
+      <style jsx global>{`
+        .pcm-globe .cesium-widget-credits,
+        .pcm-globe .cesium-widget-credits * { font-size: 11px !important; }
+      `}</style>
     </div>
   )
+}
+
+const LAYER_KEYS = ['platforms', 'contacts', 'envelopes', 'fog', 'engagement'] as const
+
+const LAYER_LABEL: Record<(typeof LAYER_KEYS)[number], string> = {
+  platforms: 'Platforms',
+  contacts: 'Contacts',
+  envelopes: 'Detection envelopes',
+  fog: 'Fog of war',
+  engagement: 'Engagement geometry',
 }

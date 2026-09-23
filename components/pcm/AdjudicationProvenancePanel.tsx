@@ -13,24 +13,16 @@ interface AdjudicationProvenancePanelProps {
 
 function PkSourceBadge({ source }: { source?: 'accredited' | 'osint' }) {
   if (source === 'accredited') {
-    return (
-      <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-mono font-semibold tracking-wider bg-orange-500/20 text-orange-400 border border-orange-500/40">
-        ACCREDITED
-      </span>
-    );
+    return <span className="tag blue ml-2">Accredited</span>;
   }
-  return (
-    <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-mono font-semibold tracking-wider bg-[var(--store-surface-2)] store-text-muted border border-[var(--store-line)]">
-      OSINT EST
-    </span>
-  );
+  return <span className="tag ml-2">OSINT estimate</span>;
 }
 
 function Row({ label, value, badge }: { label: string; value: string | number; badge?: React.ReactNode }) {
   return (
-    <div className="flex justify-between items-center py-1.5 px-2 rounded-lg store-panel-inner text-sm">
+    <div className="flex min-h-[34px] items-center justify-between gap-3 border-b border-[var(--store-line)] px-1 py-1.5 text-[13px] last:border-b-0">
       <span className="store-text-muted">{label}</span>
-      <span className="font-mono text-white flex items-center">{value}{badge}</span>
+      <span className="flex items-center font-mono tabular-nums text-[var(--store-ink)]">{value}{badge}</span>
     </div>
   );
 }
@@ -46,13 +38,13 @@ export function AdjudicationProvenancePanel({
 
   return (
     <div className={cn('space-y-4 border-t border-[var(--store-line)] pt-4', className)}>
-      <p className="text-xs store-text-muted tracking-[0.02em] font-semibold">
+      <p className="text-[13px] font-semibold text-[var(--store-ink)]">
         PCM provenance
       </p>
 
       {pd && (
-        <div className="space-y-1">
-          <p className="text-[11px] font-mono text-cyan uppercase">Detection Pd components</p>
+        <div>
+          <p className="mb-1 text-[12px] font-medium text-[#06B6D4]">Detection Pd components</p>
           <Row label="Sensor" value={pd.sensor_type} />
           <Row label="Base Pd" value={pd.base_pd.toFixed(3)} />
           <Row label="Weather mod" value={pd.weather_modifier.toFixed(2)} />
@@ -66,8 +58,8 @@ export function AdjudicationProvenancePanel({
       )}
 
       {pair && (
-        <div className="space-y-1">
-          <p className="text-[11px] font-mono text-cyan uppercase">Pair adjudication</p>
+        <div>
+          <p className="mb-1 text-[12px] font-medium text-[#06B6D4]">Pair adjudication</p>
           <Row
             label="Combined Pk"
             value={pair.combinedBlueSuccessPct + '%'}
@@ -84,11 +76,11 @@ export function AdjudicationProvenancePanel({
             />
           )}
           {pair.isImmune && pair.immuneReason && (
-            <p className="text-xs font-mono text-red px-2">{pair.immuneReason}</p>
+            <p className="px-1 pt-1.5 text-[12px] text-[#FF8A98]">{pair.immuneReason}</p>
           )}
           {showAccreditedLegend && (
-            <p className="text-[11px] store-text-muted italic font-mono mt-2 px-2">
-              Pk figures marked ACCREDITED are contract-analogue supplements, not MoD-verified.
+            <p className="mt-2 px-1 text-[11.5px] store-text-muted">
+              Pk figures marked Accredited are contract-analogue supplements, not MoD-verified.
             </p>
           )}
         </div>

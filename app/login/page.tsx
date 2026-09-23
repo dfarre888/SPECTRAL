@@ -7,7 +7,6 @@ import { MfaChallenge } from '@/components/auth/MfaChallenge'
 import { MfaEnroll } from '@/components/auth/MfaEnroll'
 import { createClient } from '@/lib/supabase/client'
 import { getOidcLoginHref, isOidcEnabledClient } from '@/lib/operations/oidc-client'
-import { StorePanel } from '@/components/ui/store-surface'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 
 type AuthStep = 'credentials' | 'mfa-enroll' | 'mfa-challenge'
@@ -69,118 +68,153 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="hub-page-canvas min-h-[calc(100vh-20px)] flex items-center justify-center p-6 relative">
-      <div className="absolute top-4 right-4">
+    <div className="hub-page-canvas relative flex min-h-[calc(100vh-20px)] items-center justify-center overflow-y-auto p-6">
+      {/* The shell's ambient light (see --ambient), without its black base so the light theme still reads. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(1100px 520px at 72% -12%, rgba(41, 151, 255, 0.12), transparent 70%), radial-gradient(800px 480px at -6% -8%, rgba(124, 92, 255, 0.08), transparent 65%)',
+        }}
+      />
+      <div className="absolute right-4 top-4 z-10">
         <ThemeToggle />
       </div>
-      <StorePanel className="w-full max-w-md p-8">
-        {step === 'credentials' && (
-          <>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-[rgba(41,151,255,0.14)] border border-[rgba(41,151,255,0.5)] flex items-center justify-center">
-                <Radio className="w-5 h-5 text-[var(--wb-blue)]" />
-              </div>
-              <div>
-                <h1 className="store-display text-xl font-bold text-white">SPECTRAL</h1>
-                <p className="text-[11px] font-mono store-text-muted">Drone Threat Intelligence Platform</p>
-              </div>
-            </div>
 
-            <p className="text-[11px] font-mono tracking-[0.02em] text-[var(--wb-blue)] mb-1">
-              Enterprise access
-            </p>
-            <p className="text-sm store-text-body mb-6">
-              UNCLASSIFIED — authenticate for full threat analysis and wargaming modules.
-            </p>
+      <div className="glass-popover relative w-full max-w-[420px] !rounded-[22px] p-8">
+        {/* Specular edge: the same top-lit sweep as the shell glass. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-[inherit]"
+          style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.07) 0%, transparent 30%)' }}
+        />
 
-            {oidcHref ? (
-              <>
-                <a
-                  href={oidcHref}
-                  className="store-btn-primary w-full py-3 text-sm font-semibold flex items-center justify-center gap-2 mb-4"
+        <div className="relative">
+          {step === 'credentials' && (
+            <>
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-11 w-11 items-center justify-center rounded-[12px]"
+                  style={{
+                    background: 'linear-gradient(180deg, #3AA2FF, #1F86EE)',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), 0 6px 18px -6px rgba(41,151,255,0.85)',
+                  }}
                 >
-                  <ShieldCheck className="w-4 h-4" />
-                  Sign in with organisation SSO
-                </a>
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex-1 h-px bg-[var(--store-line)]" />
-                  <span className="text-[11px] store-text-muted font-mono">LOCAL ACCOUNT</span>
-                  <div className="flex-1 h-px bg-[var(--store-line)]" />
+                  <Radio className="theme-keep-white h-5 w-5 text-white" aria-hidden />
                 </div>
-              </>
-            ) : null}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="text-xs store-text-muted block mb-1">Email</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full store-panel-inner rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[rgba(41,151,255,0.5)]"
-                />
-              </div>
-              <div>
-                <label className="text-xs store-text-muted block mb-1">Password</label>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full store-panel-inner rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[rgba(41,151,255,0.5)]"
-                />
+                <div>
+                  <h1 className="store-display text-[22px] font-semibold leading-tight tracking-[-0.02em] text-[var(--store-ink)]">
+                    Spectral
+                  </h1>
+                  <p className="text-[12px] store-text-muted">Drone threat intelligence</p>
+                </div>
               </div>
 
-              {error && <p className="text-xs text-red">{error}</p>}
+              <p className="mt-6 text-[14px] leading-relaxed store-text-body">
+                {mode === 'login'
+                  ? 'Sign in for threat analysis and the wargaming modules.'
+                  : 'Create an account for threat analysis and the wargaming modules.'}
+              </p>
+
+              {oidcHref ? (
+                <>
+                  <a href={oidcHref} className="btn-glass primary mt-6 !min-h-[42px] w-full">
+                    <ShieldCheck className="h-4 w-4" aria-hidden />
+                    Sign in with organisation SSO
+                  </a>
+                  <div className="my-5 flex items-center gap-3" role="separator">
+                    <div className="h-px flex-1 bg-[var(--glass-line)]" />
+                    <span className="text-[11.5px] store-text-muted">or use a local account</span>
+                    <div className="h-px flex-1 bg-[var(--glass-line)]" />
+                  </div>
+                </>
+              ) : null}
+
+              <form onSubmit={handleSubmit} className={oidcHref ? 'space-y-4' : 'mt-6 space-y-4'}>
+                <div>
+                  <label htmlFor="login-email" className="mb-1.5 block text-[12px] font-medium store-text-body">
+                    Email
+                  </label>
+                  <input
+                    id="login-email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="glass-field h-11 w-full px-3.5 text-[14px]"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="login-password" className="mb-1.5 block text-[12px] font-medium store-text-body">
+                    Password
+                  </label>
+                  <input
+                    id="login-password"
+                    type="password"
+                    required
+                    minLength={6}
+                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="glass-field h-11 w-full px-3.5 text-[14px]"
+                  />
+                </div>
+
+                {error && (
+                  <p role="alert" className="text-[13px] text-[#FF8A98]">
+                    {error}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`btn-glass ${oidcHref ? '' : 'primary'} !min-h-[42px] w-full disabled:opacity-50`}
+                >
+                  {loading ? 'Please wait…' : mode === 'login' ? 'Sign in with email' : 'Create account'}
+                </button>
+              </form>
 
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-2.5 rounded-xl border border-[var(--store-line)] text-sm font-medium text-white hover:border-[rgba(41,151,255,0.5)] disabled:opacity-50"
+                type="button"
+                onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+                className="mt-4 text-[13px] text-[var(--wb-blue)] transition-opacity duration-150 hover:opacity-80"
               >
-                {loading ? 'Please wait…' : mode === 'login' ? 'Sign in with email' : 'Create account'}
+                {mode === 'login' ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
               </button>
-            </form>
+            </>
+          )}
 
-            <button
-              type="button"
-              onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-              className="mt-4 text-xs text-cyan hover:opacity-80"
-            >
-              {mode === 'login' ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
-            </button>
-          </>
-        )}
+          {step === 'mfa-enroll' && (
+            <MfaEnroll
+              onEnrolled={() => {
+                router.push('/')
+                router.refresh()
+              }}
+              onCancelled={() => {
+                router.push('/')
+                router.refresh()
+              }}
+            />
+          )}
 
-        {step === 'mfa-enroll' && (
-          <MfaEnroll
-            onEnrolled={() => {
-              router.push('/')
-              router.refresh()
-            }}
-            onCancelled={() => {
-              router.push('/')
-              router.refresh()
-            }}
-          />
-        )}
+          {step === 'mfa-challenge' && (
+            <MfaChallenge
+              onSuccess={() => {
+                router.push('/')
+                router.refresh()
+              }}
+              onCancel={handleSignOut}
+            />
+          )}
 
-        {step === 'mfa-challenge' && (
-          <MfaChallenge
-            onSuccess={() => {
-              router.push('/')
-              router.refresh()
-            }}
-            onCancel={handleSignOut}
-          />
-        )}
-
-        <p className="mt-8 text-center text-[11px] font-mono store-text-muted opacity-70">
-          UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
-        </p>
-      </StorePanel>
+          <p className="mt-8 border-t border-[var(--glass-line)] pt-4 text-center font-mono text-[11px] tracking-[0.06em] store-text-muted">
+            UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

@@ -20,12 +20,12 @@ export default async function CurrencyPage() {
 
   return (
     <HubPageShell
-      eyebrow="Moat Builder"
-      title="Currency Updates"
-      subtitle="Tactical currency proposals require DS review before publication. Operators see approved updates only."
+      eyebrow="Administration"
+      title="Currency Queue"
+      subtitle="Tactical currency proposals need directing staff review before publication. Operators see approved updates only."
       headerAction={
         <p className="text-[11px] font-mono store-text-muted">
-          Date of information: Jul 2026 · {updates.length} records
+          Date of information: Jul 2026 · {updates.length} {updates.length === 1 ? 'record' : 'records'}
         </p>
       }
     >

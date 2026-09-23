@@ -332,7 +332,7 @@ export default function CesiumArena({
         },
         label: {
           text: `${label}\n${typeStr}${speed}`,
-          font: '10px JetBrains Mono',
+          font: '11px JetBrains Mono',
           fillColor: Color.fromCssColorString(hexColor),
           outlineColor: Color.BLACK,
           outlineWidth: 2,
@@ -368,7 +368,7 @@ export default function CesiumArena({
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 w-full h-full rounded-xl overflow-hidden border border-[var(--store-line)]"
+      className="absolute inset-0 w-full h-full overflow-hidden"
       style={{ background: SCENE_GROUND }}
     />
   )

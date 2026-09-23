@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertTriangle, Loader2, Radio, Server } from 'lucide-react'
+import { AlertTriangle, Loader2, Server } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export type AdjudicationSource = 'client' | 'loading' | 'server' | 'fallback'
@@ -23,19 +23,19 @@ export function AdjudicationSourceBanner({
       icon: Loader2,
       spin: true,
       label: 'Running server adjudication…',
-      tone: 'border-cyan/30 bg-cyan/5 text-cyan',
+      tone: 'border-[rgba(6,182,212,0.30)] bg-[rgba(6,182,212,0.05)] text-[#67E8F9]',
     },
     server: {
       icon: Server,
       spin: false,
-      label: 'Operations adjudication — ITU-R propagation + defeat matrix',
-      tone: 'border-cyan/30 bg-cyan/5 text-cyan',
+      label: 'Operations adjudication: ITU-R propagation and defeat matrix',
+      tone: 'border-[rgba(6,182,212,0.30)] bg-[rgba(6,182,212,0.05)] text-[#67E8F9]',
     },
     fallback: {
       icon: AlertTriangle,
       spin: false,
-      label: fallbackReason ?? 'Training fallback — client band overlap only',
-      tone: 'border-amber/30 bg-amber/5 text-amber',
+      label: fallbackReason ?? 'Training fallback: client band overlap only',
+      tone: 'border-[rgba(251,191,36,0.32)] bg-[rgba(251,191,36,0.05)] text-[#FCD34D]',
     },
   }[source]
 
@@ -43,21 +43,23 @@ export function AdjudicationSourceBanner({
 
   return (
     <div
+      role="status"
       className={cn(
-        'flex items-start gap-2 rounded-xl border px-3 py-2 text-[11px] font-mono leading-snug',
+        'flex items-start gap-2 rounded-xl border px-3 py-2 text-[12px] leading-snug',
         config.tone,
         className,
       )}
     >
-      <Icon className={cn('w-3.5 h-3.5 shrink-0 mt-0.5', config.spin && 'animate-spin')} />
-      <div>
-        <p className="flex items-center gap-1.5">
-          <Radio className="w-3 h-3 opacity-70" />
-          {config.label}
-        </p>
+      <Icon
+        aria-hidden
+        className={cn('w-3.5 h-3.5 shrink-0 mt-px', config.spin && 'animate-spin motion-reduce:animate-none')}
+      />
+      <div className="min-w-0">
+        <p>{config.label}</p>
         {source === 'fallback' && (
-          <p className="mt-1 opacity-80">
-            Set NEXT_PUBLIC_SPECTRAL_EDITION=operations and authenticate for server propagation.
+          <p className="mt-1 text-[11.5px] store-text-muted">
+            Set <span className="font-mono">NEXT_PUBLIC_SPECTRAL_EDITION=operations</span> and authenticate for server
+            propagation.
           </p>
         )}
       </div>

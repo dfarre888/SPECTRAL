@@ -1,6 +1,7 @@
 'use client'
 
 import { clsx } from 'clsx'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { frameAt, frameLabel, type TickFrame } from '@/lib/wopr/tick-history'
 
 interface TickScrubberProps {
@@ -23,24 +24,24 @@ export function TickScrubber({
   const disabled = frames.length < 2
 
   return (
-    <div className="flex items-center gap-2 px-2 py-1.5 mt-1 rounded-lg store-panel-inner">
+    <div className="flex items-center gap-2 border-t border-[var(--store-line)] px-3 py-2">
       <button
         type="button"
         aria-label="Step back one tick"
         disabled={disabled || index <= 0}
         onClick={() => onScrub(index - 1)}
-        className="w-6 h-6 shrink-0 rounded flex items-center justify-center store-text-body disabled:opacity-30 hover:bg-[var(--store-surface-2)]"
+        className="glass-icon-btn h-8 w-8 shrink-0 disabled:pointer-events-none disabled:opacity-30"
       >
-        ◀
+        <ChevronLeft className="h-4 w-4" aria-hidden />
       </button>
       <button
         type="button"
         aria-label="Step forward one tick"
         disabled={disabled || index >= max}
         onClick={() => onScrub(index + 1)}
-        className="w-6 h-6 shrink-0 rounded flex items-center justify-center store-text-body disabled:opacity-30 hover:bg-[var(--store-surface-2)]"
+        className="glass-icon-btn h-8 w-8 shrink-0 disabled:pointer-events-none disabled:opacity-30"
       >
-        ▶
+        <ChevronRight className="h-4 w-4" aria-hidden />
       </button>
 
       <input
@@ -51,11 +52,11 @@ export function TickScrubber({
         disabled={disabled}
         onChange={(e) => onScrub(Number(e.target.value))}
         aria-label="Scrub scenario history"
-        className="flex-1 min-w-0 accent-[var(--store-accent)] h-1 disabled:opacity-30"
+        className="mx-1 h-1 min-w-0 flex-1 cursor-pointer accent-[var(--wb-blue)] disabled:cursor-default disabled:opacity-30"
       />
 
-      <span className="text-[11px] font-mono store-text-muted tabular-nums shrink-0 w-[128px] text-right">
-        {disabled ? 'awaiting ticks…' : frameLabel(current)}
+      <span className="w-[150px] shrink-0 text-right font-mono text-[12px] tabular-nums store-text-muted">
+        {disabled ? 'Awaiting ticks' : frameLabel(current)}
       </span>
 
       <button
@@ -64,13 +65,15 @@ export function TickScrubber({
         disabled={following}
         title={following ? 'Following the live stream' : 'Jump back to the latest tick'}
         className={clsx(
-          'shrink-0 px-2 py-0.5 rounded text-[11px] font-mono font-bold border transition-colors',
-          following
-            ? 'border-[rgba(74,222,128,0.35)] text-[var(--store-success)] bg-[rgba(74,222,128,0.10)] cursor-default'
-            : 'border-[rgba(41,151,255,0.5)] text-[var(--wb-blue)] bg-[rgba(41,151,255,0.14)] hover:bg-[var(--store-accent)]/20',
+          'tag shrink-0',
+          following ? 'green cursor-default' : 'amber',
         )}
       >
-        {following ? '● LIVE' : 'REPLAY → live'}
+        <span
+          aria-hidden
+          className={clsx('h-1.5 w-1.5 rounded-full', following ? 'bg-[#4ADE80]' : 'bg-[#FBBF24]')}
+        />
+        {following ? 'Live' : 'Replay: back to live'}
       </button>
     </div>
   )

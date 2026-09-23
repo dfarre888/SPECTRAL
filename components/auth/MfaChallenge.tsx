@@ -45,22 +45,22 @@ export function MfaChallenge({ onSuccess, onCancel }: MfaChallengeProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <div className="p-3 rounded-xl bg-[rgba(41,151,255,0.14)] border border-[rgba(41,151,255,0.5)]">
-          <Shield className="w-6 h-6 text-[var(--wb-blue)]" />
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-[rgba(41,151,255,0.45)] bg-[rgba(41,151,255,0.12)]">
+          <Shield className="h-5 w-5 text-[var(--wb-blue)]" aria-hidden />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-white">Two-factor authentication</h2>
-          <p className="text-sm store-text-muted">Enter the 6-digit code from your authenticator app</p>
+          <h2 className="store-display text-[18px] font-semibold text-[var(--store-ink)]">Two-factor authentication</h2>
+          <p className="mt-0.5 text-[13px] store-text-body">Enter the 6-digit code from your authenticator app.</p>
         </div>
       </div>
       <OtpInput onComplete={handleComplete} loading={submitting} error={otpError} />
-      {error && <p className="text-xs text-red text-center">{error}</p>}
+      {error && (
+        <p role="alert" className="text-center text-[13px] text-[#FF8A98]">
+          {error}
+        </p>
+      )}
       {onCancel && (
-        <button
-          type="button"
-          onClick={onCancel}
-          className="w-full py-2.5 rounded-xl border border-[var(--store-line)] text-sm store-text-muted hover:text-white"
-        >
+        <button type="button" onClick={onCancel} className="btn-glass !min-h-[42px] w-full">
           Sign out
         </button>
       )}

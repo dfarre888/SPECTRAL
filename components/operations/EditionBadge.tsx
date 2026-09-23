@@ -8,30 +8,30 @@ type EditionBadgeProps = {
   size?: 'sm' | 'md'
 }
 
+/** Edition marker. A `.tag`: text plus hairline, cyan when the Operations edition is live. */
 export function EditionBadge({ className, size = 'sm' }: EditionBadgeProps) {
   const operations = isOperationsEditionClient()
 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-lg border font-mono font-semibold tracking-[0.02em]',
-        size === 'sm' ? 'px-2 py-0.5 text-[11px]' : 'px-2.5 py-1 text-[11px]',
-        operations
-          ? 'border-cyan/40 bg-cyan/10 text-cyan'
-          : 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-muted',
+        'tag',
+        size === 'md' && '!h-6 !px-2.5 !text-[12px]',
+        operations && '!border-[rgba(6,182,212,0.45)] !bg-[rgba(6,182,212,0.08)] !text-[#67E8F9]',
         className,
       )}
       title={
         operations
           ? 'Server-side ITU-R propagation and tenant adjudication enabled'
-          : 'OSINT band overlap only — no server propagation'
+          : 'OSINT band overlap only, no server propagation'
       }
     >
       <span
+        aria-hidden
         className={cn(
           'rounded-full shrink-0',
           size === 'sm' ? 'w-1.5 h-1.5' : 'w-2 h-2',
-          operations ? 'bg-cyan' : 'bg-[var(--store-ink-mute)]',
+          operations ? 'bg-[#06B6D4]' : 'bg-[var(--store-ink-mute)]',
         )}
       />
       {operations ? 'Operations' : 'Training'}

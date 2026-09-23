@@ -77,17 +77,18 @@ export function OtpInput({ onComplete, loading = false, error = false }: OtpInpu
             disabled={loading}
             onChange={(e) => handleChange(i, e)}
             onKeyDown={(e) => handleKeyDown(i, e)}
+            aria-label={`Digit ${i + 1} of 6`}
+            autoComplete={i === 0 ? 'one-time-code' : 'off'}
             className={cn(
-              'w-10 h-12 text-center text-lg font-mono rounded-xl border bg-black/40 text-white',
-              'focus:outline-none focus:border-[rgba(41,151,255,0.5)]',
-              error ? 'border-red/60' : 'border-[var(--store-line)]',
+              'glass-field h-12 w-11 text-center font-mono text-[20px] tabular-nums disabled:opacity-60',
+              error && '!border-[rgba(255,92,110,0.6)]',
             )}
           />
         ))}
       </div>
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[var(--store-bg)]/60 rounded-xl">
-          <Loader2 className="w-5 h-5 animate-spin text-[var(--wb-blue)]" />
+        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/40">
+          <Loader2 className="h-5 w-5 animate-spin text-[var(--wb-blue)] motion-reduce:animate-none" aria-label="Verifying" />
         </div>
       )}
     </div>

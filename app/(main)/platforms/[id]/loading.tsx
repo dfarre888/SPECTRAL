@@ -1,11 +1,12 @@
 export default function PlatformDetailLoading() {
   return (
-    <div className="max-w-7xl mx-auto animate-pulse space-y-6">
-      <div className="h-8 w-48 bg-[var(--store-surface-2)] rounded-xl" />
-      <div className="h-12 w-96 bg-[var(--store-surface-2)] rounded-xl" />
-      <div className="grid lg:grid-cols-2 gap-6">
-        <div className="h-[600px] bg-[var(--store-surface-2)] rounded-2xl" />
-        <div className="h-[400px] bg-[var(--store-surface-2)] rounded-2xl" />
+    <div className="animate-pulse motion-reduce:animate-none space-y-6" aria-busy="true" aria-label="Loading platform dossier">
+      <div className="h-4 w-32 rounded-md store-panel" />
+      <div className="h-9 w-[min(420px,100%)] rounded-xl store-panel" />
+      <div className="h-24 rounded-2xl store-panel" />
+      <div className="grid xl:grid-cols-2 gap-4">
+        <div className="h-[520px] rounded-2xl store-panel" />
+        <div className="h-[380px] rounded-2xl store-panel" />
       </div>
     </div>
   )

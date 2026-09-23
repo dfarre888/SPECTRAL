@@ -1,12 +1,9 @@
 import Link from 'next/link'
-import { GitCompare } from 'lucide-react'
+import { GitCompare, Plus } from 'lucide-react'
 import { redirect } from 'next/navigation'
-import { HubPageShell } from '@/components/hub/HubPageShell'
 import { EmptyState } from '@/components/ui/empty-state'
-import { StorePanel } from '@/components/ui/store-surface'
-import { Badge } from '@/components/ui/badge'
 import { CompareEngagement } from '@/components/compare/CompareEngagement'
-import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
+import { CompareTable } from '@/components/compare/CompareTable'
 import { getPlatformsByIds } from '@/lib/platforms/queries'
 
 interface ComparePageProps {
@@ -14,6 +11,11 @@ interface ComparePageProps {
 }
 
 const DEFAULT_COMPARE_PAIR = ['shahed-136', 'mq-9-reaper'] as const
+/**
+ * Mirrors MAX_COMPARE_PLATFORMS in lib/stores/compare-store. That module is a
+ * client module, so a server component cannot read the value from it.
+ */
+const MAX_COMPARE_PLATFORMS = 4
 
 export default async function ComparePage({ searchParams }: ComparePageProps) {
   const fromPair = [searchParams.a, searchParams.b].filter(Boolean) as string[]
@@ -28,50 +30,39 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   const platforms = await getPlatformsByIds(ids)
 
   return (
-    <HubPageShell
-      eyebrow="Engagement Analysis"
-      title="Platform Compare"
-      subtitle="Head-to-head OSINT dossier comparison — Shahed vs MALE ISR default; override with ?ids= or ?a=&b=."
-    >
-      {platforms.length === 0 ? (
-        <EmptyState
-          icon={GitCompare}
-          title="No platforms selected"
-          description="Open Platform Library and add up to two platforms with the Compare tray at the bottom of the grid."
-          primaryAction={{ href: '/platforms', label: 'Open Platform Library' }}
-          secondaryAction={{ href: '/overlay', label: 'SAM engagement analysis →' }}
-        />
-      ) : (
-        <div className="space-y-4">
-          <p className="text-xs font-mono store-text-muted">
-            {platforms.length} platform{platforms.length !== 1 ? 's' : ''} selected
+    <div className="pb-8">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="page-title">Platform Compare</h1>
+          <p className="page-lede">
+            Side-by-side OSINT dossiers. Opens on Shahed-136 and MQ-9 Reaper; pick up to {MAX_COMPARE_PLATFORMS} platforms
+            in the Platform Library, or set them with ?ids= in the address.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {platforms.map((p) => (
-              <StorePanel key={p.id} className="p-4 space-y-2">
-                <div className="flex items-center gap-3">
-                  <PlatformThumbnail id={p.id} name={p.name} size="lg" />
-                  <h2 className="font-bold text-white">{p.name}</h2>
-                </div>
-                <p className="text-sm store-text-body">{p.country_of_origin}</p>
-                <Badge variant="outline">{p.category}</Badge>
-                <div className="text-xs font-mono store-text-body space-y-1 pt-2">
-                  <p>Range: {p.range_km ?? '—'} km</p>
-                  <p>Ceiling: {p.service_ceiling_m ?? '—'} m</p>
-                  <p>Speed: {p.max_speed_kmh ?? '—'} km/h</p>
-                </div>
-                <Link
-                  href={`/platforms/${p.id}`}
-                  className="text-[var(--wb-blue)] text-xs hover:opacity-80 inline-block pt-2"
-                >
-                  View full spec →
-                </Link>
-              </StorePanel>
-            ))}
-          </div>
-          <CompareEngagement platforms={platforms} />
         </div>
-      )}
-    </HubPageShell>
+        {platforms.length > 0 && platforms.length < MAX_COMPARE_PLATFORMS ? (
+          <Link href="/platforms" className="btn-glass shrink-0">
+            <Plus size={15} aria-hidden />
+            Add platform
+          </Link>
+        ) : null}
+      </header>
+
+      <div className="mt-6">
+        {platforms.length === 0 ? (
+          <EmptyState
+            icon={GitCompare}
+            title="No platforms selected"
+            description="Open Platform Library and tick up to four platforms, then press Compare in the tray."
+            primaryAction={{ href: '/platforms', label: 'Open Platform Library' }}
+            secondaryAction={{ href: '/overlay', label: 'SAM engagement analysis' }}
+          />
+        ) : (
+          <div className="space-y-6">
+            <CompareTable platforms={platforms} ids={ids} />
+            <CompareEngagement platforms={platforms} />
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

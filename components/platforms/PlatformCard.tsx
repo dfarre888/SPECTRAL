@@ -2,19 +2,25 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { GitCompare, ShieldCheck } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { PlatformImage } from '@/components/platforms/PlatformImage'
+import { Check, GitCompare } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { CATEGORY_LABELS, CATEGORY_SHORT } from '@/lib/platforms/constants'
-import { countryFlag } from '@/lib/platforms/flags'
-import { formatAltitudeM, formatFrequencyBand, formatRangeKm } from '@/lib/platforms/format'
+import { PlatformImage } from '@/components/platforms/PlatformImage'
+import {
+  categoryLabel,
+  categoryMeta,
+  confidenceTag,
+  fmtNum,
+  initials,
+  knownFlag,
+} from '@/components/platforms/platform-display'
+import { hasResolvedPlatformImage } from '@/lib/platforms/image-resolve'
 import { MAX_COMPARE_PLATFORMS, useCompareStore } from '@/lib/stores/compare-store'
 import type { Platform } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
 interface PlatformCardProps {
   platform: Platform
+  /** Kept for API compatibility; cards no longer stagger in. */
   index?: number
 }
 
@@ -25,7 +31,7 @@ function confidenceChip(confidence: Platform['data_confidence']): string | null 
     case 'medium':
       return 'Assessed capability'
     case 'estimated':
-      return 'Estimated — verify'
+      return 'Estimated, verify'
     default:
       return null
   }
@@ -41,18 +47,35 @@ function platformBlurb(platform: Platform): string {
   if (platform.known_operators?.length) {
     return `Operators: ${platform.known_operators.slice(0, 2).join(', ')}.`
   }
-  return 'OSINT platform entry — open dossier for full specification.'
+  return 'OSINT platform entry. Open the dossier for the full specification.'
 }
 
-export function PlatformCard({ platform, index = 0 }: PlatformCardProps) {
+/** One figure: label with its unit on top, the bare number below (units never crowd the value). */
+function Figure({ label, value, unit }: { label: string; value: string | null; unit?: string }) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[11px] store-text-muted truncate">
+        {label}
+        {unit ? <span className="ml-1 opacity-80">{unit}</span> : null}
+      </div>
+      <div className="mt-0.5 font-mono tabular-nums text-[13px] text-[var(--store-ink)] truncate">
+        {value ?? <span className="store-text-muted">—</span>}
+      </div>
+    </div>
+  )
+}
+
+export function PlatformCard({ platform }: PlatformCardProps) {
   const router = useRouter()
   const { isSelected, toggle } = useCompareStore()
   const selected = isSelected(platform.id)
   const href = `/platforms/${platform.id}`
-  const kicker = CATEGORY_SHORT[platform.category] ?? CATEGORY_LABELS[platform.category]
   const compliance = confidenceChip(platform.data_confidence)
-  const featured =
-    (platform.conflict_deployments?.length ?? 0) > 0 || platform.gnss_independent
+  const tone = confidenceTag(platform.data_confidence).tone
+  const combat = (platform.conflict_deployments?.length ?? 0) > 0
+  const hasImage = hasResolvedPlatformImage(platform.id)
+  const flag = knownFlag(platform.country_of_origin)
+  const sub = categoryMeta(platform)
 
   const handleCompare = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -66,19 +89,11 @@ export function PlatformCard({ platform, index = 0 }: PlatformCardProps) {
   }
 
   return (
-    <motion.article
-      layout
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        delay: Math.min(index * 0.035, 0.35),
-        duration: 0.32,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      whileHover={{ y: -4 }}
+    <article
       className={cn(
-        'store-panel rounded-2xl overflow-hidden flex flex-col cursor-pointer transition-colors',
-        selected && 'border-[rgba(41,151,255,0.5)]',
+        'group store-panel rounded-2xl overflow-hidden flex flex-col cursor-pointer',
+        'transition-[transform,border-color] duration-200 ease-out hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+        selected && '!border-[rgba(41,151,255,0.55)]',
       )}
       onClick={() => router.push(href)}
       onKeyDown={(e) => {
@@ -86,93 +101,79 @@ export function PlatformCard({ platform, index = 0 }: PlatformCardProps) {
       }}
       role="link"
       tabIndex={0}
+      aria-label={platform.name}
     >
-      <div className="relative aspect-square store-panel-inner rounded-none border-0 border-b border-[var(--store-line)]">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              'radial-gradient(60% 60% at 50% 110%, rgba(249,115,22,0.15), transparent 65%)',
-          }}
-        />
-        <PlatformImage
-          id={platform.id}
-          name={platform.name}
-          className="relative h-full w-full border-0 rounded-none store-panel-inner"
-        />
-        {featured ? (
-          <span className="absolute top-2.5 left-2.5 text-[11px] font-bold font-mono tracking-[0.02em] px-2 py-1 rounded-md bg-[var(--wb-blue)] text-white">
-            Combat
-          </span>
-        ) : null}
-        <button
-          type="button"
-          onClick={handleCompare}
-          aria-label={selected ? 'Remove from compare' : 'Add to compare'}
-          className={cn(
-            'absolute top-2.5 right-2.5 w-8 h-8 rounded-full grid place-items-center transition-all',
-            selected
-              ? 'bg-[var(--wb-blue)] text-white'
-              : 'bg-[rgba(8,8,8,0.6)] backdrop-blur-sm text-white hover:bg-[rgba(41,151,255,0.14)]',
-          )}
-        >
-          <GitCompare size={14} />
-        </button>
+      <div className="relative aspect-[16/10] border-b border-[var(--lacquer-line)] bg-[#050506] overflow-hidden">
+        {hasImage ? (
+          <PlatformImage
+            id={platform.id}
+            name={platform.name}
+            className="h-full w-full border-0 rounded-none"
+          />
+        ) : (
+          // No open-source image: a monogram plate instead of a grey box.
+          <div className="absolute inset-0 flex items-end justify-between p-4 bg-[radial-gradient(120%_90%_at_50%_0%,rgba(255,255,255,0.06),transparent_60%)]">
+            <span
+              aria-hidden
+              className="store-display font-semibold leading-none tracking-[-0.04em] text-[64px] text-[rgba(255,255,255,0.10)] select-none"
+            >
+              {initials(platform.name)}
+            </span>
+            <span className="text-[11px] store-text-muted">No open-source image</span>
+          </div>
+        )}
       </div>
 
-      <div className="p-4 flex flex-col flex-1 gap-2">
-        <div className="text-[10.5px] font-semibold tracking-[0.02em] store-text-muted">
-          {kicker}
+      <div className="p-4 flex flex-col flex-1 gap-2.5">
+        <div className="flex items-center justify-between gap-2 text-[11.5px] store-text-muted">
+          <span className="truncate">
+            {categoryLabel(platform.category)}
+            {sub ? ` · ${sub}` : ''}
+          </span>
+          {combat ? (
+            <span className="shrink-0 text-[var(--store-ink-soft)]" title={platform.conflict_deployments.join(', ')}>
+              Combat proven
+            </span>
+          ) : null}
         </div>
-        <h3 className="font-semibold text-[15px] leading-snug text-white">
-          <Link href={href} onClick={(e) => e.stopPropagation()} className="hover:underline">
+        <h3 className="font-semibold text-[15px] leading-snug text-[var(--store-ink)] line-clamp-2">
+          <Link href={href} onClick={(e) => e.stopPropagation()} className="hover:underline underline-offset-2">
             {platform.name}
           </Link>
         </h3>
-        <p className="text-[11px] store-text-muted">
-          {countryFlag(platform.country_of_origin)}{' '}
+        <p className="text-[12px] store-text-muted -mt-1 truncate">
+          {flag ? <span className="mr-1" aria-hidden>{flag}</span> : null}
           {platform.country_of_origin ?? 'Unknown origin'}
+          {platform.manufacturer ? ` · ${platform.manufacturer}` : ''}
         </p>
-        <p className="text-[13px] leading-relaxed line-clamp-2 store-text-body">
-          {platformBlurb(platform)}
-        </p>
+        <p className="text-[13px] leading-relaxed line-clamp-2 store-text-body">{platformBlurb(platform)}</p>
 
-        {compliance ? (
-          <span className="self-start text-[11px] px-2 py-1 rounded-full flex items-center gap-1.5 border border-[rgba(74,222,128,0.20)] bg-[rgba(74,222,128,0.10)] text-[var(--store-success)]">
-            <ShieldCheck size={11} />
-            {compliance}
-          </span>
-        ) : null}
-
-        <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-mono store-text-body mt-1">
-          <span>{formatRangeKm(platform.range_km)}</span>
-          <span>{formatAltitudeM(platform.service_ceiling_m)}</span>
-          <span>{formatFrequencyBand(platform.c2_uplink_mhz, platform.data_link_mhz)}</span>
+        <div className="grid grid-cols-3 gap-3 pt-2.5 mt-auto border-t border-[var(--store-line)]">
+          <Figure label="Range" value={fmtNum(platform.range_km)} unit="km" />
+          <Figure label="Speed" value={fmtNum(platform.max_speed_kmh)} unit="km/h" />
+          <Figure label="Ceiling" value={fmtNum(platform.service_ceiling_m)} unit="m" />
         </div>
 
-        {platform.manufacturer ? (
-          <div className="flex items-center gap-1.5 text-[10.5px] store-text-muted mt-auto pt-1">
-            <span className="px-1.5 py-0.5 rounded font-mono store-panel-inner border border-[var(--store-line)]">
-              {platform.manufacturer}
-            </span>
-            <span>·</span>
-            <span>OSINT dossier</span>
+        <div className="flex items-center justify-between gap-2 pt-1">
+          <div className="flex items-center gap-1.5 min-w-0">
+            {compliance ? (
+              <span className={cn('tag', tone)} title={compliance}>
+                {confidenceTag(platform.data_confidence).label}
+              </span>
+            ) : null}
           </div>
-        ) : null}
-
-        <button
-          type="button"
-          onClick={handleCompare}
-          className={cn(
-            'mt-2 w-full py-2 rounded-xl text-xs font-semibold transition-colors',
-            selected
-              ? 'store-btn-primary'
-              : 'store-panel-inner store-text-body hover:text-white border border-[var(--store-line)]',
-          )}
-        >
-          {selected ? 'In compare tray' : 'Add to compare'}
-        </button>
+          <button
+            type="button"
+            onClick={handleCompare}
+            aria-pressed={selected}
+            aria-label={selected ? `Remove ${platform.name} from compare` : `Add ${platform.name} to compare`}
+            className="btn-e xs shrink-0"
+          >
+            {selected ? <Check size={12} /> : <GitCompare size={12} />}
+            {selected ? 'Added' : 'Compare'}
+          </button>
+        </div>
       </div>
-    </motion.article>
+    </article>
   )
 }

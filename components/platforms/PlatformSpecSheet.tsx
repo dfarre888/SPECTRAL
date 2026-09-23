@@ -1,27 +1,17 @@
-import { ConfidenceBadge } from '@/components/platforms/ConfidenceBadge'
-import { SpecGrid, SpecRow } from '@/components/ui/spec-row'
-import { StorePanel } from '@/components/ui/store-surface'
+import type { ReactNode } from 'react'
 import { CATEGORY_LABELS } from '@/lib/platforms/constants'
 import { formatFrequencyBand } from '@/lib/platforms/format'
-import type { DataConfidence, Platform } from '@/lib/types'
+import { fmtNum, fmtUsd } from '@/components/platforms/platform-display'
+import type { Platform } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
-const SECTIONS = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'performance', label: 'Performance' },
-  { id: 'sensors', label: 'Sensors' },
-  { id: 'ew', label: 'EW' },
-  { id: 'defeat', label: 'Defeat' },
-  { id: 'sources', label: 'Sources' },
-] as const
+/**
+ * The dossier: one lacquer panel per section, label/value rows, mono numbers
+ * with the unit set quietly after the value. Fields with no open-source value
+ * are listed once at the foot of their section instead of as rows of dashes.
+ */
 
-function formatValue(value: unknown): string {
-  if (value === null || value === undefined) return '—'
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
-  if (Array.isArray(value)) return value.length ? value.join(', ') : '—'
-  return String(value)
-}
-
-function formatDateOfInformation(platform: Platform): string {
+export function formatDateOfInformation(platform: Platform): string {
   const raw = platform.intel_update_date ?? platform.updated_at
   if (!raw || raw === new Date(0).toISOString()) {
     return new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(new Date())
@@ -31,138 +21,86 @@ function formatDateOfInformation(platform: Platform): string {
   return new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(d)
 }
 
-interface QuantSpec {
+function fmtDate(raw: string | null | undefined): string | null {
+  if (!raw) return null
+  const d = new Date(raw)
+  if (Number.isNaN(d.getTime()) || d.getTime() === 0) return null
+  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(d)
+}
+
+type Kind = 'num' | 'text' | 'mono' | 'list' | 'bool'
+
+interface Row {
   label: string
-  value: string
+  /** null or empty means "no open-source value". */
+  value: string | number | boolean | string[] | null | undefined
+  unit?: string
+  kind?: Kind
 }
 
-interface TextSpec {
-  label: string
-  value: string
+function isEmpty(v: Row['value']): boolean {
+  if (v === null || v === undefined || v === '') return true
+  if (Array.isArray(v)) return v.length === 0
+  if (typeof v === 'number') return Number.isNaN(v)
+  return false
 }
 
-function buildOverview(platform: Platform): TextSpec[] {
-  return [
-    { label: 'ID', value: platform.id },
-    { label: 'Name', value: platform.name },
-    { label: 'Manufacturer', value: formatValue(platform.manufacturer) },
-    { label: 'Country of Origin', value: formatValue(platform.country_of_origin) },
-    { label: 'NATO Reporting Name', value: formatValue(platform.nato_reporting_name) },
-    { label: 'Category', value: CATEGORY_LABELS[platform.category] ?? platform.category },
-    { label: 'A3DM ID', value: formatValue(platform.a3dm_drone_id) },
-    { label: 'A3DM class', value: formatValue(platform.a3dm_category) },
-    { label: 'Variant', value: formatValue(platform.sub_category) },
-    { label: 'Catalog', value: formatValue(platform.catalog_tier) },
-    { label: 'Retired / discontinued', value: formatValue(platform.retired) },
-    { label: 'Guidance Type', value: formatValue(platform.guidance_type) },
-    { label: 'GNSS Independent', value: formatValue(platform.gnss_independent) },
-    { label: 'AI Autonomous', value: formatValue(platform.ai_autonomous) },
-    { label: 'Swarm Capable', value: formatValue(platform.swarm_capable) },
-    { label: 'Known Operators', value: formatValue(platform.known_operators) },
-    { label: 'Conflict Deployments', value: formatValue(platform.conflict_deployments) },
-    { label: 'ITAR Controlled', value: formatValue(platform.itar_controlled) },
-  ]
-}
-
-function buildPerformance(platform: Platform): QuantSpec[] {
-  return [
-    { label: 'Max Speed', value: platform.max_speed_kmh != null ? `${platform.max_speed_kmh} km/h` : '—' },
-    { label: 'Service Ceiling', value: platform.service_ceiling_m != null ? `${platform.service_ceiling_m} m` : '—' },
-    { label: 'Range', value: platform.range_km != null ? `${platform.range_km} km` : '—' },
-    { label: 'Endurance', value: platform.endurance_hrs != null ? `${platform.endurance_hrs} hrs` : '—' },
-    { label: 'MTOW', value: platform.mtow_kg != null ? `${platform.mtow_kg} kg` : '—' },
-    { label: 'Dry weight', value: platform.dry_weight_kg != null ? `${platform.dry_weight_kg} kg` : '—' },
-    { label: 'Max payload', value: platform.max_payload_kg != null ? `${platform.max_payload_kg} kg` : '—' },
-    { label: 'Length', value: platform.length_m != null ? `${platform.length_m} m` : '—' },
-    { label: 'Wingspan', value: platform.wingspan_m != null ? `${platform.wingspan_m} m` : '—' },
-    { label: 'Height', value: platform.height_m != null ? `${platform.height_m} m` : '—' },
-    { label: 'Unit Cost (USD)', value: platform.unit_cost_usd != null ? `$${platform.unit_cost_usd.toLocaleString()}` : '—' },
-    { label: 'IOC Year', value: formatValue(platform.ioc_year) },
-    { label: 'Terminal Speed', value: platform.terminal_speed_kmh != null ? `${platform.terminal_speed_kmh} km/h` : '—' },
-    { label: 'Armour Penetration', value: platform.armor_piercing_mm != null ? `${platform.armor_piercing_mm} mm RHA` : '—' },
-    { label: 'Engine', value: formatValue(platform.engine_type) },
-    { label: 'Warhead', value: platform.warhead_kg != null ? `${platform.warhead_kg} kg` : '—' },
-    { label: 'RCS (m²)', value: formatValue(platform.radar_cross_section_m2) },
-    { label: 'RCS Notes', value: formatValue(platform.rcs_notes) },
-  ]
-}
-
-function buildSensors(platform: Platform): TextSpec[] {
-  return [
-    { label: 'Sensor Suite', value: formatValue(platform.sensor_suite) },
-    { label: 'Payload Hardpoints', value: formatValue(platform.payload_hardpoints) },
-    { label: 'Weapon Types', value: formatValue(platform.weapon_types) },
-  ]
-}
-
-function buildEw(platform: Platform): (QuantSpec | TextSpec)[] {
-  return [
-    { label: 'C2 Uplink', value: formatValue(platform.c2_uplink_mhz?.map((f) => `${f} MHz`)) },
-    { label: 'C2 Downlink', value: formatValue(platform.c2_downlink_mhz?.map((f) => `${f} MHz`)) },
-    { label: 'Data Link', value: formatFrequencyBand(platform.c2_uplink_mhz, platform.data_link_mhz) },
-    { label: 'Frequency Hopping', value: formatValue(platform.frequency_hopping) },
-    { label: 'GNSS Used', value: formatValue(platform.gnss_used) },
-    { label: 'RTK Capable', value: formatValue(platform.rtk_capable) },
-    { label: 'Nav Backup', value: formatValue(platform.nav_backup) },
-    { label: 'Stealth Features', value: formatValue(platform.stealth_features) },
-    { label: 'Control Link Freq', value: formatValue(platform.control_link_freq) },
-    { label: 'GNSS Dependency', value: formatValue(platform.gnss_dependency) },
-  ]
-}
-
-function buildDefeat(platform: Platform): TextSpec[] {
-  const rows: TextSpec[] = []
-  if (platform.defeat_note) {
-    rows.push({ label: 'Defeat Assessment', value: platform.defeat_note })
+function renderValue(row: Row): ReactNode {
+  const v = row.value
+  if (typeof v === 'boolean') return v ? 'Yes' : 'No'
+  if (Array.isArray(v)) return v.join(', ')
+  if (typeof v === 'number') {
+    return (
+      <span className="font-mono tabular-nums text-[var(--store-ink)]">
+        {fmtNum(v)}
+        {row.unit ? <span className="ml-1 text-[12px] store-text-muted">{row.unit}</span> : null}
+      </span>
+    )
   }
-  if (rows.length === 0) {
-    rows.push({ label: 'Defeat Assessment', value: 'See countermeasures panel for platform × effector pairings.' })
+  if (row.kind === 'mono' || row.kind === 'num') {
+    return (
+      <span className="font-mono text-[12.5px] text-[var(--store-ink)] break-all">
+        {String(v)}
+        {row.unit ? <span className="ml-1 text-[12px] store-text-muted">{row.unit}</span> : null}
+      </span>
+    )
   }
-  return rows
+  return String(v)
 }
 
-function buildSources(platform: Platform): TextSpec[] {
-  return [
-    { label: 'Sources', value: formatValue(platform.sources) },
-    { label: 'Created', value: formatValue(platform.created_at) },
-    { label: 'Updated', value: formatValue(platform.updated_at) },
-  ]
-}
-
-function isQuantitativeValue(value: string): boolean {
-  if (value === '—') return false
-  return /\d/.test(value) || value.startsWith('$')
-}
-
-interface SpecSectionProps {
-  id: string
-  title: string
-  platform: Platform
-  rows: (QuantSpec | TextSpec)[]
-}
-
-function SpecSection({ id, title, platform, rows }: SpecSectionProps) {
-  const confidence: DataConfidence = platform.data_confidence
+function SpecPanel({ id, title, rows, children }: { id: string; title: string; rows: Row[]; children?: ReactNode }) {
+  const present = rows.filter((r) => !isEmpty(r.value))
+  const missing = rows.filter((r) => isEmpty(r.value)).map((r) => r.label)
 
   return (
-    <section id={id} className="scroll-mt-24">
-      <h3 className="text-[11px] font-mono tracking-[0.02em] store-text-muted px-4 pt-3 pb-1">
-        {title}
-      </h3>
-      <SpecGrid className="px-4 pb-2">
-        {rows.map((row) => {
-          const quant = isQuantitativeValue(row.value)
-          return (
-            <SpecRow
+    <section id={id} className="store-panel rounded-2xl scroll-mt-24 break-inside-avoid mb-4">
+      <h2 className="px-5 pt-4 pb-2 text-[15px] font-semibold text-[var(--store-ink)]">{title}</h2>
+      {children}
+      {present.length > 0 ? (
+        <dl className="px-5 pb-2">
+          {present.map((row) => (
+            <div
               key={row.label}
-              label={row.label}
-              value={row.value}
-              mono={quant}
-              confidence={confidence}
-            />
-          )
-        })}
-      </SpecGrid>
+              className="grid grid-cols-[minmax(128px,38%)_1fr] gap-4 py-2.5 border-t border-[var(--store-line)] first:border-t-0"
+            >
+              <dt className="text-[12.5px] store-text-muted leading-5">{row.label}</dt>
+              <dd className="text-[13px] leading-5 text-[var(--store-ink)] min-w-0 break-words">{renderValue(row)}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : null}
+      {missing.length > 0 ? (
+        <p
+          className={cn(
+            'px-5 pb-4 text-[11.5px] leading-relaxed store-text-muted',
+            present.length > 0 && 'pt-2 border-t border-[var(--store-line)] mx-5 px-0',
+          )}
+        >
+          No open-source value: {missing.join(', ')}
+        </p>
+      ) : (
+        <div className="pb-2" />
+      )}
     </section>
   )
 }
@@ -171,38 +109,106 @@ interface PlatformSpecSheetProps {
   platform: Platform
 }
 
-export function PlatformSpecSheet({ platform }: PlatformSpecSheetProps) {
-  const dateOfInformation = formatDateOfInformation(platform)
+export function PlatformSpecSheet({ platform: p }: PlatformSpecSheetProps) {
+  const dataLink = formatFrequencyBand(p.c2_uplink_mhz, p.data_link_mhz)
+  const mhz = (list: number[] | null | undefined) =>
+    list && list.length ? list.map((f) => `${fmtNum(f)} MHz`) : null
+
+  const identity: Row[] = [
+    { label: 'ID', value: p.id, kind: 'mono' },
+    { label: 'Manufacturer', value: p.manufacturer },
+    { label: 'Country of origin', value: p.country_of_origin },
+    { label: 'NATO reporting name', value: p.nato_reporting_name },
+    { label: 'Category', value: CATEGORY_LABELS[p.category] ?? p.category },
+    { label: 'Variant', value: p.sub_category },
+    { label: 'A3DM ID', value: p.a3dm_drone_id, kind: 'mono' },
+    { label: 'A3DM class', value: p.a3dm_category },
+    { label: 'Catalogue', value: p.catalog_tier },
+    { label: 'Retired or discontinued', value: p.retired },
+    { label: 'Known operators', value: p.known_operators },
+    { label: 'Conflict deployments', value: p.conflict_deployments },
+    { label: 'ITAR controlled', value: p.itar_controlled },
+  ]
+
+  const performance: Row[] = [
+    { label: 'Max speed', value: p.max_speed_kmh, unit: 'km/h' },
+    { label: 'Service ceiling', value: p.service_ceiling_m, unit: 'm' },
+    { label: 'Range', value: p.range_km, unit: 'km' },
+    { label: 'Endurance', value: p.endurance_hrs, unit: 'h' },
+    { label: 'Terminal speed', value: p.terminal_speed_kmh, unit: 'km/h' },
+    { label: 'Engine', value: p.engine_type },
+    { label: 'Propulsion', value: p.propulsion },
+    { label: 'Year introduced', value: p.year_introduced != null ? String(p.year_introduced) : null, kind: 'mono' },
+    { label: 'IOC year', value: p.ioc_year != null ? String(p.ioc_year) : null, kind: 'mono' },
+    { label: 'Unit cost', value: fmtUsd(p.unit_cost_usd), unit: 'USD', kind: 'num' },
+  ]
+
+  const airframe: Row[] = [
+    { label: 'MTOW', value: p.mtow_kg, unit: 'kg' },
+    { label: 'Dry weight', value: p.dry_weight_kg, unit: 'kg' },
+    { label: 'Max payload', value: p.max_payload_kg, unit: 'kg' },
+    { label: 'Warhead', value: p.warhead_kg, unit: 'kg' },
+    { label: 'Armour penetration', value: p.armor_piercing_mm, unit: 'mm RHA' },
+    { label: 'Length', value: p.length_m, unit: 'm' },
+    { label: 'Wingspan', value: p.wingspan_m, unit: 'm' },
+    { label: 'Height', value: p.height_m, unit: 'm' },
+    { label: 'Payload hardpoints', value: p.payload_hardpoints },
+    { label: 'RCS', value: p.radar_cross_section_m2, unit: 'm²' },
+    { label: 'RCS notes', value: p.rcs_notes },
+  ]
+
+  const ew: Row[] = [
+    { label: 'Guidance', value: p.guidance_type ? String(p.guidance_type).replace(/_/g, ' ') : null },
+    { label: 'GNSS independent', value: p.gnss_independent },
+    { label: 'GNSS dependency', value: p.gnss_dependency },
+    { label: 'GNSS used', value: p.gnss_used },
+    { label: 'RTK capable', value: p.rtk_capable },
+    { label: 'Nav backup', value: p.nav_backup },
+    { label: 'C2 uplink', value: mhz(p.c2_uplink_mhz), kind: 'mono' },
+    { label: 'C2 downlink', value: mhz(p.c2_downlink_mhz), kind: 'mono' },
+    { label: 'Data link', value: dataLink === '—' ? null : dataLink, kind: 'mono' },
+    { label: 'Control link', value: p.control_link_freq },
+    { label: 'Frequency hopping', value: p.frequency_hopping },
+    { label: 'AI autonomous', value: p.ai_autonomous },
+    { label: 'Swarm capable', value: p.swarm_capable },
+    { label: 'Stealth features', value: p.stealth_features },
+  ]
+
+  const sensors: Row[] = [
+    { label: 'Sensor suite', value: p.sensor_suite },
+    { label: 'Weapon types', value: p.weapon_types },
+  ]
+
+  const sources: Row[] = [
+    { label: 'Date of information', value: formatDateOfInformation(p) },
+    { label: 'Created', value: fmtDate(p.created_at), kind: 'mono' },
+    { label: 'Updated', value: fmtDate(p.updated_at), kind: 'mono' },
+  ]
 
   return (
-    <StorePanel className="overflow-hidden rounded-xl">
-      <div className="sticky top-0 z-10 bg-[var(--store-surface)] border-b border-[var(--store-line)]">
-        <div className="px-4 py-3 flex items-center justify-between gap-2">
-          <h2 className="font-semibold text-white">Platform Dossier</h2>
-          <ConfidenceBadge confidence={platform.data_confidence} />
-        </div>
-        <nav className="px-4 pb-2 flex flex-wrap gap-1.5" aria-label="Dossier sections">
-          {SECTIONS.map((s) => (
-            <a
-              key={s.id}
-              href={`#dossier-${s.id}`}
-              className="text-[11px] font-mono px-2 py-1 rounded-lg border border-[var(--store-line)] store-text-muted hover:border-[rgba(41,151,255,0.5)] hover:text-[var(--wb-blue)] transition-colors"
-            >
-              {s.label}
-            </a>
-          ))}
-        </nav>
-        <p className="px-4 pb-2 text-[11px] font-mono tabular-nums store-text-muted">
-          Date of information: {dateOfInformation}
+    <div className="columns-1 xl:columns-2 gap-4 [column-fill:_balance]">
+      <SpecPanel id="dossier-overview" title="Identity" rows={identity} />
+      <SpecPanel id="dossier-performance" title="Performance" rows={performance} />
+      <SpecPanel id="dossier-airframe" title="Airframe and payload" rows={airframe} />
+      <SpecPanel id="dossier-ew" title="Guidance, EW and navigation" rows={ew} />
+      <SpecPanel id="dossier-sensors" title="Sensors and weapons" rows={sensors} />
+      <section id="dossier-defeat" className="store-panel rounded-2xl scroll-mt-24 break-inside-avoid mb-4 px-5 py-4">
+        <h2 className="text-[15px] font-semibold text-[var(--store-ink)]">Defeat assessment</h2>
+        <p className="mt-2 text-[13px] leading-relaxed store-text-body">
+          {p.defeat_note ?? 'See the countermeasures table for platform and effector pairings.'}
         </p>
-      </div>
-
-      <SpecSection id="dossier-overview" title="Overview" platform={platform} rows={buildOverview(platform)} />
-      <SpecSection id="dossier-performance" title="Performance" platform={platform} rows={buildPerformance(platform)} />
-      <SpecSection id="dossier-sensors" title="Sensors" platform={platform} rows={buildSensors(platform)} />
-      <SpecSection id="dossier-ew" title="EW" platform={platform} rows={buildEw(platform)} />
-      <SpecSection id="dossier-defeat" title="Defeat" platform={platform} rows={buildDefeat(platform)} />
-      <SpecSection id="dossier-sources" title="Sources" platform={platform} rows={buildSources(platform)} />
-    </StorePanel>
+      </section>
+      <SpecPanel id="dossier-sources" title="Sources" rows={sources}>
+        {p.sources?.length ? (
+          <ul className="px-5 pb-3 space-y-1.5">
+            {p.sources.map((s) => (
+              <li key={s} className="text-[12.5px] leading-relaxed store-text-body break-words">
+                {s}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </SpecPanel>
+    </div>
   )
 }

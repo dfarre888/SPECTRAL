@@ -81,12 +81,12 @@ export function PlatformThumbnail({
           className,
         )}
         style={px ? { width: px, height: px } : undefined}
-        aria-label={`${name} — image unavailable`}
+        aria-label={`${name}, image unavailable`}
       >
         {px && px >= 36 ? (
           <span
             className="font-mono font-bold store-text-muted"
-            style={{ fontSize: Math.max(8, Math.round(px * 0.28)) }}
+            style={{ fontSize: Math.max(11, Math.round(px * 0.28)) }}
           >
             {platformInitials(name)}
           </span>

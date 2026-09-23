@@ -1,6 +1,7 @@
 import { payloadsForPlatform } from '@/lib/a3dm/catalog'
 import { bandsForPayload } from '@/data/a3dm/payload-bands'
-import { StorePanel } from '@/components/ui/store-surface'
+import { ScrollArea } from '@/components/ui/ScrollArea'
+import { fmtNum } from '@/components/platforms/platform-display'
 import type { Platform } from '@/lib/types'
 
 interface PayloadCompatPanelProps {
@@ -16,44 +17,68 @@ export function PayloadCompatPanel({ platform }: PayloadCompatPanelProps) {
   const maxPay = platform.max_payload_kg
 
   return (
-    <div id="payloads">
-    <StorePanel className="p-4 space-y-3">
-      <h2 className="font-semibold text-white">Compatible payloads (A3DM)</h2>
-      <p className="text-xs store-text-muted font-mono">
-        {platform.a3dm_drone_id ?? platform.id}
-        {dry != null && ` · dry ${dry} kg`}
-        {mtow != null && ` · MTOW ${mtow} kg`}
-        {maxPay != null && ` · max payload ${maxPay} kg`}
-      </p>
-      <ul className="space-y-2">
-        {payloads.map((p) => {
-          const bands = p.spectrum_eligible ? bandsForPayload(p.id, p.type) : []
-          const over =
-            dry != null && p.weight_g != null && mtow != null
-              ? dry + p.weight_g / 1000 > mtow
-              : false
-          return (
-            <li key={p.id} className="border border-[var(--store-line)] rounded-lg p-2">
-              <div className="flex justify-between gap-2 text-sm">
-                <span className="text-white">{p.name}</span>
-                <span className="font-mono text-xs store-text-muted">{p.type}</span>
-              </div>
-              <p className="text-[11px] font-mono store-text-muted mt-0.5">
-                {p.id}
-                {p.weight_g != null && ` · ${p.weight_g} g`}
-                {p.mount_type && ` · ${p.mount_type}`}
-                {over && ' · exceeds MTOW'}
-              </p>
-              {bands.length > 0 && (
-                <p className="text-[11px] font-mono text-cyan mt-1">
-                  {bands.map((b) => b.label).join(' · ')}
-                </p>
-              )}
-            </li>
-          )
-        })}
-      </ul>
-    </StorePanel>
-    </div>
+    <section id="payloads" className="scroll-mt-24">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-3">
+        <h2 className="text-[15px] font-semibold text-[var(--store-ink)]">
+          Compatible payloads <span className="font-normal store-text-muted">(A3DM)</span>
+        </h2>
+        <p className="text-[12px] font-mono tabular-nums store-text-muted">
+          {platform.a3dm_drone_id ?? platform.id}
+          {dry != null && ` · dry ${fmtNum(dry)} kg`}
+          {mtow != null && ` · MTOW ${fmtNum(mtow)} kg`}
+          {maxPay != null && ` · max payload ${fmtNum(maxPay)} kg`}
+        </p>
+      </div>
+      <ScrollArea maxHeight="min(460px, calc(100vh - 200px))">
+        <table className="dt compact">
+          <caption className="sr-only">Compatible payloads</caption>
+          <thead>
+            <tr>
+              <th scope="col">Payload</th>
+              <th scope="col">Type</th>
+              <th scope="col" className="text-right">
+                Mass <span className="font-normal store-text-muted">g</span>
+              </th>
+              <th scope="col">Mount</th>
+              <th scope="col">Spectrum Bands</th>
+            </tr>
+          </thead>
+          <tbody>
+            {payloads.map((p) => {
+              const bands = p.spectrum_eligible ? bandsForPayload(p.id, p.type) : []
+              const over =
+                dry != null && p.weight_g != null && mtow != null ? dry + p.weight_g / 1000 > mtow : false
+              return (
+                <tr key={p.id}>
+                  <td>
+                    <span className="primary block">{p.name}</span>
+                    <span className="meta font-mono">{p.id}</span>
+                  </td>
+                  <td>{p.type}</td>
+                  <td className="num">
+                    {p.weight_g != null ? (
+                      <span className="text-[var(--store-ink)]">{fmtNum(p.weight_g)}</span>
+                    ) : (
+                      <span className="store-text-muted">—</span>
+                    )}
+                    {over ? <span className="tag amber ml-2">Exceeds MTOW</span> : null}
+                  </td>
+                  <td>{p.mount_type ?? <span className="store-text-muted">—</span>}</td>
+                  <td>
+                    {bands.length > 0 ? (
+                      <span className="font-mono text-[12px] text-[#67E8F9]">
+                        {bands.map((b) => b.label).join(' · ')}
+                      </span>
+                    ) : (
+                      <span className="store-text-muted">—</span>
+                    )}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </ScrollArea>
+    </section>
   )
 }

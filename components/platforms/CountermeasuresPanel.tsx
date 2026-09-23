@@ -1,88 +1,174 @@
-import { ConfidenceBadge } from '@/components/platforms/ConfidenceBadge'
-import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
-import { StorePanel } from '@/components/ui/store-surface'
+'use client'
+
+import { useMemo } from 'react'
+import { DataTable, type DataColumn } from '@/components/ui/DataTable'
+import { confidenceRank, confidenceTag } from '@/components/platforms/platform-display'
 import { effectivenessColour } from '@/lib/platforms/confidence'
 import type { DefeatEffectiveness } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
+/** Colour the value, not the cell. */
 function pctClass(colour: ReturnType<typeof effectivenessColour>) {
   switch (colour) {
-    case 'green': return 'text-green'
-    case 'amber': return 'text-amber'
-    case 'red': return 'text-red'
-    default: return 'store-text-muted'
+    case 'green':
+      return 'text-[#6EE7A0]'
+    case 'amber':
+      return 'text-[#FCD34D]'
+    case 'red':
+      return 'text-[#FF8A98]'
+    default:
+      return 'store-text-muted'
   }
+}
+
+function Pct({ pct }: { pct: number | null }) {
+  if (pct == null) return <span className="store-text-muted">—</span>
+  return <span className={cn('font-medium', pctClass(effectivenessColour(pct)))}>{pct}</span>
 }
 
 interface CountermeasuresPanelProps {
   countermeasures: DefeatEffectiveness[]
 }
 
-function EffectivenessValue({ label, pct }: { label: string; pct: number | null }) {
-  const colour = effectivenessColour(pct)
-  return (
-    <div className="flex justify-between items-center text-xs">
-      <span className="store-text-body">{label}</span>
-      <span className={cn('font-mono font-medium', pctClass(colour))}>
-        {pct != null ? `${pct}%` : '—'}
-      </span>
-    </div>
-  )
-}
+const NAME_W = 300
 
 export function CountermeasuresPanel({ countermeasures }: CountermeasuresPanelProps) {
+  const hasSwarm = countermeasures.some((c) => c.swarm_engagement_pct != null)
+
+  const columns = useMemo<DataColumn<DefeatEffectiveness>[]>(() => {
+    const cols: DataColumn<DefeatEffectiveness>[] = [
+      {
+        key: 'system',
+        header: 'Defeat System',
+        sticky: true,
+        width: NAME_W,
+        sortValue: (c) => c.defeat_system?.name ?? c.defeat_system_id,
+        cell: (c) => {
+          const name = c.defeat_system?.name ?? c.defeat_system_id
+          const meta = [c.defeat_system?.manufacturer, c.defeat_system?.country].filter(Boolean).join(' · ')
+          return (
+            <div style={{ width: NAME_W - 24 }}>
+              <span className="primary block truncate leading-snug" title={name}>
+                {name}
+              </span>
+              {meta ? (
+                <span className="meta truncate" title={meta}>
+                  {meta}
+                </span>
+              ) : null}
+            </div>
+          )
+        },
+      },
+      {
+        key: 'rf',
+        header: (
+          <span>
+            RF Jamming <span className="font-normal store-text-muted">%</span>
+          </span>
+        ),
+        label: 'RF jamming',
+        align: 'right',
+        width: 124,
+        sortValue: (c) => c.rf_jamming_pct,
+        cell: (c) => <Pct pct={c.rf_jamming_pct} />,
+      },
+      {
+        key: 'kinetic',
+        header: (
+          <span>
+            Kinetic <span className="font-normal store-text-muted">%</span>
+          </span>
+        ),
+        label: 'Kinetic',
+        align: 'right',
+        width: 100,
+        sortValue: (c) => c.kinetic_pct,
+        cell: (c) => <Pct pct={c.kinetic_pct} />,
+      },
+      {
+        key: 'dew',
+        header: (
+          <span>
+            DEW <span className="font-normal store-text-muted">%</span>
+          </span>
+        ),
+        label: 'DEW',
+        align: 'right',
+        width: 88,
+        sortValue: (c) => c.dew_pct,
+        cell: (c) => <Pct pct={c.dew_pct} />,
+      },
+    ]
+    if (hasSwarm) {
+      cols.push({
+        key: 'swarm',
+        header: (
+          <span>
+            Swarm <span className="font-normal store-text-muted">%</span>
+          </span>
+        ),
+        label: 'Swarm',
+        align: 'right',
+        width: 96,
+        sortValue: (c) => c.swarm_engagement_pct,
+        cell: (c) => <Pct pct={c.swarm_engagement_pct} />,
+      })
+    }
+    cols.push(
+      {
+        key: 'confidence',
+        header: 'Confidence',
+        width: 118,
+        sortValue: (c) => confidenceRank(c.data_confidence),
+        cell: (c) => {
+          const t = confidenceTag(c.data_confidence)
+          return <span className={cn('tag', t.tone)}>{t.label}</span>
+        },
+      },
+      {
+        key: 'notes',
+        header: 'Notes',
+        width: 360,
+        cell: (c) => {
+          const note = c.special_notes ?? c.recommended_response ?? null
+          const full = [c.is_immune ? `Immune: ${c.immune_reason ?? 'no reason recorded'}` : null, note]
+            .filter(Boolean)
+            .join('. ')
+          return (
+            <div className="flex items-center gap-2 min-w-0" style={{ width: 336 }} title={full || undefined}>
+              {c.is_immune ? <span className="tag red shrink-0">Immune</span> : null}
+              {c.weather_limited ? <span className="tag amber shrink-0">Weather-limited</span> : null}
+              {note ? (
+                <span className="truncate store-text-body">{note}</span>
+              ) : !c.is_immune && !c.weather_limited ? (
+                <span className="store-text-muted">—</span>
+              ) : null}
+            </div>
+          )
+        },
+      },
+    )
+    return cols
+  }, [hasSwarm])
+
   if (countermeasures.length === 0) {
     return (
-      <StorePanel className="p-8 text-center">
-        <p className="store-text-muted text-sm font-mono">No countermeasure data assessed</p>
-      </StorePanel>
+      <div className="store-panel rounded-2xl px-6 py-8 text-center">
+        <p className="text-[13px] store-text-body">No countermeasure pairings assessed for this platform yet.</p>
+      </div>
     )
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="font-semibold text-white">Countermeasures</h2>
-      {countermeasures.map((cm) => (
-        <StorePanel key={cm.id} inner className="p-4 space-y-3">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-start gap-2 min-w-0">
-              <PlatformThumbnail
-                id={cm.defeat_system_id}
-                name={cm.defeat_system?.name ?? cm.defeat_system_id}
-                size="sm"
-                variant="cuas"
-              />
-              <div className="min-w-0">
-              <p className="font-medium text-white">
-                {cm.defeat_system?.name ?? cm.defeat_system_id}
-              </p>
-              {cm.defeat_system?.manufacturer && (
-                <p className="text-xs store-text-muted font-mono mt-0.5">
-                  {cm.defeat_system.manufacturer} — {cm.defeat_system.country}
-                </p>
-              )}
-              </div>
-            </div>
-            <ConfidenceBadge confidence={cm.data_confidence} />
-          </div>
-
-          <div className="space-y-1.5">
-            <EffectivenessValue label="RF Jamming" pct={cm.rf_jamming_pct} />
-            <EffectivenessValue label="Kinetic" pct={cm.kinetic_pct} />
-            <EffectivenessValue label="DEW" pct={cm.dew_pct} />
-          </div>
-
-          {cm.weather_limited && (
-            <p className="text-xs font-mono text-amber">⚠ Weather-limited effectiveness</p>
-          )}
-          {cm.is_immune && (
-            <p className="text-xs font-mono text-red uppercase">IMMUNE — {cm.immune_reason}</p>
-          )}
-          {cm.special_notes && (
-            <p className="text-xs store-text-body leading-relaxed">{cm.special_notes}</p>
-          )}
-        </StorePanel>
-      ))}
-    </div>
+    <DataTable
+      rows={countermeasures}
+      columns={columns}
+      rowKey={(c) => c.id}
+      defaultSort={{ key: 'kinetic', dir: 'desc' }}
+      compact
+      maxHeight="min(560px, calc(100vh - 200px))"
+      caption="Countermeasures"
+    />
   )
 }

@@ -1,5 +1,4 @@
 import { GnssIntelClient } from '@/components/gnss/GnssIntelClient'
-import { HubPageShell } from '@/components/hub/HubPageShell'
 import {
   fetchGnssConstellations,
   fetchGnssJammingIncidents,
@@ -14,15 +13,19 @@ export default async function GnssPage() {
   ])
 
   return (
-    <HubPageShell
-      title="GNSS Intelligence"
-      subtitle={`${constellations.length} constellations · ${dependencies.length} platform dependencies · ${incidents.length} jamming incidents, evidence-graded · OSINT`}
-    >
+    <div className="max-w-[100rem] mx-auto">
+      <header>
+        <h1 className="page-title m-0">GNSS Intelligence</h1>
+        <p className="page-lede">
+          Constellation health, which platforms lose navigation when GNSS is denied, and where jamming and spoofing have been
+          recorded. Evidence-graded OSINT.
+        </p>
+      </header>
       <GnssIntelClient
         constellations={constellations}
         dependencies={dependencies}
         incidents={incidents}
       />
-    </HubPageShell>
+    </div>
   )
 }

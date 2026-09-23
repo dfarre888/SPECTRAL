@@ -10,7 +10,7 @@ const ConflictCesiumMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[360px] rounded-xl border border-[var(--store-line)] bg-[var(--store-bg)] flex items-center justify-center text-xs font-mono store-text-muted">
+      <div className="h-[440px] rounded-2xl border border-[var(--lacquer-line)] bg-[var(--store-bg)] flex items-center justify-center text-[12px] store-text-muted">
         Loading globe…
       </div>
     ),
@@ -23,7 +23,7 @@ export function ConflictCaseStudyMap({ study }: { study: ConflictCaseStudy }) {
 
   if (incidents.length === 0) {
     return (
-      <div className="h-[200px] rounded-xl border border-[var(--store-line)] bg-[var(--store-surface-2)] flex items-center justify-center text-xs font-mono store-text-muted">
+      <div className="h-[200px] store-panel rounded-2xl flex items-center justify-center text-[13px] store-text-muted">
         No geolocated incidents for this case study
       </div>
     )

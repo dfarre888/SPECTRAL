@@ -32,7 +32,7 @@ export function ConflictMap({
   );
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto rounded-xl border border-[var(--store-line)] bg-[var(--store-bg)]">
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto rounded-2xl border border-[var(--lacquer-line)] bg-[var(--store-bg)]">
       <path d={worldPath(projection)} fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
       {incidents.map((inc) => {
         const pt = projection([inc.lon, inc.lat]);

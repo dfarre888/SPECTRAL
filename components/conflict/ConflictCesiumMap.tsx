@@ -205,15 +205,15 @@ export function ConflictCesiumMap({
   }
 
   return (
-    <div className="relative rounded-xl border border-[var(--store-line)] overflow-hidden bg-[var(--store-bg)]" style={{ height: MAP_HEIGHT }}>
+    <div className="relative rounded-2xl border border-[var(--lacquer-line)] overflow-hidden bg-[var(--store-bg)] shadow-[var(--lacquer-shadow)]" style={{ height: MAP_HEIGHT }}>
       <div ref={containerRef} className="absolute inset-0" />
       {!viewerReady ? (
-        <div className="absolute inset-0 flex items-center justify-center text-xs font-mono store-text-muted bg-[var(--store-bg)]/80">
+        <div className="absolute inset-0 flex items-center justify-center text-[12px] store-text-muted bg-[var(--store-bg)]/80">
           Loading globe…
         </div>
       ) : null}
       {viewerReady && incidents.length === 0 ? (
-        <p className="absolute top-2 right-2 text-[11px] font-mono store-text-muted bg-black/60 px-2 py-1 rounded">
+        <p className="absolute top-3 right-3 lg-glass px-3 py-1.5 text-[12px] store-text-body">
           No geolocated incidents
         </p>
       ) : null}

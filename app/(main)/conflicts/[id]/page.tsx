@@ -1,9 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { HubPageShell } from '@/components/hub/HubPageShell'
 import { ConflictCaseStudyMap } from '@/components/conflict/ConflictCaseStudyMap'
-import { OpsPanel } from '@/components/ui/ops-panel'
-import { StorePanel } from '@/components/ui/store-surface'
+import { CaseStudyDetail } from '@/components/conflict/CaseStudyDetail'
 import { getConflictCaseStudy } from '@/lib/conflicts/seed-queries'
 import { caseStudyToMapIncidents } from '@/lib/conflicts/case-study-map'
 
@@ -18,75 +16,27 @@ export default function ConflictDetailPage({ params }: ConflictDetailPageProps) 
   const mapIncidents = caseStudyToMapIncidents(study)
 
   return (
-    <HubPageShell
-      eyebrow="Case Studies"
-      title={study.name}
-      subtitle={`${study.region} · ${study.period} · OSINT case study`}
-    >
-      <div className="space-y-4 max-w-4xl">
-        {mapIncidents.length > 0 ? (
-          <StorePanel className="p-3">
-            <p className="text-[11px] font-mono store-text-muted tracking-[0.02em] mb-2">
-              Incident map
-            </p>
-            <ConflictCaseStudyMap key={study.id} study={study} />
-          </StorePanel>
-        ) : null}
-        <OpsPanel title="Threat assessment" kicker={study.classification}>
-          <p className="text-sm store-text-body leading-relaxed">{study.summary}</p>
-        </OpsPanel>
-        <OpsPanel title="ORBAT note" kicker="Employment">
-          <p className="text-sm store-text-body font-mono">{study.orbat_note}</p>
-        </OpsPanel>
-        <StorePanel className="p-6 space-y-5">
-        <div>
-          <h3 className="text-xs font-semibold store-text-muted uppercase mb-2">Key lessons</h3>
-          <ul className="list-disc list-inside space-y-1 text-sm store-text-body">
-            {study.key_lessons.map((l) => (
-              <li key={l}>{l}</li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-xs font-semibold store-text-muted uppercase mb-2">Related platforms</h3>
-          <div className="flex flex-wrap gap-2">
-            {study.related_platform_ids.map((id) => (
-              <Link
-                key={id}
-                href={`/platforms/${id}`}
-                className="px-2 py-0.5 rounded-lg store-panel-inner text-[11px] font-mono text-cyan hover:border-[rgba(41,151,255,0.5)]"
-              >
-                {id}
-              </Link>
-            ))}
-          </div>
-        </div>
-        {study.incidents.length > 0 && (
-          <div>
-            <h3 className="text-xs font-semibold store-text-muted uppercase mb-2">Incidents</h3>
-            {study.incidents.map((inc) => (
-              <div key={inc.id} className="store-panel-inner rounded-xl p-3 mb-2">
-                <p className="text-sm font-medium text-white">
-                  {inc.title}{' '}
-                  <span className="store-text-muted font-mono text-xs">({inc.date})</span>
-                </p>
-                <p className="text-xs store-text-body mt-1">{inc.summary}</p>
-                <p className="text-xs font-mono text-[var(--wb-blue)] mt-2">So what: {inc.lesson}</p>
-                <p className="text-[11px] store-text-muted mt-1">
-                  Confidence: {inc.confidence} · {inc.sources.join('; ')}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-        <Link
-          href="/conflicts"
-          className="inline-flex text-xs font-mono text-cyan hover:underline underline-offset-2"
-        >
-          ← Back to Conflict Intel
-        </Link>
-      </StorePanel>
+    <div className="max-w-[72rem] mx-auto">
+      <nav aria-label="Breadcrumb" className="mb-3 text-[12px] store-text-muted">
+        <Link href="/conflicts" className="hover:text-[var(--store-ink)] transition-colors duration-150">Conflict Intel</Link>
+        <span aria-hidden className="mx-2">/</span>
+        <span>Case study</span>
+      </nav>
+      <header>
+        <h1 className="page-title m-0">{study.name}</h1>
+        <p className="page-lede">
+          {study.region} · <span className="font-mono tabular-nums">{study.period}</span> · OSINT case study, source date{' '}
+          <span className="font-mono tabular-nums">{study.source_date}</span>
+        </p>
+      </header>
+
+      <div className="mt-7 flex flex-col items-start gap-6">
+        {mapIncidents.length > 0 ? <div className="w-full"><ConflictCaseStudyMap key={study.id} study={study} /></div> : null}
+        <article className="w-full store-panel rounded-2xl p-6 md:p-8">
+          <CaseStudyDetail study={study} />
+        </article>
+        <Link href="/conflicts" className="fc-action">Back to Conflict Intel</Link>
       </div>
-    </HubPageShell>
+    </div>
   )
 }

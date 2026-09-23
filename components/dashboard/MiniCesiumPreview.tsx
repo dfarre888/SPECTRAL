@@ -17,10 +17,14 @@ export function MiniCesiumPreview({ center, tracks, className }: MiniCesiumPrevi
   const viewerRef = useRef<CesiumViewer | null>(null)
   const [failed, setFailed] = useState(false)
 
-  const init = useCallback(async () => {
+  const init = useCallback(async (isCancelled: () => boolean) => {
     if (!containerRef.current || viewerRef.current) return
     try {
       const Cesium = await loadCesium()
+      // Strict Mode mounts twice; the first run's cleanup has already fired by
+      // the time the import resolves, so re-check before building a viewer or
+      // two canvases end up stacked in one container.
+      if (isCancelled() || !containerRef.current || viewerRef.current) return
       const token = process.env.NEXT_PUBLIC_CESIUM_ION_TOKEN
       if (token) Cesium.Ion.defaultAccessToken = token
 
@@ -82,8 +86,10 @@ export function MiniCesiumPreview({ center, tracks, className }: MiniCesiumPrevi
       setFailed(true)
       return
     }
-    void init()
+    let cancelled = false
+    void init(() => cancelled)
     return () => {
+      cancelled = true
       viewerRef.current?.destroy()
       viewerRef.current = null
     }

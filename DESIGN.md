@@ -76,6 +76,10 @@ Rules:
 - A table never pushes the page wider than the viewport. Wide tables scroll inside their frame with the first column pinned.
 - Long lists of cards are a smell. If a list has more than ~24 items and each item has comparable fields, it is a table (with a Gallery view as an option if images matter).
 
+## Overriding system classes
+
+The Obsidian classes sit after `@tailwind utilities` and several are compound selectors (`.dt thead th`), so a plain utility on the same element can lose. Use Tailwind's `!` modifier (`!px-3`, `!text-[12px]`) when you deliberately override a system class on one element. Alignment in `.dt` is already handled for `text-right` / `text-center`.
+
 ## Motion
 
 State feedback only, 150 to 250ms ease-out (`--ease-out`). One signature move per surface. Every transition has a `prefers-reduced-motion` fallback. Nothing moves unless the user acted, except live data. Scroll-linked effects are allowed (scroll is an action): top bar glass, title hand-off.

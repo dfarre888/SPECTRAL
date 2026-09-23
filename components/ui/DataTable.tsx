@@ -27,6 +27,12 @@ interface DataTableProps<T> {
   rowKey: (row: T) => string
   onRowClick?: (row: T) => void
   selectedKey?: string | null
+  /** Several selected rows at once (multi-select views). */
+  selectedKeys?: ReadonlySet<string> | readonly string[]
+  /** 'fixed' makes the colgroup widths binding, so clipped columns cannot collapse. */
+  layout?: 'auto' | 'fixed'
+  /** Minimum table width; wider than the frame scrolls sideways with the pinned column. */
+  minWidth?: number | string
   defaultSort?: { key: string; dir: 'asc' | 'desc' }
   compact?: boolean
   maxHeight?: string
@@ -61,6 +67,9 @@ export function DataTable<T>({
   rowKey,
   onRowClick,
   selectedKey,
+  selectedKeys,
+  layout = 'auto',
+  minWidth,
   defaultSort,
   compact,
   maxHeight,
@@ -96,12 +105,25 @@ export function DataTable<T>({
     })
   }
 
+  const selectedSet = useMemo(
+    () => (selectedKeys ? new Set(selectedKeys as Iterable<string>) : null),
+    [selectedKeys],
+  )
+  const isSelected = (key: string): boolean | undefined => {
+    if (selectedSet) return selectedSet.has(key)
+    if (selectedKey != null) return selectedKey === key
+    return undefined
+  }
+
   const alignClass = (a?: 'left' | 'right' | 'center') =>
     a === 'right' ? 'text-right' : a === 'center' ? 'text-center' : 'text-left'
 
   return (
     <ScrollArea maxHeight={maxHeight} frame={frame} className={className} style={style}>
-      <table className={cn('dt', compact && 'compact')}>
+      <table
+        className={cn('dt', compact && 'compact')}
+        style={layout === 'fixed' || minWidth != null ? { tableLayout: layout, minWidth } : undefined}
+      >
         {caption ? <caption className="sr-only">{caption}</caption> : null}
         <colgroup>
           {columns.map((c) => (
@@ -159,8 +181,20 @@ export function DataTable<T>({
               return (
                 <tr
                   key={key}
-                  aria-selected={selectedKey != null ? selectedKey === key : undefined}
+                  aria-selected={isSelected(key)}
                   onClick={onRowClick ? () => onRowClick(row) : undefined}
+                  onKeyDown={
+                    onRowClick
+                      ? (e) => {
+                          if (e.target !== e.currentTarget) return
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            onRowClick(row)
+                          }
+                        }
+                      : undefined
+                  }
+                  tabIndex={onRowClick ? 0 : undefined}
                   className={onRowClick ? 'cursor-pointer' : undefined}
                 >
                   {columns.map((c) => (

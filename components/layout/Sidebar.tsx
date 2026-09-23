@@ -107,7 +107,7 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
       <aside
         className={cn(
           'shell-sidebar flex-shrink-0 flex flex-col z-50 overflow-hidden',
-          'fixed md:static top-2.5 bottom-2.5 left-2.5 md:top-auto md:bottom-auto md:left-auto',
+          'fixed md:relative top-2.5 bottom-2.5 left-2.5 md:top-auto md:bottom-auto md:left-auto',
           'transition-transform duration-200 md:translate-x-0',
           railed ? 'md:w-[64px] w-[248px]' : 'w-[248px]',
           open ? 'translate-x-0' : '-translate-x-[110%] md:translate-x-0',

@@ -7,11 +7,12 @@ import type {
   BlastRadii,
   BuildingProtection,
   PopulationDensityTier,
-  RiskCategory,
   TimeOfDay,
 } from '@/lib/risk/types'
 import type { OverlapVolume, PlacedCuas, PlacedEffector, PlacedRadar, PlacedUas } from '@/lib/map/types'
 import { cn } from '@/lib/utils'
+import { RiskTag } from '@/app/map/components/CollateralRiskPanel'
+import { enumLabel, selectClass } from '@/app/map/components/MapUi'
 
 interface EncounterAssessmentPanelProps {
   uas: PlacedUas
@@ -31,13 +32,6 @@ interface EncounterAssessmentPanelProps {
 
 const mono = { fontFamily: "'JetBrains Mono', monospace" } as const
 
-const RISK_STYLE: Record<RiskCategory, { bg: string; text: string }> = {
-  GREEN: { bg: '#22C55E', text: '#052e16' },
-  AMBER: { bg: '#EAB308', text: '#422006' },
-  RED: { bg: '#EF4444', text: '#450a0a' },
-  BLACK: { bg: '#7F1D1D', text: '#fecaca' },
-}
-
 function Section({
   title,
   icon: Icon,
@@ -52,10 +46,10 @@ function Section({
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1.5">
-        <Icon className={cn('w-3 h-3 shrink-0', warn ? 'text-[var(--wb-blue)]' : 'text-cyan')} />
-        <p className="text-[11px] uppercase tracking-wide store-text-muted">{title}</p>
+        <Icon className={cn('w-3.5 h-3.5 shrink-0', warn ? 'text-[var(--wb-blue)]' : 'store-text-muted')} />
+        <p className="text-[12px] font-semibold store-text-muted">{title}</p>
       </div>
-      <div className="text-[11px] leading-snug store-text-body">{children}</div>
+      <div className="text-[12px] leading-relaxed store-text-body">{children}</div>
     </div>
   )
 }
@@ -97,21 +91,17 @@ export function EncounterAssessmentPanel({
   const platformWarheads = getWarheadsForPlatform(uas.asset.id)
 
   return (
-    <div className="map-material-float shrink-0 rounded-xl w-full overflow-hidden">
-      <div className="px-3 py-2 border-b border-[var(--store-line)] bg-[var(--store-surface-2)]">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <Crosshair className="w-3.5 h-3.5 text-cyan shrink-0" />
-            <span className="text-[11px] font-semibold tracking-[0.02em] text-cyan">
-              Encounter assessment
-            </span>
-          </div>
-          <span className="text-[11px] font-mono store-text-muted">AeroCopilot · template</span>
+    <div className="glass-popover shrink-0 w-full overflow-hidden">
+      <div className="px-4 py-2.5 border-b border-[var(--glass-line)]">
+        <div className="flex items-center gap-2 min-w-0">
+          <Crosshair className="w-4 h-4 store-text-muted shrink-0" />
+          <span className="text-[13px] font-semibold text-[var(--store-ink)]">Encounter assessment</span>
         </div>
+        <p className="text-[11.5px] store-text-muted mt-0.5 pl-6">AeroCopilot template</p>
       </div>
 
-      <div className="p-3 space-y-3 text-[11px]">
-        <p className="font-mono text-[11px] store-text-muted">{assessment.summary}</p>
+      <div className="px-4 py-3 space-y-3 text-[12px]">
+        <p className="font-mono text-[12px] store-text-body leading-relaxed">{assessment.summary}</p>
 
         <Section title="Encounter summary" icon={Crosshair} warn={flagged}>
           {assessment.encounterSummary}
@@ -123,7 +113,7 @@ export function EncounterAssessmentPanel({
           ) : (
             <ul className="space-y-1 mt-1">
               {assessment.threatsOnRoute.slice(0, 4).map((t) => (
-                <li key={t.instanceId} className="font-mono text-[11px] store-text-muted">
+                <li key={t.instanceId} className="font-mono text-[11.5px] store-text-muted break-words">
                   {t.name} · Pk {t.peakPk_pct}% · Pd {t.peakPd_pct}% · {t.exposureKm.toFixed(1)} km
                 </li>
               ))}
@@ -144,69 +134,56 @@ export function EncounterAssessmentPanel({
         </Section>
 
         {mission.goalKind === 'target' && (
-          <div className="rounded-lg border border-[rgba(41,151,255,0.5)]/50 bg-black/25 p-2.5 space-y-2.5">
+          <div className="rounded-xl border border-[var(--store-line)] bg-[rgba(255,255,255,0.02)] p-3 space-y-2.5">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
-                <Bomb className="w-3.5 h-3.5 text-[var(--wb-blue)] shrink-0" />
-                <p className="text-[11px] uppercase tracking-wide text-[var(--wb-blue)]">
-                  Collateral damage estimate
-                </p>
+                <Bomb className="w-3.5 h-3.5 store-text-muted shrink-0" />
+                <p className="text-[12px] font-semibold text-[var(--store-ink)]">Collateral damage estimate</p>
               </div>
               {onOpenBlastTool && (
-                <button
-                  type="button"
-                  onClick={onOpenBlastTool}
-                  className="text-[11px] font-mono text-cyan hover:text-white underline"
-                >
-                  Blast map
+                <button type="button" onClick={onOpenBlastTool} className="fc-action !text-[#6CB8FF] hover:!text-white">
+                  Open Blast tool
                 </button>
               )}
             </div>
 
             {!collateral?.applicable || !cde ? (
-              <p className="text-[11px] store-text-muted leading-snug">{collateral?.summary}</p>
+              <p className="text-[12px] store-text-muted leading-snug">{collateral?.summary}</p>
             ) : (
               <>
-                <p className="font-mono text-[11px] text-white">{collateral.warhead?.weapon_name}</p>
-                <p className="text-[11px] store-text-muted font-mono">
-                  Impact {collateral.impactLat.toFixed(4)}°N {collateral.impactLon.toFixed(4)}°E
-                </p>
-                <div
-                  className="rounded-lg px-3 py-1 text-center text-[11px] font-bold uppercase"
-                  style={{
-                    background: RISK_STYLE[cde.risk_category].bg,
-                    color: RISK_STYLE[cde.risk_category].text,
-                    ...mono,
-                  }}
-                >
-                  {cde.risk_category}
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-mono text-[12px] text-[var(--store-ink)] min-w-0 break-words">{collateral.warhead?.weapon_name}</p>
+                  <RiskTag category={cde.risk_category} />
                 </div>
+                <p className="text-[11.5px] store-text-muted font-mono">
+                  Impact {collateral.impactLat.toFixed(4)}°, {collateral.impactLon.toFixed(4)}°
+                </p>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <p className="store-text-muted text-[11px]">Expected casualties</p>
-                    <p className="text-xl text-white" style={mono}>{cde.expected_casualties}</p>
+                    <p className="store-text-muted text-[12px]">Expected casualties</p>
+                    <p className="text-[20px] leading-none mt-1 text-[var(--store-ink)] tabular-nums" style={mono}>{cde.expected_casualties}</p>
                   </div>
                   <div>
-                    <p className="store-text-muted text-[11px]">Expected injured</p>
-                    <p className="text-xl text-orange-300" style={mono}>{cde.expected_injured}</p>
+                    <p className="store-text-muted text-[12px]">Expected injured</p>
+                    <p className="text-[20px] leading-none mt-1 text-[#FBBF24] tabular-nums" style={mono}>{cde.expected_injured}</p>
                   </div>
                 </div>
-                <div className="rounded border border-[var(--store-line)] store-panel-inner px-2 py-1.5 space-y-0.5">
-                  <p className="store-text-muted text-[11px]">Pop. in hazard disk</p>
-                  <p className="text-sm text-white" style={mono}>{cde.population_in_hazard_disk}</p>
-                  <p className="text-[11px] store-text-muted">
+                <div className="rounded-lg store-panel-inner px-2.5 py-2 space-y-0.5">
+                  <p className="store-text-muted text-[12px]">Population in hazard disk</p>
+                  <p className="text-[13px] text-[var(--store-ink)]" style={mono}>{cde.population_in_hazard_disk}</p>
+                  <p className="text-[12px] store-text-muted">
                     Density{' '}
                     <span className="text-white" style={mono}>
                       {cde.pop_density_pkm2.toLocaleString()}
                     </span>{' '}
                     persons/km²
                   </p>
-                  <p className="text-[11px] store-text-muted">
+                  <p className="text-[12px] store-text-muted">
                     Lethal zone occupants (est.):{' '}
                     <span className="text-white" style={mono}>{cde.civilians_in_lethal_zone}</span>
                   </p>
                 </div>
-                <table className="w-full text-[11px]">
+                <table className="w-full text-[12px]">
                   <tbody>
                     {(
                       [
@@ -226,16 +203,16 @@ export function EncounterAssessmentPanel({
                   </tbody>
                 </table>
                 {collateral.warhead && (
-                  <p className="text-[11px] store-text-muted leading-snug">
+                  <p className="text-[12px] store-text-muted leading-snug">
                     {collateral.warhead.warhead_kg} kg NEW · TNT-eq {collateral.warhead.tnt_equivalent_kg} kg
                     {collateral.warhead.fragmentation_m
                       ? ` · frag radius ~${collateral.warhead.fragmentation_m} m`
                       : ''}
                   </p>
                 )}
-                <p className="text-[11px] store-text-muted leading-snug">{cde.proportionality_summary}</p>
-                <p className="text-[11px] text-amber-200/90">{cde.authority_required}</p>
-                <p className="text-[11px] store-text-muted">
+                <p className="text-[12px] store-text-muted leading-relaxed">{cde.proportionality_summary}</p>
+                <p className="text-[12px] text-[#FCD34D]">{cde.authority_required}</p>
+                <p className="text-[12px] store-text-muted">
                   Optimal time window (min ECCas):{' '}
                   <span className="text-white font-mono">{cde.recommended_time_window.replace(/_/g, ' ')}</span>
                 </p>
@@ -245,43 +222,43 @@ export function EncounterAssessmentPanel({
             {(onPopulationTierChange || onTimeOfDayChange || onBuildingProtectionChange) && (
               <div className="space-y-2 pt-2 border-t border-[var(--store-line)]">
                 {onPopulationTierChange && (
-                  <label className="block text-[11px] store-text-muted">
+                  <label className="block text-[12px] store-text-body">
                     Population density
                     <select
-                      className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white text-[11px] font-mono"
+                      className={cn(selectClass, 'mt-1')}
                       value={populationTier}
                       onChange={(e) => onPopulationTierChange(e.target.value as PopulationDensityTier)}
                     >
                       {(['remote', 'rural', 'suburban', 'urban', 'dense_urban'] as const).map((v) => (
-                        <option key={v} value={v}>{v.replace(/_/g, ' ')}</option>
+                        <option key={v} value={v}>{enumLabel(v)}</option>
                       ))}
                     </select>
                   </label>
                 )}
                 {onTimeOfDayChange && (
-                  <label className="block text-[11px] store-text-muted">
+                  <label className="block text-[12px] store-text-body">
                     Time of day
                     <select
-                      className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white text-[11px] font-mono"
+                      className={cn(selectClass, 'mt-1')}
                       value={timeOfDay}
                       onChange={(e) => onTimeOfDayChange(e.target.value as TimeOfDay)}
                     >
                       {(['early_hours', 'morning_peak', 'business_day', 'evening_peak', 'night'] as const).map((v) => (
-                        <option key={v} value={v}>{v.replace(/_/g, ' ')}</option>
+                        <option key={v} value={v}>{enumLabel(v)}</option>
                       ))}
                     </select>
                   </label>
                 )}
                 {onBuildingProtectionChange && (
-                  <label className="block text-[11px] store-text-muted">
+                  <label className="block text-[12px] store-text-body">
                     Building protection
                     <select
-                      className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white text-[11px] font-mono"
+                      className={cn(selectClass, 'mt-1')}
                       value={buildingProtection}
                       onChange={(e) => onBuildingProtectionChange(e.target.value as BuildingProtection)}
                     >
                       {(['open', 'light', 'reinforced'] as const).map((v) => (
-                        <option key={v} value={v}>{v}</option>
+                        <option key={v} value={v}>{enumLabel(v)}</option>
                       ))}
                     </select>
                   </label>
@@ -290,17 +267,17 @@ export function EncounterAssessmentPanel({
             )}
 
             {platformWarheads.length > 1 && (
-              <p className="text-[11px] store-text-muted">
-                {platformWarheads.length} warhead options for this platform — use Blast tool to compare munitions.
+              <p className="text-[12px] store-text-muted">
+                {platformWarheads.length} warhead options for this platform. Use the Blast tool to compare munitions.
               </p>
             )}
           </div>
         )}
 
         {assessment.tacticalRecommendations.length > 0 && (
-          <div className="rounded-lg border border-[var(--store-line)] bg-black/20 px-2.5 py-2 space-y-1">
-            <p className="text-[11px] uppercase tracking-wide text-[var(--wb-blue)]">Tactical recommendations</p>
-            <ul className="list-disc list-inside text-[11px] store-text-muted space-y-0.5">
+          <div className="rounded-xl border border-[var(--store-line)] bg-[rgba(255,255,255,0.02)] px-3 py-2.5 space-y-1.5">
+            <p className="text-[12px] font-semibold text-[var(--store-ink)]">Tactical recommendations</p>
+            <ul className="list-disc pl-4 text-[12px] store-text-body space-y-1 leading-snug">
               {assessment.tacticalRecommendations.map((rec) => (
                 <li key={rec}>{rec}</li>
               ))}

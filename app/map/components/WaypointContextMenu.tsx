@@ -51,43 +51,58 @@ export function WaypointContextMenu({ target, onApply, onClose }: WaypointContex
     })
   }
 
+  const inputClass = 'glass-field mt-1 w-full h-8 px-2.5 font-mono text-[12px] tabular-nums'
+  const labelClass = 'block text-[12px] store-text-body'
+
   return (
     <>
       <button type="button" className="fixed inset-0 z-30 cursor-default" aria-label="Close menu" onClick={onClose} />
-      <div className="map-material-float absolute z-40 w-56 rounded-xl overflow-hidden pointer-events-auto p-3 space-y-2" style={{ left: target.screenX, top: target.screenY }}>
-        <p className="text-[11px] store-text-muted truncate">Waypoint · {target.assetName}</p>
-        <label className="block text-[11px] store-text-muted">Longitude
-          <input
-            type="number"
-            step="0.00001"
-            value={lon}
-            onChange={(e) => {
-              setLon(Number(e.target.value))
-              setCoordError(null)
-            }}
-            className="mt-1 w-full rounded-lg store-panel-inner border border-[var(--store-line)] px-2 py-1 font-mono text-[11px] text-white"
-          />
-        </label>
-        <label className="block text-[11px] store-text-muted">Latitude
-          <input
-            type="number"
-            step="0.00001"
-            value={lat}
-            onChange={(e) => {
-              setLat(Number(e.target.value))
-              setCoordError(null)
-            }}
-            className="mt-1 w-full rounded-lg store-panel-inner border border-[var(--store-line)] px-2 py-1 font-mono text-[11px] text-white"
-          />
-        </label>
-        {coordError && <p className="text-[11px] text-red-400 font-mono">{coordError}</p>}
-        <label className="block text-[11px] store-text-muted">Altitude AMSL (m)
-          <input type="number" min={target.alt_m - 500} max={target.maxAlt_m} value={alt_m} onChange={(e) => setAlt_m(Number(e.target.value))} className="mt-1 w-full rounded-lg store-panel-inner border border-[var(--store-line)] px-2 py-1 font-mono text-[11px] text-white" />
-        </label>
-        <label className="block text-[11px] store-text-muted">Speed (km/h)
-          <input type="number" min={1} max={target.maxSpeed_kmh} value={speed_kmh} onChange={(e) => setSpeed_kmh(Number(e.target.value))} className="mt-1 w-full rounded-lg store-panel-inner border border-[var(--store-line)] px-2 py-1 font-mono text-[11px] text-white" />
-        </label>
-        <button type="button" onClick={handleApply} className="store-btn-primary w-full py-1.5 text-[11px] font-semibold">Apply</button>
+      <div
+        className="glass-popover absolute z-40 w-64 pointer-events-auto p-3 space-y-2.5"
+        style={{ left: target.screenX, top: target.screenY }}
+        role="dialog"
+        aria-label={`Waypoint, ${target.assetName}`}
+      >
+        <div>
+          <p className="text-[13px] font-semibold text-[var(--store-ink)]">Waypoint</p>
+          <p className="text-[12px] store-text-muted truncate" title={target.assetName}>{target.assetName}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <label className={labelClass}>Longitude
+            <input
+              type="number"
+              step="0.00001"
+              value={lon}
+              onChange={(e) => {
+                setLon(Number(e.target.value))
+                setCoordError(null)
+              }}
+              className={inputClass}
+            />
+          </label>
+          <label className={labelClass}>Latitude
+            <input
+              type="number"
+              step="0.00001"
+              value={lat}
+              onChange={(e) => {
+                setLat(Number(e.target.value))
+                setCoordError(null)
+              }}
+              className={inputClass}
+            />
+          </label>
+        </div>
+        {coordError && <p className="text-[12px] text-[var(--wb-red)]">{coordError}</p>}
+        <div className="grid grid-cols-2 gap-2">
+          <label className={labelClass}>Altitude AMSL (m)
+            <input type="number" min={target.alt_m - 500} max={target.maxAlt_m} value={alt_m} onChange={(e) => setAlt_m(Number(e.target.value))} className={inputClass} />
+          </label>
+          <label className={labelClass}>Speed (km/h)
+            <input type="number" min={1} max={target.maxSpeed_kmh} value={speed_kmh} onChange={(e) => setSpeed_kmh(Number(e.target.value))} className={inputClass} />
+          </label>
+        </div>
+        <button type="button" onClick={handleApply} className="btn-glass primary w-full !min-h-8">Apply</button>
       </div>
     </>
   )

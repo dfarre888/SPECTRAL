@@ -1,10 +1,12 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { Waves } from 'lucide-react'
 import { EwPropagationEngine } from '@/lib/ew/ewPropagationEngine'
 import { SpectrumDeconflictionEngine } from '@/lib/ew/spectrumDeconflictionEngine'
 import { BAND_REFERENCE, type GnssBand } from '@/lib/gnss/types'
 import type { PlacedCuas, PlacedUas } from '@/lib/map/types'
+import { CardSection, Field, KV, MapCard, rangeClass, selectClass } from '@/app/map/components/MapUi'
 
 interface EwFootprintAnalyserProps {
   placedUas: PlacedUas[]
@@ -12,6 +14,7 @@ interface EwFootprintAnalyserProps {
   emitterLon: number
   emitterLat: number
   onClose: () => void
+  className?: string
 }
 
 const BAND_OPTIONS: GnssBand[] = [
@@ -23,7 +26,11 @@ const BAND_OPTIONS: GnssBand[] = [
   'control_link_5_8ghz',
 ]
 
-const mono = { fontFamily: "'JetBrains Mono', monospace" } as const
+const VERDICT_TAG: Record<string, string> = { clear: 'green', contested: 'amber' }
+
+function formatRange(m: number): string {
+  return m >= 10_000 ? `${(m / 1000).toFixed(1)} km` : `${Math.round(m).toLocaleString()} m`
+}
 
 export function EwFootprintAnalyser({
   placedUas,
@@ -31,6 +38,7 @@ export function EwFootprintAnalyser({
   emitterLon,
   emitterLat,
   onClose,
+  className,
 }: EwFootprintAnalyserProps) {
   const [band, setBand] = useState<GnssBand>('GPS_L1')
   const [erpWatts, setErpWatts] = useState(100)
@@ -78,8 +86,8 @@ export function EwFootprintAnalyser({
 
   const chart = footprint.curve
   const maxR = chart[chart.length - 1]?.range_m ?? 1
-  const w = 280
-  const h = 100
+  const w = 300
+  const h = 96
   const points = chart
     .map((p, i) => {
       const x = (p.range_m / maxR) * w
@@ -87,57 +95,72 @@ export function EwFootprintAnalyser({
       return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
     })
     .join(' ')
-
-  const verdictColor =
-    deconflict.verdict === 'clear' ? '#22C55E' : deconflict.verdict === 'contested' ? '#EAB308' : '#EF4444'
+  const area = chart.length > 0 ? `${points} L${w},${h} L0,${h} Z` : ''
+  const halfX = maxR > 0 ? Math.min(w, (footprint.effective_radius_m / maxR) * w) : 0
 
   return (
-    <div
-      className="map-material-float absolute bottom-16 left-3 z-30 w-[min(100%,20rem)] rounded-xl pointer-events-auto"
+    <MapCard
+      className={className}
+      title="EW footprint and deconfliction"
+      icon={<Waves className="w-4 h-4" />}
+      onClose={onClose}
     >
-      <div className="p-3 space-y-3 text-[11px] store-text-body">
-        <div className="flex items-start justify-between gap-2">
-          <p className="text-[11px] font-semibold tracking-[0.02em] text-[#06B6D4]">EW footprint analyser</p>
-          <button type="button" onClick={onClose} className="store-text-muted hover:text-white text-xs" aria-label="Close">✕</button>
-        </div>
-        <label className="block text-[11px] store-text-muted">
-          Band
-          <select
-            className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white"
-            style={mono}
-            value={band}
-            onChange={(e) => setBand(e.target.value as GnssBand)}
-          >
+      <div className="space-y-3">
+        <Field label="Band">
+          <select className={selectClass} value={band} onChange={(e) => setBand(e.target.value as GnssBand)}>
             {BAND_OPTIONS.map((b) => (
-              <option key={b} value={b}>{BAND_REFERENCE[b].label}</option>
+              <option key={b} value={b}>
+                {BAND_REFERENCE[b].label}
+              </option>
             ))}
           </select>
-        </label>
-        <label className="block text-[11px] store-text-muted">
-          ERP (W): <span style={mono}>{erpWatts}</span>
+        </Field>
+        <Field label="ERP" hint={`${erpWatts} W`}>
           <input
             type="range"
             min={1}
             max={500}
             value={erpWatts}
             onChange={(e) => setErpWatts(Number(e.target.value))}
-            className="w-full mt-1 accent-[#F97316]"
+            className={rangeClass}
+            aria-label="Effective radiated power in watts"
           />
-        </label>
-        <p className="text-[11px]" style={mono}>
-          50% effect radius: {footprint.effective_radius_m} m · {footprint.erp_dbm} dBm ERP
-        </p>
-        <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-24 store-panel-inner rounded">
-          <path d={points} fill="none" stroke="#06B6D4" strokeWidth="2" />
-          <text x="4" y="12" fill="#94a3b8" fontSize="8">% effect</text>
-        </svg>
-        <div className="rounded-lg px-2 py-2 border" style={{ borderColor: verdictColor }}>
-          <p className="text-[11px] store-text-muted">Deconfliction verdict</p>
-          <p className="text-xs uppercase font-semibold" style={{ color: verdictColor, ...mono }}>{deconflict.verdict}</p>
-          <p className="text-[11px] store-text-muted mt-1">{deconflict.summary}</p>
-          <p className="text-[8px] store-text-muted mt-1" style={mono}>{deconflict.adversary_effectiveness_ref}</p>
-        </div>
+        </Field>
+
+        <dl>
+          <KV label="50% effect radius" value={formatRange(footprint.effective_radius_m)} tone="cyan" />
+          <KV label="ERP" value={`${footprint.erp_dbm} dBm`} />
+        </dl>
+
+        <CardSection title="Effect by range" aside={<span className="text-[11.5px] store-text-muted">% effect</span>}>
+          <div className="rounded-lg store-panel-inner px-2 pt-2 pb-1.5">
+            <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="block w-full h-24" aria-hidden>
+              <line x1="0" y1={h / 2} x2={w} y2={h / 2} stroke="rgba(255,255,255,0.10)" strokeDasharray="3 3" vectorEffect="non-scaling-stroke" />
+              {halfX > 0 ? (
+                <line x1={halfX} y1="0" x2={halfX} y2={h} stroke="rgba(6,182,212,0.45)" strokeDasharray="3 3" vectorEffect="non-scaling-stroke" />
+              ) : null}
+              <path d={area} fill="rgba(6,182,212,0.12)" />
+              <path d={points} fill="none" stroke="#06B6D4" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+            </svg>
+            <div className="flex justify-between font-mono text-[11px] store-text-muted mt-1">
+              <span>0</span>
+              <span>{formatRange(maxR)}</span>
+            </div>
+          </div>
+        </CardSection>
+
+        <CardSection
+          title="Deconfliction"
+          aside={
+            <span className={`tag font-mono font-semibold ${VERDICT_TAG[deconflict.verdict] ?? 'red'}`}>
+              {deconflict.verdict.toUpperCase()}
+            </span>
+          }
+        >
+          <p className="text-[12px] store-text-body leading-relaxed">{deconflict.summary}</p>
+          <p className="mt-2 font-mono text-[11px] store-text-muted break-words">{deconflict.adversary_effectiveness_ref}</p>
+        </CardSection>
       </div>
-    </div>
+    </MapCard>
   )
 }

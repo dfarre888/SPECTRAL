@@ -19,11 +19,12 @@ export function PlatformContextMenu({ target, onAdd, onClose }: PlatformContextM
         onClick={onClose}
       />
       <div
-        className="map-material-float absolute z-40 min-w-[140px] rounded-xl overflow-hidden pointer-events-auto"
+        className="glass-popover absolute z-40 min-w-[200px] max-w-[280px] overflow-hidden pointer-events-auto p-1"
         style={{ left: target.screenX, top: target.screenY }}
         role="menu"
+        aria-label={target.assetName}
       >
-        <p className="px-3 py-2 text-[11px] store-text-muted border-b border-[var(--store-line)] truncate">
+        <p className="px-2.5 pt-1.5 pb-1 text-[12px] font-medium text-[var(--store-ink)] truncate" title={target.assetName}>
           {target.assetName}
         </p>
         <button
@@ -33,13 +34,13 @@ export function PlatformContextMenu({ target, onAdd, onClose }: PlatformContextM
             onAdd()
             onClose()
           }}
-          className="map-press flex w-full items-center gap-2 px-3 py-2.5 text-[11px] font-semibold text-white hover:bg-[var(--store-surface-2)]"
+          className="map-press flex w-full items-center gap-2 h-8 px-2.5 rounded-lg text-[13px] text-[var(--store-ink)] hover:bg-[var(--wb-blue)] hover:text-white"
         >
-          <Plus className="w-3.5 h-3.5 text-[var(--wb-blue)]" />
-          ADD
+          <Plus className="w-3.5 h-3.5" />
+          Add another
         </button>
-        <p className="px-3 py-1.5 text-[11px] store-text-muted border-t border-[var(--store-line)]">
-          ~1 km offset · drag to reposition
+        <p className="px-2.5 pt-1 pb-1.5 text-[11.5px] store-text-muted">
+          Placed about 1 km away. Drag to reposition.
         </p>
       </div>
     </>

@@ -564,42 +564,63 @@ export default function CesiumMapPanel({
   return (
     <div
       ref={containerRef}
-      className="relative flex-1 h-full w-full"
+      className="absolute inset-0"
       style={{ cursor: cursorStyle }}
     />
   )
 }
 
+/**
+ * Laydown bar along the foot of the globe: wind model, laydown edit tools,
+ * and the cursor readout. Liquid Glass, 32px controls.
+ */
 export function MapBottomBar({
   cursor,
   nilWind,
   windLoading,
   onNilWindChange,
   onClearAll,
+  tools,
+  className,
 }: {
   cursor: CursorPosition
   nilWind: boolean
   windLoading: boolean
   onNilWindChange: (v: boolean) => void
   onClearAll: () => void
+  /** Extra laydown controls rendered after the wind model (e.g. Edit flight path). */
+  tools?: React.ReactNode
+  className?: string
 }) {
   return (
-    <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center justify-between gap-3 px-2 py-1 lg-glass">
-      <div className="flex items-center gap-2">
+    <div
+      role="toolbar"
+      aria-label="Laydown"
+      className={`lg-glass z-20 flex items-center justify-between gap-3 p-1 pl-2 ${className ?? 'absolute bottom-3 left-3 right-3'}`}
+    >
+      <div className="flex items-center gap-1 min-w-0">
+        <span className="text-[12px] store-text-muted pl-1 pr-1.5">Wind</span>
         <WindToggleInline nilWind={nilWind} loading={windLoading} onChange={onNilWindChange} />
-        <button
-          type="button"
-          onClick={onClearAll}
-          className="lg-btn font-mono"
-        >
-          Clear All
+        {tools ? (
+          <>
+            <span className="lg-sep" aria-hidden />
+            {tools}
+          </>
+        ) : null}
+        <span className="lg-sep" aria-hidden />
+        <button type="button" onClick={onClearAll} className="lg-btn map-press !min-h-8 !text-[13px]">
+          Clear all
         </button>
       </div>
-      <p className="text-[11px] font-mono store-text-soft px-2">
-        {cursor.terrainAMSL !== null
-          ? `${formatCoord(cursor.lon, cursor.lat)} · ${Math.round(cursor.terrainAMSL)} m terrain`
-          : '—'}
-      </p>
+      {cursor.terrainAMSL !== null ? (
+        <p className="font-mono text-[12px] store-text-body px-2 whitespace-nowrap tabular-nums">
+          {`${formatCoord(cursor.lon, cursor.lat)} · ${Math.round(cursor.terrainAMSL)} m terrain`}
+        </p>
+      ) : (
+        <p className="text-[12px] store-text-muted px-2 truncate min-w-0">
+          Point at the globe for position and terrain height
+        </p>
+      )}
     </div>
   )
 }
@@ -614,14 +635,18 @@ function WindToggleInline({
   onChange: (v: boolean) => void
 }) {
   return (
-    <button
-      type="button"
-      onClick={() => onChange(!nilWind)}
-      className={`lg-btn font-mono ${nilWind
-          ? 'border-[var(--store-line)] bg-[var(--store-surface-2)] store-text-body'
-          : 'border-cyan/40 bg-cyan/10 text-cyan'}`}
-    >
-      {loading ? 'Fetching wind…' : nilWind ? 'Nil-Wind' : 'Live Wind'}
-    </button>
+    <div className="seg sm" role="group" aria-label="Wind model">
+      <button type="button" aria-pressed={nilWind} onClick={() => onChange(true)} title="Nil-wind assumption">
+        Nil wind
+      </button>
+      <button
+        type="button"
+        aria-pressed={!nilWind}
+        onClick={() => onChange(false)}
+        title="Live wind from Windy API"
+      >
+        {loading ? 'Fetching…' : 'Live wind'}
+      </button>
+    </div>
   )
 }

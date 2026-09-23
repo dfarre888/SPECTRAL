@@ -38,17 +38,22 @@ export function IadsStackPanel({ assets, onApply }: Props) {
   };
 
   return (
-    <div className="space-y-2 p-2">
-      <p className="text-[11px] font-mono store-text-muted uppercase tracking-wide">IADS Stack Builder</p>
+    <div className="space-y-2">
+      <p className="text-[12px] store-text-muted leading-relaxed">
+        Pick a preset to place its radars and effectors around the preset anchor.
+      </p>
       {IADS_STACK_PRESETS.map((p) => (
         <button
           key={p.id}
           type="button"
           onClick={() => apply(p)}
-          className="map-press w-full text-left rounded-lg border border-[var(--store-line)] px-2 py-2 hover:border-cyan/50"
+          className="map-press block w-full text-left rounded-xl store-panel-inner px-3 py-2.5 transition-colors hover:border-[rgba(41,151,255,0.5)] hover:bg-[rgba(41,151,255,0.06)]"
         >
-          <div className="text-xs font-semibold text-white">{p.name}</div>
-          <div className="text-[11px] store-text-muted mt-0.5">{p.description}</div>
+          <span className="block text-[13px] font-medium text-[var(--store-ink)] leading-snug">{p.name}</span>
+          <span className="block text-[12px] store-text-muted mt-1 leading-relaxed">{p.description}</span>
+          <span className="block font-mono text-[11px] store-text-muted mt-1.5">
+            {p.layers.length} layer{p.layers.length === 1 ? '' : 's'}
+          </span>
         </button>
       ))}
     </div>

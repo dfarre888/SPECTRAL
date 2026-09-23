@@ -40,12 +40,16 @@ export function NavCockpit({ onRotate, onTilt }: NavCockpitProps) {
 
   return (
     <div className="theme-on-globe relative select-none group">
-      <div className="relative w-32 h-32 flex items-center justify-center">
+      <div className="relative w-24 h-24 flex items-center justify-center">
+        {/* Bezel: a recessed dial inside the glass cluster. The white tick is north (heading). */}
         <div
           ref={wheelRef}
-          className="absolute inset-0 rounded-full border-2 border-white/25 bg-black/60 backdrop-blur-md shadow-lg pointer-events-none"
+          className="absolute inset-0 rounded-full border border-[var(--glass-line)] bg-black/35 shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)] pointer-events-none"
         >
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-1.5 h-3.5 bg-safety rounded-full shadow-[0_0_10px_#ff8c00]" />
+          <span className="absolute top-1.5 left-1/2 -translate-x-1/2 w-1 h-2.5 rounded-full bg-white shadow-[0_0_6px_rgba(255,255,255,0.6)]" />
+          <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-0.5 h-1.5 rounded-full bg-white/30" />
+          <span className="absolute left-1.5 top-1/2 -translate-y-1/2 h-0.5 w-1.5 rounded-full bg-white/30" />
+          <span className="absolute right-1.5 top-1/2 -translate-y-1/2 h-0.5 w-1.5 rounded-full bg-white/30" />
         </div>
 
         <div
@@ -58,16 +62,15 @@ export function NavCockpit({ onRotate, onTilt }: NavCockpitProps) {
             e.stopPropagation()
             setIsDragging(false)
           }}
-          className={`relative w-14 h-14 bg-black/70 border-2 ${
-            isDragging ? 'border-safety/80 bg-black/90' : 'border-white/30'
-          } rounded-full flex items-center justify-center shadow-lg cursor-grab active:cursor-grabbing hover:border-safety/50 hover:bg-black/80 transition-all`}
+          title="Drag to rotate and tilt"
+          className={`relative w-11 h-11 rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing bg-gradient-to-b from-white/20 to-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_2px_8px_rgba(0,0,0,0.55)] border transition-[border-color,box-shadow] duration-150 ease-out motion-reduce:transition-none ${
+            isDragging
+              ? 'border-[#2997FF] shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_0_0_3px_rgba(41,151,255,0.28)]'
+              : 'border-[var(--store-line-strong)] hover:border-[var(--store-ink-mute)]'
+          }`}
         >
-          <Move className="w-5 h-5 text-safety group-hover:text-safety/90 transition-colors pointer-events-none" />
+          <Move className="w-[18px] h-[18px] text-white/85 pointer-events-none" />
         </div>
-
-        <p className="absolute -top-6 left-1/2 -translate-x-1/2 text-[8px] font-black uppercase text-white/70 tracking-widest pointer-events-none whitespace-nowrap">
-          Nav-Sync
-        </p>
       </div>
     </div>
   )

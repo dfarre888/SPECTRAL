@@ -32,10 +32,11 @@ import { writeLaydownSession } from '@/lib/map/laydown-session'
 import { writeDashboardSelectedAssetId } from '@/lib/dashboard/laydown-bridge'
 import { useBattlespacePlan } from '@/app/map/hooks/useBattlespacePlan'
 import { PlannerToolbar } from '@/components/planner/PlannerToolbar'
-import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { PlanLoadDialog } from '@/components/planner/PlanLoadDialog'
 import toast from 'react-hot-toast'
 import { IadsStackPanel } from '@/app/map/components/IadsStackPanel'
+import { MapCard } from '@/app/map/components/MapUi'
+import { Layers, PanelLeftOpen, Route, X } from 'lucide-react'
 import { getVignette, vignetteToLaydown } from '@/lib/planner/vignettes'
 import { hydrateLaydown } from '@/lib/planner/battlespace-plan'
 import { readForcePackage, clearForcePackage } from '@/lib/force/package-session'
@@ -81,7 +82,7 @@ import { getWarheadsForPlatform } from '@/lib/risk/warhead-db'
 
 const CesiumMapPanel = dynamic(() => import('./CesiumMapPanel'), {
   ssr: false,
-  loading: () => <GlobeSkeleton className="flex-1 min-h-[320px]" />,
+  loading: () => <GlobeSkeleton className="absolute inset-0 !rounded-none" />,
 })
 
 const MapBottomBar = dynamic(
@@ -89,11 +90,17 @@ const MapBottomBar = dynamic(
   { ssr: false }
 )
 
-function mapToolbarBtn(active: boolean, accent: 'orange' | 'cyan'): string {
-  // Glass-layer buttons: transparent at rest, blue (or cyan for EW tools) with
-  // a glow when active. See .lg-btn in globals.css.
-  return `lg-btn map-press${accent === 'cyan' ? ' cyan' : ''}${active ? ' on' : ''}`
+function mapToolbarBtn(active: boolean): string {
+  // Glass-layer buttons: transparent at rest, blue with a glow when active
+  // (see .lg-btn in globals.css). 32px tall, 13px labels.
+  return `lg-btn map-press !min-h-8 !text-[13px] !px-2.5${active ? ' on' : ''}`
 }
+
+/** Asset panel width, and the inset every left-anchored overlay clears. */
+const ASSET_PANEL_W = 300
+const GUTTER = 12
+/** Inspector column (analysis tools, laydown evaluation) on the right. */
+const INSPECTOR_W = 360
 
 interface MapIntelViewProps {
   initialAssets: MapAssetsPayload
@@ -131,6 +138,11 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const [waypointContextMenu, setWaypointContextMenu] = useState<WaypointContextTarget | null>(null)
   const [missionNotice, setMissionNotice] = useState<string | null>(null)
   const [loadPlanOpen, setLoadPlanOpen] = useState(false)
+  const [assetPanelOpen, setAssetPanelOpen] = useState(true)
+  // Toolbar and laydown bar heights (they wrap on narrow screens); side columns start below them.
+  const toolbarRowRef = useRef<HTMLDivElement>(null)
+  const bottomBarRef = useRef<HTMLDivElement>(null)
+  const [chromeH, setChromeH] = useState({ top: 42, bottom: 42 })
 
   type MapToolMode = 'none' | 'cuas-siting' | 'ew-deconflict'
 
@@ -396,7 +408,8 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
       closeRiskOverlay()
       setMapTool('none')
       setFlightPathEditActive(true)
-      setMissionNotice('Flight path edit — right-click line to add waypoint · drag waypoints · right-click waypoint for altitude')
+      // The flight-path banner carries the instructions; clear any stale notice.
+      setMissionNotice(null)
     })
   }, [flightPathEditActive, enableFlightPathEdit, closeRiskOverlay])
 
@@ -871,43 +884,50 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     writeLaydownSession({ updatedAt: new Date().toISOString(), pairs })
   }, [adjudication.analysis, placedUas, placedCuas])
 
-  return (
-    <div className="map-intel flex h-full w-full overflow-hidden">
-      <AssetSidebar
-        assets={assets}
-        placedUas={placedUas}
-        placedCuas={placedCuas}
-        selectedLaydownItem={selectedLaydownItem}
-        onSelectPlacedItem={handleSelectPlacedItem}
-        placementMode={placementMode}
-        highlightedIds={highlightedIds}
-        onSelectUas={handleSelectUas}
-        onSelectCuas={startCuasPlacement}
-        onPlaceLoiter={startLoiterMode}
-        onClearLoiter={clearLoiter}
-        onReplanMission={(id) => void replanMission(id, { clearManualOverride: true })}
-        onClearMission={clearMission}
-        onMissionEmcon={setEmcon}
-        onMissionRouteObjective={setRouteObjective}
-        rcsOverrides={rcsOverrides}
-        onRcsChange={handleRcsChange}
-        onRemoveUas={handleRemoveUas}
-        onRemoveCuas={handleRemoveCuas}
-        placedRadars={placedRadars}
-        placedEffectors={placedEffectors}
-        onSelectRadar={startRadarPlacement}
-        onSelectEffector={startEffectorPlacement}
-        onRemoveRadar={handleRemoveRadar}
-        onRemoveEffector={handleRemoveEffector}
-        overlapLegend={overlapLegend}
-        overlapSource={overlapSource}
-        heatmapEnabled={heatmapEnabled}
-        heatmapLoading={heatmap.loading}
-        heatmapError={heatmap.error}
-        onToggleHeatmap={() => setHeatmapEnabled((v) => !v)}
-        onOpenSpectralAnalysis={() => setSpectralOpen(true)}
-      />
+  useEffect(() => {
+    const top = toolbarRowRef.current
+    const bottom = bottomBarRef.current
+    if (!top || !bottom || typeof ResizeObserver === 'undefined') return
+    const measure = () =>
+      setChromeH((prev) => {
+        const next = { top: top.offsetHeight || 42, bottom: bottom.offsetHeight || 42 }
+        return prev.top === next.top && prev.bottom === next.bottom ? prev : next
+      })
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(top)
+    ro.observe(bottom)
+    return () => ro.disconnect()
+  }, [])
 
+  const toolPanelOpen = riskMode !== 'none' || mapTool !== 'none' || showIadsPanel
+  const inspectorOpen = toolPanelOpen || laydownEvaluation != null
+  // Every overlay anchors to these insets so nothing slides under the asset panel or the inspector.
+  const insetLeft = assetPanelOpen ? GUTTER + ASSET_PANEL_W + GUTTER : GUTTER
+  const insetRight = inspectorOpen ? GUTTER + INSPECTOR_W + GUTTER : GUTTER
+  const stageVars = {
+    '--map-l': `${insetLeft}px`,
+    '--map-r': `${insetRight}px`,
+    '--asset-w': `${ASSET_PANEL_W}px`,
+    '--inspector-w': `${INSPECTOR_W}px`,
+    '--map-t': `${GUTTER + chromeH.top + 8}px`,
+    '--map-b': `${GUTTER + chromeH.bottom + 8}px`,
+  } as React.CSSProperties
+
+  const placementText = !placementMode.active
+    ? null
+    : placementMode.kind === 'mission-goal'
+      ? 'Mission goal: click the globe for the target or AOI point. Esc to cancel.'
+      : placementMode.kind === 'loiter'
+        ? 'Place loiter: click the globe for the loiter point. Esc to cancel.'
+        : placementMode.kind === 'radar'
+          ? `Placing radar ${formatRadarDisplayName(placementMode.asset)}: click terrain. Esc to cancel.`
+          : placementMode.kind === 'effector'
+            ? `Placing ${placementMode.asset.tierLabel} ${formatEffectorDisplayName(placementMode.asset)}: click terrain. Esc to cancel.`
+            : `Placing ${placementMode.asset.name}: click terrain. Esc to cancel.`
+
+  return (
+    <div className="map-intel relative h-full w-full overflow-hidden">
       <SpectralAnalysisPanel
         open={spectralOpen}
         onOpenChange={setSpectralOpen}
@@ -925,21 +945,120 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         selectedLaydownItem={selectedLaydownItem}
       />
 
-      <div className="relative flex-1 flex flex-col min-w-0">
-        <PlanLoadDialog
-          open={loadPlanOpen}
-          onClose={() => setLoadPlanOpen(false)}
-          onSelect={(id) => {
-            void planner.loadPlan(id).then((ok) => {
-              if (ok) setLoadPlanOpen(false)
-              else toast.error('Could not load plan')
+      <PlanLoadDialog
+        open={loadPlanOpen}
+        onClose={() => setLoadPlanOpen(false)}
+        onSelect={(id) => {
+          void planner.loadPlan(id).then((ok) => {
+            if (ok) setLoadPlanOpen(false)
+            else toast.error('Could not load plan')
+          })
+        }}
+      />
+
+      {/* Stage: the globe fills the route; every control floats over it as Liquid Glass. */}
+      <div className="absolute inset-0" style={stageVars}>
+        <CesiumMapPanel
+          placedUas={placedUas}
+          placedCuas={placedCuas}
+          placedRadars={placedRadars}
+          placedEffectors={placedEffectors}
+          selectedLaydownItem={selectedLaydownItem}
+          onSelectPlacedItem={handleSelectPlacedItem}
+          overlaps={overlaps}
+          maskingPolygons={maskingPolygons}
+          heatmapCells={heatmap.cells}
+          heatmapGridSteps={heatmap.gridSteps}
+          heatmapJammer={heatmapJammer}
+          buildingFootprints={mapBuildings.buildings}
+          windByUas={windByUas}
+          nilWind={nilWind}
+          placementMode={placementMode}
+          panelUasId={panelUas?.instanceId ?? null}
+          onCesiumReady={onCesiumReady}
+          onGlobeClick={handleGlobeClick}
+          onCursorMove={setCursor}
+          onPanelScreenPos={setPanelScreenPos}
+          onTerrainHeightsResolved={handleTerrainHeightsResolved}
+          onTerrainEpochChange={setTerrainEpoch}
+          setPlacedUas={setPlacedUas}
+          setPlacedCuas={setPlacedCuas}
+          onPlatformContextMenu={setPlatformContextMenu}
+          onWaypointContextMenu={setWaypointContextMenu}
+          flightPathEditActive={flightPathEditActive}
+          onWaypointDragEnd={(uasInstanceId, waypointId, lon, lat) => {
+            void updateWaypoint(uasInstanceId, waypointId, { lon, lat }).then((result) => {
+              if (!result.ok) setMissionNotice(result.reason)
+            })
+          }}
+          onAddWaypointOnPath={(uasInstanceId, lon, lat, segmentIndex) => {
+            void addWaypointOnPath(uasInstanceId, lon, lat, segmentIndex).then((result) => {
+              if (!result.ok) setMissionNotice(result.reason)
+              else setMissionNotice(null)
             })
           }}
         />
-        <div className="relative flex-1 min-h-0">
-        {/* Liquid-glass control layer: plan on the left, tools on the right, both floating over the globe. */}
-        <div className="absolute top-3 inset-x-3 z-20 flex items-start justify-between gap-3 pointer-events-none">
-        <div className="lg-glass pointer-events-auto flex flex-wrap items-center gap-0.5 px-1.5 py-1 shrink-0">
+
+        {assetPanelOpen && (
+          <AssetSidebar
+            className="absolute z-20 left-3 top-3 max-h-[calc(100%-24px)] w-[var(--asset-w)]"
+            onHide={() => setAssetPanelOpen(false)}
+            assets={assets}
+            placedUas={placedUas}
+            placedCuas={placedCuas}
+            selectedLaydownItem={selectedLaydownItem}
+            onSelectPlacedItem={handleSelectPlacedItem}
+            placementMode={placementMode}
+            highlightedIds={highlightedIds}
+            onSelectUas={handleSelectUas}
+            onSelectCuas={startCuasPlacement}
+            onPlaceLoiter={startLoiterMode}
+            onClearLoiter={clearLoiter}
+            onReplanMission={(id) => void replanMission(id, { clearManualOverride: true })}
+            onClearMission={clearMission}
+            onMissionEmcon={setEmcon}
+            onMissionRouteObjective={setRouteObjective}
+            rcsOverrides={rcsOverrides}
+            onRcsChange={handleRcsChange}
+            onRemoveUas={handleRemoveUas}
+            onRemoveCuas={handleRemoveCuas}
+            placedRadars={placedRadars}
+            placedEffectors={placedEffectors}
+            onSelectRadar={startRadarPlacement}
+            onSelectEffector={startEffectorPlacement}
+            onRemoveRadar={handleRemoveRadar}
+            onRemoveEffector={handleRemoveEffector}
+            overlapLegend={overlapLegend}
+            overlapSource={overlapSource}
+            heatmapEnabled={heatmapEnabled}
+            heatmapLoading={heatmap.loading}
+            heatmapError={heatmap.error}
+            onToggleHeatmap={() => setHeatmapEnabled((v) => !v)}
+            onOpenSpectralAnalysis={() => setSpectralOpen(true)}
+          />
+        )}
+
+        {/* Top row: plan on the left, analysis tools on the right. */}
+        <div
+          ref={toolbarRowRef}
+          className="absolute z-20 top-3 left-[var(--map-l)] right-3 flex flex-wrap items-start gap-2 pointer-events-none"
+        >
+          {!assetPanelOpen && (
+            <button
+              type="button"
+              onClick={() => setAssetPanelOpen(true)}
+              className="lg-glass pointer-events-auto inline-flex items-center gap-2 h-[42px] px-3.5 text-[13px] text-[var(--store-ink)] hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+              aria-label="Show asset panel"
+            >
+              <PanelLeftOpen className="w-4 h-4" />
+              Assets
+            </button>
+          )}
+          <div
+            className="lg-glass pointer-events-auto flex items-center p-1 shrink-0 [&_.btn-e]:!min-h-8 [&_.btn-e]:!text-[13px] [&_.btn-e]:!px-2.5 [&_.btn-e]:![font-family:inherit]"
+            role="toolbar"
+            aria-label="Plan"
+          >
             <PlannerToolbar
               planName={planner.planName}
               planId={planner.planId}
@@ -959,7 +1078,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
                   .publishWopr()
                   .then((id) => {
                     if (id) window.location.href = `/arena?scenario=${id}`
-                    else toast.error('WOPR publish failed — save the plan and try again.')
+                    else toast.error('WOPR publish failed. Save the plan and try again.')
                   })
                   .catch((e) => toast.error(e instanceof Error ? e.message : 'WOPR publish failed'))
               }}
@@ -968,332 +1087,330 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
                   .publishPcm()
                   .then((id) => {
                     if (id) window.location.href = `/pcm/exercise/${id}`
-                    else toast.error('PCM publish failed — save the plan and try again.')
+                    else toast.error('PCM publish failed. Save the plan and try again.')
                   })
                   .catch((e) => toast.error(e instanceof Error ? e.message : 'PCM publish failed'))
               }}
             />
-          <span className="lg-sep" aria-hidden />
-          <ThemeToggle labeled />
-        </div>
-        <div className="lg-glass pointer-events-auto flex flex-wrap items-center justify-end gap-0.5 px-1.5 py-1 min-w-0" role="toolbar" aria-label="Map tools">
-
-            <button type="button" onClick={activateBlastRisk} className={mapToolbarBtn(riskMode === 'blast', 'orange')}>Blast</button>
-            <button type="button" onClick={activateJammingRisk} className={mapToolbarBtn(riskMode === 'jamming', 'cyan')}>EW Jam</button>
-            <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'cuas-siting' ? 'none' : 'cuas-siting')) }} className={mapToolbarBtn(mapTool === 'cuas-siting', 'cyan')}>C-UAS Siting</button>
-            <button type="button" onClick={() => { closeRiskOverlay(); setMapTool((t) => (t === 'ew-deconflict' ? 'none' : 'ew-deconflict')) }} className={mapToolbarBtn(mapTool === 'ew-deconflict', 'cyan')}>EW Deconflict</button>
-            <button type="button" onClick={() => setShowIadsPanel((v) => !v)} className={mapToolbarBtn(showIadsPanel, 'cyan')}>IADS</button>
+          </div>
+          <div
+            className="lg-glass pointer-events-auto ml-auto flex items-center gap-0.5 p-1 shrink-0"
+            role="toolbar"
+            aria-label="Map tools"
+          >
             <button
               type="button"
-              disabled={placedUas.length === 0}
-              onClick={toggleFlightPathEdit}
-              className={mapToolbarBtn(flightPathEditActive, 'orange')}
-              title={placedUas.length === 0 ? 'Place a UAS first' : 'Edit flight paths'}
+              aria-pressed={riskMode === 'blast'}
+              onClick={() => (riskMode === 'blast' ? closeRiskOverlay() : activateBlastRisk())}
+              className={mapToolbarBtn(riskMode === 'blast')}
             >
-              Edit flight path
+              Blast
             </button>
-            {riskMode === 'blast' && (
-              <select className="text-[11px] rounded-lg bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.14)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedWarhead?.weapon_id ?? ''} onChange={(e) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === e.target.value) ?? null)}>
-                {WARHEAD_DB.map((w) => (<option key={w.weapon_id} value={w.weapon_id}>{w.weapon_name}</option>))}
-              </select>
-            )}
-            {riskMode === 'jamming' && (
-              <select className="text-[11px] rounded-lg bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.14)] px-2 py-1.5 font-mono text-white max-w-[9rem]" value={selectedJammer?.jammer_id ?? ''} onChange={(e) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === e.target.value) ?? null)}>
-                {JAMMER_DB.map((j) => (<option key={j.jammer_id} value={j.jammer_id}>{j.jammer_name}</option>))}
-              </select>
-            )}
-
-        </div>
-        </div>
-        {showIadsPanel && (
-          <div className="map-material-float absolute bottom-16 left-3 z-20 w-72 max-h-64 overflow-y-auto rounded-xl">
-            <div className="flex justify-between items-center px-2 py-1 border-b border-[var(--store-line)]">
-              <span className="text-[11px] font-mono text-cyan">IADS stacks</span>
-              <button type="button" className="store-text-muted text-xs" onClick={() => setShowIadsPanel(false)}>✕</button>
-            </div>
-            <IadsStackPanel
-              assets={assets}
-              onApply={({ radars, effectors, cuas }) => {
-                setPlacedRadars((p) => [...p, ...radars])
-                setPlacedEffectors((p) => [...p, ...effectors])
-                setPlacedCuas((p) => [...p, ...cuas])
+            <button
+              type="button"
+              aria-pressed={riskMode === 'jamming'}
+              onClick={() => (riskMode === 'jamming' ? closeRiskOverlay() : activateJammingRisk())}
+              className={mapToolbarBtn(riskMode === 'jamming')}
+            >
+              EW Jam
+            </button>
+            <button
+              type="button"
+              aria-pressed={mapTool === 'cuas-siting'}
+              onClick={() => {
+                closeRiskOverlay()
+                setMapTool((t) => (t === 'cuas-siting' ? 'none' : 'cuas-siting'))
               }}
-            />
-          </div>
-        )}
-        {stagingBanner && (
-          <div className="map-material-float absolute top-2 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl border-[rgba(41,151,255,0.5)] text-[11px] store-text-body flex items-start justify-between gap-3">
-            <span>
-              AeroCopilot staged {stagingBanner.stagedCount} system
-              {stagingBanner.stagedCount === 1 ? '' : 's'} — {stagingBanner.matchedCount} matched
-              Map Intel asset{stagingBanner.matchedCount === 1 ? '' : 's'} (unmatched SPECTRA IDs
-              stay in staging). Highlighted in sidebar.
-            </span>
+              className={mapToolbarBtn(mapTool === 'cuas-siting')}
+            >
+              C-UAS Siting
+            </button>
             <button
               type="button"
-              onClick={dismissStagingBanner}
-              className="store-text-muted hover:text-[var(--wb-blue)] shrink-0"
-              aria-label="Dismiss staging banner"
+              aria-pressed={mapTool === 'ew-deconflict'}
+              onClick={() => {
+                closeRiskOverlay()
+                setMapTool((t) => (t === 'ew-deconflict' ? 'none' : 'ew-deconflict'))
+              }}
+              className={mapToolbarBtn(mapTool === 'ew-deconflict')}
             >
-              ✕
+              EW Deconflict
             </button>
-          </div>
-        )}
-        {forceBanner && (
-          <div className="map-material-float absolute top-14 left-1/2 -translate-x-1/2 z-20 max-w-xl w-[calc(100%-2rem)] px-4 py-2.5 rounded-xl border-[rgba(41,151,255,0.5)] text-[11px] store-text-body flex items-start justify-between gap-3">
-            <span>
-              Force package — {forceBanner.theatre}: {forceBanner.placed} envelopes placed
-              {forceBanner.unmatched > 0
-                ? ` · ${forceBanner.unmatched} ORBAT types have no map model (Estimated, listed only)`
-                : ''}
-              . Continue in Arena / PCM for the work-up, not a campaign auto-play.
-            </span>
+            <span className="lg-sep" aria-hidden />
             <button
               type="button"
-              onClick={() => setForceBanner(null)}
-              className="store-text-muted hover:text-[var(--wb-blue)] shrink-0"
-              aria-label="Dismiss force package banner"
+              aria-pressed={showIadsPanel}
+              onClick={() => setShowIadsPanel((v) => !v)}
+              className={mapToolbarBtn(showIadsPanel)}
             >
-              ✕
+              IADS
             </button>
           </div>
-        )}
-        {flightPathEditActive && !placementMode.active && (
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-xl store-panel-inner border-[rgba(41,151,255,0.5)] text-[11px] text-[var(--wb-blue)] font-medium max-w-lg text-center">
-            Flight path edit — right-click line to add waypoint · drag waypoints · right-click waypoint for altitude · Esc to exit
-          </div>
-        )}
+        </div>
 
-        {placementMode.active && (
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-xl store-panel-inner border-[rgba(41,151,255,0.5)] text-[11px] text-[var(--wb-blue)] font-medium">
-{placementMode.kind === 'mission-goal'
-              ? 'Mission goal — click globe for target/AOI point · Esc to cancel'
-              : placementMode.kind === 'loiter'
-              ? 'Place Loiter — click globe for loiter point · Esc to cancel'
-              : placementMode.kind === 'radar'
-                ? `Placing radar ${formatRadarDisplayName(placementMode.asset)} · click terrain · Esc to cancel`
-                : placementMode.kind === 'effector'
-                  ? `Placing ${placementMode.asset.tierLabel} ${formatEffectorDisplayName(placementMode.asset)} · click terrain · Esc to cancel`
-                  : placementMode.kind === 'uas'
-                    ? `Placing ${placementMode.asset.name} · click terrain · Esc to cancel`
-                    : `Placing ${placementMode.asset.name} · click terrain · Esc to cancel`}
-          </div>
-        )}
-
-          <CesiumMapPanel
-            placedUas={placedUas}
-            placedCuas={placedCuas}
-            placedRadars={placedRadars}
-            placedEffectors={placedEffectors}
-            selectedLaydownItem={selectedLaydownItem}
-            onSelectPlacedItem={handleSelectPlacedItem}
-            overlaps={overlaps}
-            maskingPolygons={maskingPolygons}
-            heatmapCells={heatmap.cells}
-            heatmapGridSteps={heatmap.gridSteps}
-            heatmapJammer={heatmapJammer}
-            buildingFootprints={mapBuildings.buildings}
-            windByUas={windByUas}
-            nilWind={nilWind}
-            placementMode={placementMode}
-            panelUasId={panelUas?.instanceId ?? null}
-            onCesiumReady={onCesiumReady}
-            onGlobeClick={handleGlobeClick}
-            onCursorMove={setCursor}
-            onPanelScreenPos={setPanelScreenPos}
-            onTerrainHeightsResolved={handleTerrainHeightsResolved}
-            onTerrainEpochChange={setTerrainEpoch}
-            setPlacedUas={setPlacedUas}
-            setPlacedCuas={setPlacedCuas}
-            onPlatformContextMenu={setPlatformContextMenu}
-            onWaypointContextMenu={setWaypointContextMenu}
-            flightPathEditActive={flightPathEditActive}
-            onWaypointDragEnd={(uasInstanceId, waypointId, lon, lat) => {
-              void updateWaypoint(uasInstanceId, waypointId, { lon, lat }).then((result) => {
-                if (!result.ok) setMissionNotice(result.reason)
-              })
-            }}
-            onAddWaypointOnPath={(uasInstanceId, lon, lat, segmentIndex) => {
-              void addWaypointOnPath(uasInstanceId, lon, lat, segmentIndex).then((result) => {
-                if (!result.ok) setMissionNotice(result.reason)
-                else setMissionNotice(null)
-              })
-            }}
-          />
-
-          {platformContextMenu && (
-            <PlatformContextMenu
-              target={platformContextMenu}
-              onAdd={() =>
-                duplicateAdjacent(platformContextMenu.kind, platformContextMenu.instanceId)
-              }
-              onClose={() => setPlatformContextMenu(null)}
-            />
-          )}
-
-
-        {heatmapEnabled && !heatmap.loading && (
-          <div
-            className={cn(
-              'absolute top-12 left-3 z-20 max-w-sm px-3 py-2 rounded-xl store-panel border text-[11px] font-mono shadow-lg pointer-events-none',
-              heatmap.error
-                ? 'border-amber/40 text-amber'
-                : 'border-cyan/30 text-cyan',
-            )}
-          >
-            {heatmap.error
-              ? heatmap.error
-              : !placedCuas.some((c) => c.asset.defeat_methods.includes('RF_jamming'))
-                ? 'No jammer with RF band placed — place C-UAS with RF jamming'
-                : heatmap.cells.length === 0
-                  ? 'Jam heatmap — no coverage cells returned'
-                  : `Jam coverage heatmap — ${heatmap.cells.length} cells around ${heatmapJammer?.asset.name ?? 'jammer'}`}
-          </div>
-        )}
-
-        {missionNotice && (
-          <div
-            className="absolute bottom-24 left-1/2 z-30 max-w-md -translate-x-1/2 px-4 py-2.5 rounded-xl store-panel border border-amber/40 text-[11px] font-mono text-amber shadow-lg pointer-events-auto"
-            role="status"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <span>{missionNotice}</span>
+        {/* Status banners: one centred stack under the toolbars, clear of both side columns. */}
+        <div className="absolute z-20 top-[var(--map-t)] left-[var(--map-l)] right-[var(--map-r)] flex flex-col items-center gap-2 pointer-events-none">
+          {stagingBanner && (
+            <div className="glass-popover pointer-events-auto w-full max-w-xl pl-4 pr-2 py-2 flex items-start justify-between gap-3 text-[12px] store-text-body leading-relaxed">
+              <span className="py-1">
+                AeroCopilot staged {stagingBanner.stagedCount} system
+                {stagingBanner.stagedCount === 1 ? '' : 's'}: {stagingBanner.matchedCount} matched Map Intel asset
+                {stagingBanner.matchedCount === 1 ? '' : 's'} (unmatched SPECTRA IDs stay in staging). Highlighted in
+                the asset panel.
+              </span>
               <button
                 type="button"
-                className="shrink-0 store-text-muted hover:text-white"
+                onClick={dismissStagingBanner}
+                className="glass-icon-btn !w-7 !h-7 !rounded-lg shrink-0"
+                aria-label="Dismiss staging banner"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+          {forceBanner && (
+            <div className="glass-popover pointer-events-auto w-full max-w-xl pl-4 pr-2 py-2 flex items-start justify-between gap-3 text-[12px] store-text-body leading-relaxed">
+              <span className="py-1">
+                Force package, {forceBanner.theatre}: {forceBanner.placed} envelopes placed
+                {forceBanner.unmatched > 0
+                  ? `. ${forceBanner.unmatched} ORBAT types have no map model (Estimated, listed only)`
+                  : ''}
+                . Continue in Arena or PCM for the work-up, not a campaign auto-play.
+              </span>
+              <button
+                type="button"
+                onClick={() => setForceBanner(null)}
+                className="glass-icon-btn !w-7 !h-7 !rounded-lg shrink-0"
+                aria-label="Dismiss force package banner"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+          {placementText && (
+            <div className="glass-popover pointer-events-auto max-w-xl px-4 py-2 text-[12px] font-medium text-[#6CB8FF] text-center">
+              {placementText}
+            </div>
+          )}
+          {flightPathEditActive && !placementMode.active && (
+            <div className="glass-popover pointer-events-auto max-w-xl px-4 py-2 text-[12px] font-medium text-[#6CB8FF] text-center">
+              Flight path edit: right-click the line to add a waypoint, drag waypoints, right-click a waypoint for
+              altitude. Esc to exit.
+            </div>
+          )}
+          {heatmapEnabled && !heatmap.loading && (
+            <div
+              className={cn(
+                'glass-popover max-w-xl px-4 py-2 text-[12px] font-mono',
+                heatmap.error ? 'text-[#FCD34D]' : 'text-[#67E8F9]',
+              )}
+            >
+              {heatmap.error
+                ? heatmap.error
+                : !placedCuas.some((c) => c.asset.defeat_methods.includes('RF_jamming'))
+                  ? 'No jammer with RF band placed. Place a C-UAS with RF jamming.'
+                  : heatmap.cells.length === 0
+                    ? 'Jam heatmap: no coverage cells returned'
+                    : `Jam coverage heatmap: ${heatmap.cells.length} cells around ${heatmapJammer?.asset.name ?? 'jammer'}`}
+            </div>
+          )}
+          {missionNotice && (
+            <div
+              className="glass-popover pointer-events-auto max-w-xl pl-4 pr-2 py-2 flex items-start justify-between gap-3 text-[12px] font-mono text-[#FCD34D] leading-relaxed"
+              role="status"
+            >
+              <span className="py-1">{missionNotice}</span>
+              <button
+                type="button"
+                className="glass-icon-btn !w-7 !h-7 !rounded-lg shrink-0"
                 onClick={() => setMissionNotice(null)}
                 aria-label="Dismiss"
               >
-                ×
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
-          </div>
-        )}
-
-
-          <div className="absolute bottom-14 left-3 z-20 flex flex-col-reverse items-start gap-3 w-80 max-w-[min(100%,20rem)] pointer-events-none">
-            <div className="pointer-events-auto shrink-0">
-              <MapNavigationWheel getCesium={getCesium} embedded />
-            </div>
-            {flightDetailsUas?.mission && (
-              <div
-                role="region"
-                aria-label="Flight and encounter assessment"
-                className="pointer-events-auto min-h-0 w-full max-h-[min(calc(100dvh-13rem),32rem)] overflow-y-auto overscroll-y-contain flex flex-col gap-3 pr-0.5 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.25)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/25"
-                onWheel={(e) => e.stopPropagation()}
-              >
-                <FlightDetailsPanel
-                  uas={flightDetailsUas}
-                  placedCuas={placedCuas}
-                  placedRadars={placedRadars}
-                  placedEffectors={placedEffectors}
-                  onReplan={() => void replanMission(flightDetailsUas.instanceId, { clearManualOverride: true })}
-                />
-                <EncounterAssessmentPanel
-                  uas={flightDetailsUas}
-                  placedCuas={placedCuas}
-                  placedRadars={placedRadars}
-                  placedEffectors={placedEffectors}
-                  overlaps={overlaps}
-                  populationTier={riskPopTier}
-                  timeOfDay={riskTimeOfDay}
-                  buildingProtection={riskProtection}
-                  warheadOverride={selectedWarhead}
-                  onPopulationTierChange={setRiskPopTier}
-                  onTimeOfDayChange={setRiskTimeOfDay}
-                  onBuildingProtectionChange={setRiskProtection}
-                  onOpenBlastTool={() => openBlastAtMissionTarget(flightDetailsUas)}
-                />
-              </div>
-            )}
-          </div>
-
-          <LaydownEvaluationPanel
-            evaluation={laydownEvaluation}
-            placedItems={placedLaydownChips}
-            selectedItem={selectedLaydownItem}
-            onSelectItem={handleSelectPlacedItem}
-            onEvalItemClick={handleEvaluationItemClick}
-            adjudicationSource={adjudication.source}
-            compareRows={uasCompareRows}
-          />
-
-          {pendingMissionUas && (
-            <MissionGoalDialog
-              uas={pendingMissionUas}
-              onSelect={(kind) => { startMissionGoal(pendingMissionUas, kind); setPendingMissionUasId(null) }}
-              onDismiss={() => {
-                suppressAutoPlan(pendingMissionUas.instanceId)
-                setPendingMissionUasId(null)
-              }}
-            />
-          )}
-
-          {waypointContextMenu && (
-            <WaypointContextMenu
-              target={waypointContextMenu}
-              onApply={(patch) => {
-                void updateWaypoint(waypointContextMenu.uasInstanceId, waypointContextMenu.waypointId, patch).then(
-                  (result) => {
-                    if (!result.ok) {
-                      setMissionNotice(result.reason)
-                      return
-                    }
-                    setMissionNotice(null)
-                    setWaypointContextMenu(null)
-                  },
-                )
-              }}
-              onClose={() => setWaypointContextMenu(null)}
-            />
-          )}
-
-
-          {riskMode !== 'none' && (
-            <CollateralRiskPanel
-              mode={riskMode}
-              blastResult={cdeResult}
-              jammingRadii={selectedJammer}
-              weaponName={selectedWarhead?.weapon_name}
-              jammerName={selectedJammer?.jammer_name}
-              popTier={riskPopTier}
-              timeOfDay={riskTimeOfDay}
-              buildingProtection={riskProtection}
-              onPopTierChange={setRiskPopTier}
-              onTimeChange={setRiskTimeOfDay}
-              onProtectionChange={setRiskProtection}
-              ringShade={riskRingShade}
-              onRingShadeChange={setRiskRingShade}
-              onClose={closeRiskOverlay}
-            />
-          )}
-          {mapTool === 'cuas-siting' && (
-            <CuasSitingPlanner placedUas={placedUas} placedCuas={placedCuas} onClose={() => setMapTool('none')} />
-          )}
-          {mapTool === 'ew-deconflict' && (
-            <EwFootprintAnalyser placedUas={placedUas} placedCuas={placedCuas} emitterLon={cursor.lon} emitterLat={cursor.lat} onClose={() => setMapTool('none')} />
-          )}
-
-          {panelUas && panelScreenPos && (
-            <EntityInfoPanel
-              uas={panelUas}
-              placedCuas={placedCuas}
-              placedRadars={placedRadars}
-              placedEffectors={placedEffectors}
-              screenX={panelScreenPos.x}
-              screenY={panelScreenPos.y}
-              onClose={() => closePanel(panelUas.instanceId)}
-            />
           )}
         </div>
 
+        {/* Left column over the globe: flight details above the camera cluster. */}
+        <div className="absolute z-20 top-[var(--map-t)] bottom-[var(--map-b)] left-[var(--map-l)] w-80 max-w-[calc(100%-var(--map-l)-var(--map-r)-8px)] flex flex-col justify-end gap-2 pointer-events-none">
+          {flightDetailsUas?.mission && (
+            <div
+              role="region"
+              aria-label="Flight and encounter assessment"
+              className="pointer-events-auto min-h-0 w-full overflow-y-auto overscroll-y-contain flex flex-col gap-2 rounded-[14px] [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.25)_transparent]"
+              onWheel={(e) => e.stopPropagation()}
+            >
+              <FlightDetailsPanel
+                uas={flightDetailsUas}
+                placedCuas={placedCuas}
+                placedRadars={placedRadars}
+                placedEffectors={placedEffectors}
+                onReplan={() => void replanMission(flightDetailsUas.instanceId, { clearManualOverride: true })}
+              />
+              <EncounterAssessmentPanel
+                uas={flightDetailsUas}
+                placedCuas={placedCuas}
+                placedRadars={placedRadars}
+                placedEffectors={placedEffectors}
+                overlaps={overlaps}
+                populationTier={riskPopTier}
+                timeOfDay={riskTimeOfDay}
+                buildingProtection={riskProtection}
+                warheadOverride={selectedWarhead}
+                onPopulationTierChange={setRiskPopTier}
+                onTimeOfDayChange={setRiskTimeOfDay}
+                onBuildingProtectionChange={setRiskProtection}
+                onOpenBlastTool={() => openBlastAtMissionTarget(flightDetailsUas)}
+              />
+            </div>
+          )}
+          <div className="pointer-events-auto shrink-0 self-start">
+            <MapNavigationWheel getCesium={getCesium} embedded />
+          </div>
+        </div>
+
+        {/* Inspector column: the open analysis tool, otherwise the laydown evaluation. */}
+        {inspectorOpen && (
+          <div className="absolute z-20 top-[var(--map-t)] bottom-[var(--map-b)] right-3 w-[var(--inspector-w)] max-w-[calc(100%-24px)] flex flex-col gap-2 pointer-events-none">
+            {riskMode !== 'none' && (
+              <CollateralRiskPanel
+                mode={riskMode}
+                blastResult={cdeResult}
+                jammingRadii={selectedJammer}
+                weaponName={selectedWarhead?.weapon_name}
+                jammerName={selectedJammer?.jammer_name}
+                warheads={WARHEAD_DB}
+                selectedWarheadId={selectedWarhead?.weapon_id ?? null}
+                onWarheadChange={(id) => setSelectedWarhead(WARHEAD_DB.find((w) => w.weapon_id === id) ?? null)}
+                jammers={JAMMER_DB}
+                selectedJammerId={selectedJammer?.jammer_id ?? null}
+                onJammerChange={(id) => setSelectedJammer(JAMMER_DB.find((j) => j.jammer_id === id) ?? null)}
+                popTier={riskPopTier}
+                timeOfDay={riskTimeOfDay}
+                buildingProtection={riskProtection}
+                onPopTierChange={setRiskPopTier}
+                onTimeChange={setRiskTimeOfDay}
+                onProtectionChange={setRiskProtection}
+                ringShade={riskRingShade}
+                onRingShadeChange={setRiskRingShade}
+                onClose={closeRiskOverlay}
+              />
+            )}
+            {mapTool === 'cuas-siting' && (
+              <CuasSitingPlanner placedUas={placedUas} placedCuas={placedCuas} onClose={() => setMapTool('none')} />
+            )}
+            {mapTool === 'ew-deconflict' && (
+              <EwFootprintAnalyser
+                placedUas={placedUas}
+                placedCuas={placedCuas}
+                emitterLon={cursor.lon}
+                emitterLat={cursor.lat}
+                onClose={() => setMapTool('none')}
+              />
+            )}
+            {showIadsPanel && (
+              <MapCard title="IADS stacks" icon={<Layers className="w-4 h-4" />} onClose={() => setShowIadsPanel(false)}>
+                <IadsStackPanel
+                  assets={assets}
+                  onApply={({ radars, effectors, cuas }) => {
+                    setPlacedRadars((p) => [...p, ...radars])
+                    setPlacedEffectors((p) => [...p, ...effectors])
+                    setPlacedCuas((p) => [...p, ...cuas])
+                  }}
+                />
+              </MapCard>
+            )}
+            {!toolPanelOpen && (
+              <LaydownEvaluationPanel
+                evaluation={laydownEvaluation}
+                placedItems={placedLaydownChips}
+                selectedItem={selectedLaydownItem}
+                onSelectItem={handleSelectPlacedItem}
+                onEvalItemClick={handleEvaluationItemClick}
+                adjudicationSource={adjudication.source}
+                compareRows={uasCompareRows}
+              />
+            )}
+          </div>
+        )}
+
+        <div ref={bottomBarRef} className="absolute z-20 bottom-3 left-[var(--map-l)] right-3">
         <MapBottomBar
+          className="w-full flex-wrap"
           cursor={cursor}
           nilWind={nilWind}
           windLoading={windLoading}
           onNilWindChange={setNilWind}
           onClearAll={handleClearAll}
+          tools={
+            <button
+              type="button"
+              aria-pressed={flightPathEditActive}
+              disabled={placedUas.length === 0}
+              onClick={toggleFlightPathEdit}
+              className={mapToolbarBtn(flightPathEditActive)}
+              title={placedUas.length === 0 ? 'Place a UAS first' : 'Edit flight paths'}
+            >
+              <Route className="w-3.5 h-3.5" />
+              Edit flight path
+            </button>
+          }
         />
+        </div>
+
+        {platformContextMenu && (
+          <PlatformContextMenu
+            target={platformContextMenu}
+            onAdd={() => duplicateAdjacent(platformContextMenu.kind, platformContextMenu.instanceId)}
+            onClose={() => setPlatformContextMenu(null)}
+          />
+        )}
+
+        {pendingMissionUas && (
+          <MissionGoalDialog
+            uas={pendingMissionUas}
+            onSelect={(kind) => {
+              startMissionGoal(pendingMissionUas, kind)
+              setPendingMissionUasId(null)
+            }}
+            onDismiss={() => {
+              suppressAutoPlan(pendingMissionUas.instanceId)
+              setPendingMissionUasId(null)
+            }}
+          />
+        )}
+
+        {waypointContextMenu && (
+          <WaypointContextMenu
+            target={waypointContextMenu}
+            onApply={(patch) => {
+              void updateWaypoint(waypointContextMenu.uasInstanceId, waypointContextMenu.waypointId, patch).then(
+                (result) => {
+                  if (!result.ok) {
+                    setMissionNotice(result.reason)
+                    return
+                  }
+                  setMissionNotice(null)
+                  setWaypointContextMenu(null)
+                },
+              )
+            }}
+            onClose={() => setWaypointContextMenu(null)}
+          />
+        )}
+
+        {panelUas && panelScreenPos && (
+          <EntityInfoPanel
+            uas={panelUas}
+            placedCuas={placedCuas}
+            placedRadars={placedRadars}
+            placedEffectors={placedEffectors}
+            screenX={panelScreenPos.x}
+            screenY={panelScreenPos.y}
+            onClose={() => closePanel(panelUas.instanceId)}
+          />
+        )}
       </div>
     </div>
   )

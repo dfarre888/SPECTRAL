@@ -1,6 +1,7 @@
 'use client'
 
-import { Info } from 'lucide-react'
+import { useState } from 'react'
+import { ChevronRight, Info } from 'lucide-react'
 import {
   getRcsFacets,
   isPlatformRcsBoundaryPinned,
@@ -23,15 +24,15 @@ function facetField(
   onChange: (v: number) => void,
 ) {
   return (
-    <label className="flex flex-col gap-0.5">
-      <span className="text-[11px] uppercase tracking-wide store-text-muted">{label}</span>
+    <label className="flex flex-col gap-1">
+      <span className="text-[12px] store-text-body">{label}</span>
       <input
         type="number"
         step="0.001"
         min="0"
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="font-mono text-[11px] store-panel-inner rounded px-1.5 py-0.5 text-white"
+        className="glass-field h-8 w-full px-2 font-mono text-[12px] tabular-nums"
       />
     </label>
   )
@@ -51,34 +52,56 @@ export function RoutePlanner({ uas, rcsOverride, onRcsChange }: RoutePlannerProp
   }
 
   const reset = () => onRcsChange(uas.instanceId, undefined)
+  // Folded by default so a placed card stays compact; an override keeps it open.
+  const [open, setOpen] = useState(false)
+  const expanded = open || !!rcsOverride
 
   return (
-    <div className="mt-2 p-2 rounded-lg border border-[var(--store-line)] bg-black/20 space-y-2">
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)]">
-          RCS — OSINT planning nominal
-        </span>
+    <div className="rounded-xl border border-[var(--store-line)] bg-[rgba(255,255,255,0.02)]">
+      <div className="flex items-center justify-between gap-2 pl-1 pr-2.5">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={expanded}
+          className="flex-1 min-w-0 flex items-center gap-1.5 h-9 pl-1.5 text-left"
+        >
+          <ChevronRight
+            className={cn(
+              'w-3.5 h-3.5 shrink-0 store-text-muted transition-transform duration-150 ease-out motion-reduce:transition-none',
+              expanded && 'rotate-90',
+            )}
+          />
+          <span className="text-[12px] font-semibold text-[var(--store-ink)] shrink-0">RCS</span>
+          <span className="text-[12px] store-text-muted truncate">OSINT planning nominal</span>
+        </button>
+        {boundary && !expanded && (
+          <span className="tag amber shrink-0" title="Open-build values are geometry inference only">
+            Inference only
+          </span>
+        )}
         {rcsOverride && (
-          <button type="button" onClick={reset} className="text-[11px] store-text-muted hover:text-white">
+          <button type="button" onClick={reset} className="fc-action shrink-0">
             Reset
           </button>
         )}
       </div>
+      {expanded && (
+      <div className="px-2.5 pb-2.5 space-y-2">
 
       {boundary && (
-        <p className="text-[11px] text-amber-400/95 leading-snug border border-amber-500/40 rounded px-2 py-1.5 bg-amber-950/30">
-          SOVEREIGN_CORE_BOUNDARY — open-build values are geometry inference only. Real signature fidelity requires the accredited resolver.
+        <p className="text-[12px] text-[#FCD34D] leading-snug border border-[rgba(251,191,36,0.35)] rounded-lg px-2.5 py-2">
+          SOVEREIGN_CORE_BOUNDARY: open-build values are geometry inference only. Real signature fidelity requires the accredited resolver.
         </p>
       )}
 
       {catalogueEntry && (
-        <p className="text-[11px] store-text-muted flex gap-1 leading-snug" title={catalogueEntry.osint_basis}>
-          <Info className="w-3 h-3 shrink-0 mt-0.5" />
+        <p className="text-[12px] store-text-muted flex gap-1.5 leading-snug" title={catalogueEntry.osint_basis}>
+          <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
           <span className="line-clamp-3">{catalogueEntry.osint_basis}</span>
         </p>
       )}
 
-      <p className="text-[11px] store-text-muted font-mono">
+      <p className="text-[11.5px] store-text-muted font-mono break-words">
         ref: {resolved.rcs_ref} · confidence: {resolved.confidence}
       </p>
 
@@ -88,6 +111,8 @@ export function RoutePlanner({ uas, rcsOverride, onRcsChange }: RoutePlannerProp
         {facetField('Tail m²', facets.tail, (v) => setFacet('tail', v))}
         {facetField('Top m²', facets.top, (v) => setFacet('top', v))}
       </div>
+      </div>
+      )}
     </div>
   )
 }

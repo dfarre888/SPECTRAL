@@ -28,24 +28,26 @@ export function EntityInfoPanel({
   const flight = computeMissionFlightDetails(uas, placedCuas, placedRadars, placedEffectors)
   return (
     <div
-      className="map-material-float absolute z-20 w-72 rounded-2xl pointer-events-auto"
+      className="glass-popover absolute z-20 w-72 pointer-events-auto flex flex-col max-h-[min(70vh,560px)] overflow-hidden"
       style={{ left: screenX + 12, top: screenY - 8 }}
     >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--store-line)] gap-2">
+      <div className="flex items-center justify-between pl-4 pr-2 py-2 border-b border-[var(--glass-line)] gap-2 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <PlatformThumbnail id={uas.asset.id} name={uas.asset.name} size="sm" />
-          <p className="text-sm font-semibold text-white truncate">{uas.asset.name}</p>
+          <p className="text-[13px] font-semibold text-[var(--store-ink)] leading-snug line-clamp-2" title={uas.asset.name}>
+            {uas.asset.name}
+          </p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="rounded-lg p-1 store-text-muted hover:text-white hover:bg-[var(--store-surface-2)]"
+          className="glass-icon-btn !w-7 !h-7 !rounded-lg shrink-0"
           aria-label="Close panel"
         >
           <X className="w-3.5 h-3.5" />
         </button>
       </div>
-      <div className="px-4 py-3 space-y-2 text-[11px]">
+      <dl className="px-4 py-2.5 text-[12px] overflow-y-auto min-h-0">
         <DataRow label="Position" value={formatCoord(uas.lon, uas.lat)} accent />
         <DataRow label="Terrain AMSL" value={`${Math.round(uas.terrainAMSL)} m`} />
         <DataRow
@@ -97,16 +99,16 @@ export function EntityInfoPanel({
           </>
         )}
         {uas.loiter?.exceedsEndurance && (
-          <p className="text-[var(--wb-blue)] pt-1 text-[11px]">
-            Endurance warning — loiter exceeds fuel/time envelope
+          <p className="text-[#FCD34D] pt-2 text-[12px]">
+            Endurance warning: loiter exceeds the fuel and time envelope.
           </p>
         )}
         {!uas.loiter && (
-          <p className="store-text-muted pt-1 text-[11px]">
-            Use Place Loiter in the sidebar to plan time on station.
+          <p className="store-text-muted pt-2 text-[12px]">
+            Use Place loiter in the asset panel to plan time on station.
           </p>
         )}
-      </div>
+      </dl>
     </div>
   )
 }
@@ -121,15 +123,17 @@ function DataRow({
   accent?: boolean
 }) {
   return (
-    <div className="flex justify-between gap-3">
-      <span className="store-text-muted shrink-0">{label}</span>
-      <span
+    <div className="flex items-baseline justify-between gap-3 py-[5px] border-b border-[var(--store-line)] last:border-b-0">
+      <dt className="store-text-body shrink-0">{label}</dt>
+      <dd
         className={
-          accent ? 'font-mono text-[var(--wb-blue)] text-right' : 'font-mono store-text-body text-right'
+          accent
+            ? 'font-mono text-[var(--wb-blue)] text-right tabular-nums'
+            : 'font-mono text-[var(--store-ink)] text-right tabular-nums'
         }
       >
         {value}
-      </span>
+      </dd>
     </div>
   )
 }

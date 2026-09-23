@@ -1,11 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
+import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from 'react'
 import {
-  ChevronDown,
   ChevronRight,
   Crosshair,
+  PanelLeftClose,
   Radio,
   Search,
   Shield,
@@ -17,14 +16,11 @@ import {
 import { LoiterControls } from '@/app/map/components/LoiterControls'
 import { MissionPathControls } from '@/app/map/components/MissionPathControls'
 import { RoutePlanner } from '@/app/map/components/RoutePlanner'
-import { EditionBadge } from '@/components/operations/EditionBadge'
 import { PlatformThumbnail } from '@/components/platforms/PlatformThumbnail'
+import { ScrollArea } from '@/components/ui/ScrollArea'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
-import { StoreFilterSection } from '@/components/catalog/StoreFilterSidebar'
-import { StorePanel } from '@/components/ui/store-surface'
 import {
   applyForceFilter,
-  matchesForceFilter,
   assetSideForceSides,
   cuasForceSides,
   filterMapAssetHits,
@@ -86,8 +82,21 @@ interface AssetSidebarProps {
   heatmapError?: string | null
   onToggleHeatmap?: () => void
   onOpenSpectralAnalysis?: () => void
+  /** Collapse the panel off the globe. */
+  onHide?: () => void
+  className?: string
 }
 
+const FORCE_OPTIONS: { value: MapForceFilter; label: string; dot?: string }[] = [
+  { value: 'red', label: 'Red', dot: 'var(--wb-red)' },
+  { value: 'blue', label: 'Blue', dot: 'var(--wb-blue)' },
+  { value: 'both', label: 'Both' },
+]
+
+/**
+ * Asset panel: a glass control surface floating over the globe. Force filter,
+ * search, then disclosure groups in one bounded scroller, legend at the foot.
+ */
 export function AssetSidebar({
   assets,
   placedUas,
@@ -121,15 +130,17 @@ export function AssetSidebar({
   heatmapError,
   onToggleHeatmap,
   onOpenSpectralAnalysis,
+  onHide,
+  className,
 }: AssetSidebarProps) {
   const operations = isOperationsEditionClient()
-  const [cotsOpen, setCotsOpen] = useState(true)
+  const [cotsOpen, setCotsOpen] = useState(false)
   const [cotsDjiOpen, setCotsDjiOpen] = useState(false)
   const [uasOpen, setUasOpen] = useState(false)
   const [cuasOpen, setCuasOpen] = useState(false)
   const [radarsOpen, setRadarsOpen] = useState(false)
   const [effectorsOpen, setEffectorsOpen] = useState(false)
-  const [placedOpen, setPlacedOpen] = useState(false)
+  const [placedOpen, setPlacedOpen] = useState(true)
   const [legendOpen, setLegendOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [forceFilter, setForceFilter] = useState<MapForceFilter>('both')
@@ -203,69 +214,68 @@ export function AssetSidebar({
     }
   }, [forceFilter, visibleUas.length, visibleCuas.length, visibleRadars.length, visibleEffectors.length])
 
-    const dualRoleIds = new Set(
+  const dualRoleIds = new Set(
     assets.uas.filter((u) => assets.cuas.some((c) => c.id === u.id)).map((u) => u.id),
   )
 
+  const placedCount = placedUas.length + placedCuas.length + placedRadars.length + placedEffectors.length
+  const hasEngagement = placedUas.length > 0 || placedCuas.length > 0
+
   return (
     <aside
-      className={cn(
-        'w-72 xl:w-80 flex-shrink-0 flex flex-col h-full',
-        'map-material border-r border-[var(--store-line)] border-t-0 border-b-0 border-l-0 rounded-none',
-      )}
+      aria-label="Map assets"
+      className={cn('glass-popover pointer-events-auto flex flex-col min-h-0 overflow-hidden', className)}
     >
-      {/* Header — matches main Sidebar / store catalog */}
-      <div className="px-5 py-4 border-b border-[var(--store-line)]">
-        <Link
-          href="/"
-          className="text-[11px] store-text-muted hover:text-[var(--wb-blue)] transition-colors mb-3 inline-block"
-        >
-          ← Dashboard
-        </Link>
-        <div className="min-w-0">
-          <p className="store-display font-semibold text-[var(--store-ink)] tracking-[-0.01em] text-[15px]">Map Intel</p>
-          <p className="text-[12px] store-text-muted">Terrain laydown and envelopes. Place assets on the globe.</p>
+      {/* Filter and search: always in view. */}
+      <div className="shrink-0 px-3 pt-3 pb-2.5 space-y-2.5 border-b border-[var(--glass-line)]">
+        <div className="flex items-center gap-2">
+          <div className="seg sm flex-1" role="group" aria-label="Force filter">
+            {FORCE_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                aria-pressed={forceFilter === opt.value}
+                onClick={() => setForceFilter(opt.value)}
+                className="flex-1 justify-center"
+              >
+                {opt.dot ? (
+                  <span aria-hidden className="h-1.5 w-1.5 rounded-full" style={{ background: opt.dot }} />
+                ) : null}
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          {onHide ? (
+            <button
+              type="button"
+              onClick={onHide}
+              aria-label="Hide asset panel"
+              title="Hide asset panel"
+              className="glass-icon-btn !w-8 !h-8 shrink-0"
+            >
+              <PanelLeftClose className="w-4 h-4" />
+            </button>
+          ) : null}
         </div>
-        <div className="mt-3 flex gap-2" role="group" aria-label="Force filter">
-          <ForceFilterButton
-            label="RED"
-            active={forceFilter === 'red'}
-            activeClassName="bg-red-600 text-white border-red-600 theme-keep-white"
-            onClick={() => setForceFilter('red')}
-          />
-          <ForceFilterButton
-            label="BLUE"
-            active={forceFilter === 'blue'}
-            activeClassName="bg-blue-600 text-white border-blue-600 theme-keep-white"
-            onClick={() => setForceFilter('blue')}
-          />
-          <ForceFilterButton
-            label="BOTH"
-            active={forceFilter === 'both'}
-            activeClassName="bg-[var(--store-ink)] text-black border-[var(--store-ink)]"
-            onClick={() => setForceFilter('both')}
-          />
-        </div>
-      </div>
-
-      <div className="px-5 py-3 border-b border-[var(--store-line)]">
         <div className="relative">
           <Search
             size={14}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 store-text-muted"
+            aria-hidden
+            className="absolute left-3 top-1/2 -translate-y-1/2 store-text-muted pointer-events-none"
           />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search platforms, NATO name…"
-            className="w-full text-[13px] pl-9 pr-9 py-2.5 rounded-xl text-white store-panel-inner focus:outline-none focus:border-[rgba(41,151,255,0.5)]"
+            placeholder="Search platforms and NATO names"
+            aria-label="Search map assets"
+            className="glass-field w-full h-9 pl-9 pr-9 text-[13px]"
           />
           {search && (
             <button
               type="button"
               onClick={() => setSearch('')}
               aria-label="Clear search"
-              className="absolute right-3 top-1/2 -translate-y-1/2 store-text-muted hover:text-white transition-colors"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 glass-icon-btn !w-7 !h-7 !rounded-lg"
             >
               <X size={14} />
             </button>
@@ -273,251 +283,71 @@ export function AssetSidebar({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+      <ScrollArea
+        frame={false}
+        maxHeight="none"
+        className="min-h-0 flex flex-col"
+        scrollClassName="min-h-0 px-2"
+      >
+        <div className="py-2">
         {searchActive && (
-          <StoreFilterSection label="Search results">
-            <p className="text-[11px] font-mono store-text-muted mb-2">
-              {visibleHits.length} {visibleHits.length === 1 ? 'match' : 'matches'}
-            </p>
+          <div className="mb-2">
+            <div className="flex items-baseline justify-between px-2 pt-1 pb-1.5">
+              <span className="text-[12px] font-semibold store-text-muted">Search results</span>
+              <span className="font-mono text-[12px] store-text-muted tabular-nums">
+                {visibleHits.length} {visibleHits.length === 1 ? 'match' : 'matches'}
+              </span>
+            </div>
             {visibleHits.length === 0 ? (
-              <p className="text-[13px] store-text-muted py-2">
+              <p className="px-2 py-2 text-[13px] store-text-muted">
                 No assets match &ldquo;{search.trim()}&rdquo;
               </p>
             ) : (
-              <div className="space-y-2 max-h-64 overflow-y-auto pr-0.5">
-                {visibleHits.map((hit) => (
-                  <MapSearchResultCard
-                    key={`${hit.kind}-${hit.asset.id}`}
-                    hit={hit}
-                    placingUasId={placingUasId}
-                    placingCuasId={placingCuasId}
-                    placingRadarId={placingRadarId}
-                    placingEffectorId={placingEffectorId}
-                    highlightedIds={highlightedIds}
-                    onSelectUas={onSelectUas}
-                    onSelectCuas={onSelectCuas}
-                    onSelectRadar={onSelectRadar}
-                    onSelectEffector={onSelectEffector}
-                  />
-                ))}
-              </div>
+              visibleHits.map((hit) => (
+                <MapSearchResultCard
+                  key={`${hit.kind}-${hit.asset.id}`}
+                  hit={hit}
+                  placingUasId={placingUasId}
+                  placingCuasId={placingCuasId}
+                  placingRadarId={placingRadarId}
+                  placingEffectorId={placingEffectorId}
+                  highlightedIds={highlightedIds}
+                  onSelectUas={onSelectUas}
+                  onSelectCuas={onSelectCuas}
+                  onSelectRadar={onSelectRadar}
+                  onSelectEffector={onSelectEffector}
+                />
+              ))
             )}
-          </StoreFilterSection>
-        )}
-
-        {(!searchActive || cotsAll.length > 0) && cotsAll.length > 0 && (
-          <CollapsibleSection
-            open={cotsOpen}
-            onToggle={() => setCotsOpen(!cotsOpen)}
-            label="COTS catalog"
-            count={cotsAll.length}
-            icon={<Plane size={14} className="text-[var(--wb-blue)]" />}
-          >
-            <div className="space-y-2 max-h-72 overflow-y-auto pr-0.5">
-              {cotsAll.map((asset) => (
-                <MapAssetPickCard
-                  key={`cots-${asset.id}`}
-                  id={asset.id}
-                  kicker={isCotsDji(asset) ? 'COTS DJI' : 'COTS'}
-                  name={asset.name}
-                  sub={formatUasSubline(asset)}
-                  active={placingUasId === asset.id}
-                  highlighted={highlightedIds.includes(asset.id)}
-                  onClick={() => onSelectUas(asset)}
-                  accent="threat"
-                  thumbnailVariant="uas"
-                />
-              ))}
-            </div>
-          </CollapsibleSection>
-        )}
-
-        {(!searchActive || cotsDji.length > 0) && cotsDji.length > 0 && (
-          <CollapsibleSection
-            open={cotsDjiOpen}
-            onToggle={() => setCotsDjiOpen(!cotsDjiOpen)}
-            label="COTS DJI"
-            count={cotsDji.length}
-            icon={<Plane size={14} className="text-[var(--wb-blue)]" />}
-          >
-            <div className="space-y-2 max-h-64 overflow-y-auto pr-0.5">
-              {cotsDji.map((asset) => (
-                <MapAssetPickCard
-                  key={`cots-dji-${asset.id}`}
-                  id={asset.id}
-                  kicker="COTS DJI"
-                  name={asset.name}
-                  sub={formatUasSubline(asset)}
-                  active={placingUasId === asset.id}
-                  highlighted={highlightedIds.includes(asset.id)}
-                  onClick={() => onSelectUas(asset)}
-                  accent="threat"
-                  thumbnailVariant="uas"
-                />
-              ))}
-            </div>
-          </CollapsibleSection>
-        )}
-
-        {(!searchActive || visibleUas.length > 0) && (
-          <CollapsibleSection
-          open={uasOpen}
-          onToggle={() => setUasOpen(!uasOpen)}
-          label="Threat platforms"
-          count={visibleUas.length}
-          icon={<Plane size={14} className="text-[var(--wb-blue)]" />}
-        >
-          <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
-            {visibleUas.map((asset) => (
-              <MapAssetPickCard
-                key={asset.id}
-                id={asset.id}
-                kicker="UAS"
-                name={asset.name}
-                sub={formatUasSubline(asset)}
-                active={placingUasId === asset.id}
-                highlighted={highlightedIds.includes(asset.id)}
-                onClick={() => onSelectUas(asset)}
-                accent="threat"
-                thumbnailVariant="uas"
-              />
-            ))}
+            <div className="mx-2 mt-2 border-b border-[var(--store-line)]" />
           </div>
-        </CollapsibleSection>
         )}
 
-        {(!searchActive || visibleCuas.length > 0) && (
-        <CollapsibleSection
-          open={cuasOpen}
-          onToggle={() => setCuasOpen(!cuasOpen)}
-          label="Defeat systems"
-          count={visibleCuas.length}
-          icon={<Shield size={14} className="text-[var(--store-success)]" />}
-        >
-          <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
-            {visibleCuas.map((asset) => (
-              <MapAssetPickCard
-                key={`${asset.id}-${asset.name}`}
-                id={asset.id}
-                kicker={asset.categoryLabel}
-                name={asset.name}
-                sub={`${asset.defeat_range_km.toFixed(1)} km defeat envelope`}
-                active={placingCuasId === asset.id}
-                highlighted={highlightedIds.includes(asset.id)}
-                onClick={() => onSelectCuas(asset)}
-                accent="defeat"
-                thumbnailVariant="cuas"
-              />
-            ))}
-          </div>
-        </CollapsibleSection>
-        )}
-
-        {visibleRadars.length > 0 && (
-          <CollapsibleSection
-            open={radarsOpen}
-            onToggle={() => setRadarsOpen(!radarsOpen)}
-            label="Radars"
-            count={visibleRadars.length}
-            icon={<Radar size={14} className="text-cyan" />}
-          >
-            <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
-              {visibleRadars.map((asset) => (
-                <MapAssetPickCard
-                  key={asset.id}
-                  id={asset.id}
-                  kicker={asset.roleLabel}
-                  name={formatRadarDisplayName(asset)}
-                  sub={formatRadarSubline(asset)}
-                  active={placingRadarId === asset.id}
-                  highlighted={highlightedIds.includes(asset.id)}
-                  onClick={() => onSelectRadar(asset)}
-                  accent={asset.side === 'red' ? 'hostile' : 'radar'}
-                  thumbnailVariant="cuas"
-                />
-              ))}
-            </div>
-          </CollapsibleSection>
-        )}
-
-        {visibleEffectors.length > 0 && (
-          <CollapsibleSection
-            open={effectorsOpen}
-            onToggle={() => setEffectorsOpen(!effectorsOpen)}
-            label="SAM / BMD / effectors"
-            count={visibleEffectors.length}
-            icon={<Target size={14} className="text-orange" />}
-          >
-            <div className="space-y-2 max-h-52 overflow-y-auto pr-0.5">
-              {visibleEffectors.map((asset) => (
-                <MapAssetPickCard
-                  key={asset.id}
-                  id={asset.id}
-                  kicker={asset.tierLabel}
-                  name={formatEffectorDisplayName(asset)}
-                  sub={formatEffectorSubline(asset)}
-                  active={placingEffectorId === asset.id}
-                  highlighted={highlightedIds.includes(asset.id)}
-                  onClick={() => onSelectEffector(asset)}
-                  accent={asset.side === 'red' ? 'hostile' : 'effector'}
-                  thumbnailVariant="cuas"
-                />
-              ))}
-            </div>
-          </CollapsibleSection>
-        )}
-
-        {(placedUas.length > 0 ||
-          placedCuas.length > 0 ||
-          placedRadars.length > 0 ||
-          placedEffectors.length > 0) && (
-          <CollapsibleSection
+        {placedCount > 0 && (
+          <DisclosureGroup
             open={placedOpen}
             onToggle={() => setPlacedOpen(!placedOpen)}
             label="On map"
-            count={
-              placedUas.length +
-              placedCuas.length +
-              placedRadars.length +
-              placedEffectors.length
-            }
-
-            icon={<Crosshair size={14} className="store-text-muted" />}
+            count={placedCount}
+            icon={<Crosshair size={14} />}
           >
-            <div className="space-y-2">
+            <div className="space-y-1.5 px-1 pt-0.5">
               {placedUas.map((u) => (
-                <div
+                <PlacedCard
                   key={u.instanceId}
-                  role="button"
-                  tabIndex={0}
-                  className={cn(
-                    'rounded-xl cursor-pointer',
-                    isSameLaydownItem(selectedLaydownItem, { kind: 'uas', instanceId: u.instanceId }) &&
-                      'ring-2 ring-[rgba(41,151,255,0.5)]',
-                  )}
-                  onClick={() => onSelectPlacedItem?.({ kind: 'uas', instanceId: u.instanceId })}
+                  selected={isSameLaydownItem(selectedLaydownItem, { kind: 'uas', instanceId: u.instanceId })}
+                  onSelect={() => onSelectPlacedItem?.({ kind: 'uas', instanceId: u.instanceId })}
+                  thumb={<PlatformThumbnail id={u.asset.id} name={u.asset.name} size="sm" />}
+                  name={u.asset.name}
+                  coords={`${u.lat.toFixed(4)}°, ${u.lon.toFixed(4)}°`}
+                  meta={`${(u.lateralRadius_m / 1000).toFixed(1)} km combat envelope`}
+                  removeLabel={`Remove ${u.asset.name}`}
+                  onRemove={() => onRemoveUas(u.instanceId)}
                 >
-                <StorePanel inner className="relative p-3 pl-9">
-                  <RemoveButton
-                    label={`Remove ${u.asset.name}`}
-                    onClick={() => onRemoveUas(u.instanceId)}
-                  />
-                  <div className="flex items-start gap-3">
-                    <PlatformThumbnail id={u.asset.id} name={u.asset.name} size="md" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-white truncate">{u.asset.name}</p>
-                      <p className="text-[11px] store-text-muted font-mono mt-0.5">
-                        {u.lat.toFixed(4)}°, {u.lon.toFixed(4)}°
-                      </p>
-                      <p className="text-[11px] store-text-body mt-1">
-                        {(u.lateralRadius_m / 1000).toFixed(1)} km combat envelope
-                      </p>
-                    </div>
-                  </div>
                   <div
                     className={cn(
-                      'mt-2',
-                      loiterPlacingId === u.instanceId && 'ring-1 ring-[rgba(41,151,255,0.5)] rounded-xl',
+                      'mt-2 space-y-2',
+                      loiterPlacingId === u.instanceId && 'rounded-xl shadow-[0_0_0_1px_rgba(41,151,255,0.55)]',
                     )}
                   >
                     <RoutePlanner
@@ -539,234 +369,298 @@ export function AssetSidebar({
                       onClearLoiter={() => onClearLoiter(u.instanceId)}
                     />
                   </div>
-                </StorePanel>
-                </div>
+                </PlacedCard>
               ))}
               {placedCuas.map((c) => (
-                <div
+                <PlacedCard
                   key={c.instanceId}
-                  role="button"
-                  tabIndex={0}
-                  className={cn(
-                    'rounded-xl cursor-pointer',
-                    isSameLaydownItem(selectedLaydownItem, { kind: 'cuas', instanceId: c.instanceId }) &&
-                      'ring-2 ring-[rgba(41,151,255,0.5)]',
-                  )}
-                  onClick={() => onSelectPlacedItem?.({ kind: 'cuas', instanceId: c.instanceId })}
-                >
-                <StorePanel inner className="relative p-3 pl-9">
-                  <RemoveButton
-                    label={`Remove ${c.asset.name}`}
-                    onClick={() => onRemoveCuas(c.instanceId)}
-                  />
-                  <div className="flex items-start gap-3">
-                    <PlatformThumbnail
-                      id={c.asset.id}
-                      name={c.asset.name}
-                      size="md"
-                      variant="cuas"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-white truncate">{c.asset.name}</p>
-                      <p className="text-[11px] store-text-muted font-mono mt-0.5">
-                        {c.lat.toFixed(4)}°, {c.lon.toFixed(4)}°
-                      </p>
-                      {c.hasTerrainMasking && (
-                        <p className="text-[11px] text-[var(--wb-blue)] mt-1">
-                          Terrain masking active
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </StorePanel>
-                </div>
+                  selected={isSameLaydownItem(selectedLaydownItem, { kind: 'cuas', instanceId: c.instanceId })}
+                  onSelect={() => onSelectPlacedItem?.({ kind: 'cuas', instanceId: c.instanceId })}
+                  thumb={<PlatformThumbnail id={c.asset.id} name={c.asset.name} size="sm" variant="cuas" />}
+                  name={c.asset.name}
+                  coords={`${c.lat.toFixed(4)}°, ${c.lon.toFixed(4)}°`}
+                  meta={c.hasTerrainMasking ? 'Terrain masking active' : undefined}
+                  metaTone={c.hasTerrainMasking ? 'blue' : undefined}
+                  removeLabel={`Remove ${c.asset.name}`}
+                  onRemove={() => onRemoveCuas(c.instanceId)}
+                />
               ))}
-
               {placedRadars.map((r) => (
-                <div
+                <PlacedCard
                   key={r.instanceId}
-                  role="button"
-                  tabIndex={0}
-                  className={cn(
-                    'rounded-xl cursor-pointer',
-                    isSameLaydownItem(selectedLaydownItem, { kind: 'radar', instanceId: r.instanceId }) &&
-                      'ring-2 ring-[rgba(41,151,255,0.5)]',
-                  )}
-                  onClick={() => onSelectPlacedItem?.({ kind: 'radar', instanceId: r.instanceId })}
-                >
-                <StorePanel inner className="relative p-3 pl-9">
-                  <RemoveButton
-                    label={`Remove ${formatRadarDisplayName(r.asset)}`}
-                    onClick={() => onRemoveRadar(r.instanceId)}
-                  />
-                  <div className="flex items-start gap-3">
-                    <PlatformThumbnail id={r.asset.id} name={formatRadarDisplayName(r.asset)} size="md" variant="cuas" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-white truncate">{formatRadarDisplayName(r.asset)}</p>
-                      <p className="text-[11px] store-text-muted font-mono mt-0.5">
-                        {r.lat.toFixed(4)}°, {r.lon.toFixed(4)}°
-                      </p>
-                      <p className="text-[11px] store-text-body mt-1">
-                        {r.asset.detection_range_km.toFixed(0)} km detect
-                      </p>
-                    </div>
-                  </div>
-                </StorePanel>
-                </div>
+                  selected={isSameLaydownItem(selectedLaydownItem, { kind: 'radar', instanceId: r.instanceId })}
+                  onSelect={() => onSelectPlacedItem?.({ kind: 'radar', instanceId: r.instanceId })}
+                  thumb={
+                    <PlatformThumbnail id={r.asset.id} name={formatRadarDisplayName(r.asset)} size="sm" variant="cuas" />
+                  }
+                  name={formatRadarDisplayName(r.asset)}
+                  coords={`${r.lat.toFixed(4)}°, ${r.lon.toFixed(4)}°`}
+                  meta={`${r.asset.detection_range_km.toFixed(0)} km detect`}
+                  removeLabel={`Remove ${formatRadarDisplayName(r.asset)}`}
+                  onRemove={() => onRemoveRadar(r.instanceId)}
+                />
               ))}
               {placedEffectors.map((e) => (
-                <div
+                <PlacedCard
                   key={e.instanceId}
-                  role="button"
-                  tabIndex={0}
-                  className={cn(
-                    'rounded-xl cursor-pointer',
-                    isSameLaydownItem(selectedLaydownItem, { kind: 'effector', instanceId: e.instanceId }) &&
-                      'ring-2 ring-[rgba(41,151,255,0.5)]',
-                  )}
-                  onClick={() => onSelectPlacedItem?.({ kind: 'effector', instanceId: e.instanceId })}
-                >
-                <StorePanel inner className="relative p-3 pl-9">
-                  <RemoveButton
-                    label={`Remove ${formatEffectorDisplayName(e.asset)}`}
-                    onClick={() => onRemoveEffector(e.instanceId)}
-                  />
-                  <div className="flex items-start gap-3">
-                    <PlatformThumbnail id={e.asset.id} name={formatEffectorDisplayName(e.asset)} size="md" variant="cuas" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-white truncate">{formatEffectorDisplayName(e.asset)}</p>
-                      <p className="text-[11px] store-text-muted font-mono mt-0.5">
-                        {e.lat.toFixed(4)}°, {e.lon.toFixed(4)}°
-                      </p>
-                      <p className="text-[11px] store-text-body mt-1">
-                        {e.asset.engagement_max_km.toFixed(0)} km engage
-                      </p>
-                    </div>
-                  </div>
-                </StorePanel>
-                </div>
+                  selected={isSameLaydownItem(selectedLaydownItem, { kind: 'effector', instanceId: e.instanceId })}
+                  onSelect={() => onSelectPlacedItem?.({ kind: 'effector', instanceId: e.instanceId })}
+                  thumb={
+                    <PlatformThumbnail
+                      id={e.asset.id}
+                      name={formatEffectorDisplayName(e.asset)}
+                      size="sm"
+                      variant="cuas"
+                    />
+                  }
+                  name={formatEffectorDisplayName(e.asset)}
+                  coords={`${e.lat.toFixed(4)}°, ${e.lon.toFixed(4)}°`}
+                  meta={`${e.asset.engagement_max_km.toFixed(0)} km engage`}
+                  removeLabel={`Remove ${formatEffectorDisplayName(e.asset)}`}
+                  onRemove={() => onRemoveEffector(e.instanceId)}
+                />
               ))}
             </div>
-          </CollapsibleSection>
+          </DisclosureGroup>
         )}
 
-        {(placedUas.length > 0 || placedCuas.length > 0) && (
-          <div className="space-y-2">
+        {cotsAll.length > 0 && (
+          <DisclosureGroup
+            open={cotsOpen}
+            onToggle={() => setCotsOpen(!cotsOpen)}
+            label="COTS catalogue"
+            count={cotsAll.length}
+            icon={<Plane size={14} />}
+          >
+            {cotsAll.map((asset) => (
+              <MapAssetPickCard
+                key={`cots-${asset.id}`}
+                kicker={isCotsDji(asset) ? 'DJI' : undefined}
+                name={asset.name}
+                sub={formatUasSubline(asset)}
+                active={placingUasId === asset.id}
+                highlighted={highlightedIds.includes(asset.id)}
+                onClick={() => onSelectUas(asset)}
+                accent="threat"
+              />
+            ))}
+          </DisclosureGroup>
+        )}
+
+        {cotsDji.length > 0 && (
+          <DisclosureGroup
+            open={cotsDjiOpen}
+            onToggle={() => setCotsDjiOpen(!cotsDjiOpen)}
+            label="COTS DJI"
+            count={cotsDji.length}
+            icon={<Plane size={14} />}
+          >
+            {cotsDji.map((asset) => (
+              <MapAssetPickCard
+                key={`cots-dji-${asset.id}`}
+                name={asset.name}
+                sub={formatUasSubline(asset)}
+                active={placingUasId === asset.id}
+                highlighted={highlightedIds.includes(asset.id)}
+                onClick={() => onSelectUas(asset)}
+                accent="threat"
+              />
+            ))}
+          </DisclosureGroup>
+        )}
+
+        {(!searchActive || visibleUas.length > 0) && (
+          <DisclosureGroup
+            open={uasOpen}
+            onToggle={() => setUasOpen(!uasOpen)}
+            label="Threat platforms"
+            count={visibleUas.length}
+            icon={<Plane size={14} />}
+          >
+            {visibleUas.map((asset) => (
+              <MapAssetPickCard
+                key={asset.id}
+                name={asset.name}
+                sub={formatUasSubline(asset)}
+                active={placingUasId === asset.id}
+                highlighted={highlightedIds.includes(asset.id)}
+                onClick={() => onSelectUas(asset)}
+                accent="threat"
+              />
+            ))}
+          </DisclosureGroup>
+        )}
+
+        {(!searchActive || visibleCuas.length > 0) && (
+          <DisclosureGroup
+            open={cuasOpen}
+            onToggle={() => setCuasOpen(!cuasOpen)}
+            label="Defeat systems"
+            count={visibleCuas.length}
+            icon={<Shield size={14} />}
+          >
+            {visibleCuas.map((asset) => (
+              <MapAssetPickCard
+                key={`${asset.id}-${asset.name}`}
+                kicker={asset.categoryLabel}
+                name={asset.name}
+                sub={`${asset.defeat_range_km.toFixed(1)} km defeat envelope`}
+                active={placingCuasId === asset.id}
+                highlighted={highlightedIds.includes(asset.id)}
+                onClick={() => onSelectCuas(asset)}
+                accent="defeat"
+              />
+            ))}
+          </DisclosureGroup>
+        )}
+
+        {visibleRadars.length > 0 && (
+          <DisclosureGroup
+            open={radarsOpen}
+            onToggle={() => setRadarsOpen(!radarsOpen)}
+            label="Radars"
+            count={visibleRadars.length}
+            icon={<Radar size={14} />}
+          >
+            {visibleRadars.map((asset) => (
+              <MapAssetPickCard
+                key={asset.id}
+                kicker={asset.roleLabel}
+                name={formatRadarDisplayName(asset)}
+                sub={formatRadarSubline(asset)}
+                active={placingRadarId === asset.id}
+                highlighted={highlightedIds.includes(asset.id)}
+                onClick={() => onSelectRadar(asset)}
+                accent={asset.side === 'red' ? 'hostile' : 'radar'}
+              />
+            ))}
+          </DisclosureGroup>
+        )}
+
+        {visibleEffectors.length > 0 && (
+          <DisclosureGroup
+            open={effectorsOpen}
+            onToggle={() => setEffectorsOpen(!effectorsOpen)}
+            label="SAM, BMD and effectors"
+            count={visibleEffectors.length}
+            icon={<Target size={14} />}
+          >
+            {visibleEffectors.map((asset) => (
+              <MapAssetPickCard
+                key={asset.id}
+                kicker={asset.tierLabel}
+                name={formatEffectorDisplayName(asset)}
+                sub={formatEffectorSubline(asset)}
+                active={placingEffectorId === asset.id}
+                highlighted={highlightedIds.includes(asset.id)}
+                onClick={() => onSelectEffector(asset)}
+                accent={asset.side === 'red' ? 'hostile' : 'effector'}
+              />
+            ))}
+          </DisclosureGroup>
+        )}
+        </div>
+      </ScrollArea>
+
+      {/* Actions and legend: pinned to the foot of the panel. */}
+      <div className="shrink-0 border-t border-[var(--glass-line)]">
+        {hasEngagement && (
+          <div className="px-3 pt-3 space-y-2">
             <button
               type="button"
               onClick={onOpenSpectralAnalysis}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl store-btn-primary text-sm"
-              title="Keyboard: S"
+              className="btn-glass primary w-full"
+              title={
+                operations
+                  ? 'Server adjudication, J/S and propagation (keyboard: S)'
+                  : 'Band overlap and defeat tactics (keyboard: S)'
+              }
             >
               <Radio className="w-4 h-4" />
-              Spectral Analysis
+              Spectral analysis
+              <kbd className="ml-1 font-mono text-[11px] px-1.5 rounded-md border border-[rgba(255,255,255,0.35)] leading-[18px]">
+                S
+              </kbd>
             </button>
             {operations && placedCuas.length > 0 && onToggleHeatmap && (
               <button
                 type="button"
                 onClick={onToggleHeatmap}
-                className={cn(
-                  'w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-mono transition-colors',
-                  heatmapEnabled
-                    ? 'border-cyan/40 bg-cyan/10 text-cyan'
-                    : 'store-panel-inner store-text-body hover:border-cyan/30',
-                )}
-                title="Keyboard: H — jam coverage heatmap (Operations edition + placed RF jammer)"
+                aria-pressed={!!heatmapEnabled}
+                className={cn('btn-glass w-full', heatmapEnabled && '!border-[rgba(6,182,212,0.55)] !text-[#67E8F9]')}
+                title="Keyboard: H. Jam coverage heatmap (Operations edition and a placed RF jammer)"
               >
                 {heatmapLoading ? 'Computing heatmap…' : heatmapEnabled ? 'Hide jam heatmap' : 'Show jam heatmap'}
               </button>
             )}
             {operations && placedCuas.length > 0 && (
-              <p className="text-[11px] store-text-muted text-center leading-relaxed">
+              <p className="text-[11.5px] store-text-muted leading-snug">
                 Jam heatmap requires Operations edition and a placed C-UAS with RF jamming capability.
               </p>
             )}
             {heatmapEnabled && !heatmapLoading && !heatmapError && (
-              <p className="text-[11px] font-mono text-cyan text-center">
-                Heatmap overlay active on globe — cyan = stronger jam field, orange = weaker path loss
+              <p className="text-[11.5px] font-mono text-[#67E8F9] leading-snug">
+                Heatmap overlay active on globe: cyan = stronger jam field, orange = weaker path loss
               </p>
             )}
-            {heatmapError && (
-              <p className="text-[11px] font-mono text-amber text-center">{heatmapError}</p>
-            )}
-            <p className="text-[11px] store-text-muted text-center leading-relaxed">
-              {operations
-                ? 'Server adjudication, J/S, propagation — press S'
-                : 'Band overlap + defeat tactics — press S'}
-            </p>
+            {heatmapError && <p className="text-[11.5px] font-mono text-[#FCD34D] leading-snug">{heatmapError}</p>}
           </div>
         )}
-      </div>
 
-      <div className="px-4 py-3 border-t border-[var(--store-line)]">
         <button
           type="button"
           onClick={() => setLegendOpen(!legendOpen)}
-          className="w-full flex items-center justify-between text-[11px] font-semibold tracking-[0.02em] store-text-muted mb-2"
+          aria-expanded={legendOpen}
+          className="w-full flex items-center gap-2 h-10 px-4 text-[13px] font-medium store-text-body hover:text-[var(--store-ink)] transition-colors"
         >
-          <span>Map legend</span>
-          {legendOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          <ChevronRight
+            className={cn(
+              'w-3.5 h-3.5 store-text-muted transition-transform duration-150 ease-out motion-reduce:transition-none',
+              legendOpen && 'rotate-90',
+            )}
+          />
+          <span className="flex-1 text-left">Map legend</span>
         </button>
         {legendOpen && (
-          <StorePanel inner className="p-3 space-y-2">
+          <ScrollArea frame={false} maxHeight="240px" scrollClassName="px-4 pb-3">
+          <div className="space-y-1.5">
             <LegendRow colour="bg-cyan/40" label="Combat envelope" />
-            <LegendRow colour="bg-cyan/20" label="Ferry max / wind spec (faint)" />
+            <LegendRow colour="bg-cyan/20" label="Ferry max or wind spec (faint)" />
             <LegendRow colour="bg-orange/40" label="C-UAS defeat dome" />
             <LegendRow colour="bg-cyan/30" label="Radar detection dome (Blue)" />
-            <LegendRow colour="bg-red-500/25" label="Radar detection dome (Red)" />
+            <LegendRow colour="bg-[rgba(239,68,68,0.3)]" label="Radar detection dome (Red)" />
             <LegendRow colour="bg-orange/35" label="SAM / BMD engagement dome" />
-            <LegendRow colour="bg-slate-500/40" label="Terrain shield & dead ground" />
-            <LegendRow colour="bg-red-500/40" label="Defeat adjudication (≥50%)" />
-            <LegendRow colour="bg-green-500/40" label="Survivable (&lt;50%)" />
+            <LegendRow colour="bg-[rgba(100,116,139,0.5)]" label="Terrain shield and dead ground" />
+            <LegendRow colour="bg-[rgba(239,68,68,0.45)]" label="Defeat adjudication (≥50%)" />
+            <LegendRow colour="bg-[rgba(34,197,94,0.45)]" label="Survivable (<50%)" />
+            {heatmapEnabled && (
+              <LegendRow colour="bg-gradient-to-r from-cyan/40 to-orange/40" label="Jam coverage heatmap (dB)" />
+            )}
             {overlapLegend && (overlapLegend.defeat > 0 || overlapLegend.survivable > 0) && (
-              <p className="text-[11px] store-text-body pt-1 border-t border-[var(--store-line)]">
+              <p className="text-[12px] font-mono store-text-body pt-1.5 mt-1 border-t border-[var(--store-line)]">
                 {overlapLegend.defeat} defeat · {overlapLegend.survivable} survivable
                 {overlapSource === 'adjudication' && (
-                  <span className="block text-[11px] font-mono text-cyan mt-0.5">
+                  <span className="block text-[11.5px] text-[#67E8F9] mt-0.5">
                     Dome colours: Operations adjudication
                   </span>
                 )}
               </p>
             )}
-            {heatmapEnabled && (
-              <LegendRow colour="bg-gradient-to-r from-cyan/40 to-orange/40" label="Jam coverage heatmap (dB)" />
-            )}
             {dualRoleIds.size > 0 && (
-              <p className="text-[11px] store-text-muted leading-snug pt-1">
+              <p className="text-[11.5px] store-text-muted leading-snug pt-1">
                 Dual-role assets (e.g. Anvil): pick UAS for combat disc, C-UAS for defeat sphere.
               </p>
             )}
-          </StorePanel>
+          </div>
+          </ScrollArea>
         )}
       </div>
     </aside>
   )
 }
 
-function ForceFilterButton({
-  label,
-  active,
-  activeClassName,
-  onClick,
-}: {
-  label: string
-  active: boolean
-  activeClassName: string
-  onClick: () => void
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={cn('btn-e xs font-mono capitalize', activeClassName && '')}
-    >
-      {label.toLowerCase()}
-    </button>
-  )
-}
-
-function CollapsibleSection({
+/** Disclosure row (HIG outline list): chevron, glyph, label, count. Sticks while its rows scroll. */
+function DisclosureGroup({
   open,
   onToggle,
   label,
@@ -778,30 +672,116 @@ function CollapsibleSection({
   onToggle: () => void
   label: string
   count: number
-  icon: React.ReactNode
-  children: React.ReactNode
+  icon: ReactNode
+  children: ReactNode
 }) {
   return (
-    <StoreFilterSection label={label}>
+    <section className="mb-0.5">
       <button
         type="button"
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-2.5 py-2 -mt-1 mb-2 rounded-lg store-text-body hover:bg-[var(--store-surface-2)] hover:text-white transition-all"
+        aria-expanded={open}
+        className={cn(
+          'sticky top-0 z-[2] w-full flex items-center gap-2 h-9 px-2 rounded-lg text-left',
+          'text-[13px] font-medium text-[var(--store-ink)] transition-colors duration-150 ease-out',
+          'hover:bg-[rgba(255,255,255,0.06)]',
+          open && 'bg-[rgba(28,28,32,0.94)] backdrop-blur-xl',
+        )}
       >
-        <span className="flex items-center gap-2 text-[13px]">
-          {icon}
-          <span>{open ? 'Collapse' : 'Expand'}</span>
-        </span>
-        <span className="flex items-center gap-2">
-          <span className="font-mono text-[11px] store-text-muted">{count}</span>
-          {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-        </span>
+        <ChevronRight
+          className={cn(
+            'w-3.5 h-3.5 shrink-0 store-text-muted transition-transform duration-150 ease-out motion-reduce:transition-none',
+            open && 'rotate-90',
+          )}
+        />
+        <span className="shrink-0 store-text-muted flex">{icon}</span>
+        <span className="flex-1 min-w-0 truncate">{label}</span>
+        <span className="font-mono text-[12px] store-text-muted tabular-nums">{count}</span>
       </button>
-      {open ? children : null}
-    </StoreFilterSection>
+      {open ? <div className="pt-0.5 pb-2">{children}</div> : null}
+    </section>
   )
 }
 
+function PlacedCard({
+  selected,
+  onSelect,
+  thumb,
+  name,
+  coords,
+  meta,
+  metaTone,
+  removeLabel,
+  onRemove,
+  children,
+}: {
+  selected: boolean
+  onSelect: () => void
+  thumb: ReactNode
+  name: string
+  coords: string
+  meta?: string
+  metaTone?: 'blue'
+  removeLabel: string
+  onRemove: () => void
+  children?: ReactNode
+}) {
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onSelect()
+    }
+  }
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      aria-pressed={selected}
+      onClick={onSelect}
+      onKeyDown={onKeyDown}
+      className={cn(
+        'rounded-xl p-2.5 cursor-pointer transition-[background-color,box-shadow] duration-150 ease-out',
+        selected
+          ? 'bg-[rgba(41,151,255,0.14)] shadow-[inset_0_0_0_1px_rgba(41,151,255,0.55)]'
+          : 'store-panel-inner hover:bg-[rgba(255,255,255,0.05)]',
+      )}
+    >
+      <div className="flex items-start gap-2.5">
+        <span className="shrink-0 mt-0.5">{thumb}</span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[13px] font-medium text-[var(--store-ink)] leading-[18px] line-clamp-2" title={name}>
+            {name}
+          </p>
+          <p className="font-mono text-[11.5px] store-text-muted mt-0.5">{coords}</p>
+          {meta ? (
+            <p
+              className={cn(
+                'text-[11.5px] mt-0.5',
+                metaTone === 'blue' ? 'text-[var(--wb-blue)]' : 'font-mono store-text-body',
+              )}
+            >
+              {meta}
+            </p>
+          ) : null}
+        </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onRemove()
+          }}
+          aria-label={removeLabel}
+          title={removeLabel}
+          className="glass-icon-btn !w-7 !h-7 !rounded-lg shrink-0 -mr-1 -mt-0.5 hover:!text-[var(--wb-red)]"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      {children}
+    </div>
+  )
+}
 
 function MapSearchResultCard({
   hit,
@@ -827,11 +807,10 @@ function MapSearchResultCard({
   onSelectEffector: (asset: MapEffectorAsset) => void
 }) {
   switch (hit.kind) {
-    case "uas": {
+    case 'uas': {
       const asset = hit.asset as MapUasAsset
       return (
         <MapAssetPickCard
-          id={asset.id}
           kicker="UAS"
           name={asset.name}
           sub={formatUasSubline(asset)}
@@ -839,15 +818,13 @@ function MapSearchResultCard({
           highlighted={highlightedIds.includes(asset.id)}
           onClick={() => onSelectUas(asset)}
           accent="threat"
-          thumbnailVariant="uas"
         />
       )
     }
-    case "cuas": {
+    case 'cuas': {
       const asset = hit.asset as MapCuasAsset
       return (
         <MapAssetPickCard
-          id={asset.id}
           kicker={asset.categoryLabel}
           name={asset.name}
           sub={`${asset.defeat_range_km.toFixed(1)} km defeat envelope`}
@@ -855,47 +832,42 @@ function MapSearchResultCard({
           highlighted={highlightedIds.includes(asset.id)}
           onClick={() => onSelectCuas(asset)}
           accent="defeat"
-          thumbnailVariant="cuas"
         />
       )
     }
-    case "radar": {
+    case 'radar': {
       const asset = hit.asset as MapRadarAsset
       return (
         <MapAssetPickCard
-          id={asset.id}
           kicker={asset.roleLabel}
           name={formatRadarDisplayName(asset)}
           sub={formatRadarSubline(asset)}
           active={placingRadarId === asset.id}
           highlighted={highlightedIds.includes(asset.id)}
           onClick={() => onSelectRadar(asset)}
-          accent={asset.side === "red" ? "hostile" : "radar"}
-          thumbnailVariant="cuas"
+          accent={asset.side === 'red' ? 'hostile' : 'radar'}
         />
       )
     }
-    case "effector": {
+    case 'effector': {
       const asset = hit.asset as MapEffectorAsset
       return (
         <MapAssetPickCard
-          id={asset.id}
           kicker={asset.tierLabel}
           name={formatEffectorDisplayName(asset)}
           sub={formatEffectorSubline(asset)}
           active={placingEffectorId === asset.id}
           highlighted={highlightedIds.includes(asset.id)}
           onClick={() => onSelectEffector(asset)}
-          accent={asset.side === "red" ? "hostile" : "effector"}
-          thumbnailVariant="cuas"
+          accent={asset.side === 'red' ? 'hostile' : 'effector'}
         />
       )
     }
   }
 }
 
+/** One catalogue row: name wraps to two lines, meta in mono. Selected (placing) = blue lens. */
 function MapAssetPickCard({
-  id,
   kicker,
   name,
   sub,
@@ -903,42 +875,48 @@ function MapAssetPickCard({
   highlighted,
   onClick,
   accent,
-  thumbnailVariant,
 }: {
-  id: string
-  kicker: string
+  /** Category prefix for the meta line; omitted where the group already says it. */
+  kicker?: string
   name: string
   sub: string
   active: boolean
   highlighted?: boolean
   onClick: () => void
   accent: 'threat' | 'defeat' | 'radar' | 'effector' | 'hostile'
-  thumbnailVariant: 'uas' | 'cuas'
 }) {
+  const meta = kicker ? `${kicker} · ${sub}` : sub
   return (
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
+      title={`${name}\n${meta}`}
       className={cn(
-        'w-full text-left rounded-lg border transition-colors duration-150',
+        'w-full text-left flex items-start gap-2.5 pl-[26px] pr-2 py-[7px] rounded-lg transition-[background-color,box-shadow] duration-150 ease-out',
         active
-          ? 'border-[rgba(41,151,255,0.6)] bg-[rgba(41,151,255,0.10)]'
+          ? 'bg-[rgba(41,151,255,0.20)] shadow-[inset_0_0_0_1px_rgba(41,151,255,0.6)]'
           : highlighted
-            ? 'border-[rgba(41,151,255,0.4)] bg-[rgba(41,151,255,0.06)]'
-            : 'border-transparent hover:bg-[var(--store-surface)]',
+            ? 'bg-[rgba(41,151,255,0.06)] shadow-[inset_0_0_0_1px_rgba(41,151,255,0.4)]'
+            : 'hover:bg-[rgba(255,255,255,0.06)]',
       )}
     >
-      <div className="flex items-center gap-2.5 px-2.5 py-2">
-        <span
-          className="h-1.5 w-1.5 rounded-full shrink-0"
-          style={{ background: accent === 'hostile' ? 'var(--wb-red)' : accent === 'threat' || accent === 'radar' ? 'var(--wb-data)' : 'var(--wb-blue)' }}
-          aria-hidden
-        />
-        <div className="min-w-0 flex-1">
-          <p className="text-[13px] text-[var(--store-ink)] leading-snug truncate">{name}</p>
-          <p className="text-[11px] font-mono store-text-muted truncate">{kicker} · {sub}</p>
-        </div>
-      </div>
+      <span
+        aria-hidden
+        className="mt-[6px] h-1.5 w-1.5 rounded-full shrink-0"
+        style={{
+          background:
+            accent === 'hostile'
+              ? 'var(--wb-red)'
+              : accent === 'threat' || accent === 'radar'
+                ? 'var(--wb-data)'
+                : 'var(--wb-blue)',
+        }}
+      />
+      <span className="min-w-0 flex-1">
+        <span className="block text-[13px] leading-[18px] text-[var(--store-ink)] line-clamp-2">{name}</span>
+        <span className="block font-mono text-[11.5px] leading-4 store-text-muted mt-0.5 line-clamp-2">{meta}</span>
+      </span>
     </button>
   )
 }
@@ -979,26 +957,11 @@ function formatEffectorSubline(asset: MapEffectorAsset): string {
   return `${asset.engagement_max_km.toFixed(0)} km engage · ${alt}${cue}`
 }
 
-function RemoveButton({ label, onClick }: { label: string; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className="absolute top-2.5 left-2.5 w-6 h-6 rounded-full grid place-items-center store-panel-inner border border-[var(--store-line)] store-text-muted hover:text-red-400 hover:border-red-400/40 transition-colors"
-    >
-      <X className="w-3 h-3" />
-    </button>
-  )
-}
-
 function LegendRow({ colour, label }: { colour: string; label: string }) {
   return (
     <div className="flex items-center gap-2.5">
-      <span
-        className={cn('w-3 h-3 rounded-md border border-[var(--store-line)] shrink-0', colour)}
-      />
-      <span className="text-[11px] store-text-body">{label}</span>
+      <span className={cn('w-3.5 h-3.5 rounded-[4px] border border-[var(--store-line)] shrink-0', colour)} />
+      <span className="text-[12px] store-text-body">{label}</span>
     </div>
   )
 }

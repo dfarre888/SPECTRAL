@@ -1,8 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { StorePanel } from '@/components/ui/store-surface'
 import type {
   CommanderCompareRow,
   EvaluatedItem,
@@ -18,7 +16,8 @@ import {
   isSameLaydownItem,
 } from '@/lib/map/laydown-evaluation'
 import { cn } from '@/lib/utils'
-import { ChevronDown, Crosshair, Radar, Shield, Target } from 'lucide-react'
+import { ChevronRight, Crosshair, Radar, Shield, Target } from 'lucide-react'
+import { MapCard } from '@/app/map/components/MapUi'
 
 interface PlacedItemChip {
   kind: SelectedLaydownItem['kind']
@@ -35,6 +34,7 @@ interface LaydownEvaluationPanelProps {
   adjudicationSource?: string
   /** Detect / Defeat roll-up for every UAS on the map (shown when 2+). */
   compareRows?: CommanderCompareRow[]
+  className?: string
 }
 
 type ScoreboardTab = 'detect' | 'deny' | 'destroy' | 'gaps'
@@ -43,7 +43,7 @@ const PREVIEW_LIMIT = 8
 
 const VERDICT_LABEL: Record<'can_finish' | 'deny_only' | 'detect_only' | 'blind', string> = {
   can_finish: 'Find and destroy',
-  deny_only: 'Find and deny — airframe stays up',
+  deny_only: 'Find and deny (airframe stays up)',
   detect_only: 'Detect only',
   blind: 'Blind',
 }
@@ -54,6 +54,9 @@ const KIND_LABEL: Record<SelectedLaydownItem['kind'], string> = {
   radar: 'Radar',
   effector: 'Effector',
 }
+
+const GREEN = '#4ADE80'
+const AMBER = '#FBBF24'
 
 function kindIcon(kind: SelectedLaydownItem['kind']) {
   switch (kind) {
@@ -79,7 +82,7 @@ function EvalRow({
   tone: 'can' | 'cannot'
   selectedItem: SelectedLaydownItem | null
   onItemClick: (item: EvaluatedItem) => void
-  /** When true, parent system is shown on the stack header — omit per-row duplicate. */
+  /** When true, parent system is shown on the stack header, so the row omits it. */
   compactStack?: boolean
 }) {
   const displayName = formatCatalogDisplayName({
@@ -92,59 +95,47 @@ function EvalRow({
     item.instanceId != null &&
     isSameLaydownItem(selectedItem, { kind: item.kind, instanceId: item.instanceId })
   const actionLabel = item.placed || item.instanceId ? 'Select on map' : 'Place on map'
+  const pctColour =
+    item.finishClass === 'deny' ? AMBER : tone === 'can' ? GREEN : 'var(--store-ink-mute)'
 
   return (
     <button
       type="button"
-      title={actionLabel}
+      title={`${displayName}. ${actionLabel}`}
+      aria-pressed={selected}
       onClick={() => onItemClick(item)}
       className={cn(
-        'map-press store-panel-inner rounded-lg px-2.5 py-2 w-full text-left cursor-pointer border',
-        'hover:bg-[var(--store-surface-2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(41,151,255,0.5)]',
+        'map-press block w-full text-left rounded-xl px-3 py-2.5 transition-[background-color,box-shadow] duration-150 ease-out',
         selected
-          ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
-          : 'border-transparent',
-        item.finishClass === 'deny' && tone === 'can'
-          ? 'border-l-2 border-l-amber-400/70'
-          : tone === 'can'
-            ? 'border-l-2 border-l-green-500/60'
-            : 'opacity-80',
+          ? 'bg-[rgba(41,151,255,0.14)] shadow-[inset_0_0_0_1px_rgba(41,151,255,0.55)]'
+          : 'store-panel-inner hover:bg-[rgba(255,255,255,0.05)]',
       )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <p className={cn('text-xs font-mono truncate', tone === 'can' ? 'text-white' : 'store-text-muted')}>
-          {displayName}
-          {item.placed && (
-            <span className="ml-1.5 text-[11px] uppercase text-[var(--wb-blue)]">on map</span>
-          )}
-        </p>
-        <div className="flex items-center gap-1.5 shrink-0">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p
+            className={cn(
+              'text-[13px] font-medium leading-snug',
+              tone === 'can' ? 'text-[var(--store-ink)]' : 'store-text-body',
+            )}
+          >
+            {displayName}
+          </p>
+          {item.placed && <p className="mt-0.5 text-[11.5px] text-[#6CB8FF]">On map</p>}
+        </div>
+        <div className="flex items-start gap-2 shrink-0">
           {item.finishClass && (
-            <span
-              className={cn(
-                'text-[8px] font-semibold tracking-[0.02em] px-1 py-0.5 rounded',
-                item.finishClass === 'destroy'
-                  ? 'bg-green-950/60 text-green-400 border border-green-500/30'
-                  : 'bg-amber-950/50 text-amber-300 border border-amber-400/30',
-              )}
-            >
+            <span className={cn('tag', item.finishClass === 'destroy' ? 'green' : 'amber')}>
               {finishClassLabel(item.finishClass)}
             </span>
           )}
           {item.pct != null && (
-            <span
-              className={cn(
-                'text-[11px] font-mono',
-                item.finishClass === 'deny'
-                  ? 'text-amber-300'
-                  : tone === 'can'
-                    ? 'text-green-400'
-                    : 'store-text-muted',
-              )}
-            >
-              {item.pct}%
+            <span className="text-right leading-none">
+              <span className="block font-mono text-[13px] tabular-nums" style={{ color: pctColour }}>
+                {item.pct}%
+              </span>
               {item.finishClass ? (
-                <span className="block text-[8px] leading-none store-text-muted text-right">
+                <span className="block mt-1 font-mono text-[11px] store-text-muted">
                   {finishPctLabel(item.finishClass)}
                 </span>
               ) : null}
@@ -153,24 +144,24 @@ function EvalRow({
         </div>
       </div>
       {item.parentSystem && !compactStack && (
-        <p className="text-[11px] font-mono text-cyan-400/90 mt-0.5">{item.parentSystem}</p>
+        <p className="text-[12px] font-mono text-[#67E8F9] mt-1">{item.parentSystem}</p>
       )}
       {item.roleLabel && item.kind === 'radar' && (
-        <p className="text-[11px] store-text-muted mt-0.5 capitalize">{item.roleLabel} radar</p>
+        <p className="text-[12px] store-text-muted mt-1 capitalize">{item.roleLabel} radar</p>
       )}
       {item.linkedEffectors && item.linkedEffectors.length > 0 && (
-        <p className="text-[11px] store-text-muted mt-0.5 leading-relaxed">
-          <span className="text-[var(--wb-blue)]/90">Finish chain: </span>
+        <p className="text-[12px] store-text-muted mt-1 leading-relaxed">
+          <span className="store-text-body">Finish chain: </span>
           {item.linkedEffectors.join(' · ')}
         </p>
       )}
       {item.linkedRadars && item.linkedRadars.length > 0 && (
-        <p className="text-[11px] store-text-muted mt-0.5 leading-relaxed">
-          <span className="text-[var(--wb-blue)]/90">Cueing radar: </span>
+        <p className="text-[12px] store-text-muted mt-1 leading-relaxed">
+          <span className="store-text-body">Cueing radar: </span>
           {item.linkedRadars.join(' · ')}
         </p>
       )}
-      <p className="text-[11px] store-text-muted mt-0.5 leading-relaxed">{item.reason}</p>
+      <p className="text-[12px] store-text-muted mt-1 leading-relaxed">{item.reason}</p>
     </button>
   )
 }
@@ -197,37 +188,35 @@ function IadsStackBlock({
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <div className="rounded-lg border border-[var(--store-line)] overflow-hidden">
+    <div className="rounded-xl border border-[var(--store-line)]">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={cn(
-          'w-full px-2.5 py-2 text-left flex items-start gap-2 transition-colors',
-          'hover:bg-[var(--store-surface-2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(41,151,255,0.5)]',
-          tone === 'can' ? 'bg-green-950/20' : 'bg-[var(--store-surface-1)]',
-        )}
+        aria-expanded={open}
+        className="w-full px-3 py-2 text-left flex items-start gap-2 rounded-xl transition-colors hover:bg-[rgba(255,255,255,0.05)]"
       >
-        <ChevronDown
+        <ChevronRight
           className={cn(
-            'w-3.5 h-3.5 shrink-0 mt-0.5 store-text-muted transition-transform',
-            !open && '-rotate-90',
+            'w-3.5 h-3.5 shrink-0 mt-0.5 store-text-muted transition-transform duration-150 ease-out motion-reduce:transition-none',
+            open && 'rotate-90',
           )}
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline justify-between gap-2">
-            <p className="text-[11px] font-mono font-semibold text-cyan-400 truncate">{stackLabel}</p>
-            <span className="text-[11px] font-mono store-text-muted shrink-0">{items.length}</span>
+            <p className="text-[12px] font-mono font-semibold text-[#67E8F9]">{stackLabel}</p>
+            <span className="text-[12px] font-mono store-text-muted shrink-0 tabular-nums">{items.length}</span>
           </div>
           {finishChainSummary && (
-            <p className="text-[11px] store-text-muted mt-0.5 leading-relaxed">
-              <span className="text-[var(--wb-blue)]/90">Finish chain: </span>
+            <p className="text-[12px] store-text-muted mt-0.5 leading-relaxed">
+              <span className="store-text-body">Finish chain: </span>
               {finishChainSummary}
             </p>
           )}
+          {tone === 'cannot' && <span className="sr-only">Cannot engage</span>}
         </div>
       </button>
       {open && (
-        <div className="space-y-1 p-1.5 pt-0">
+        <div className="space-y-1.5 p-1.5 pt-0">
           {items.map((item) => (
             <EvalRow
               key={`${stackKey}-${item.kind}-${item.assetId}`}
@@ -266,12 +255,12 @@ function SectionItemList({
   const groupRadars = isRadarSection || (radarItems.length > 0 && radarGroups.length > 0)
 
   if (section.items.length === 0) {
-    return <p className="text-[11px] store-text-muted italic">None</p>
+    return <p className="text-[12px] store-text-muted">None</p>
   }
 
   if (groupRadars && radarItems.length > 0) {
     return (
-      <div className="space-y-2 max-h-48 overflow-y-auto pr-0.5">
+      <div className="space-y-1.5">
         {radarGroups.map((group, index) => (
           <IadsStackBlock
             key={group.stackKey}
@@ -282,18 +271,18 @@ function SectionItemList({
             tone={section.tone}
             defaultOpen={section.tone === 'can' ? true : index < 4}
             selectedItem={selectedItem}
-              onItemClick={onItemClick}
+            onItemClick={onItemClick}
           />
         ))}
         {otherItems.length > 0 && (
-          <div className="space-y-1.5 pt-1 border-t border-[var(--store-line)]">
+          <div className="space-y-1.5 pt-1.5 border-t border-[var(--store-line)]">
             {otherItems.map((item) => (
               <EvalRow
                 key={`${item.kind}-${item.assetId}`}
                 item={item}
                 tone={section.tone}
                 selectedItem={selectedItem}
-              onItemClick={onItemClick}
+                onItemClick={onItemClick}
               />
             ))}
           </div>
@@ -303,10 +292,15 @@ function SectionItemList({
   }
 
   return (
-    <div className="space-y-1.5 max-h-48 overflow-y-auto pr-0.5">
+    <div className="space-y-1.5">
       {section.items.map((item) => (
-        <EvalRow key={`${item.kind}-${item.assetId}`} item={item} tone={section.tone} selectedItem={selectedItem}
-              onItemClick={onItemClick} />
+        <EvalRow
+          key={`${item.kind}-${item.assetId}`}
+          item={item}
+          tone={section.tone}
+          selectedItem={selectedItem}
+          onItemClick={onItemClick}
+        />
       ))}
     </div>
   )
@@ -331,30 +325,31 @@ function ScoreTile({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={cn(
-        'map-press flex-1 min-w-0 rounded-lg border px-2 py-2 text-left',
-        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(41,151,255,0.5)]',
+        'map-press min-w-0 rounded-xl px-3 py-2.5 text-left transition-[background-color,box-shadow] duration-150 ease-out',
         active
-          ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)]'
-          : 'border-[var(--store-line)] hover:bg-[var(--store-surface-2)]',
+          ? 'bg-[rgba(41,151,255,0.16)] shadow-[inset_0_0_0_1px_rgba(41,151,255,0.6)]'
+          : 'store-panel-inner hover:bg-[rgba(255,255,255,0.05)]',
       )}
     >
-      <p className="text-[11px] font-semibold tracking-[0.02em] store-text-muted">{label}</p>
+      <p className="text-[12px] font-medium store-text-body">{label}</p>
       <p
-        className={cn(
-          'text-lg font-mono leading-none mt-1',
-          tone === 'can'
-            ? 'text-green-400'
-            : tone === 'deny'
-              ? 'text-amber-300'
-              : tone === 'cannot'
-                ? 'store-text-muted'
-                : 'text-white',
-        )}
+        className="font-mono text-[22px] leading-none mt-1.5 tabular-nums"
+        style={{
+          color:
+            tone === 'can'
+              ? GREEN
+              : tone === 'deny'
+                ? AMBER
+                : tone === 'cannot'
+                  ? 'var(--store-ink-mute)'
+                  : 'var(--store-ink)',
+        }}
       >
         {value}
       </p>
-      <p className="text-[11px] store-text-muted mt-1 leading-tight">{hint}</p>
+      <p className="text-[11.5px] store-text-muted mt-1.5 leading-tight">{hint}</p>
     </button>
   )
 }
@@ -384,7 +379,8 @@ function PreviewList({
         <button
           type="button"
           onClick={onToggle}
-          className="mt-2 w-full text-[11px] font-mono store-text-muted hover:text-white border border-[var(--store-line)] rounded-lg py-1.5"
+          aria-expanded={expanded}
+          className="btn-glass w-full mt-2 !min-h-8 !text-[12px]"
         >
           {expanded ? 'Show decision set only' : `Show remaining ${hidden} systems`}
         </button>
@@ -401,6 +397,7 @@ export function LaydownEvaluationPanel({
   onEvalItemClick,
   adjudicationSource,
   compareRows = [],
+  className,
 }: LaydownEvaluationPanelProps) {
   const board = useMemo(() => (evaluation ? commanderScoreboard(evaluation) : null), [evaluation])
   const [tab, setTab] = useState<ScoreboardTab>('destroy')
@@ -430,259 +427,243 @@ export function LaydownEvaluationPanel({
   const gapSections = [board.detectBlindSection, board.noShotSection].filter(
     (section): section is EvaluationSection => section != null,
   )
+  const verdictColour =
+    board.verdict === 'can_finish'
+      ? GREEN
+      : board.verdict === 'deny_only' || board.verdict === 'detect_only'
+        ? AMBER
+        : 'var(--store-ink-soft)'
+  const verdictLine =
+    board.verdict === 'can_finish'
+      ? 'rgba(74,222,128,0.35)'
+      : board.verdict === 'deny_only' || board.verdict === 'detect_only'
+        ? 'rgba(251,191,36,0.35)'
+        : 'var(--store-line)'
 
   return (
-    <StorePanel className="map-material-float absolute top-14 right-3 z-20 w-[min(100%,26rem)] max-h-[calc(100%-4rem)] overflow-y-auto p-3 pointer-events-auto border-[rgba(41,151,255,0.5)]">
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <div>
-          <p className="text-[11px] font-semibold tracking-[0.02em] text-[var(--wb-blue)] flex items-center gap-1.5">
-            <Icon className="w-3.5 h-3.5" />
-            Laydown evaluation
-          </p>
-          <p className="text-[11px] store-text-muted mt-0.5">
-            Commander scoreboard · OSINT catalog · virtual geometry
-          </p>
-        </div>
-        <div className="flex flex-col items-end gap-1 shrink-0">
-          <Badge variant="outline" className="text-[11px] font-mono">
-            {KIND_LABEL[evaluation.subject.kind]}
-          </Badge>
+    <MapCard
+      className={className}
+      title="Laydown evaluation"
+      icon={<Icon className="w-4 h-4" />}
+      meta={
+        <>
+          <span className="tag font-mono">{KIND_LABEL[evaluation.subject.kind]}</span>
           {adjudicationSource && adjudicationSource !== 'client' && (
-            <Badge variant="assessed" className="text-[11px]">
-              {adjudicationSource}
-            </Badge>
+            <span className="tag blue font-mono">{adjudicationSource}</span>
           )}
-        </div>
-      </div>
-
-      {placedItems.length > 1 && (
-        <div className="flex flex-wrap gap-1 mb-3">
-          {placedItems.map((chip) => {
-            const item: SelectedLaydownItem = { kind: chip.kind, instanceId: chip.instanceId }
-            const active = isSameLaydownItem(selectedItem, item)
-            return (
-              <button
-                key={`${chip.kind}-${chip.instanceId}`}
-                type="button"
-                onClick={() => onSelectItem(item)}
-                className={cn(
-                  'map-press px-2 py-0.5 rounded-lg text-[11px] font-mono border truncate max-w-full',
-                  active
-                    ? 'border-[rgba(41,151,255,0.5)] bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]'
-                    : 'border-[var(--store-line)] store-text-muted hover:text-white',
-                )}
-              >
-                {chip.name}
-              </button>
-            )
-          })}
-        </div>
-      )}
-
-      <p className="text-xs font-medium text-white mb-2 leading-snug">{evaluation.subject.name}</p>
-
-      <div
-        className={cn(
-          'rounded-lg border px-2.5 py-2 mb-3',
-          board.verdict === 'can_finish'
-            ? 'border-green-500/40 bg-green-950/30'
-            : board.verdict === 'deny_only' || board.verdict === 'detect_only'
-              ? 'border-amber-400/40 bg-amber-950/20'
-              : 'border-[var(--store-line)] bg-[var(--store-surface-2)]',
-        )}
-      >
-        <p
-          className={cn(
-            'text-[11px] font-semibold tracking-[0.02em]',
-            board.verdict === 'can_finish'
-              ? 'text-green-400'
-              : board.verdict === 'deny_only' || board.verdict === 'detect_only'
-                ? 'text-amber-300'
-                : 'store-text-muted',
-          )}
-        >
-          {VERDICT_LABEL[board.verdict]}
-        </p>
-        <p className="text-[11px] text-white mt-1 leading-snug">{board.verdictLine}</p>
-        <p className="text-[11px] store-text-muted mt-1">
-          P(kill) = airframe down. P(link) = pilot denied, airframe recoverable. OSINT / training estimates — not
-          accredited Pk.
-        </p>
-      </div>
-
-      {board.williamtownLine && (
-        <div className="rounded-lg border border-amber-400/40 bg-amber-950/25 px-2.5 py-2 mb-3">
-          <p className="text-[11px] font-semibold tracking-[0.02em] text-amber-300">Williamtown lesson</p>
-          <p className="text-[11px] text-white mt-1 leading-snug">{board.williamtownLine}</p>
-        </div>
-      )}
-
-      <div className="grid grid-cols-2 gap-1.5 mb-3">
-        {board.detectSection && (
-          <ScoreTile
-            label="Detect"
-            value={board.detect}
-            hint="Can find"
-            active={tab === 'detect'}
-            tone={board.detect > 0 ? 'can' : 'cannot'}
-            onClick={() => {
-              setTab('detect')
-              setExpanded(false)
-            }}
-          />
-        )}
-        {(board.defeatSection || board.denySection) && (
-          <ScoreTile
-            label="Deny"
-            value={board.deny}
-            hint="Link only · stays up"
-            active={tab === 'deny'}
-            tone={board.deny > 0 ? 'deny' : 'cannot'}
-            onClick={() => {
-              setTab('deny')
-              setExpanded(false)
-            }}
-          />
-        )}
-        {(board.defeatSection || board.destroySection) && (
-          <ScoreTile
-            label="Destroy"
-            value={board.destroy}
-            hint="Airframe down"
-            active={tab === 'destroy'}
-            tone={board.destroy > 0 ? 'can' : 'cannot'}
-            onClick={() => {
-              setTab('destroy')
-              setExpanded(false)
-            }}
-          />
-        )}
-        {gapSections.length > 0 && (
-          <ScoreTile
-            label="Gaps"
-            value={gapCount}
-            hint="No find / no finish"
-            active={tab === 'gaps'}
-            tone="cannot"
-            onClick={() => {
-              setTab('gaps')
-              setExpanded(false)
-            }}
-          />
-        )}
-      </div>
-
-      {compareRows.length > 1 && (
-        <div className="mb-3 rounded-lg border border-[var(--store-line)] overflow-hidden">
-          <p className="px-2.5 py-1.5 text-[11px] font-semibold tracking-[0.02em] store-text-muted">
-            Airframe compare
-          </p>
-          <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-2.5 pb-1 text-[11px] font-mono store-text-muted">
-            <span />
-            <span>Find</span>
-            <span>Deny</span>
-            <span>Kill</span>
-            <span>Call</span>
-          </div>
-          {compareRows.map((row) => {
-            const active = selectedItem?.kind === 'uas' && selectedItem.instanceId === row.instanceId
-            return (
-              <button
-                key={row.instanceId}
-                type="button"
-                onClick={() => onSelectItem({ kind: 'uas', instanceId: row.instanceId })}
-                className={cn(
-                  'w-full grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-2.5 py-1.5 text-left text-[11px] font-mono border-t border-[var(--store-line)]',
-                  active
-                    ? 'bg-[rgba(41,151,255,0.14)] text-[var(--wb-blue)]'
-                    : 'hover:bg-[var(--store-surface-2)] text-white',
-                )}
-              >
-                <span className="truncate">{row.name}</span>
-                <span className={row.detect > 0 ? 'text-green-400' : 'store-text-muted'}>{row.detect}</span>
-                <span className={row.deny > 0 ? 'text-amber-300' : 'store-text-muted'}>{row.deny}</span>
-                <span className={row.destroy > 0 ? 'text-green-400' : 'store-text-muted'}>{row.destroy}</span>
-                <span
-                  className={
-                    row.verdict === 'can_finish'
-                      ? 'text-green-400'
-                      : row.verdict === 'deny_only' || row.verdict === 'detect_only'
-                        ? 'text-amber-300'
-                        : 'store-text-muted'
-                  }
+        </>
+      }
+    >
+      <div className="space-y-3">
+        {placedItems.length > 1 && (
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Placed items">
+            {placedItems.map((chip) => {
+              const item: SelectedLaydownItem = { kind: chip.kind, instanceId: chip.instanceId }
+              const active = isSameLaydownItem(selectedItem, item)
+              return (
+                <button
+                  key={`${chip.kind}-${chip.instanceId}`}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => onSelectItem(item)}
+                  title={chip.name}
+                  className="btn-e xs max-w-full"
                 >
-                  {row.verdict === 'can_finish'
-                    ? 'Kill'
-                    : row.verdict === 'deny_only'
-                      ? 'Deny'
-                      : row.verdict === 'detect_only'
-                        ? 'Find'
-                        : 'Blind'}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-      )}
+                  <span className="truncate">{chip.name}</span>
+                </button>
+              )
+            })}
+          </div>
+        )}
 
-      {tab !== 'gaps' && !activeSection && (tab === 'deny' || tab === 'destroy') && (
-        <p className="text-[11px] text-amber-200/90 leading-snug mb-2">
-          {tab === 'deny'
-            ? 'No catalog RF deny path for this airframe.'
-            : 'No catalog hard-kill path. A DroneGun-class RF buy is not a crash — the airframe stays up.'}
-        </p>
-      )}
-
-      {tab === 'deny' && activeSection && (
-        <p className="text-[11px] text-amber-200/80 leading-snug mb-2">
-          These systems take the pilot off the stick. They do not drop the aircraft.
-        </p>
-      )}
-
-      {tab !== 'gaps' && activeSection && (
         <div>
-          <p
-            className={cn(
-              'text-[11px] font-semibold tracking-[0.02em] mb-2',
-              activeSection.tone === 'can' ? 'text-green-400' : 'store-text-muted',
-            )}
-          >
-            {tab === 'detect' ? 'Can detect' : tab === 'deny' ? 'Can deny — link only' : 'Can destroy — airframe down'}
-            <span className="ml-1.5 font-mono font-normal normal-case">({activeSection.items.length})</span>
-          </p>
-          <PreviewList
-            section={activeSection}
-            selectedItem={selectedItem}
-            onItemClick={onEvalItemClick}
-            expanded={expanded}
-            onToggle={() => setExpanded((v) => !v)}
-          />
+          <p className="text-[15px] font-semibold text-[var(--store-ink)] leading-snug">{evaluation.subject.name}</p>
+          <p className="text-[11.5px] store-text-muted mt-0.5">Commander scoreboard · OSINT catalogue · virtual geometry</p>
         </div>
-      )}
 
-      {tab === 'gaps' && (
-        <div className="space-y-3">
-          <p className="text-[11px] store-text-muted leading-snug">
-            Catalog leftovers — systems that neither find nor finish this airframe. Do not use this list to make the
-            call.
+        <div className="rounded-xl px-3 py-2.5" style={{ border: `1px solid ${verdictLine}`, background: 'rgba(255,255,255,0.03)' }}>
+          <p className="text-[13px] font-semibold" style={{ color: verdictColour }}>
+            {VERDICT_LABEL[board.verdict]}
           </p>
-          {gapSections.map((section) => (
-            <div key={section.title}>
-              <p className="text-[11px] font-semibold tracking-[0.02em] mb-2 store-text-muted">
-                {section.title}
-                <span className="ml-1.5 font-mono font-normal normal-case">({section.items.length})</span>
-              </p>
-              <PreviewList
-                section={section}
-                selectedItem={selectedItem}
-                onItemClick={onEvalItemClick}
-                expanded={expanded}
-                onToggle={() => setExpanded((v) => !v)}
-              />
-            </div>
-          ))}
+          <p className="text-[12px] text-[var(--store-ink)] mt-1 leading-snug">{board.verdictLine}</p>
+          <p className="text-[11.5px] store-text-muted mt-1.5 leading-relaxed">
+            P(kill) = airframe down. P(link) = pilot denied, airframe recoverable. OSINT and training estimates, not
+            accredited Pk.
+          </p>
         </div>
-      )}
-    </StorePanel>
+
+        {board.williamtownLine && (
+          <div className="rounded-xl px-3 py-2.5 border border-[rgba(251,191,36,0.35)] bg-[rgba(255,255,255,0.03)]">
+            <p className="text-[13px] font-semibold text-[#FBBF24]">Williamtown lesson</p>
+            <p className="text-[12px] text-[var(--store-ink)] mt-1 leading-snug">{board.williamtownLine}</p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-1.5" role="group" aria-label="Scoreboard">
+          {board.detectSection && (
+            <ScoreTile
+              label="Detect"
+              value={board.detect}
+              hint="Can find"
+              active={tab === 'detect'}
+              tone={board.detect > 0 ? 'can' : 'cannot'}
+              onClick={() => {
+                setTab('detect')
+                setExpanded(false)
+              }}
+            />
+          )}
+          {(board.defeatSection || board.denySection) && (
+            <ScoreTile
+              label="Deny"
+              value={board.deny}
+              hint="Link only, stays up"
+              active={tab === 'deny'}
+              tone={board.deny > 0 ? 'deny' : 'cannot'}
+              onClick={() => {
+                setTab('deny')
+                setExpanded(false)
+              }}
+            />
+          )}
+          {(board.defeatSection || board.destroySection) && (
+            <ScoreTile
+              label="Destroy"
+              value={board.destroy}
+              hint="Airframe down"
+              active={tab === 'destroy'}
+              tone={board.destroy > 0 ? 'can' : 'cannot'}
+              onClick={() => {
+                setTab('destroy')
+                setExpanded(false)
+              }}
+            />
+          )}
+          {gapSections.length > 0 && (
+            <ScoreTile
+              label="Gaps"
+              value={gapCount}
+              hint="No find or no finish"
+              active={tab === 'gaps'}
+              tone="cannot"
+              onClick={() => {
+                setTab('gaps')
+                setExpanded(false)
+              }}
+            />
+          )}
+        </div>
+
+        {compareRows.length > 1 && (
+          <div className="rounded-xl border border-[var(--store-line)] overflow-hidden">
+            <p className="px-3 pt-2 pb-1 text-[12px] font-semibold store-text-muted">Airframe compare</p>
+            <div className="grid grid-cols-[minmax(0,1fr)_repeat(4,2.75rem)] gap-x-1 px-3 pb-1.5 text-[12px] store-text-muted">
+              <span>Airframe</span>
+              <span className="text-right">Find</span>
+              <span className="text-right">Deny</span>
+              <span className="text-right">Kill</span>
+              <span className="text-right">Call</span>
+            </div>
+            {compareRows.map((row) => {
+              const active = selectedItem?.kind === 'uas' && selectedItem.instanceId === row.instanceId
+              const callColour =
+                row.verdict === 'can_finish'
+                  ? GREEN
+                  : row.verdict === 'deny_only' || row.verdict === 'detect_only'
+                    ? AMBER
+                    : 'var(--store-ink-mute)'
+              return (
+                <button
+                  key={row.instanceId}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => onSelectItem({ kind: 'uas', instanceId: row.instanceId })}
+                  className={cn(
+                    'w-full grid grid-cols-[minmax(0,1fr)_repeat(4,2.75rem)] gap-x-1 px-3 py-1.5 text-left text-[12px] border-t border-[var(--store-line)] transition-colors',
+                    active ? 'bg-[rgba(41,151,255,0.14)]' : 'hover:bg-[rgba(255,255,255,0.05)]',
+                  )}
+                >
+                  <span className="truncate text-[var(--store-ink)]" title={row.name}>
+                    {row.name}
+                  </span>
+                  <span className="text-right font-mono tabular-nums" style={{ color: row.detect > 0 ? GREEN : 'var(--store-ink-mute)' }}>
+                    {row.detect}
+                  </span>
+                  <span className="text-right font-mono tabular-nums" style={{ color: row.deny > 0 ? AMBER : 'var(--store-ink-mute)' }}>
+                    {row.deny}
+                  </span>
+                  <span className="text-right font-mono tabular-nums" style={{ color: row.destroy > 0 ? GREEN : 'var(--store-ink-mute)' }}>
+                    {row.destroy}
+                  </span>
+                  <span className="text-right font-mono" style={{ color: callColour }}>
+                    {row.verdict === 'can_finish'
+                      ? 'Kill'
+                      : row.verdict === 'deny_only'
+                        ? 'Deny'
+                        : row.verdict === 'detect_only'
+                          ? 'Find'
+                          : 'Blind'}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {tab !== 'gaps' && !activeSection && (tab === 'deny' || tab === 'destroy') && (
+          <p className="text-[12px] text-[#FCD34D] leading-snug">
+            {tab === 'deny'
+              ? 'No catalogue RF deny path for this airframe.'
+              : 'No catalogue hard-kill path. A DroneGun-class RF buy is not a crash: the airframe stays up.'}
+          </p>
+        )}
+
+        {tab === 'deny' && activeSection && (
+          <p className="text-[12px] text-[#FCD34D] leading-snug">
+            These systems take the pilot off the stick. They do not drop the aircraft.
+          </p>
+        )}
+
+        {tab !== 'gaps' && activeSection && (
+          <div>
+            <p className="text-[12px] font-semibold mb-2 flex items-baseline gap-1.5" style={{ color: activeSection.tone === 'can' ? GREEN : 'var(--store-ink-mute)' }}>
+              {tab === 'detect' ? 'Can detect' : tab === 'deny' ? 'Can deny (link only)' : 'Can destroy (airframe down)'}
+              <span className="font-mono font-normal store-text-muted">{activeSection.items.length}</span>
+            </p>
+            <PreviewList
+              section={activeSection}
+              selectedItem={selectedItem}
+              onItemClick={onEvalItemClick}
+              expanded={expanded}
+              onToggle={() => setExpanded((v) => !v)}
+            />
+          </div>
+        )}
+
+        {tab === 'gaps' && (
+          <div className="space-y-3">
+            <p className="text-[12px] store-text-muted leading-snug">
+              Catalogue leftovers: systems that neither find nor finish this airframe. Do not use this list to make
+              the call.
+            </p>
+            {gapSections.map((section) => (
+              <div key={section.title}>
+                <p className="text-[12px] font-semibold mb-2 store-text-muted flex items-baseline gap-1.5">
+                  {section.title}
+                  <span className="font-mono font-normal">{section.items.length}</span>
+                </p>
+                <PreviewList
+                  section={section}
+                  selectedItem={selectedItem}
+                  onItemClick={onEvalItemClick}
+                  expanded={expanded}
+                  onToggle={() => setExpanded((v) => !v)}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </MapCard>
   )
 }

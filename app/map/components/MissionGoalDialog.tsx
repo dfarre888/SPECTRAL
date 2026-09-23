@@ -11,22 +11,31 @@ interface MissionGoalDialogProps {
 
 export function MissionGoalDialog({ uas, onSelect, onDismiss }: MissionGoalDialogProps) {
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/50 pointer-events-auto">
-      <div className="w-full max-w-sm rounded-2xl store-panel shadow-xl border border-[var(--store-line)] p-5 space-y-4">
+    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/45 pointer-events-auto">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mission-goal-title"
+        className="glass-popover w-full max-w-sm p-5 space-y-4"
+      >
         <div>
-          <p className="text-[11px] store-text-muted tracking-[0.02em]">Mission planning</p>
-          <p className="text-sm font-semibold text-white mt-1">{uas.asset.name} placed</p>
-          <p className="text-[11px] store-text-body mt-1">Select mission objective type, then click the map.</p>
+          <p className="text-[12px] store-text-muted">Mission planning</p>
+          <p id="mission-goal-title" className="text-[15px] font-semibold text-[var(--store-ink)] mt-1 leading-snug">
+            {uas.asset.name} placed
+          </p>
+          <p className="text-[13px] store-text-body mt-1.5">Choose the mission objective, then click the map.</p>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <button type="button" onClick={() => onSelect('target')} className="store-btn-primary flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold">
-            <Crosshair className="w-3.5 h-3.5" /> Target
+          <button type="button" onClick={() => onSelect('target')} className="btn-glass primary">
+            <Crosshair className="w-4 h-4" /> Target
           </button>
-          <button type="button" onClick={() => onSelect('aoi')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold border border-[var(--store-line)] store-panel-inner store-text-body hover:text-white">
-            <MapPin className="w-3.5 h-3.5 text-[var(--wb-blue)]" /> AOI
+          <button type="button" onClick={() => onSelect('aoi')} className="btn-glass">
+            <MapPin className="w-4 h-4" /> AOI
           </button>
         </div>
-        <button type="button" onClick={onDismiss} className="w-full text-[11px] store-text-muted hover:text-white">Skip for now</button>
+        <button type="button" onClick={onDismiss} className="fc-action w-full justify-center">
+          Skip for now
+        </button>
       </div>
     </div>
   )

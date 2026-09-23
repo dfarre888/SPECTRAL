@@ -84,7 +84,7 @@ function centreFreqGHz(pair: PairLaydownAssessment): string {
 function jamErpLabel(pair: PairLaydownAssessment, placedCuas: PlacedCuas[]): string {
   const cuas = placedCuas.find((c) => c.asset.name === pair.cuasName)
   if (!cuas) return '—'
-  if (!cuas.asset.defeat_methods.includes('RF_jamming')) return 'N/A — non-RF effector'
+  if (!cuas.asset.defeat_methods.includes('RF_jamming')) return 'N/A (non-RF effector)'
   const blue = cuasAssetToSpectrumBlue(cuas.asset)
   const jam = resolveJamTransmit(blue, pair.bandOverlaps[0] ?? null)
   return `${jam.erp_dbm} dBm (${jam.confidence})`
@@ -168,8 +168,8 @@ export function SpectralAnalysisPanel({
           </div>
           <SheetDescription className="text-xs">
             {operations
-              ? 'Operations — server ITU-R propagation, J/S, and defeat adjudication'
-              : 'Training — band overlap + geometric defeat envelopes (OSINT)'}
+              ? 'Operations: server ITU-R propagation, J/S and defeat adjudication'
+              : 'Training: band overlap and geometric defeat envelopes (OSINT)'}
           </SheetDescription>
         </SheetHeader>
 
@@ -204,9 +204,9 @@ export function SpectralAnalysisPanel({
               )}
             </section>
 
-            <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
+            <div className="grid grid-cols-2 gap-2">
               <StatChip label="In envelope" value={analysis.summary.activeEngagements} colour="cyan" />
-              <StatChip label="Blue favoured" value={analysis.summary.defeatLikely} colour="orange" />
+              <StatChip label="Blue favoured" value={analysis.summary.defeatLikely} colour="blue" />
               <StatChip label="Red survivable" value={analysis.summary.survivable} colour="green" />
               <StatChip label="Out of range" value={analysis.summary.outOfRange} colour="muted" />
             </div>
@@ -214,7 +214,7 @@ export function SpectralAnalysisPanel({
 
             <section className="space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <h3 className="text-[11px] font-semibold tracking-[0.02em] store-text-muted flex items-center gap-2">
+                <h3 className="text-[12px] font-semibold store-text-muted flex items-center gap-2">
                   Laydown EW bands
                   {activeBandCount > 0 && (
                     <span className="font-mono text-[var(--wb-blue)] normal-case tracking-normal">
@@ -223,7 +223,7 @@ export function SpectralAnalysisPanel({
                   )}
                 </h3>
                 {threatAssessments.length > 0 && catalogCuas.length > 0 && (
-                  <label className="flex items-center gap-2 text-[11px] store-text-muted cursor-pointer select-none">
+                  <label className="flex items-center gap-2 text-[12px] store-text-body cursor-pointer select-none">
                     <input
                       type="checkbox"
                       className="rounded border-[var(--store-line)]"
@@ -258,7 +258,7 @@ export function SpectralAnalysisPanel({
             />
 
             <section className="space-y-3">
-              <h3 className="text-[11px] font-semibold tracking-[0.02em] store-text-muted">
+              <h3 className="text-[12px] font-semibold store-text-muted">
                 Platform bands
               </h3>
               {analysis.uasProfiles.map((p) => (
@@ -271,8 +271,8 @@ export function SpectralAnalysisPanel({
 
             {analysis.pairs.length > 0 && (
               <section className="space-y-3">
-                <h3 className="text-[11px] font-semibold tracking-[0.02em] store-text-muted">
-                  Engagement pairs — gaps, overlaps &amp; tactics
+                <h3 className="text-[12px] font-semibold store-text-muted">
+                  Engagement pairs: gaps, overlaps and tactics
                 </h3>
                 {analysis.pairs.map((pair) => (
                   <PairAssessmentCard
@@ -293,7 +293,7 @@ export function SpectralAnalysisPanel({
                 {overlaps.length === 1 ? '' : 's'}).
               </p>
             )}
-          <div className="mt-4 pt-3 border-t border-[var(--store-line)]"><p className="text-[11px] font-mono store-text-muted uppercase mb-2">EMCON timeline</p><EmconTimeline placedUas={placedUas} /></div></div>
+          <div className="mt-4 pt-3 border-t border-[var(--store-line)]"><p className="text-[12px] font-semibold store-text-muted mb-2">EMCON timeline</p><EmconTimeline placedUas={placedUas} /></div></div>
         )}
       </SheetContent>
     </Sheet>
@@ -332,7 +332,7 @@ function PairAssessmentCard({
           <p className="text-[11px] store-text-muted mt-0.5">
             {pair.inDefeatRange
               ? 'Inside defeat envelope'
-              : 'Outside defeat envelope — geometry blocks effect'}
+              : 'Outside defeat envelope: geometry blocks effect'}
             {pair.isImmune ? ' · IMMUNE to primary defeat type' : ''}
             {gated ? ' · PROPAGATION GATED' : ''}
           </p>
@@ -347,13 +347,13 @@ function PairAssessmentCard({
 
       <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
         <div className="rounded-lg store-panel px-2 py-1.5">
-          <span className="store-text-muted text-[11px]">Defeat matrix</span>
-          <p className="text-orange mt-0.5">
+          <span className="store-text-muted text-[11px] font-sans">Defeat matrix</span>
+          <p className="text-[var(--wb-blue)] mt-0.5">
             {pair.defeatMatrixPk != null ? `${pair.defeatMatrixPk}% Pk` : 'N/A'}
           </p>
         </div>
         <div className="rounded-lg store-panel px-2 py-1.5">
-          <span className="store-text-muted text-[11px]">Spectrum</span>
+          <span className="store-text-muted text-[11px] font-sans">Spectrum</span>
           <p className="text-cyan mt-0.5">{verdictTag(pair.spectrum.verdict)}</p>
         </div>
       </div>
@@ -368,13 +368,13 @@ function PairAssessmentCard({
               Centre freq: <span className="text-cyan">{centreFreqGHz(pair)}</span>
             </span>
             <span className="store-text-muted">
-              Jam ERP: <span className="text-orange">{jamErpLabel(pair, placedCuas)}</span>
+              Jam ERP: <span className="text-[var(--store-ink)]">{jamErpLabel(pair, placedCuas)}</span>
             </span>
             <span className="store-text-muted">
               LOS: <span className="text-cyan">{pair.propagation.los_state}</span>
             </span>
             <span className="store-text-muted">
-              Path loss: <span className="text-orange">{pair.propagation.path_loss_db} dB</span>
+              Path loss: <span className="text-[var(--store-ink)]">{pair.propagation.path_loss_db} dB</span>
             </span>
             <span className="store-text-muted">
               Multipath margin: {pair.propagation.multipath_margin_db} dB
@@ -387,7 +387,7 @@ function PairAssessmentCard({
             </span>
           </div>
           <p className="text-[11px] font-mono store-text-muted">
-            {pair.propagation.confidence} — {pair.propagation.model_tier.join(', ')}
+            {pair.propagation.confidence}: {pair.propagation.model_tier.join(', ')}
             {pair.propagation.model_tier.includes('deygout_chain') ? ' · ridge diffraction' : ''}
             {pair.propagation.propagationGated ? ' · propagation gated' : ''}
             {pair.propagation.buildingObstructed ? ' · building occlusion' : ''}
@@ -396,7 +396,7 @@ function PairAssessmentCard({
       )}
 
       <div>
-        <p className="text-[11px] font-mono text-orange tracking-[0.02em] mb-1">
+        <p className="text-[12px] font-semibold text-[var(--wb-blue)] mb-1">
           Blue defeat tactic
         </p>
         <p className="text-[11px] store-text-body leading-snug">{pair.blueTactic}</p>
@@ -405,7 +405,7 @@ function PairAssessmentCard({
 
       {pair.bandOverlaps.length > 0 ? (
         <div>
-          <p className="text-[11px] font-mono text-cyan tracking-[0.02em] mb-1">
+          <p className="text-[12px] font-semibold text-cyan mb-1">
             Band overlaps ({pair.bandOverlaps.length})
           </p>
           <ul className="space-y-1">
@@ -422,14 +422,14 @@ function PairAssessmentCard({
         </div>
       ) : (
         <p className="text-[11px] font-mono text-amber">
-          No RF/GNSS band overlap — spectrum gap; kinetic/DEW path required
+          No RF/GNSS band overlap: spectrum gap, kinetic/DEW path required
         </p>
       )}
 
       {pair.uncoveredGaps.length > 0 && (
         <div>
-          <p className="text-[11px] font-mono text-amber tracking-[0.02em] mb-1">
-            Gaps — threat bands not jammed
+          <p className="text-[12px] font-semibold text-amber mb-1">
+            Gaps: threat bands not jammed
           </p>
           <ul className="space-y-0.5">
             {pair.uncoveredGaps.map((g) => (
@@ -442,7 +442,7 @@ function PairAssessmentCard({
       )}
 
       <div>
-        <p className="text-[11px] font-mono text-green tracking-[0.02em] mb-1">
+        <p className="text-[12px] font-semibold text-green mb-1">
           UAS survival tactics
         </p>
         <ul className="space-y-0.5">
@@ -467,18 +467,18 @@ function StatChip({
 }: {
   label: string
   value: number
-  colour: 'cyan' | 'orange' | 'green' | 'muted'
+  colour: 'cyan' | 'blue' | 'green' | 'muted'
 }) {
   const colours = {
     cyan: 'border-cyan/30 text-cyan',
-    orange: 'border-orange/30 text-orange',
+    blue: 'border-[rgba(41,151,255,0.35)] text-[var(--wb-blue)]',
     green: 'border-green/30 text-green',
     muted: 'border-[var(--store-line)] store-text-muted',
   }
   return (
     <div className={clsx('rounded-xl store-panel-inner px-2 py-1.5 border', colours[colour])}>
-      <p className="store-text-muted text-[11px]">{label}</p>
-      <p className="text-sm font-bold mt-0.5">{value}</p>
+      <p className="store-text-muted text-[12px]">{label}</p>
+      <p className="text-[18px] font-mono font-semibold mt-0.5 tabular-nums">{value}</p>
     </div>
   )
 }
@@ -496,7 +496,7 @@ function BandProfileCard({
   variant: 'uas' | 'cuas'
 }) {
   const Icon = variant === 'uas' ? Plane : Shield
-  const accent = variant === 'uas' ? 'text-cyan' : 'text-orange'
+  const accent = variant === 'uas' ? 'text-cyan' : 'text-[var(--wb-blue)]'
 
   return (
     <div className="rounded-xl store-panel-inner p-2.5">
@@ -511,7 +511,7 @@ function BandProfileCard({
         <span className="text-[11px] font-semibold text-white truncate">{profile.name}</span>
       </div>
       {profile.bands.length === 0 ? (
-        <p className="text-[11px] store-text-muted">No RF bands catalogued — RF-silent or autonomous</p>
+        <p className="text-[11px] store-text-muted">No RF bands catalogued: RF-silent or autonomous</p>
       ) : (
         <ul className="space-y-0.5 max-h-28 overflow-y-auto">
           {profile.bands.map((b) => (
@@ -527,7 +527,7 @@ function BandProfileCard({
       )}
       {profile.redundancies.length > 0 && (
         <div className="mt-2 pt-2 border-t border-[var(--store-line)]">
-          <p className="text-[11px] store-text-muted uppercase mb-1 font-semibold tracking-wider">
+          <p className="text-[12px] store-text-muted mb-1 font-semibold">
             Redundancies
           </p>
           <ul className="space-y-0.5">

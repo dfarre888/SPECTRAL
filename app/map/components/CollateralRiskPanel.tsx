@@ -1,8 +1,10 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { Bomb, RadioTower } from 'lucide-react'
 
 import type {
+  BlastRadii,
   BuildingProtection,
   CdeResult,
   JammingRadii,
@@ -11,6 +13,8 @@ import type {
   TimeOfDay,
 } from '@/lib/risk'
 import { assessEwCivilianImpact } from '@/lib/risk/cde-engine'
+import { cn } from '@/lib/utils'
+import { CardSection, Field, KV, MapCard, enumLabel, rangeClass, selectClass } from '@/app/map/components/MapUi'
 
 interface CollateralRiskPanelProps {
   mode: 'blast' | 'jamming'
@@ -18,6 +22,14 @@ interface CollateralRiskPanelProps {
   jammingRadii?: JammingRadii | null
   weaponName?: string
   jammerName?: string
+  /** Munition picker (lives in the panel so long names are never clipped). */
+  warheads?: readonly BlastRadii[]
+  selectedWarheadId?: string | null
+  onWarheadChange?: (weaponId: string) => void
+  /** Jammer picker. */
+  jammers?: readonly JammingRadii[]
+  selectedJammerId?: string | null
+  onJammerChange?: (jammerId: string) => void
   popTier: PopulationDensityTier
   timeOfDay: TimeOfDay
   buildingProtection: BuildingProtection
@@ -27,17 +39,28 @@ interface CollateralRiskPanelProps {
   ringShade?: number
   onRingShadeChange?: (v: number) => void
   onClose: () => void
+  className?: string
 }
 
-const mono = { fontFamily: "'JetBrains Mono', monospace" } as const
-
-const RISK_STYLE: Record<RiskCategory, { bg: string; text: string }> = {
-  GREEN: { bg: '#22C55E', text: '#052e16' },
-  AMBER: { bg: '#EAB308', text: '#422006' },
-  RED: { bg: '#EF4444', text: '#450a0a' },
-  BLACK: { bg: '#7F1D1D', text: '#fecaca' },
+/** Risk category as a tag: coloured text on a hairline, never a filled slab. */
+const RISK_TAG: Record<RiskCategory, string> = {
+  GREEN: 'green',
+  AMBER: 'amber',
+  RED: 'red',
+  BLACK: 'red',
 }
 
+const POP_TIERS: PopulationDensityTier[] = ['remote', 'rural', 'suburban', 'urban', 'dense_urban']
+const TIMES: TimeOfDay[] = ['early_hours', 'morning_peak', 'business_day', 'evening_peak', 'night']
+const PROTECTION: BuildingProtection[] = ['open', 'light', 'reinforced']
+
+export function RiskTag({ category }: { category: RiskCategory }) {
+  return (
+    <span className={cn('tag font-mono font-semibold', RISK_TAG[category], category === 'BLACK' && '!text-white')}>
+      {category}
+    </span>
+  )
+}
 
 export function CollateralRiskPanel({
   mode,
@@ -45,6 +68,12 @@ export function CollateralRiskPanel({
   jammingRadii,
   weaponName,
   jammerName,
+  warheads,
+  selectedWarheadId,
+  onWarheadChange,
+  jammers,
+  selectedJammerId,
+  onJammerChange,
   popTier,
   timeOfDay,
   buildingProtection,
@@ -54,6 +83,7 @@ export function CollateralRiskPanel({
   ringShade = 55,
   onRingShadeChange,
   onClose,
+  className,
 }: CollateralRiskPanelProps) {
   const [propOpen, setPropOpen] = useState(false)
   const civilianEw = useMemo(() => {
@@ -61,136 +91,227 @@ export function CollateralRiskPanel({
     return assessEwCivilianImpact(popTier, jammingRadii.max_radius_m / 1000)
   }, [jammingRadii, popTier])
 
-  return (
-    <div
-      className="map-material-float absolute top-14 right-3 z-30 w-80 max-h-[calc(100%-4rem)] overflow-y-auto rounded-xl pointer-events-auto"
-    >
-      <div className="p-3 space-y-3 text-[11px] store-text-body">
-        <div className="flex items-start justify-between gap-2">
-          <p className="text-[11px] font-semibold tracking-[0.02em]" style={{ color: mode === 'blast' ? '#F97316' : '#06B6D4' }}>
-            {mode === 'blast' ? 'Collateral damage estimate' : 'EW jamming footprint'}
-          </p>
-          <button type="button" onClick={onClose} className="store-text-muted hover:text-white text-xs" aria-label="Close">✕</button>
-        </div>
+  const isBlast = mode === 'blast'
 
-        {mode === 'blast' && (
+  return (
+    <MapCard
+      className={className}
+      title={isBlast ? 'Collateral damage estimate' : 'EW jamming footprint'}
+      icon={isBlast ? <Bomb className="w-4 h-4" /> : <RadioTower className="w-4 h-4" />}
+      onClose={onClose}
+    >
+      <div className="space-y-3">
+        {isBlast && warheads && onWarheadChange ? (
+          <Field label="Munition">
+            <select
+              className={selectClass}
+              value={selectedWarheadId ?? ''}
+              onChange={(e) => onWarheadChange(e.target.value)}
+              title={weaponName}
+            >
+              {warheads.map((w) => (
+                <option key={w.weapon_id} value={w.weapon_id}>
+                  {w.weapon_name}
+                </option>
+              ))}
+            </select>
+          </Field>
+        ) : null}
+        {!isBlast && jammers && onJammerChange ? (
+          <Field label="Jammer">
+            <select
+              className={selectClass}
+              value={selectedJammerId ?? ''}
+              onChange={(e) => onJammerChange(e.target.value)}
+              title={jammerName}
+            >
+              {jammers.map((j) => (
+                <option key={j.jammer_id} value={j.jammer_id}>
+                  {j.jammer_name}
+                </option>
+              ))}
+            </select>
+          </Field>
+        ) : null}
+
+        {isBlast && !warheads ? (
+          <p className="font-mono text-[12px] text-[var(--store-ink)]">{weaponName ?? 'No munition'}</p>
+        ) : null}
+
+        {isBlast && !blastResult ? (
+          <p className="text-[12px] store-text-muted leading-relaxed">Click the globe to set the impact point.</p>
+        ) : null}
+
+        {isBlast && blastResult ? (
           <>
-            <p className="text-xs" style={mono}>{weaponName ?? '—'}</p>
-            {blastResult && (
-              <>
-                <p className="text-[11px] store-text-muted font-mono">
-                  Impact {blastResult.input.impact_lat.toFixed(4)}°N {blastResult.input.impact_lon.toFixed(4)}°E
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[12px] store-text-body">Risk category</span>
+              <RiskTag category={blastResult.risk_category} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 py-1">
+              <div>
+                <p className="text-[12px] store-text-muted">Expected casualties</p>
+                <p className="font-mono text-[24px] leading-none mt-1.5 text-[var(--store-ink)] tabular-nums">
+                  {blastResult.expected_casualties}
                 </p>
-                <div className="rounded-lg px-3 py-1.5 text-center text-xs font-bold uppercase" style={{ background: RISK_STYLE[blastResult.risk_category].bg, color: RISK_STYLE[blastResult.risk_category].text, ...mono }}>
-                  {blastResult.risk_category}
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <p className="store-text-muted text-[11px]">Expected casualties</p>
-                    <p className="text-2xl text-white" style={mono}>{blastResult.expected_casualties}</p>
-                  </div>
-                  <div>
-                    <p className="store-text-muted text-[11px]">Expected injured</p>
-                    <p className="text-2xl text-orange-300" style={mono}>{blastResult.expected_injured}</p>
-                  </div>
-                </div>
-                <div className="rounded border border-[var(--store-line)] store-panel-inner px-2 py-1.5 space-y-0.5">
-                  <p className="store-text-muted text-[11px]">Pop. in hazard disk</p>
-                  <p className="text-sm text-white" style={mono}>{blastResult.population_in_hazard_disk}</p>
-                  <p className="text-[11px] store-text-muted">
-                    Density <span className="text-white" style={mono}>{blastResult.pop_density_pkm2.toLocaleString()}</span> persons/km²
-                  </p>
-                  <p className="text-[11px] store-text-muted leading-relaxed">
-                    {blastResult.input.population_tier === 'urban' || blastResult.input.population_tier === 'dense_urban'
-                      ? 'Built-up model: indoor occupancy (not outdoor-only 0.35).'
-                      : 'Open-area model: outdoor exposure fraction applied.'}
-                  </p>
-                </div>
-                <table className="w-full text-[11px]">
-                  <tbody>
-                    {([['Lethal', blastResult.rings.lethal_m], ['Injury', blastResult.rings.injury_m], ['Structural', blastResult.rings.structural_m], ['Hazard', blastResult.rings.hazard_m]] as const).map(([label, m]) => (
-                      <tr key={label} className="border-t border-[var(--store-line)]">
-                        <td className="py-1 store-text-muted">{label}</td>
-                        <td className="py-1 text-right text-white" style={mono}>{m} m</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {blastResult.infrastructure_flags.length > 0 && (
-                  <ul className="text-[11px] text-red-400 space-y-1 list-disc pl-4">
-                    {blastResult.infrastructure_flags.map((f) => (<li key={f}>{f}</li>))}
-                  </ul>
-                )}
-                <p className="text-[11px]" style={{ color: blastResult.risk_category === 'GREEN' ? '#EAB308' : '#EF4444' }}>{blastResult.authority_required}</p>
-                <button type="button" className="text-[11px] store-text-muted underline" onClick={() => setPropOpen((v) => !v)}>
-                  {propOpen ? 'Hide' : 'Show'} proportionality summary
-                </button>
-                {propOpen && <p className="text-[11px] store-text-muted leading-relaxed">{blastResult.proportionality_summary}</p>}
-              </>
+              </div>
+              <div>
+                <p className="text-[12px] store-text-muted">Expected injured</p>
+                <p className="font-mono text-[24px] leading-none mt-1.5 text-[#FBBF24] tabular-nums">
+                  {blastResult.expected_injured}
+                </p>
+              </div>
+            </div>
+
+            <dl>
+              <KV
+                label="Impact"
+                value={`${blastResult.input.impact_lat.toFixed(4)}°, ${blastResult.input.impact_lon.toFixed(4)}°`}
+              />
+              <KV label="Population in hazard disk" value={blastResult.population_in_hazard_disk} />
+              <KV label="Density" value={`${blastResult.pop_density_pkm2.toLocaleString()} /km²`} />
+            </dl>
+            <p className="text-[12px] store-text-muted leading-relaxed">
+              {blastResult.input.population_tier === 'urban' || blastResult.input.population_tier === 'dense_urban'
+                ? 'Built-up model: indoor occupancy (not outdoor-only 0.35).'
+                : 'Open-area model: outdoor exposure fraction applied.'}
+            </p>
+
+            <CardSection title="Effect rings">
+              <dl>
+                <KV label="Lethal" value={`${blastResult.rings.lethal_m} m`} />
+                <KV label="Injury" value={`${blastResult.rings.injury_m} m`} />
+                <KV label="Structural" value={`${blastResult.rings.structural_m} m`} />
+                <KV label="Hazard" value={`${blastResult.rings.hazard_m} m`} />
+              </dl>
+            </CardSection>
+
+            {blastResult.infrastructure_flags.length > 0 && (
+              <ul className="text-[12px] text-[var(--wb-red)] space-y-1 list-disc pl-4 leading-snug">
+                {blastResult.infrastructure_flags.map((f) => (
+                  <li key={f}>{f}</li>
+                ))}
+              </ul>
+            )}
+            <p
+              className="text-[12px] leading-snug"
+              style={{ color: blastResult.risk_category === 'GREEN' ? '#FBBF24' : 'var(--wb-red)' }}
+            >
+              {blastResult.authority_required}
+            </p>
+            <button
+              type="button"
+              className="fc-action"
+              aria-expanded={propOpen}
+              onClick={() => setPropOpen((v) => !v)}
+            >
+              {propOpen ? 'Hide' : 'Show'} proportionality summary
+            </button>
+            {propOpen && (
+              <p className="text-[12px] store-text-muted leading-relaxed">{blastResult.proportionality_summary}</p>
             )}
           </>
-        )}
+        ) : null}
 
-        {mode === 'jamming' && jammingRadii && (
+        {!isBlast && jammingRadii ? (
           <>
-            <p className="text-xs" style={mono}>{jammerName ?? jammingRadii.jammer_name}</p>
-            <table className="w-full text-[11px]">
-              <tbody>
-                {([['GPS L1', jammingRadii.gps_l1_radius_m], ['RC link', jammingRadii.rc_link_radius_m], ['Max', jammingRadii.max_radius_m]] as const).map(([label, m]) => (
-                  <tr key={label} className="border-t border-[var(--store-line)]">
-                    <td className="py-1 store-text-muted">{label}</td>
-                    <td className="py-1 text-right text-white" style={mono}>{m} m</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <ul className="text-[11px] space-y-0.5" style={mono}>
-              {jammingRadii.bands.map((b) => (<li key={b.label} className="text-cyan-300/90">{b.label}</li>))}
-            </ul>
-            <ul className="text-[11px] text-orange-300/90 list-disc pl-4 space-y-0.5">
-              {civilianEw.map((s) => (<li key={s}>{s}</li>))}
-            </ul>
-            <p className="text-[11px] store-text-muted">ERP <span className="text-white" style={mono}>{jammingRadii.erp_watts} W</span></p>
+            {!jammers ? (
+              <p className="font-mono text-[12px] text-[var(--store-ink)]">{jammerName ?? jammingRadii.jammer_name}</p>
+            ) : null}
+            <CardSection title="Effect radius">
+              <dl>
+                <KV label="GPS L1" value={`${jammingRadii.gps_l1_radius_m} m`} />
+                <KV label="RC link" value={`${jammingRadii.rc_link_radius_m} m`} />
+                <KV label="Max" value={`${jammingRadii.max_radius_m} m`} />
+                <KV label="ERP" value={`${jammingRadii.erp_watts} W`} />
+              </dl>
+            </CardSection>
+            {jammingRadii.bands.length > 0 && (
+              <CardSection title="Bands">
+                <div className="flex flex-wrap gap-1.5">
+                  {jammingRadii.bands.map((b) => (
+                    <span key={b.label} className="tag font-mono !text-[#67E8F9] !border-[rgba(6,182,212,0.4)]">
+                      {b.label}
+                    </span>
+                  ))}
+                </div>
+              </CardSection>
+            )}
+            {civilianEw.length > 0 && (
+              <CardSection title="Civilian impact">
+                <ul className="text-[12px] text-[#FCD34D] list-disc pl-4 space-y-1 leading-snug">
+                  {civilianEw.map((s) => (
+                    <li key={s}>{s}</li>
+                  ))}
+                </ul>
+              </CardSection>
+            )}
           </>
+        ) : null}
+
+        {isBlast && (
+          <CardSection title="Assumptions" className="border-t border-[var(--store-line)] pt-3 [&>*+*]:mt-2.5">
+            <Field label="Population density">
+              <select
+                className={selectClass}
+                value={popTier}
+                onChange={(e) => onPopTierChange(e.target.value as PopulationDensityTier)}
+              >
+                {POP_TIERS.map((v) => (
+                  <option key={v} value={v}>
+                    {enumLabel(v)}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Time of day">
+              <select
+                className={selectClass}
+                value={timeOfDay}
+                onChange={(e) => onTimeChange(e.target.value as TimeOfDay)}
+              >
+                {TIMES.map((v) => (
+                  <option key={v} value={v}>
+                    {enumLabel(v)}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <div>
+              <span className="block text-[12px] store-text-body mb-1">Building protection</span>
+              <div className="seg sm w-full" role="group" aria-label="Building protection">
+                {PROTECTION.map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    aria-pressed={buildingProtection === v}
+                    onClick={() => onProtectionChange(v)}
+                    className="flex-1 justify-center"
+                  >
+                    {enumLabel(v)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </CardSection>
         )}
 
-        {mode === 'blast' && (
-          <div className="space-y-2 pt-2 border-t border-[var(--store-line)]">
-            <label className="block text-[11px] store-text-muted">Population density
-              <select className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white" style={mono} value={popTier} onChange={(e) => onPopTierChange(e.target.value as PopulationDensityTier)}>
-                {['remote','rural','suburban','urban','dense_urban'].map((v) => (<option key={v} value={v}>{v}</option>))}
-              </select>
-            </label>
-            <label className="block text-[11px] store-text-muted">Time of day
-              <select className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white" style={mono} value={timeOfDay} onChange={(e) => onTimeChange(e.target.value as TimeOfDay)}>
-                {['early_hours','morning_peak','business_day','evening_peak','night'].map((v) => (<option key={v} value={v}>{v}</option>))}
-              </select>
-            </label>
-            <label className="block text-[11px] store-text-muted">Building protection
-              <select className="mt-0.5 w-full rounded bg-black/40 border border-[var(--store-line)] px-2 py-1 text-white" style={mono} value={buildingProtection} onChange={(e) => onProtectionChange(e.target.value as BuildingProtection)}>
-                {['open','light','reinforced'].map((v) => (<option key={v} value={v}>{v}</option>))}
-              </select>
-            </label>
-          </div>
-        )}
-        <div className="space-y-1.5 pt-2 border-t border-[var(--store-line)]">
-          <div className="flex items-center justify-between text-[11px] store-text-muted">
-            <span>Ring shading</span>
-            <span className="text-white" style={mono}>{ringShade}%</span>
-          </div>
-          <input
-            type="range"
-            min={5}
-            max={100}
-            step={5}
-            value={ringShade}
-            onChange={(e) => onRingShadeChange?.(Number(e.target.value))}
-            className="w-full accent-orange-500"
-            aria-label="Ring shading opacity"
-          />
+        <div className="border-t border-[var(--store-line)] pt-3">
+          <Field label="Ring shading" hint={`${ringShade}%`}>
+            <input
+              type="range"
+              min={5}
+              max={100}
+              step={5}
+              value={ringShade}
+              onChange={(e) => onRingShadeChange?.(Number(e.target.value))}
+              className={rangeClass}
+              aria-label="Ring shading opacity"
+            />
+          </Field>
         </div>
       </div>
-    </div>
+    </MapCard>
   )
 }
-

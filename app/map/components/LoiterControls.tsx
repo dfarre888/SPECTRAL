@@ -20,27 +20,35 @@ export function LoiterControls({
 }: LoiterControlsProps) {
   if (uas.loiter) {
     return (
-      <div className="p-2.5 rounded-xl store-panel-inner border border-[var(--store-line)] text-[11px] space-y-1">
-        <div className="flex items-center justify-between store-text-body">
-          <span className="text-[var(--wb-blue)] font-semibold text-[11px] tracking-[0.02em]">
-            Loiter active
-          </span>
+      <div className="p-2.5 rounded-xl border border-[var(--store-line)] bg-[rgba(255,255,255,0.02)] space-y-1">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[12px] font-semibold text-[var(--store-ink)]">Loiter active</span>
           <button
             type="button"
             onClick={onClearLoiter}
-            className="store-text-muted hover:text-[var(--wb-blue)]"
+            className="glass-icon-btn !w-7 !h-7 !rounded-lg"
             title="Clear loiter plan"
+            aria-label="Clear loiter plan"
           >
-            <X className="w-3 h-3" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
-        <p className="font-mono store-text-muted">Transit {formatHHMM(uas.loiter.transitTime_min)}</p>
-        <p className="font-mono store-text-muted">On station {formatHHMM(uas.loiter.timeOnStation_min)}</p>
-        <p className="font-mono store-text-muted">RTH {formatHHMM(uas.loiter.returnTime_min)}</p>
+        <dl className="font-mono text-[12px]">
+          <div className="flex justify-between gap-2">
+            <dt className="font-sans store-text-body">Transit</dt>
+            <dd className="tabular-nums text-[var(--store-ink)]">{formatHHMM(uas.loiter.transitTime_min)}</dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt className="font-sans store-text-body">On station</dt>
+            <dd className="tabular-nums text-[var(--store-ink)]">{formatHHMM(uas.loiter.timeOnStation_min)}</dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt className="font-sans store-text-body">Return to home</dt>
+            <dd className="tabular-nums text-[var(--store-ink)]">{formatHHMM(uas.loiter.returnTime_min)}</dd>
+          </div>
+        </dl>
         {uas.loiter.exceedsEndurance && (
-          <p className="text-[var(--wb-blue)] font-semibold text-[11px]">
-            Exceeds endurance envelope
-          </p>
+          <p className="text-[12px] font-semibold text-[#FCD34D]">Exceeds endurance envelope</p>
         )}
       </div>
     )
@@ -49,19 +57,13 @@ export function LoiterControls({
   return (
     <div className="space-y-1.5">
       {loiterPlacing && (
-        <p className="text-[11px] text-[var(--wb-blue)] animate-pulse">
-          Click the map to set loiter point
-        </p>
+        <p className="text-[12px] text-[#6CB8FF]">Click the map to set the loiter point</p>
       )}
       <button
         type="button"
         onClick={onPlaceLoiter}
-        className={cn(
-          'w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors border',
-          loiterPlacing
-            ? 'nav-item-active'
-            : 'store-panel-inner store-text-body hover:text-white border-[var(--store-line)]',
-        )}
+        aria-pressed={loiterPlacing}
+        className={cn('btn-glass w-full !min-h-8 !text-[12px]', loiterPlacing && 'primary')}
       >
         <MapPin className="w-3.5 h-3.5" />
         Place loiter

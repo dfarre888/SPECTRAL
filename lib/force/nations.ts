@@ -39,7 +39,7 @@ export const FORCE_NATIONS: ForceNation[] = [
     shortName: 'China',
     side: 'red',
     region: 'Indo-Pacific',
-    note: 'Largest catalog in this set — air, land AD, and maritime strike mass. Default Red for SCS and northern Australia.',
+    note: 'Largest catalog in this set: air, land AD, and maritime strike mass. Default Red for SCS and northern Australia.',
   },
   {
     code: 'RUS',

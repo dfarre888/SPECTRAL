@@ -1171,3 +1171,13 @@ p {
 [data-theme="light"] .shell-marking { color: #9A5B00; }
 /* Chips drawn over imagery keep their night styling in either theme. */
 .on-imagery { color: rgba(255, 255, 255, 0.88) !important; background: rgba(0, 0, 0, 0.55) !important; border-color: rgba(255, 255, 255, 0.16) !important; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+
+/* Data-text hues are tuned for black. On paper the same hue needs to be
+   darker to hold AA, so the common ones are remapped here in one place
+   rather than threading a theme check through every component. */
+[data-theme="light"] :is(.text-\[\#FF8A98\], .text-\[\#FF5C6E\]) { color: #C21F37; }
+[data-theme="light"] :is(.text-\[\#FCD34D\], .text-\[\#FBBF24\], .text-\[\#FDE68A\], .text-\[\#F5B94A\]) { color: #A16207; }
+[data-theme="light"] :is(.text-\[\#67E8F9\], .text-\[\#06B6D4\], .text-\[\#22D3EE\]) { color: #0E7490; }
+[data-theme="light"] :is(.text-\[\#4ADE80\], .text-\[\#6EE7A0\]) { color: #15803D; }
+[data-theme="light"] .text-\[\#6CB8FF\] { color: #0A5FC0; }
+[data-theme="light"] .text-\[\#C4B5FD\] { color: #6D28D9; }

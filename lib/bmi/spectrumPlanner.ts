@@ -90,7 +90,8 @@ export class SpectrumPlanner {
     const warnings: string[] = []
     for (const o of occupancy) {
       if (o.congestion === 'congested') {
-        warnings.push(`${o.label} band congested (${o.bearer_count} bearers) — deconfliction needed`)
+        const band = /band$/i.test(o.label) ? o.label : `${o.label} band`
+        warnings.push(`${band} congested (${o.bearer_count} bearers): deconfliction needed`)
       }
     }
 

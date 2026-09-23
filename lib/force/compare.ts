@@ -20,19 +20,19 @@ function cellCopy(
   if (aCount === 0 && bCount === 0) {
     return {
       so_what: `Neither catalog lists a ${FORCE_EFFECT_LABEL[effect]} type. Do not invent the capability.`,
-      gap: 'Both sides — effect not represented in this OSINT set.',
+      gap: 'Both sides: effect not represented in this OSINT set.',
     }
   }
   if (aCount === 0) {
     return {
       so_what: `${aN} has no catalogued ${FORCE_EFFECT_LABEL[effect]} type. ${bN} holds the effect in this set.`,
-      gap: `${aN} — cannot generate this effect from catalogued types.`,
+      gap: `${aN}: cannot generate this effect from catalogued types.`,
     }
   }
   if (bCount === 0) {
     return {
       so_what: `${bN} has no catalogued ${FORCE_EFFECT_LABEL[effect]} type. ${aN} holds the effect in this set.`,
-      gap: `${bN} — cannot generate this effect from catalogued types.`,
+      gap: `${bN}: cannot generate this effect from catalogued types.`,
     }
   }
   if (effect === 'finish' || effect === 'sea_control' || effect === 'shield') {
@@ -40,10 +40,10 @@ function cellCopy(
     return {
       so_what:
         aCount === bCount
-          ? `Type counts are close. Discriminate on quality, basing, and munitions — not hull count.`
+          ? `Type counts are close. Discriminate on quality, basing, and munitions, not hull count.`
           : `${aN} ${aCount} vs ${bN} ${bCount} catalogued types. Mass favours the larger list; it is not a campaign result.`,
       gap: heavier
-        ? `${heavier} — fewer types in this effect. Ask whether munitions and basing close the gap.`
+        ? `${heavier}: fewer types in this effect. Ask whether munitions and basing close the gap.`
         : 'No type-count gap. Look at sensors, tankers, and AD density instead.',
     }
   }
@@ -51,9 +51,9 @@ function cellCopy(
     so_what: `${aN} ${aCount} vs ${bN} ${bCount} types. The side that keeps this node alive (AEW, tanker, C2) usually keeps the fight.`,
     gap:
       aCount < bCount
-        ? `${aN} — thinner ${FORCE_EFFECT_LABEL[effect]}. Protect the few nodes you have.`
+        ? `${aN}: thinner ${FORCE_EFFECT_LABEL[effect]}. Protect the few nodes you have.`
         : bCount < aCount
-          ? `${bN} — thinner ${FORCE_EFFECT_LABEL[effect]}.`
+          ? `${bN}: thinner ${FORCE_EFFECT_LABEL[effect]}.`
           : 'Parity in type count. Discriminate on persistence and EMCON.',
   }
 }
@@ -87,7 +87,7 @@ export function buildNationCompare(a: NationForce, b: NationForce): NationCompar
     a,
     b,
     cells,
-    headline: `${a.nation.shortName} vs ${b.nation.shortName} — effect comparison, not a winner.`,
+    headline: `${a.nation.shortName} vs ${b.nation.shortName}: effect comparison, not a winner.`,
     caveat:
       'Hull and type counts are OSINT catalog depth, not order-of-battle strength. Munitions, crew, basing, and classified sensors are not in this set. Do not brief a campaign winner from this matrix.',
   }

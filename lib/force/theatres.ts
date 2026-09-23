@@ -27,9 +27,9 @@ export const FORCE_THEATRES: TheatreTemplate[] = [
     defaultRed: 'PRK',
     date_of_information: 'August 2026',
     briefing:
-      'ROK is not in this seven-nation catalog — treat USA/JPN as the Blue increment, not the full Combined Forces Command. DPRK rows are artillery, ballistic missiles, and coastal defence; quality is Estimated. Japan adds home-island AD and MPA, not a ground campaign.',
+      'ROK is not in this seven-nation catalog; treat USA/JPN as the Blue increment, not the full Combined Forces Command. DPRK rows are artillery, ballistic missiles, and coastal defence; quality is Estimated. Japan adds home-island AD and MPA, not a ground campaign.',
     so_what:
-      'The fight is massed land fires and missiles vs layered AD and ISR. A US-only air package without ROK ground AD is an incomplete work-up — flag that gap on the AAR.',
+      'The fight is massed land fires and missiles vs layered AD and ISR. A US-only air package without ROK ground AD is an incomplete work-up; flag that gap on the AAR.',
   },
   {
     id: 'north-aus',

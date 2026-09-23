@@ -1,16 +1,20 @@
 import type { ConflictIncidentType } from '@/lib/conflicts/types'
 
+/**
+ * Strike types share the red family (red means threat across the app);
+ * orange is reserved for IR-band data, so no incident type uses it.
+ */
 export const INCIDENT_TYPE_COLOR: Record<ConflictIncidentType, string> = {
-  uas_strike: '#F97316',
+  uas_strike: '#FF5C6E',
   gnss_denial: '#06B6D4',
   ew: '#A78BFA',
   naval: '#38BDF8',
   isr: '#4ADE80',
-  swarm: '#FB7185',
+  swarm: '#F472B6',
   cruise_strike: '#EAB308',
-  ballistic_strike: '#F43F5E',
+  ballistic_strike: '#E11D48',
   intercept: '#22D3EE',
-  strike: '#FB923C',
+  strike: '#FDA4AF',
   other: '#94A3B8',
 }
 

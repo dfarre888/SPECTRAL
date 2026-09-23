@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, type ReactNode } from 'react'
 import Link from 'next/link'
+import { INCIDENT_TYPE_COLOR, normalizeIncidentType } from '@/lib/conflicts/incident-style'
 
 export interface HeroIncidentPoint {
   id: string
@@ -28,19 +29,6 @@ interface CommandHeroProps {
 const LON0 = 128
 const LAT0 = -14
 const RAD = Math.PI / 180
-
-const TYPE_COLOUR: Record<string, string> = {
-  uas_strike: '#FF5C6E',
-  strike: '#FF5C6E',
-  cruise_strike: '#FF5C6E',
-  ballistic_strike: '#FF5C6E',
-  swarm: '#FF5C6E',
-  gnss_denial: '#22D3EE',
-  ew: '#A78BFA',
-  naval: '#2997FF',
-  isr: '#4ADE80',
-  intercept: '#FBBF24',
-}
 
 interface Plotted {
   key: string
@@ -88,7 +76,8 @@ export function CommandHero({ title, subtitle, switcher, instruments, points, bu
         key,
         x: pos.x,
         y: pos.y,
-        colour: TYPE_COLOUR[p.type] ?? '#A1A1A6',
+        // Same colours as the Incident Timeline's type pills.
+        colour: INCIDENT_TYPE_COLOR[normalizeIncidentType(p.type)],
         count: 1,
         label: p.title,
       })

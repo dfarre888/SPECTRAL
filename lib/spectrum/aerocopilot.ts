@@ -166,6 +166,31 @@ function nameTokens(name: string): string[] {
 /* ----------------------------- main entry ----------------------------- */
 
 export function askCopilot(query: string, ctx: CopilotContext): CopilotResponse {
+  return tidy(routeQuery(query, ctx));
+}
+
+/**
+ * House style for everything the engine says: no em dashes in UI copy. Library
+ * reasons and verdicts arrive with them, so they are normalised here once.
+ */
+function tidy(res: CopilotResponse): CopilotResponse {
+  const fix = (s: string) => s.replace(/\s+\u2014\s+/g, ', ').replace(/\u2014/g, ', ');
+  return {
+    ...res,
+    answer: fix(res.answer),
+    reasoning: res.reasoning?.map(fix),
+    followups: res.followups?.map(fix),
+  };
+}
+
+/** `~$0k/shot` hides cheap effectors; say what a shot actually costs. */
+function fmtUsd(n: number): string {
+  if (n >= 1e6) return `$${(n / 1e6).toFixed(1)}M`;
+  if (n >= 1e3) return `$${Math.round(n / 1e3)}k`;
+  return `$${Math.max(1, Math.round(n))}`;
+}
+
+function routeQuery(query: string, ctx: CopilotContext): CopilotResponse {
   const intent = detectIntent(query);
   const { matchedPlatforms, matchedRadars } = findEntities(query, ctx);
 
@@ -346,16 +371,21 @@ function handleCounter(
     const effective = ranked.filter((a) => a.verdict === 'effective');
     const marginal = ranked.filter((a) => a.verdict === 'marginal');
     const best = effective.slice(0, 4);
+    const top = best[0];
+    const exchange =
+      top?.cost_exchange && top.effector.cost_per_shot_usd != null
+        ? top.cost_exchange.replace(/^~\$[\d.]+[kM]\/shot/, `~${fmtUsd(top.effector.cost_per_shot_usd)}/shot`)
+        : top?.cost_exchange ?? null;
 
     return {
       answer: best.length
-        ? `Against ${red.name}, your best kinetic/DE options are ${best.map((a) => a.effector.name).join(', ')}. ${best[0].cost_exchange ? `Top pick exchange: ${best[0].cost_exchange}.` : ''} I\'ve staged them — open the map to see engagement envelopes.`
+        ? `Against ${red.name}, your best kinetic/DE options are ${best.map((a) => a.effector.name).join(', ')}. ${exchange ? `Top pick exchange: ${exchange}.` : ''} I\'ve staged them; open the map to see engagement envelopes.`
         : marginal.length
         ? `Nothing gives a clean, economical kill of ${red.name}. Marginal options: ${marginal.slice(0, 3).map((a) => a.effector.name).join(', ')} — capable but a poor cost-exchange. Favour a cheap layer (HPM/gun) if available.`
         : `No effector in your inventory can finish ${red.name}. You have a FINISH gap — add an appropriate shooter.`,
       reasoning: ranked.slice(0, 5).map((a) => `${a.effector.name}: ${a.verdict}${a.reasons[0] ? ` — ${a.reasons[0]}` : ''}`),
       action: { navigate: 'map', highlightIds: best.map((a) => a.effector.id), placeIds: best.map((a) => a.effector.id), detailId: red.id },
-      refs: [{ id: red.id, name: red.name, side: 'red' }, ...best.slice(0, 3).map((a) => ({ id: a.effector.id, name: a.effector.name, side: 'blue' as Side }))],
+      refs: [{ id: red.id, name: red.name, side: 'red' }, ...best.map((a) => ({ id: a.effector.id, name: a.effector.name, side: 'blue' as Side }))],
       followups: [`What's the full kill chain on ${red.name}?`, `Can I find and fix ${red.name}?`, `What if ${red.name} comes in a swarm?`],
     };
   }

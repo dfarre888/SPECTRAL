@@ -1,7 +1,12 @@
 /**
- * Build a conflict-intel bundle on a CONNECTED machine.
+ * Build a Watchfloor intel bundle on a CONNECTED machine.
  *
- *   npx tsx scripts/build-intel-bundle.ts [--days 2] [--out data/intel/bundles]
+ *   npm run intel:bundle -- [--days 2] [--out data/intel/bundles]
+ *
+ * If the signing key exists (~/.spectral/keys/intel-signing.key, see
+ * scripts/intel-keygen.ts) the bundle is signed with ML-DSA-87 over a SHA-384
+ * digest before it is written (lib/trust/bundle-signature.ts). Without the key
+ * the bundle is written unsigned and the instance labels it so.
  *
  * Pulls open feeds, turns them into graded leads, and writes a bundle the
  * air-gapped instance can import (lib/conflicts/intel-bundle.ts). Never run
@@ -22,6 +27,8 @@ import { join } from 'node:path'
 import { cellToLatLng } from 'h3-js'
 import { FORCE_CATALOG } from '../data/force-catalog'
 import { buildBundle, validateBundle } from '../lib/conflicts/intel-bundle'
+import { formatKeyId, signBundle } from '../lib/trust/bundle-signature'
+import { loadSigningKey } from '../lib/trust/intel-keys'
 import {
   clusterGpsJam, corroborate, googleNewsToArticles, gpsJamClusterToIncident, leadToIncident, mergeClustersByTheatre, milAircraftByTheatre,
   parseFirmsCsv, parseGdeltExport, parseGpsJamCsv, theatreSnapshots, withGdelt, withThermal,
@@ -223,12 +230,17 @@ async function main() {
   if (!v.ok) throw new Error(`Bundle failed self-validation: ${v.message}`)
   mkdirSync(OUT, { recursive: true })
   const file = join(OUT, `${new Date().toISOString().slice(0, 10)}.json`)
-  writeFileSync(file, JSON.stringify({
+  const out = {
     ...bundle,
     attribution: ['GDELT Project (gdeltproject.org)', 'Google News RSS (outlets as cited)', 'NASA FIRMS / LANCE (firms.modaps.eosdis.nasa.gov)', 'GPSJam by John Wiseman (gpsjam.org)', 'adsb.lol community ADS-B'],
     snapshots: { generatedAt: bundle.manifest.generatedAt, theatres: snapshots },
-  }, null, 2))
+  }
+  // Sign last, over everything above. Any stream added to `out` is covered.
+  const key = loadSigningKey()
+  const final = key ? signBundle(out, key) : out
+  writeFileSync(file, JSON.stringify(final, null, 2))
   console.log(`Wrote ${file}: ${bundle.manifest.incidentCount} incidents, checksum ${bundle.manifest.checksum}`)
+  console.log(key ? `Signed ML-DSA-87, key ${formatKeyId(key.keyId)}` : 'UNSIGNED: no signing key on this machine (npm run intel:keygen)')
 }
 
 main().catch((e) => { console.error(e); process.exit(1) })

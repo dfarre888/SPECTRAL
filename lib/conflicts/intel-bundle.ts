@@ -11,13 +11,20 @@
  * nothing happened, when it means nobody told the machine. Every read of this
  * data therefore carries its age, and the UI is expected to show it.
  *
- * Integrity here is a checksum, which detects corruption in transit and casual
- * alteration. It is NOT a signature and must not be described as one — real
- * tamper-evidence needs a signing key and a key-management story that belongs to
- * the customer's accreditation, not to this file.
+ * Two integrity layers:
+ *   - checksum (here): FNV-1a over the incidents. Catches corruption on media.
+ *     It is NOT a signature; anyone can recompute it.
+ *   - signature (lib/trust/bundle-signature.ts): ML-DSA-87 over a SHA-384
+ *     digest of the whole bundle. Proves origin and that nothing changed.
+ *     validateBundle checks it when the caller passes a verifier, which the
+ *     server does whenever a public key is configured
+ *     (lib/trust/intel-keys.ts validateBundleForImport).
+ *
+ * This module stays dependency-free because client components import intelAge.
  */
 
 import type { ConflictIncident } from '@/lib/conflicts/types'
+import type { SignatureCheck } from '@/lib/trust/bundle-signature'
 
 export const BUNDLE_FORMAT_VERSION = 1
 
@@ -104,12 +111,26 @@ export type BundleRejection =
   | 'count_mismatch'
   | 'checksum_mismatch'
   | 'future_dated'
+  | 'signature_invalid'
+  | 'signature_required'
 
 export interface BundleValidation {
   ok: boolean
   rejection: BundleRejection | null
   /** Operator-facing explanation. Never just a code. */
   message: string
+  /** Present when a signature verifier was supplied. */
+  signature?: SignatureCheck
+}
+
+export interface ValidateBundleOptions {
+  /**
+   * Signature check against the instance's trusted key. Supplied by the server
+   * (lib/trust/intel-keys.ts) so this module needs no crypto dependency.
+   */
+  verifySignature?: (bundle: unknown) => SignatureCheck
+  /** Reject bundles whose signature is not verified (unsigned or unverifiable). */
+  requireSignature?: boolean
 }
 
 /**
@@ -119,7 +140,11 @@ export interface BundleValidation {
  * clock problem on the producing machine or deliberate alteration, and both
  * make the age figure meaningless — which is the whole point of the format.
  */
-export function validateBundle(input: unknown, now: Date = new Date()): BundleValidation {
+export function validateBundle(
+  input: unknown,
+  now: Date = new Date(),
+  opts: ValidateBundleOptions = {},
+): BundleValidation {
   const b = input as IntelBundle | null
   if (!b || typeof b !== 'object' || !b.manifest || !Array.isArray(b.incidents)) {
     return { ok: false, rejection: 'malformed', message: 'Not a recognisable intel bundle.' }
@@ -143,7 +168,7 @@ export function validateBundle(input: unknown, now: Date = new Date()): BundleVa
     return {
       ok: false,
       rejection: 'checksum_mismatch',
-      message: 'Checksum does not match — the bundle was corrupted or altered in transit.',
+      message: 'Checksum does not match. The bundle was corrupted or altered in transit.',
     }
   }
   const gen = Date.parse(m.generatedAt)
@@ -155,10 +180,37 @@ export function validateBundle(input: unknown, now: Date = new Date()): BundleVa
     return {
       ok: false,
       rejection: 'future_dated',
-      message: 'Bundle is dated in the future — check the clock on the producing machine.',
+      message: 'Bundle is dated in the future. Check the clock on the producing machine.',
     }
   }
-  return { ok: true, rejection: null, message: `Valid bundle, ${b.incidents.length} incidents.` }
+  let signature: SignatureCheck | undefined
+  if (opts.verifySignature) {
+    signature = opts.verifySignature(input)
+    if (signature.state === 'invalid') {
+      return {
+        ok: false,
+        rejection: 'signature_invalid',
+        message: `Signature check failed: ${signature.reason}`,
+        signature,
+      }
+    }
+  }
+  if (opts.requireSignature && signature?.state !== 'verified') {
+    return {
+      ok: false,
+      rejection: 'signature_required',
+      message: signature
+        ? `This instance only accepts signed bundles. ${signature.reason}`
+        : 'This instance only accepts signed bundles and no verifier was supplied.',
+      signature,
+    }
+  }
+  return {
+    ok: true,
+    rejection: null,
+    message: `Valid bundle, ${b.incidents.length} incidents.`,
+    ...(signature ? { signature } : {}),
+  }
 }
 
 export type Freshness = 'current' | 'aging' | 'stale' | 'expired'

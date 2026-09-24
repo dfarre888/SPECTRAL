@@ -1,18 +1,19 @@
 /**
- * AeroCopilot — Claude API wiring (documented for Cursor).
- * ========================================================
- * The dock uses the offline `askCopilot` engine by default. To upgrade to a
- * true Level-4 reasoning assistant backed by Claude, implement a server route
- * that calls the Anthropic API and returns the SAME `CopilotResponse` shape so
- * the UI is unchanged.
+ * AeroCopilot model prompt.
  *
- * Recommended architecture (matches the A3DM stack):
- *   app/api/aerocopilot/route.ts  (Next.js Route Handler, runs server-side)
- *     - receives { query, context: { platforms, radars } }
- *     - calls Anthropic Messages API with AEROCOPILOT_SYSTEM + tools
- *     - returns CopilotResponse JSON
+ * Wiring (as built):
+ *   - Offline is the default (SPECTRAL_AI_MODE unset or 'offline'): the dock
+ *     answers with the rules engine in lib/spectrum/aerocopilot.ts and makes
+ *     no model call.
+ *   - With SPECTRAL_AI_MODE=bedrock and AWS credentials, the dock POSTs to
+ *     app/api/aerocopilot/route.ts, which sends AEROCOPILOT_SYSTEM and
+ *     buildCopilotUserMessage() to Claude through lib/claude/bedrock.ts
+ *     (AWS Bedrock, ap-southeast-2 endpoint) and returns the same
+ *     CopilotResponse shape plus the engine label and audit receipt.
+ *   - Every answer, from either engine, is written to the AI audit log
+ *     (lib/trust/ai-audit.ts).
  *
- * Keep the ANTHROPIC_API_KEY server-side only (never in the client bundle).
+ * No other model provider is called. Credentials stay server-side.
  */
 
 import type { Platform } from './types';
@@ -112,28 +113,3 @@ PLATFORMS = ${JSON.stringify(plats)}
 RADARS = ${JSON.stringify(rads)}
 EFFECTORS = ${JSON.stringify(effs)}`;
 }
-
-/**
- * Example Route Handler (for app/api/aerocopilot/route.ts) — pseudocode:
- *
- *   import Anthropic from '@anthropic-ai/sdk';
- *   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
- *   export async function POST(req: Request) {
- *     const { query, context } = await req.json();
- *     const msg = await anthropic.messages.create({
- *       model: 'claude-sonnet-4-20250514',
- *       max_tokens: 1200,
- *       system: AEROCOPILOT_SYSTEM,
- *       messages: [{ role: 'user', content: buildCopilotUserMessage(query, context.platforms, context.radars) }],
- *     });
- *     const text = msg.content.filter(b => b.type === 'text').map(b => b.text).join('');
- *     const json = JSON.parse(text.replace(/```json|```/g, '').trim());
- *     return Response.json(json);
- *   }
- *
- * Then in AeroCopilotDock.run(), swap the offline call for:
- *   const res = await fetch('/api/aerocopilot', { method:'POST', body: JSON.stringify({ query: q, context: { platforms, radars } }) }).then(r => r.json());
- *
- * Fallback: if the fetch fails, call the offline askCopilot() so the dock
- * always works even without the API.
- */

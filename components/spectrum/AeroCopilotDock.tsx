@@ -7,14 +7,28 @@
  * shows the answer + reasoning, and fires actions that navigate the app and
  * pre-select / highlight platforms and radars. It can be minimised to a pill
  * so it never hides data.
+ *
+ * Honesty rules: every answer names the engine that produced it and the
+ * library records it cites, and is written to the append-only AI audit log.
+ * In offline mode (the default) no request leaves for a model: the rules
+ * engine answers instantly in the browser and only the audit entry is posted
+ * to this instance.
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowUp, ChevronDown, ChevronUp, Minus, Sparkles } from 'lucide-react';
+import { ArrowUp, ChevronDown, ChevronUp, Cpu, Minus, Sparkles } from 'lucide-react';
 import type { Platform } from '@/lib/spectrum/types';
 import type { RadarSystem } from '@/lib/spectrum/radar-types';
 import type { EffectorSystem } from '@/lib/spectrum/effector-types';
 import { askCopilot, CopilotResponse, CopilotAction } from '@/lib/spectrum/aerocopilot';
+import {
+  ADVICE_ONLY,
+  OFFLINE_ENGINE,
+  type AiEngineInfo,
+  type AiModeStatus,
+  type AuditReceipt,
+  type EngineCopilotResponse,
+} from '@/lib/spectrum/aerocopilot-engine';
 
 export interface AeroCopilotDockProps {
   platforms: Platform[];
@@ -26,11 +40,17 @@ export interface AeroCopilotDockProps {
 }
 
 interface Turn {
+  id: number;
   role: 'user' | 'copilot';
   text: string;
   reasoning?: string[];
   followups?: string[];
   refs?: { id: string; name: string; side: string }[];
+  /** The engine that actually produced this answer. */
+  engine?: AiEngineInfo;
+  /** Bedrock was selected but failed, so the offline engine answered. */
+  fallback?: boolean;
+  audit?: 'pending' | 'failed' | AuditReceipt;
 }
 
 const MIN_KEY = 'spectra.copilot.minimised';
@@ -53,6 +73,26 @@ export function AeroCopilotDock({ platforms, radars, effectors = [], onAction, o
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const dockRef = useRef<HTMLDivElement>(null);
+  const turnId = useRef(0);
+  // Which engine answers on this instance. Until the server says otherwise the
+  // dock assumes offline, which is also the server default.
+  const [mode, setMode] = useState<AiModeStatus | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    fetch('/api/aerocopilot', { cache: 'no-store' })
+      .then((r) => (r.ok ? (r.json() as Promise<AiModeStatus>) : null))
+      .then((m) => {
+        if (live && m?.engine) setMode(m);
+      })
+      .catch(() => {
+        /* offline default stands */
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
+  const activeEngine = mode?.engine ?? OFFLINE_ENGINE;
 
   // Remember a minimised dock per viewer (convenience only).
   useEffect(() => {
@@ -85,54 +125,94 @@ export function AeroCopilotDock({ platforms, radars, effectors = [], onAction, o
     return () => ro.disconnect();
   }, [onHeightChange, minimised]);
 
+  const patchTurn = (id: number, patch: Partial<Turn>) =>
+    setTurns((t) => t.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+
+  /** Offline answers are computed here, so the browser reports them to the audit log. */
+  const logOffline = async (id: number, q: string, res: CopilotResponse, fallback: boolean) => {
+    try {
+      const r = await fetch('/api/v1/ai-audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          feature: 'aerocopilot',
+          question: q,
+          engine: 'offline',
+          answer: res.answer,
+          refs: res.refs ?? [],
+          fallback,
+        }),
+        keepalive: true,
+      });
+      patchTurn(id, { audit: r.ok ? ((await r.json()) as AuditReceipt) : 'failed' });
+    } catch {
+      patchTurn(id, { audit: 'failed' });
+    }
+  };
+
   const run = async (q: string) => {
     if (!q.trim()) return;
-    setTurns((t) => [...t, { role: 'user', text: q }]);
+    setTurns((t) => [...t, { id: ++turnId.current, role: 'user', text: q }]);
     setInput('');
-    setThinking(true);
     setOpen(true);
     setMin(false);
 
     let res: CopilotResponse | null = null;
+    let engine: AiEngineInfo = OFFLINE_ENGINE;
+    let audit: Turn['audit'] = 'pending';
+    let fallback = false;
 
-    // A hung request should not leave the dock reasoning forever in a briefing:
-    // after 25 s the offline engine answers instead.
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 25000);
-    try {
-      const apiRes = await fetch('/api/aerocopilot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q, platforms, radars, effectors }),
-        signal: ctrl.signal,
-      });
-      if (apiRes.ok) {
-        res = (await apiRes.json()) as CopilotResponse;
+    if (activeEngine.engine === 'bedrock') {
+      setThinking(true);
+      // A hung request should not leave the dock reasoning forever in a briefing:
+      // after 25 s the offline engine answers instead, and says so.
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 25000);
+      try {
+        const apiRes = await fetch('/api/aerocopilot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: q, platforms, radars, effectors }),
+          signal: ctrl.signal,
+        });
+        if (apiRes.ok) {
+          const body = (await apiRes.json()) as EngineCopilotResponse;
+          res = body;
+          engine = body.engine;
+          audit = body.audit ?? 'failed';
+        }
+      } catch {
+        // fall through to offline engine
+      } finally {
+        clearTimeout(timer);
       }
-    } catch {
-      // fall through to offline engine
-    } finally {
-      clearTimeout(timer);
+      setThinking(false);
+      if (!res) fallback = true;
     }
 
     if (!res) {
-      await new Promise((r) => setTimeout(r, 280));
       res = askCopilot(q, { platforms, radars, effectors });
+      engine = OFFLINE_ENGINE;
+      audit = 'pending';
     }
 
-    setThinking(false);
-
+    const id = ++turnId.current;
     setTurns((t) => [
       ...t,
       {
+        id,
         role: 'copilot',
         text: res.answer,
         reasoning: res.reasoning,
         followups: res.followups,
         refs: res.refs,
+        engine,
+        fallback,
+        audit,
       },
     ]);
     if (res.action) onAction(res.action);
+    if (engine.engine === 'offline') void logOffline(id, q, res, fallback);
   };
 
   if (minimised) {
@@ -207,10 +287,16 @@ export function AeroCopilotDock({ platforms, radars, effectors = [], onAction, o
                 radar and band in the library. Ask it to place defences on the map, find which drones survive a threat
                 picture, run a what-if engagement, or explain a radar. It opens the right view and highlights what to
                 pick.
+                <span style={{ display: 'block', marginTop: 6, fontSize: 12, color: 'var(--store-ink-mute)' }}>
+                  {activeEngine.engine === 'offline'
+                    ? 'Answers come from the offline engine: no data leaves this instance.'
+                    : `Answers come from ${activeEngine.label}.`}{' '}
+                  {ADVICE_ONLY}
+                </span>
               </p>
             )}
-            {turns.map((t, i) => (
-              <Bubble key={i} turn={t} onFollowup={run} />
+            {turns.map((t) => (
+              <Bubble key={t.id} turn={t} onFollowup={run} />
             ))}
             {thinking && (
               <div className="sx-mono" style={{ fontSize: 12, color: 'var(--store-ink-mute)', padding: '4px 0 10px' }}>
@@ -376,15 +462,21 @@ function Bubble({ turn, onFollowup }: { turn: Turn; onFollowup: (q: string) => v
           ))}
         </ul>
       )}
-      {turn.refs && turn.refs.length > 0 && (
-        <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
-          {turn.refs.map((r) => (
+      <div
+        style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap', alignItems: 'center' }}
+        title="Platform library records this answer draws on. Each record lists its open sources in its dossier."
+      >
+        <span style={{ fontSize: 11.5, color: 'var(--store-ink-mute)', marginRight: 2 }}>Sources</span>
+        {turn.refs && turn.refs.length > 0 ? (
+          turn.refs.map((r) => (
             <span key={r.id} className={`tag ${r.side === 'red' ? 'red' : r.side === 'blue' ? 'blue' : ''}`}>
               {r.name}
             </span>
-          ))}
-        </div>
-      )}
+          ))
+        ) : (
+          <span style={{ fontSize: 11.5, color: 'var(--store-ink-mute)' }}>No library records cited</span>
+        )}
+      </div>
       {turn.followups && turn.followups.length > 0 && (
         <div style={{ display: 'flex', gap: 7, marginTop: 10, flexWrap: 'wrap' }}>
           {turn.followups.map((f) => (
@@ -394,6 +486,51 @@ function Bubble({ turn, onFollowup }: { turn: Turn; onFollowup: (q: string) => v
           ))}
         </div>
       )}
+      {turn.engine && <Provenance turn={turn} />}
+    </div>
+  );
+}
+
+/** Engine, human accountability and audit receipt, under every answer. */
+function Provenance({ turn }: { turn: Turn }) {
+  const engine = turn.engine!;
+  const audit = turn.audit;
+  const auditText =
+    audit === 'pending' ? 'Logging' : audit === 'failed' || !audit ? 'Not logged' : `Logged ${audit.answerSha256.slice(0, 8)}`;
+  const auditTitle =
+    audit && typeof audit === 'object'
+      ? `Audit entry ${audit.id}, ${audit.store === 'local' ? 'stored locally on this instance' : 'stored in the database'}. SHA-256 of this answer: ${audit.answerSha256}`
+      : audit === 'failed'
+        ? 'The audit log could not be written for this answer.'
+        : undefined;
+  return (
+    <div
+      className="sx-prov"
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        gap: '4px 12px',
+        marginTop: 10,
+        paddingTop: 8,
+        borderTop: '1px solid var(--glass-line)',
+        fontSize: 11.5,
+        lineHeight: 1.4,
+        color: 'var(--store-ink-mute)',
+      }}
+    >
+      <span
+        title={`${engine.detail}${engine.modelId ? ` Model ${engine.modelId}.` : ''}`}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: 'var(--store-ink-soft)' }}
+      >
+        {engine.engine === 'offline' ? <Cpu size={12} aria-hidden /> : <Sparkles size={12} aria-hidden />}
+        {engine.label}
+        {turn.fallback ? ' (model unavailable, offline answer)' : ''}
+      </span>
+      <span>{ADVICE_ONLY}</span>
+      <span className="sx-mono" title={auditTitle} style={{ color: audit === 'failed' ? '#FCD34D' : undefined }}>
+        {auditText}
+      </span>
     </div>
   );
 }

@@ -1,0 +1,1441 @@
+{
+  "manifest": {
+    "formatVersion": 1,
+    "generatedAt": "2026-09-24T08:08:52.611Z",
+    "producedBy": "davidfarrell@connected",
+    "incidentCount": 62,
+    "checksum": "0b14b041532862f3",
+    "coverageFrom": "2026-09-22T08:35:00Z",
+    "coverageTo": "2026-09-24T06:58:00Z",
+    "classification": "UNCLASSIFIED // OSINT"
+  },
+  "incidents": [
+    {
+      "id": "osint-intercept-ukraine-2026-09-22",
+      "conflict_name": "Ukraine",
+      "incident_title": "Ukrainian STING FPV interceptor shot down modified Russian \"Shahed-136\" over Odesa region. VIDEO",
+      "incident_type": "intercept",
+      "occurred_at": "2026-09-22T08:35:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported intercept in Ukraine on 2026-09-22. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMimgFBVV95cUxQaHVxaEVISGxSdzQ4SWFGOXRhUHptN215QURNLTFfN2RlemNiODZsSWVPQ0dKc08xbENLYlBUTkVYU3JZdDNkaE5JdVBLRkk5ck9PU2Vya0JyOVpkYXJuSldtc2xUMC1hb09QajFWUm4xSnE2REFWSzctR1FuaDJvNkFhWmUwdmhpN25yZTQxbWtZU0hCLTdhWC13?oc=5",
+      "platforms_involved": [
+        "IRN-CAT-SHAHED136"
+      ],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-naval-baltic-2026-09-22",
+      "conflict_name": "Baltic",
+      "incident_title": "Russia Reroutes Grain Exports to Baltic and Arctic Ports Amid Black Sea Drone Attacks",
+      "incident_type": "naval",
+      "occurred_at": "2026-09-22T08:36:00Z",
+      "lat": 57.5,
+      "lon": 20,
+      "summary": "1 outlet (0 tier-1) reported naval in Baltic on 2026-09-22. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNZko2Y0tiSUVDbEw2WjF1YUllZG4xUVA1THAzTlJoVTA0NEF5OVVzdFBjQlozclhsTUlWM2w2ZkVqRmc3Mk5aYU81WkNoMzJNVGZxaG9kUXNTLU9Fb2c4eG9jTjhEYkRhSG5mUHUxazVVWXRWLWxFcVFreG84RHVMNW1DU0xZbE13SkptNFcxUEN1QUZ6UHc0bUxKck5pdHZia0VsVWdoT3gtdnNnclJhRVdHSUEtRk1XMVNZ?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 3,
+        "thermalKm": 150,
+        "gdeltEvents24h": 0
+      }
+    },
+    {
+      "id": "osint-strike-ukraine-2026-09-22",
+      "conflict_name": "Ukraine",
+      "incident_title": "Russia Launches Massive Combined Strike on Industrial Facilities in Dnipropetrovsk Region",
+      "incident_type": "strike",
+      "occurred_at": "2026-09-22T08:57:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported strike in Ukraine on 2026-09-22. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPX01sNmlJcjUzdlRsOTZPNzJzeEpRSll6eVl2XzVBWkdlWHRydjdIanZtbl9BelVWZ0oyRlpqZnZIV0pYdXBkYnhsVTlMbGFEbUN3VUpjbVRieXZzZm9PeHUxTzQ2bzNVSDQxc3VQUHBVNU9QcmdJY2NNUkNmMWxJZTlUX0JaaUdVQUI2RVE2Z3FQUjMwNXBoSTlXamJSdVI3dkpFTWFDaWZYZndCaGdzc2RNT0ZrRzV2Q3hURUZ3?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-uas_strike-iran-2026-09-22",
+      "conflict_name": "Iran",
+      "incident_title": "Shahed-238: Iran’s jet-powered drone redefines low-cost threat, challenges modern air defense networks",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-22T08:58:00Z",
+      "lat": 32.4,
+      "lon": 53.7,
+      "summary": "2 outlets (0 tier-1) reported uas strike in Iran on 2026-09-22. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiywFBVV95cUxNWHVsOHI2bWg0ZGNkSnpReV9KOTNCemxhdEpSdG03eHB2cEhDcTVaU1RhQXhqdmtDQk5lR0R6a2hQUHpHd2gwQl9VOHJhS2g1VTlZNkR0NEFCRjNUYmhhbFpjeWtUcEc1ZldoWTFRY3dCQ3c3X3hrbl9zQ1d3OG5JdWlIc0Q1RlBaT0ZqLTM0X0tWTmFJc1hzY1NfWWJZTjdhR1Fyem5rOGxkVWdvNi1sOS1ub0RsUXpkVklQMlM0TXRyT3hsb1B4S2s0SQ?oc=5 | https://news.google.com/rss/articles/CBMiqgFBVV95cUxNNlo4QjRzR1ZXSE10Nk5EbVkzRE1LSGFJYkxacnlILVljMHRIbU9XakktWkdjUGp6RVBnaVJvbllYRGZ3b3NzYWxyTkpLYTJFVi1uQjFLaGUwSl9Sc05PZU16czhCZWZsS0pWWmtQOXpvVjNvQTJCMUF1QXJtSHZvVVVtOHJtLWZJR2Zsa3EzRGNwTjM1djF5NldGekpGMGZMaUJLRGUtbzRjZw?oc=5",
+      "platforms_involved": [
+        "IRN-CAT-SHADED238"
+      ],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 0,
+        "thermal24h": 8,
+        "thermalKm": 150,
+        "gdeltEvents24h": 95
+      }
+    },
+    {
+      "id": "osint-swarm-ukraine-2026-09-22",
+      "conflict_name": "Ukraine",
+      "incident_title": "Ukrainian Drone Swarm Strikes Key Russian Oil Refinery in Samara",
+      "incident_type": "swarm",
+      "occurred_at": "2026-09-22T09:50:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported swarm in Ukraine on 2026-09-22. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiS0FVX3lxTFBtUjFWSkF3VnhHQ3o4bDNWT1Q3eWNQWmlQT1RDWnVXSEhha0kyR1V3TnRBY0dEcUlobWxZbkxNeVpJUWt1QVZWYjNLMA?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-ballistic_strike-korea-2026-09-22",
+      "conflict_name": "Korean Peninsula",
+      "incident_title": "North Korea tests new KN-23 missiles used to strike Ukraine - RBC-Ukraine",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-22T11:50:00Z",
+      "lat": 38,
+      "lon": 127,
+      "summary": "1 outlet (0 tier-1) reported ballistic strike in Korean Peninsula on 2026-09-22. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMikwFBVV95cUxORll1Vk1oRkZ5SGJUeExGamc4RVhYdnZGaWhFNEo2ajRQSFVMS216NDRNTGJLU1A1MS1LQ0t4TmpYeWwxNm5nUkVxZGJNS0hwRXNiNE1aRHRHX3dPdUI3LUQ5OFFaTGxxYy1HV2Exb2VscE4yVUZGREZpbHFCMmx5Q1dKYjV4TjAzQzNfUU1VVVM2M1E?oc=5",
+      "platforms_involved": [
+        "PRK-CAT-KN23"
+      ],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 9,
+        "thermalKm": 150,
+        "gdeltEvents24h": 21
+      }
+    },
+    {
+      "id": "osint-ballistic_strike-ukraine-2026-09-22",
+      "conflict_name": "Ukraine",
+      "incident_title": "Russia launched a ballistic missile strike on the Interpipe plant in Dnipro; there are fatalities",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-22T12:08:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "6 outlets (0 tier-1) reported ballistic strike in Ukraine on 2026-09-22. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMilgFBVV95cUxOSk43UDM5UWJweVFhakxEckp5MVg4bEFEZDdsTnlESmQyb3paa1dNb3k2UHI3bmpEZ0IzOXVHeHpYeVV3Y3ZQNUhKbElrajBIUjA5bGJ3VXNXLW5nOFBmSXEwWGlYSk1vX3NlMlc4bTN1NHNXNzd3MC1lbE1XdXNjbjVvdEcwOXREYkdkWHdrdV9xckJIOFE?oc=5 | https://news.google.com/rss/articles/CBMikwFBVV95cUxOZE55SzVCb3BQWFg4Q3dXaVQzc1hYTlI5b3F6Z1M0QUNVcDdCbGFkSi1uUjdZcDZsTEowdHpDNHczUHdiVG9rd19iTGUxd2pMRXRBQTNxODVQbzRFb1hRMllOcG45Vk91ZEdfNktNaUZGbmNlS1ZRX3puRlhGQTZ0YlRmb3RPRjVGOGl6TmN3azRGb3c?oc=5 | https://news.google.com/rss/articles/CBMirAFBVV95cUxOTjZXam1Ka01zT2g1S1NBdG9ac2xZUFdHOE4teTRNdnVTMldQVWVwb3ZSZ3dHX2JMMnpvc3otejQzblVYWlJtRGh0WHFMcHAzc1pPR3A4YllsbnoyYTBmVlh5MUNVWVU2a015NWFIZE16cmx1czVJQzVzby01bGRaeEo5VUROQ0g0LVB6QUdoWVY5aGwyQ0JMNkJ0Zi1oeW5aNy1PR3I2QWpFWjQy0gGyAUFVX3lxTFB2clpvYUptSThiMURKbVFiZzVXc2VJS3M2SkUweHpDZGhoQm5MU20xVExDekY5VFQtYkpOTDNFVTM4cGVYOUVEcHJ1S21UU2c4cVF6bFJLTy05M0ZpWEN4UHZzcXR5RUh1TlA1TDNXbVA0aTJHd21TRlFETG1nZ015Wm9xVWhZNVkydHotcGFRNHphUmo5TVM5d0MyN3pBOTlqM1JrREV4eXplcTVTUU9IbEE?oc=5 | https://news.google.com/rss/articles/CBMi1gFBVV95cUxPQmZkQlhEZFByZEhRSDNOWjBUYlZXQUJjNHpMU0RNNGVzV1FlUnk0WTlyalkwbkN0emRPd2gya3QzRDJhX1J1MUR1WXAwVVlhNjFZb3FzdkRBS3p5LV9UeFB5MVlqbkhRTUFjNFZ6cW50V1ZrZ3VzLUFlbVFTd1BPZVVYZDRHZG5wX0czalRGSmhDZ19wMGdKNmxhMi1BWGtwQTVva2VnOTI3X3RmWmxGZTR2RmdRMlQxWnZJeVhtVzdWd3FDTVhkY1paNDNTMzVBdGhxZDhR0gHWAUFVX3lxTE9CZmRCWERkUHJkSFFIM05aMFRiVldBQmM0ekxTRE00ZXNXUWVSeTRZOXJqWTBuQ3R6ZE93aDJrdDNEMmFfUnUxRHVZcDBVWWE2MVlvcXN2REFLenktX1R4UHkxWWpuSFFNQWM0VnpxbnRXVmtndXMtQWVtUVN3UE9lVVhkNEdkbnBfRzNqVEZKaENnX3AwZ0o2bGEyLUFYa3BBNW9rZWc5MjdfdGZabEZlNHZGZ1EyVDFadkl5WG1XN1Z3cUNNWGRjWlo0M1MzNUF0aHFkOFE?oc=5 | https://news.google.com/rss/articles/CBMirAFBVV95cUxPX1Y3UXpTbWljVUFxTF94b1ZfbUVkZF9nRHM0dGJNelU4aVpSYU1aSHB2M1E1empMM0hobzlLVFB0c3FQMUxoREtsZ2NiWHZpSThoa1pTTXNGaXpqR1RycHlzV0pqSzJ5Z3R0UHRTamRUdm40bmRQZDNzVlc1Q2JjaEFMR3hzRFhkd2xYY3hVdnR4OVNoOUNLeE5qVTVIeGNLcnRnYmFDMzB1Y1Qx?oc=5 | https://news.google.com/rss/articles/CBMikwFBVV95cUxQQVpwY0ZKM2FxQ2xZVUd5VklUOWRqaF9oaHlTTTQ0YXR5bDhaMXlkVTRWbnhhUURSLWVPRHUtM2FVeWF5d0xpR283ZEFSVlNLU2J0RmlvdWZISExWQWx3dHpWN3FnV0h0TS1UR0Q0dkp5bmkwSHNyb1hYaHZ6SWxQeFJvXzZGY2dyNHlGUUMxeFQ4ekk?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 6,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-uas_strike-baltic-2026-09-22",
+      "conflict_name": "Baltic",
+      "incident_title": "Lithuania Designs Power Substation Near Russia to Withstand Multiple Shahed Drone Attacks",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-22T12:51:00Z",
+      "lat": 57.5,
+      "lon": 20,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Baltic on 2026-09-22. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNM3BLbFk3WGw2azAzdDhOYVBnc0NOQnVfRGZtQ3gtQU91ZGdsVGZpSnp4Y2JyUm94UjJ5MkUzRGxxQ3NXYVlGVEgwZmtadUE4S1RPOXZUS2Y5V2FIb2NVVnNSaFAwLTB4R0U1aHp2NVpDTk9ZbmE2WExpdkcwYWRTM0RDVU9lcTY3c2F4UVVFczRydUc1UHQ3ZThZSWlUOTFfZkVQMldTOFdkMHh5TmEwVW5fREc5ME1BeWRQeml1M1BXSFRsYUE?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 3,
+        "thermalKm": 150,
+        "gdeltEvents24h": 0
+      }
+    },
+    {
+      "id": "osint-uas_strike-red-sea-2026-09-22",
+      "conflict_name": "Red Sea / Yemen",
+      "incident_title": "Saudi King Salman calls Houthis ‘terrorist militia’ after Mecca drone attack",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-22T15:02:00Z",
+      "lat": 15,
+      "lon": 42.5,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Red Sea / Yemen on 2026-09-22. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNMlVkYndfS0tPaUFRTWxvajBsRG9RR0lSOFZsUFJpOGFUV0UzTDROMDlQblZrRHVnYTFhdVNQR1ppbExpd1FGMDR3M2t6bEJzWkRPb2ZCLVE5REdTcXlQdkpHQVVTbjdPQm5rUEc1cEdSU1pjemc5Y0dncHUtZ0hPNzZzb1ZXb2RLWFlwV3h0b1N5VWJMQ3dfV2cyckIwSTBsN2lGV2lCczUyeWZJRGYxMlVUemljN3JBUThDRdIBwgFBVV95cUxNRkxGUXhfMFpTOXJyT0I4YWN3QUt5eFNPOGpNNzBRaXJWVjNBS0I2dG5vbG9iX2dTTXBsLWxyQzlnMENZNFlBcVhCZXl5Q2drWlp4Ykl4eENxS1EtVENscEVFS3QzMEJsSUhCUHNDZWpBWldPNTJpcVd0OTdpcExqWTdPbElQeUphNTFmY2pWalgwc1BvS3dTeFk0WTVPdXh1NEJpeHVYQ3hrRGl5UUVzNnJYc2ZHRzBjVk5LOXJxb0NoUQ?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 0
+      }
+    },
+    {
+      "id": "osint-uas_strike-israel-gaza-2026-09-22",
+      "conflict_name": "Israel / Gaza",
+      "incident_title": "Reports: Two killed in drone strike in Gaza",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-22T16:18:00Z",
+      "lat": 31.5,
+      "lon": 34.8,
+      "summary": "1 outlet (1 tier-1) reported uas strike in Israel / Gaza on 2026-09-22. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQMW03ZVprT1dXb3ZuNExxNnJKejRmMFJyaWdkM2RTQS1CdUQ1U2pmUk5xQVFMLVhKbkZoa0NReExwVFB4bDJHMU1wZlV2eG0tdDJHUVZQZVU0T3VadmdyM0JWcXpOeXJPa19RdE44cVBoSm5YOS1rQWxwd0VXYmlia1IxUkZsajd5dkgyTmhJZFFrZw?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 1,
+        "thermal24h": 15,
+        "thermalKm": 150,
+        "gdeltEvents24h": 749
+      }
+    },
+    {
+      "id": "osint-uas_strike-ukraine-2026-09-22",
+      "conflict_name": "Ukraine",
+      "incident_title": "One killed in Russian drone attack on cars in Kharkiv",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-22T17:58:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "12 outlets (3 tier-1) reported uas strike in Ukraine on 2026-09-22. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPVk1Xc1d5a2xHeFUzN2g4Sm1PbWt1aGdoSm1Zbm04Rll6Q21oSnRzRWdjeTZzbENPell2Y2NZQ2xzQnkzamZmTHZyVmVOQlM3N3Fad0tnOUFMYnhUMmEtT1dKcm1FUHBpcGgzQy1maEZOMXE0Q0lWckVQRGVoRnA0UlluZjE5c2QxREMzMUdtXzhZXzJZMi11Q3Rn?oc=5 | https://news.google.com/rss/articles/CBMiggFBVV95cUxPYV8wajc0V1lXdUV3bl95bkRIZFVpZkRjX05ncFdzT3FuRkVUMWFxVERXSHByRVBaMDBUWUNLUWg2eDBHY2ZfekhNN2RoQUdiYlpVS2FHWklLVXpab2dMU2JTZVZxU1Y2eGdjRjZQN0Y5MEdIRVVzU1FiZlhPdmNkNi13?oc=5 | https://news.google.com/rss/articles/CBMipAFBVV95cUxPUTdCOWF4dVhLTzZ3T081TXdBcFpyZ2FybmpkOWw5VmlVUW9WdzlMMGNCX2xBWFRzaGFhWXk2N1M5UmlxODA1bm16bWNZMkY1cWRKT3pfU1FETHc0aVVGVmFObUhFYm1MZWE3YnAwNDRJMzc3ajAwX09penJfek1wSXI3VEswUDhLN1lkeDNUNExKZlkzODNPOVVYZWdFa0xBdzhKaA?oc=5 | https://news.google.com/rss/articles/CBMi3gFBVV95cUxNUWFGVk1MQk1YRkR3a0FfMEF2bWFvbU5kdUVMRWttX3U1NUl2enk0VjBlb2JpWnQzOG9nSFllZUZiSk1kM1lmNUNuaElESGItTmdvSFlZdmxKRVVoTy1wTXNKYkxiNkFWc2Z3cWlYUElWc1NwNVZLY2h2VEhFaHItY2tMLTh2Y3NXX0UtVUs5YkdxakVWMTdnQmlVY3FGVjBGNURRZzR6ZEhFREtFZDBKa2xTX0FWQ00xbG9CQmZpMHBCcVRITTlVWV9YZmJEUFRaYlhJS21QVTJIQXN0blE?oc=5 | https://news.google.com/rss/articles/CBMilAFBVV95cUxNR25rQVdGZ3dqZlM1YloxR1lIcEVndV9YQkxrcWJBTFVPRzdiR0htZ2dyQlRGXzgyQnVwWWZzc1NubUZ3aVJySEU1NG1MN3FwTXBXU3lSN1RRS1QwdU1zdnFaWnU5UTJpaGk3X0d3VGtIVXZ2QnR0UnBISU9WYzhjNFk0X19scF94LWNlZlc0R2ZPaFAy?oc=5 | https://news.google.com/rss/articles/CBMimwFBVV95cUxOcm9iLUFJaWpPV1NRLWJTU2xpSktjd0RhVGJqNFNVcVVpVEFfbGRFQmdZR25Bd2ZldjZLcXBWSmVhc1h2OWQ0WW1rbXRyUnBoUFEySDVPdnVQWjM3TnczTl9DTEhhS2RfeG82ektmcXlZbVhPX253QjJXb1BjVHR5Y1VNRTJ3eFYxT3A0UjhSUjVUeTBsSGRzekczYw?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 12,
+        "tier1": 3,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-naval-romania-2026-09-23",
+      "conflict_name": "Romania / Moldova",
+      "incident_title": "Rheinmetall's Romanian Powder Plant Hits Legal Snag as Training Simulator and Naval Drone Tests Adva",
+      "incident_type": "naval",
+      "occurred_at": "2026-09-23T05:01:00Z",
+      "lat": 45.5,
+      "lon": 27.5,
+      "summary": "1 outlet (0 tier-1) reported naval in Romania / Moldova on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxOWHcwcjJQSENKUUJWM1RuMzJYWUFuaHRtdTk3dnVjb2I4R1NydFh3NUd1bnB5U3lBWk1iZ0lVbkR5TGRkTWg1WlBMS2N1RUxrQXdPbVRoblkyLVhVd1l3R29ZR2ZWYkxYdWg3Q3lTSXljVDgzZEJnMzUtdzNrY1NabHZHUktQN3RFb1dEQ2tUOFBDTVFLajlGM196MXhLVGx6SklwZ2drWlJST1VuVE5Yd2hvT1ZjenR1MWUtRjVNakFEQU5aYnRMQUhJZ3ZjMURESjNCd2l3ejlMa3F0SXc?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 1,
+        "thermalKm": 150,
+        "gdeltEvents24h": 10
+      }
+    },
+    {
+      "id": "osint-uas_strike-red-sea-2026-09-23",
+      "conflict_name": "Red Sea / Yemen",
+      "incident_title": "Alleged al-Qaeda member killed in suspected US drone strike on Yemen",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-23T05:34:00Z",
+      "lat": 15,
+      "lon": 42.5,
+      "summary": "2 outlets (0 tier-1) reported uas strike in Red Sea / Yemen on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMikwFBVV95cUxPaHowLWNHdlVnUUpnbTBlclVjdzlFT19iYUNyajM0QkZUV0VHUzN1bWdaTTdDelh5YXdLM3RmVkNmQ0lncVBhdEJCWmQzUlI4UG1NY3Z1dDlCcWpPaWJ6OTlPY1NnYlJ0dk9haVZEa1hfbHNHYWlFcExnM0lzLWljWXpjU1dzeElyb0ZVZC1MYTkzWW8?oc=5 | https://news.google.com/rss/articles/CBMisAFBVV95cUxPZTRRbDcwVzZSTlBHc29tRnllb29XVVhUOG1iNjE0TjhYYzlVZUd4dUdzV3RMZzI5YkpGd1prV0N4aW1FdVJsT3lUQjVFaUY3N1FwQ2pVMTZUQUwzaDhnSWlqaHBYM1A2NlV5dTNaVTIyTy1mTUFGcC1EMHAwbXJYclAtWHdoM1cxWFZLX3hLaFFfcGpqT2lCYkpoOU1rUzFvYkk5N2hnQzdmcnhhYVBESA?oc=5",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 0
+      }
+    },
+    {
+      "id": "osint-strike-ukraine-2026-09-23",
+      "conflict_name": "Ukraine",
+      "incident_title": "At least one killed, several injured in Russian strike on Kyiv",
+      "incident_type": "strike",
+      "occurred_at": "2026-09-23T08:11:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "3 outlets (0 tier-1) reported strike in Ukraine on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOVTIyMUIxcHVDeDhiR0VJaE5qVUtWUWV6NEJTNDVEOFdxUU9JQVVZbzFWdmhZVi1zNXhsWHRPbzdpeFQyc0FjT3NLS3VaWmo1SmNzRDJJTFhKb2tBZzhITUFNeEJZRWljS1ZCd2Z0U0Y3aDRxMWFCTVExTTlNUW9mTGhoUHlfR04zVGc?oc=5 | https://news.google.com/rss/articles/CBMiiAFBVV95cUxQc1FCWl91ZWM0emlNZUx3aE5wSGpJcGZHSDRiRGhxcXBkeUJ4czNvdWRPU0xWRm9iX3Z3SjY5Z2V5X182eXJJWnpiaUVRUkc1YWN1QVhEckRJMTVqck5LNW5LRUtITTBGbXRZOXQwQ003XzdzcE1BTVI5dTE0Nng2Z0c5VzJZUUk3?oc=5 | https://news.google.com/rss/articles/CBMiigFBVV95cUxPMVFtcmh6T1hHTlBUenhnaWRtWHA1ZUMta25BdnFQbld6RUwyYmZhdmJDWC0tYVE3MmQxenJCMDRsRTNtVFhKU1ZraXYtYno2dXJGT2dzOXlwWnFLMGdDWVpTQXRvRXYzVXppOHAxcHA4UVdVVFMxRmN6UGEzaDJ5YVpOWGtyOTNOdnc?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 3,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-ballistic_strike-red-sea-2026-09-23",
+      "conflict_name": "Red Sea / Yemen",
+      "incident_title": "Yemeni Forces Intercept Houthi Ballistic Missile",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-23T09:00:00Z",
+      "lat": 15,
+      "lon": 42.5,
+      "summary": "1 outlet (0 tier-1) reported ballistic strike in Red Sea / Yemen on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5Nem5sNGc0UGdZN0JLSWhZbUw5WWJLV3BlWWhobTRlbUVZbFRxV0NadUtySVB0aVEyX1NHbzVHMUpPUUNaNkxvVlU3Umtsb2t3R1BTNlBPMXczOGs?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 0
+      }
+    },
+    {
+      "id": "osint-uas_strike-russia-2026-09-23",
+      "conflict_name": "Russia (interior)",
+      "incident_title": "Moscow Fortifies Power Plants With Concrete After Retaliatory Ukrainian Drone Strike",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-23T10:03:00Z",
+      "lat": 55.7,
+      "lon": 37.6,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Russia (interior) on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNV1gxbDNLbEV1eTJnYUJnYUdqZ0hYbVIzYW1BVWNobWZxWlhjV1FwSm5HX0pjLVhmOFFTdGtUWXZEczlkVW84SURlRkhUWHRhSThKVkZ0bHlpVmV4YzZJUVY0Zm9xR3J6SWVNTHVtMGMwaDFkMVVYN3pPZndhaF9OSWFTRDY5TEhMLVQwMG1penJhb0NJbjFjVWxnTG02SGYzSnNNajVmOHhncldYazFGeGtQUTBVbUktQlQwVUlXbw?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 1,
+        "thermalKm": 150,
+        "gdeltEvents24h": 121
+      }
+    },
+    {
+      "id": "osint-uas_strike-israel-gaza-2026-09-23",
+      "conflict_name": "Israel / Gaza",
+      "incident_title": "Israeli drone strike kills 2 Palestinians in southern Gaza",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-23T10:48:00Z",
+      "lat": 31.5,
+      "lon": 34.8,
+      "summary": "7 outlets (0 tier-1) reported uas strike in Israel / Gaza on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNOU5Rbk5sZkxSZjFHc2Y0VTVjZ1Z2eE5TQkZkV0IzeFpFV183MjN6NU5ULUpSVVpiMmlZTzh2STNEUGpJdU01ZVNoMjBGWGNIQmlqbE1ZNVJSVVlFMjBzLVo4R2VQOEVlcWJ0ci04eVpSdVJjb0dDYjJtOTVCQ05CZ1hGbnJfSGJNNjdMOF8wMVpmX19VdXJCMlln?oc=5 | https://news.google.com/rss/articles/CBMiwwFBVV95cUxNbUdFNG1FX2JhQlhRdG9CelRxdUcxX0ZhUWFCQU9LZ3BlYkUzekQzMTl5MkZlNENVWGI4UzgtMUxldU1LalRxR0pmT05BQzUyTnNURkdvbXl2eGIzYzNTcUNPM2huYW42eHVUWXlWLWNLYkVvZnIzSUo2QTF2anBwblFFSGdjYzB1anp3QUVzWURkVERuNHQyUnNndm9ycHFrWHUwU0otY2lGVm52Wl8wSUVkQ2lVaXM0MjJsUEhIdDBsbjDSAcgBQVVfeXFMT3hhcXhTQlI1YWFTU1BSNXRuZmc5YW51cnBBRXdVR2tiejF4TW4tQnZTRlBvUUJGd0VldElCMmJUdWpjS1MtXy1rbmlkZkpuSEZzeHBtTlBkNDRHb3poVGhhWTNVTkZjalJkeWZ2T0Y3UWJTdHItYzlMMm1LQ0pDTERieW93NEtxdmU0NktFQnV2SU5pM3pfbE56cGJraU1rbXZCXzN6bDVOSHRnNnduWEF0eXZXZ0RJLUNBSW5OQ0tNTkxFdVV3eVk?oc=5 | https://news.google.com/rss/articles/CBMiqwFBVV95cUxOTjRXQUsxMkxJM3E4dEM2amkwLUcyNWRoRmJ3UU9hUWt5b1BVUTQ5YmV4SkJrLVMtUVdpNWp1aGZJaFZmT0hUaWNlcHJBUE9kT3Nhbklld3V3a2laNkNlMEs0YjhBTFJMMTJLNXhMNFd1Nk8wSEduVi0xdU1qa3RWMzRqdGlkbXZNRkpvSmxVeHJGQjFJaUo4R2g0Ti1BWGJrT3JXR2FOaE9SUjjSAbABQVVfeXFMTmdFaHJ1bFhGZm45R3VGZkg5QlhxNFlhV2huMUxZWHZYSV8zNTFsX292Z3QxTGVGdGVGZ3FBYVNVU3YzLXdkSlB5NUpwNEEtZHFXT1UxYWZxVjY3c3ZYSFBicXI5ZUZ5ZnB4Z1RHRGJEd0EzTkpLODlPQ3pRZmhlbEVJYUhWLU9Vd194UThRNVJMQnNhRFdfSGloM0RkSFRKUlpzaE9oRUtSUjlOZmtKRjk?oc=5 | https://news.google.com/rss/articles/CBMijgFBVV95cUxPb1NFM0hnWHVjLWl0Y2lEa3RkbmNxVHRTdl82NGtJbWZZSUxzbUFOdzJMS1B4NTdGZFZINWpRbDNsaU0tdDM0Wi1jUEN0cUxsUWNsR1VKaTJmRlA0cXFadnlFei1Sb2lTLVlPOF90MmZwRF9LZUhYeUtWYmo4dDRVSjM2T1RWY2dSUDVVNEhn?oc=5 | https://news.google.com/rss/articles/CBMisgFBVV95cUxNYjJULUFxNEt0eXJIS3VWRmREYjI0TW94QWUtcGlhdjN1ZGxlZlBwelRjOTc5NERGOEVDRGtSa2xzR1JHWnhTWlRrMXoteXBWbWhWaHZhcnJSQjY0OVNrOFJPaWNJbTVnSjJ1YWhMUDR4YXVKZnZvSzJaV1ZtWVFuYXhSYUh4dDBBUElDckxjZUhnaVlaWHEyb2NIbmhvREVpSFo5dzZKcGQ0dnFoa253TkxR?oc=5 | https://news.google.com/rss/articles/CBMizgJBVV95cUxPS0FOQXE5ZzhwQ244NHR4ME5HTTlkQUs1b29mZkh0M2I3ZUhZWHMxV0tkNGZLV2lhTDN1NGtta0liVjY5SDlfY0U4UU9EeVhYUnJmMVFYUlhsTTRSdUJoR0wxWGJ5QzJPdlpPVGhaZHFOS08ybzJLV0xyOTBfRkFvWFgyb1VSTUV6VkFwZ2kzSXVfdW14M0h4X1hUVVFrOUxWS0NhcGUtM3JxRXg4X29DTE5XTXg1T2JZYzVwaFVmUk9ySnBUMlhEQ2xrbW8xbmthYjhvaHZGVXA4N3ZrdXcxWW03Z0RNaWVhTFRBaXZZUGFZVmdud21sODZlNV83ZjE2S01DUnY5RTFYakY0cTc3NXdQY0x2dFg4bGpfSlZpYTBjeXBNbDNWSDhnMC1zQW5Yb0JOZlQySS1QZkxaUVNFV2JicktvY2ZiSzJqUmlR?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 7,
+        "tier1": 0,
+        "thermal24h": 15,
+        "thermalKm": 150,
+        "gdeltEvents24h": 749
+      }
+    },
+    {
+      "id": "gpsjam-2026-09-23-41-35",
+      "conflict_name": "Crimea",
+      "incident_title": "GNSS interference: 21% of 8521 aircraft reporting degraded navigation near Crimea",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 40.722824124693425,
+      "lon": 35.464932717146425,
+      "summary": "62 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.610Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-25-54",
+      "conflict_name": "Gulf / Hormuz",
+      "incident_title": "GNSS interference: 15% of 7451 aircraft reporting degraded navigation near Gulf / Hormuz",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 24.72408165470548,
+      "lon": 53.78586436428069,
+      "summary": "31 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.610Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-43-28",
+      "conflict_name": "Romania / Moldova",
+      "incident_title": "GNSS interference: 15% of 6513 aircraft reporting degraded navigation near Romania / Moldova",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 43.209987948645995,
+      "lon": 28.43422478490609,
+      "summary": "38 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.610Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-17-96",
+      "conflict_name": "Myanmar",
+      "incident_title": "GNSS interference: 23% of 2056 aircraft reporting degraded navigation near Myanmar",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 16.935034269139965,
+      "lon": 96.00815947127126,
+      "summary": "28 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.610Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-59-23",
+      "conflict_name": "Baltic",
+      "incident_title": "GNSS interference: 20% of 2410 aircraft reporting degraded navigation near Baltic",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 58.513290113629125,
+      "lon": 23.471239301181598,
+      "summary": "47 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.610Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-54-21",
+      "conflict_name": "Poland",
+      "incident_title": "GNSS interference: 25% of 1723 aircraft reporting degraded navigation near Poland",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 53.90955239843067,
+      "lon": 20.851183334807086,
+      "summary": "33 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.610Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-35-35",
+      "conflict_name": "Lebanon",
+      "incident_title": "GNSS interference: 17% of 1874 aircraft reporting degraded navigation near Lebanon",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 34.54249545912767,
+      "lon": 35.2276763235695,
+      "summary": "19 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.610Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-56-39",
+      "conflict_name": "Russia (interior)",
+      "incident_title": "GNSS interference: 34% of 926 aircraft reporting degraded navigation near Russia (interior)",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 55.705072447382975,
+      "lon": 39.44753518586417,
+      "summary": "15 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.610Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-32-35",
+      "conflict_name": "Israel / Gaza",
+      "incident_title": "GNSS interference: 18% of 1718 aircraft reporting degraded navigation near Israel / Gaza",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 32.12823207105277,
+      "lon": 35.49541507703948,
+      "summary": "11 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.610Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-33-72",
+      "conflict_name": "India / Pakistan",
+      "incident_title": "GNSS interference: 23% of 1322 aircraft reporting degraded navigation near India / Pakistan",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 33.38273356323366,
+      "lon": 72.0279574346797,
+      "summary": "27 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.610Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-44-52",
+      "conflict_name": "43.5, 52.1",
+      "incident_title": "GNSS interference: 27% of 725 aircraft reporting degraded navigation near 43.5, 52.1",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 43.539264931444634,
+      "lon": 52.121466036490794,
+      "summary": "7 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-39-40",
+      "conflict_name": "Syria",
+      "incident_title": "GNSS interference: 22% of 803 aircraft reporting degraded navigation near Syria",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 38.67386972161063,
+      "lon": 39.75317172523108,
+      "summary": "6 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-40-44",
+      "conflict_name": "Iraq",
+      "incident_title": "GNSS interference: 18% of 653 aircraft reporting degraded navigation near Iraq",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 40.22846902832982,
+      "lon": 43.897164282250905,
+      "summary": "4 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-42-46",
+      "conflict_name": "41.7, 45.7",
+      "incident_title": "GNSS interference: 16% of 526 aircraft reporting degraded navigation near 41.7, 45.7",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 41.7241545171065,
+      "lon": 45.686796020174754,
+      "summary": "4 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-42-50",
+      "conflict_name": "42.0, 50.2",
+      "incident_title": "GNSS interference: 20% of 393 aircraft reporting degraded navigation near 42.0, 50.2",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 42.020405703186555,
+      "lon": 50.16506186197308,
+      "summary": "7 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-52-105",
+      "conflict_name": "52.0, 104.5",
+      "incident_title": "GNSS interference: 31% of 179 aircraft reporting degraded navigation near 52.0, 104.5",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 52.029894866491205,
+      "lon": 104.5408416356192,
+      "summary": "5 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23--12--77",
+      "conflict_name": "-12.0, -77.1",
+      "incident_title": "GNSS interference: 20% of 193 aircraft reporting degraded navigation near -12.0, -77.1",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": -12.029835827571194,
+      "lon": -77.07386871947742,
+      "summary": "1 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-56-70",
+      "conflict_name": "55.7, 69.9",
+      "incident_title": "GNSS interference: 33% of 113 aircraft reporting degraded navigation near 55.7, 69.9",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 55.703506735218575,
+      "lon": 69.9158168209821,
+      "summary": "3 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-41-49",
+      "conflict_name": "40.9, 48.9",
+      "incident_title": "GNSS interference: 13% of 262 aircraft reporting degraded navigation near 40.9, 48.9",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 40.926880562429346,
+      "lon": 48.915066438158725,
+      "summary": "1 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-60-57",
+      "conflict_name": "59.5, 57.2",
+      "incident_title": "GNSS interference: 37% of 84 aircraft reporting degraded navigation near 59.5, 57.2",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 59.5329438139071,
+      "lon": 57.2322113094475,
+      "summary": "1 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-29--100",
+      "conflict_name": "29.2, -100.4",
+      "incident_title": "GNSS interference: 15% of 188 aircraft reporting degraded navigation near 29.2, -100.4",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 29.19578636067115,
+      "lon": -100.35247774248677,
+      "summary": "3 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-41-49",
+      "conflict_name": "41.4, 48.7",
+      "incident_title": "GNSS interference: 17% of 161 aircraft reporting degraded navigation near 41.4, 48.7",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 41.37760456203832,
+      "lon": 48.65079472035063,
+      "summary": "3 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-43-51",
+      "conflict_name": "42.8, 51.1",
+      "incident_title": "GNSS interference: 28% of 90 aircraft reporting degraded navigation near 42.8, 51.1",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 42.842603410762145,
+      "lon": 51.13523939339092,
+      "summary": "1 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-55-74",
+      "conflict_name": "55.1, 74.0",
+      "incident_title": "GNSS interference: 33% of 54 aircraft reporting degraded navigation near 55.1, 74.0",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 55.12208126512726,
+      "lon": 73.97243226825545,
+      "summary": "2 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23--13--72",
+      "conflict_name": "-13.4, -71.8",
+      "incident_title": "GNSS interference: 31% of 49 aircraft reporting degraded navigation near -13.4, -71.8",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": -13.361289027106393,
+      "lon": -71.78324968495441,
+      "summary": "1 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-29--98",
+      "conflict_name": "29.2, -97.8",
+      "incident_title": "GNSS interference: 12% of 112 aircraft reporting degraded navigation near 29.2, -97.8",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 29.192761020445218,
+      "lon": -97.76895977209217,
+      "summary": "1 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-25-67",
+      "conflict_name": "24.9, 67.1",
+      "incident_title": "GNSS interference: 16% of 77 aircraft reporting degraded navigation near 24.9, 67.1",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 24.889780817502157,
+      "lon": 67.07360942327195,
+      "summary": "1 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-55-89",
+      "conflict_name": "54.7, 89.1",
+      "incident_title": "GNSS interference: 12% of 82 aircraft reporting degraded navigation near 54.7, 89.1",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 54.700849441140235,
+      "lon": 89.11569148712087,
+      "summary": "1 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-50-57",
+      "conflict_name": "50.2, 56.6",
+      "incident_title": "GNSS interference: 42% of 24 aircraft reporting degraded navigation near 50.2, 56.6",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 50.1568135960525,
+      "lon": 56.60364442330474,
+      "summary": "2 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "gpsjam-2026-09-23-55-83",
+      "conflict_name": "55.3, 82.8",
+      "incident_title": "GNSS interference: 12% of 76 aircraft reporting degraded navigation near 55.3, 82.8",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:00:00Z",
+      "lat": 55.323109459874054,
+      "lon": 82.79167025146944,
+      "summary": "1 H3 cells with ≥10% of ADS-B aircraft reporting low navigation integrity on 2026-09-23. Derived from gpsjam.org (ADS-B NIC/NACp), which indicates interference at aircraft altitude, not on the ground. Automated lead.",
+      "source_ref": "https://gpsjam.org/?date=2026-09-23",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:52.611Z"
+    },
+    {
+      "id": "osint-gnss_denial-ukraine-2026-09-23",
+      "conflict_name": "Ukraine",
+      "incident_title": "SPARC AI Proves Overwatch Under Live GPS Jamming 17 km from Ukraine Front Line and Advances Engagements with Multiple Drone OEMs",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T12:30:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "2 outlets (0 tier-1) reported gnss denial in Ukraine on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://www.intelligencer.ca/press-releases/globe-newswire/sparc-ai-proves-overwatch-under-live-gps-jamming-17-km-from-ukraines-front-line-and-advances-engagements-with-multiple-drone-oems/ | https://news.google.com/rss/articles/CBMiqwJBVV95cUxNVmdOYm5vb2FUT0RWM21yalpacVdpQzZsSllVVERmS1paV3BkSDQ5NmxjT2FET0o2bWlnMGRYYlZtRndaa3doU3BiT0w5R2JRLUVXWW5fb1MyaGhmbEVjM25xenJEM1VtcUc4SnV3STAzaU02SDUyZ3pUWGh6Wnd4RmF2UElLempBcWdHX3FLc0ZHUlFOTGFzaGxZR2l2YWM2R2JVeldXQjRSV0pPd0Y3Q1p6SE9wMFlCSjdzeDZBb2tyTjZ2dkpkR1NsSnZPN1ViTTZmTXA4amU2TkJoTGpRRnBmMTZ5RlR5dUJ1S0xUUGNrZ3pYNFNJZWp4NGJYWkg1VHZ5aXNvV043WEJLMW5IUVNiQWJvR2w3d3lSNkRCaXRTNUZ3N0Q1dnlra9IBsAJBVV95cUxNNndNQU9mMHR3RXhKQ3R5WW9TQkVOd0RacVdNajZiRmlPblB1b3E3VHVLdXNPZ2VDZmZiS3dTUm1Hdi1LOW1ndmJ3VXFDVnVtT2p1SjA0M2kyajh4Q1FXZjFzQy1JX0NtbFM1RU5pN0xscGlJRV92bTB4MGxnRHVWZUFCZXFUd2lkUEhlTnk2bzRNWE1kOTBTMm1wRDJGekpnWmhqbVZCak1MN0Fwd00xQktPZFJVbW9nYUxCT0MyczJhakRrT016bGxLZlVMa1JsaGVCLUVCN3l4X1JGREt6MlU5Q21ueEh3MU9nc2xDVWJjSzlZVzk0VmlTWHQtNk1FdEYyeTF3bUtMS0ZFckRQbGxBWnFEQVRRSnZQSk16RFAzbWZaX0NjMkhmdlFJYks1?oc=5",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-gnss_denial-poland-2026-09-23",
+      "conflict_name": "Poland",
+      "incident_title": "Poland's Counter-Drone Network Defeats Russia's GPS Jamming With Light-Based Navigation",
+      "incident_type": "gnss_denial",
+      "occurred_at": "2026-09-23T13:44:00Z",
+      "lat": 52,
+      "lon": 19.5,
+      "summary": "1 outlet (0 tier-1) reported gnss denial in Poland on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxPZERuMzRJSnRieUhMRVI2WnhSQlVXdDR1eGJBc2d6U0NYdFNSVzRPSGVPZGk4RWhhRXVPRUhQbXhBSlJPVzN6anYyUnlHUXVkUUFGZ0Vvd1pHdHZtUGI2cDUwOHVtc1dPb3NzZ2txRkFaWk9McWZyMjRsV1ZHOUNSR0dnVzhnc1ZTT3NZajY0SmZ6TlQzazJUOVlSNHhxckFzUWU3bVV1ckh2SkE0UU5mMEg4ZEV0T2RFT3BSRW5xUVIyeWVLWkd6aGxJTUdpeXZC?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 5,
+        "thermalKm": 150,
+        "gdeltEvents24h": 21
+      }
+    },
+    {
+      "id": "osint-naval-ukraine-2026-09-23",
+      "conflict_name": "Ukraine",
+      "incident_title": "Ukraine Turns to Formula 1 Engineers for Its Next Generation of MAGURA Naval Drones",
+      "incident_type": "naval",
+      "occurred_at": "2026-09-23T14:31:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported naval in Ukraine on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiygFBVV95cUxQRzFpRGl1QTJwRllHS1czY0MzSUJqejJZU2QwLS1uSFc1TlNaZUIxbzlkSzRyaVpkam8yVWdxOWdHWFB6ZWZSdUpWZTFCazU4SUVTa0FGNk9sUzlyOEJFVjRuUjNkYUMyR1hBdDYtd21jbXhCdG9yM255LVgtOTlsakJSOW9LOUU2b0o1VUJYRjEtZTA4Z0ZxMFNaV2ZxTVY5M1daaW5PbkRxVHNZNXBITmRvZFRkUF85RnVsM1p4THpiNzdFY1NxbUxn?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-intercept-india-pak-2026-09-23",
+      "conflict_name": "India / Pakistan",
+      "incident_title": "Eight drones shot down after entering Pakistan from Afghanistan: security sources",
+      "incident_type": "intercept",
+      "occurred_at": "2026-09-23T14:36:00Z",
+      "lat": 32.5,
+      "lon": 74.5,
+      "summary": "10 outlets (0 tier-1) reported intercept in India / Pakistan on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQc0pqMWFWaDEwSVRQOVRkYTJiamxjNjMzM2FlWjRGREswNF9kNlUzb1hTa2lnZUIzVkF3cDB4ckpNRUNiQVByQVhrNlU2cFBYbmt6QTZxNzJYSTl0N1F5Nk1DZnoyRHBCOFlydVZ4SkE4c3RzVk9WVnUtQW1VaHZmVVRLS0VnUDl0Tno4dEFBSVZ3bXVPeXRfQlBSaUx0eTVfa3Q2bHo0VWVxRzRZaV9YVm1rSQ?oc=5 | https://news.google.com/rss/articles/CBMinwFBVV95cUxPdWFKRU5mYkhna3JBOEowbmNxOTJ2TnJMSS1zNy1lclNDUWRGMXhTS2NnLVlyMkxJdGtPbnlDN3BucEZtemJGd1VsRWZfRlRXOUhZRW1vMF8xajR5Z2d4UTFPUDhEOEluNkd6T0ZTTWZwbF9fZkNCM3g4OXhGQ283YkdMdE9McDRQLW13R0NvOXVuSGtYRktLZEJQU09tdWs?oc=5 | https://news.google.com/rss/articles/CBMi1gFBVV95cUxQMjRBaVJxTkU4MUR4WG9QQXBSVDZORHlBeXV2TjcyN2wxM2NtelZ1RWVwODlNaFlIeDVYZ2RjbVgwQ2NrUzMwXzYzeDVrUkJ4QjUwTmlJREl1cnlUcEVYYkw1aTloZGdnQTNxa28zSUVaeUFDQjlpMHVOYmJBVWdSTElSMC1rb3RMR1FPcndwMFpvbWI4blk2dzdpYlZIMW5FSXdQVmZ6ZUt0NkFkdWJyWjJVZkdLel9GNVZpWUJMWGlVU2x5eDJaNUVvSW4zcmg0TDRGSHBB0gHbAUFVX3lxTE1oSXZrbGY5dG42VS1GRWtDOC1WcGhTX1c2bFFOWDhCT2dWRUNFeTNCaThlSDYzcWVtYXQ2ZjBoU0I3d1VNUE1ldFZsaEJSS09ETEI5MVNva1daLUxUZVVnVHZEeUh0WXlGVnBXZUNGcTJGeF80ZXFDSGQ2Uk1WNS00aW1KcDB5ekFmRWRYcGxoNHd2dmJwZUtCWVJnT2xIN2xGRXV5MXdnUVpjcmlMRGlJbFQyUmNCUGluV1BLemticnl4TnlHN1FvTTAwazdaT05tY1BRWS1vTkJRVQ?oc=5 | https://news.google.com/rss/articles/CBMiTEFVX3lxTE00cU12d1p6VDA4Z2w4TkR0Qm1QMXRGR3NQSTJqbG1TWFYzQkJSempSLXg0TjFrcEs4RklmeWpTV1VJQWZQbjZnc2VSa3g?oc=5 | https://news.google.com/rss/articles/CBMi2gFBVV95cUxQdUpJWjVmZXI4OC1xMHhCeDZXNlltTHI3YkFaT0ZzeUFlY2lSbWxidHprakVSNHRsaWE3QVlMeFBDczg0dkhEdmdTZkE5bWlEdnhnVThKeHVWdGtNOUU4UGR6RXhXQnhUTnhoQ3hfYkxYUUt3U3dXem12NlQ5NGtLTFVXdXdMMHJNTWo3TjNJcDhSLXA2T1RCS1MwcmkxOUZfQ1RtWnpQbm9Lb0hUdzJ5cnVRLURnLTM2Sk9EMEhlc2o3SlNJTXJqTWdJNHhoVk9KZ0x1WGpzTUQwUdIB2gFBVV95cUxQdUpJWjVmZXI4OC1xMHhCeDZXNlltTHI3YkFaT0ZzeUFlY2lSbWxidHprakVSNHRsaWE3QVlMeFBDczg0dkhEdmdTZkE5bWlEdnhnVThKeHVWdGtNOUU4UGR6RXhXQnhUTnhoQ3hfYkxYUUt3U3dXem12NlQ5NGtLTFVXdXdMMHJNTWo3TjNJcDhSLXA2T1RCS1MwcmkxOUZfQ1RtWnpQbm9Lb0hUdzJ5cnVRLURnLTM2Sk9EMEhlc2o3SlNJTXJqTWdJNHhoVk9KZ0x1WGpzTUQwUQ?oc=5 | https://news.google.com/rss/articles/CBMiowFBVV95cUxNRjRGMllpYkNQUFI2YU1JUnZCVGNVcVNQeEJ2QS1aLW9UaWtvLWdjLVBzb2VOdzdKbWt2d3IxNW1mQ1lJaV9LM0ZxaG5KVXNrZmdiOFVEWURnd3N4WGxtUU8wR2JDc0wyaXZPQ2Y2VVlfOFNyY0p2cW5FWmlZRlNlV0IzdHp0eFVBb3Z0QlNHMHh6X2VOcnN4OWJrd25rLU1EY2Jz?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.644Z",
+      "evidence": {
+        "outlets": 10,
+        "tier1": 0,
+        "thermal24h": 3,
+        "thermalKm": 150,
+        "gdeltEvents24h": 20
+      }
+    },
+    {
+      "id": "osint-uas_strike-india-pak-2026-09-23",
+      "conflict_name": "India / Pakistan",
+      "incident_title": "Taliban Administration Denies Carrying Out Drone Attack on Pakistan",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-23T14:49:00Z",
+      "lat": 32.5,
+      "lon": 74.5,
+      "summary": "1 outlet (0 tier-1) reported uas strike in India / Pakistan on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNQkQzQkxScm9sbnBWSElYYm1relllTUdCTV9EOWxBTjJsaHFtYUFLalQ1Qmh1X1IwVGdVamJwSjRfNWRWUVZhMThwSkZBTl9MZFh1VVhBZGVzUEtlMzFBQktGOHk0NHN4SklWTkJ3TnlfTklVTUN3NmxmcWx2UzVfMUk4WTc?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 3,
+        "thermalKm": 150,
+        "gdeltEvents24h": 20
+      }
+    },
+    {
+      "id": "osint-uas_strike-ukraine-2026-09-23",
+      "conflict_name": "Ukraine",
+      "incident_title": "Damage across Kyiv after one of Russia's heaviest drone attacks",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-23T18:20:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "31 outlets (4 tier-1) reported uas strike in Ukraine on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQYzBFekRYSTFYRkd3dWpKM3Y1NDFpQ19LdkdRbXlDRkVKeWg3aHpuT3hyeGRtSUFmUlZiRTVnUDd6RlowVElrNS11cXpCeHp1TlBlbnQ5UDVlZktQdEpRaXhiSERQRlZxUnhzSzZfLTJPM2xzM1FyMDM0Ny1jQ2xETFJLWFd0MUw5NUhKeUlfQ0Z4OGMtbVI1dDZmbl81WXZra1pBeEV5cw?oc=5 | https://news.google.com/rss/articles/CBMihgFBVV95cUxOTnhYNGc2NHpLbzBOY3I1WGJHV29YV2plZ3g4TGNJcWllN2hVeHMySEU4d0t6NnNOcUZtaUt5MmY2eUd6dURzNjN4MWRDbVpKT0Y3VFAxLW9iYXg0eHdjN0RaUW5RMUMzQUYzNmY3YUQwam1rN0dScVVibVlYVHloci1MNFVPUQ?oc=5 | https://news.google.com/rss/articles/CBMiZEFVX3lxTE5GZmZ4aGctdmZocnlBTThnX1R4eGtUQk1pMzFZQlIyNUJOcnE3Smtvb3FYVzFEQ0lNM0xuYjBTTUFrU0dLTzFyWjUxLTdrQkJVTlJuOElsWGRBanV2NWZOOVF0bi3SAXBBVV95cUxNU0p2WlQzUzRDZEd5dFJWeDRaX2J6N2tNUWY4LWNEUkZNbFJ3aGxPV3U2QXVGNEw5Y2RVaUF2NlFMZ1ZpMV9udEZkN0Fucnpha3VjaXJZYlZPNFJWa1RrWk1SS2Z3X1dJUUNqWUl4ZkNF?oc=5 | https://news.google.com/rss/articles/CBMimAJBVV95cUxNTHdfSmFRQzNNUDhHaDljb1dMT0lBSzNaMnUzMTNrdmtOWmRqZ25nLWwzUE9DRHYtNTRBRmJ2bXRxZFhld2RUWVpqM3FLR3RCTmgtS0NpNUlBUTNsSURqcW93OGY5X3lyUUhrV1dtQmtiSDFoVmRfUk5ka01jUEpTUWtvcl9VcUhDaVZ2VzZlcVF3TXNoZTVxdFJsc3o3SW1EY2xheGc1bkFsRkZnVHlwMlN3aEl3LWNCWWFWajJ1OTdjcm1TbTZUb0pJUUx2S1oxbE9XNDF2MlhZai11eXZIbWpHZkFVQWJLOWRvWVV4anFlNUJZQW5pYmZSekViQWlyN01HbWFuRGxSQ2ZVdlM3ZkZZNGN6SXI5?oc=5 | https://news.google.com/rss/articles/CBMikwFBVV95cUxOVlpqZ0FJMmxqZE1KS28xYk9abE9mRG9mSVNScWZvZHJvZWo0QnFBV0owWmM4Z3ljdnQ2eFFjbk0teFdMVHNDSUIxd1FENVVmUWdTdk5NaHBBOEZkVktMV1VmWWZNbTByN1JhTWpHaExDSGdCTGtqb2NtcTVpcXJOUlV1Nl9rOExjUVZEWlVZeWRHLVU?oc=5 | https://news.google.com/rss/articles/CBMiwgFBVV95cUxPeDh3VFZGMHdYRFFGVkd4VVcyUGV1bXZTZ2NSQVNYbVJpWVNJX1lvV1VuMEpvNGowTEw5S2tDOVlpdXZIQnZvQ3l1V3R2b3ZueURCZEI3VWlTbGxaU2t3ZENyMmp1MkdhTXgzRmhXczlEeFBYZVg1Z2JkT2REVHBJRDRBRExSNmhzMTlKTjA0MEU0Y1RQdV81WDAzbWVscGo4SnAyYzlZOURTUnROOFg4ZkdFbGl1ekVFZXZoTm9aQjJCZw?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.644Z",
+      "evidence": {
+        "outlets": 31,
+        "tier1": 4,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-intercept-red-sea-2026-09-23",
+      "conflict_name": "Red Sea / Yemen",
+      "incident_title": "Houthi missile intercepted over Riyadh as airport fire erupts",
+      "incident_type": "intercept",
+      "occurred_at": "2026-09-23T20:27:00Z",
+      "lat": 15,
+      "lon": 42.5,
+      "summary": "1 outlet (0 tier-1) reported intercept in Red Sea / Yemen on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNTHNXLXdmVDJQcUgwWFRMVm9zcVJhVDBqZFo4LUVjNlpPcUJCR1ZPVlpHRVg0dllfTzQwcEU4b0hOb0h2ZTBCWG44UmllMUtLUmVaWkpZR0lvVEg1LTVTbzBWaXExSTFqRzhHeE44VlJUMm5VNVF1UFR2elZhQTFiR1hHbkdrN18wV3hTT2lKeTdlcGZISnc?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 0
+      }
+    },
+    {
+      "id": "osint-ballistic_strike-ukraine-2026-09-23",
+      "conflict_name": "Ukraine",
+      "incident_title": "Russia hits Kyiv with ballistic missiles, drones, killing two",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-23T22:51:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "4 outlets (2 tier-1) reported ballistic strike in Ukraine on 2026-09-23. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPSGcxekQ2VmFRMWU4T0tvN3RVYU5oOFBJX3lzSk5lSFZ5c2ZTMnc4QnRjTFRocWlncEdQa0F5b3RHMDhGTHliR3dDTFFrYUpWTGFtWkhZWnd0S2xtVUJaSm9BcV9ReDNwa2JnZDBZeE5TQ2NMZUpGaVV5dFRFcW9RejlQUkI1XzdMbFdoYURoZFFlZTczWE40SF8yMmpJYkhUeklvSjlveF9TR3lsemNaWkYwR2Jnb0RlYlAw?oc=5 | https://news.google.com/rss/articles/CBMi1gFBVV95cUxQNHl6RkJUNVFvZ3ZXWkkwcUFkOVMzRHdadDdoQUJHWWJBbFRlaExXX2R0QzUzUzR5UzVxeVlRTUVudkc2ckpGTElGZ1cxbmduVU1GVVhiUy05ZEVxY1VmMU5FWkJRQzZGRmh2aWFnTTJoTjI3cUVNV1Jfc2ZGNWR3ZGI5OGF3RkRVTlZUSEF3dGlXcUlxa3ZabUZoa2pBYXloeG95Ri1SMEwtNXpTUHNhNC0wc3lfUklySUJDbDVSQnhsa0tyS29QZVRYY09yMHV4bDdXZjN3?oc=5 | https://news.google.com/rss/articles/CBMiZEFVX3lxTE4wdkNBUEU4c1Rva2RvaFhBdHBmNE01VnRQQm84SktYbmZpTlpLcTBUdEd6REQyNWppSjc3dk91cTNTYXI2REZjM2Rud0M3NlV0V3M2dnFtVDh5RGF0ZlU0eHdMV2vSAXBBVV95cUxOajlEbWRzSTVRQlVSM1dNRU16OVU2UEVHTDg4RUw5aGlvYTB6NVZIS3pnZ2pTWmtaeVk1VjNNYUk4dmNHX1M2QXF0bV9ObVRMd0MwVlE4NW5uZzJwSXltRElPSnI3dG80MGlaWEg3dU1q?oc=5 | https://news.google.com/rss/articles/CBMirgFBVV95cUxPaW9NWnZmQmFiYjdCa3F2TmZmZ0VUOUZkdnlvU3lySjQ2UElNemdETUxHazktWUpQTnE3ZVV3cUZ4eGF1NmtLN2dibmpUS3lzN2dQOXBlSDZjZUd6OXZLZ080OVBJalR0SGgxckh2cjBPdXFPUk40ZTdnRFc5V18zZUtaSllvN2lXYnBnODJCWk43YjVCeFE0SHhPU3AwYjFsckNYV2RJNWxncXljc0E?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.645Z",
+      "evidence": {
+        "outlets": 4,
+        "tier1": 2,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-cruise_strike-india-pak-2026-09-24",
+      "conflict_name": "India / Pakistan",
+      "incident_title": "Pakistan’s Hypersonic Strike Future Isn’t a Scramjet Cruise Missile – Why the Ballistic Path is the Real Goal",
+      "incident_type": "cruise_strike",
+      "occurred_at": "2026-09-24T03:17:00Z",
+      "lat": 32.5,
+      "lon": 74.5,
+      "summary": "1 outlet (0 tier-1) reported cruise strike in India / Pakistan on 2026-09-24. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxOZ25haUNGbmNrVWN5dlI2c2w0a3dINzlYVFNzWlZBOVEtblVIRnBwbGZRRF9IZDVRWDR5WERjMHlUNTd0b0g5R2xHVlYzT2JOT0xWUDJ4di1hallBdzItRGlXRWItZjk5ZW5ETjZoLXJXZUFES0MtUzFCbVFSa0hFMlphdmJVdktBbXJ2b2lNVGduSUZqSFB2RmM3NXBUeFNNYnpveDBrTzlDRWpySHhCWUxER2JsOEdsQzF5V0ZMck1TbVBmZDZmZThCRUZ5amhna1VQV1gxTmlhYjFxWl9yUGd1cFNySlU?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.644Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 3,
+        "thermalKm": 150,
+        "gdeltEvents24h": 20
+      }
+    },
+    {
+      "id": "osint-strike-ukraine-2026-09-24",
+      "conflict_name": "Ukraine",
+      "incident_title": "Kyiv hit by massive Russian missile strike, two killed, at least six injured",
+      "incident_type": "strike",
+      "occurred_at": "2026-09-24T04:16:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "2 outlets (1 tier-1) reported strike in Ukraine on 2026-09-24. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://www.ukrinform.net/rubric-ato/4167404-kyiv-hit-by-massive-russian-missile-strike-two-killed-at-least-six-injured.html | https://news.google.com/rss/articles/CBMirwFBVV95cUxNZy1aS0ZJUE1lTXpWYWx4RFJzeHJlQnlFRHlEV09mck9GTmpuWS11MkRIRWR0bXEwYld0Qzc1OUl6VTQ4cUVIem1SRktiWjhrRnlNajJVWWtqYnRPM2FhQnlPWk01LVBCNXRsekxOQTM0cFFKcWRCTEpNVy1RS0xEai1LbjVsZkNZTXJoU3VJV1Q0T1hqai1zTl9sZFBsWmxpTEFCUF9QbHFxYnAtRlg0?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.644Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 1,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-ballistic_strike-ukraine-2026-09-24",
+      "conflict_name": "Ukraine",
+      "incident_title": "Russians attack Kyiv with ballistic missiles while Zelenskyy discusses Graham Act with congressmen",
+      "incident_type": "ballistic_strike",
+      "occurred_at": "2026-09-24T06:08:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "5 outlets (2 tier-1) reported ballistic strike in Ukraine on 2026-09-24. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiS0FVX3lxTFBuNGl0bDBqZXhwWlpQZXNiQ2M5azNaNTVLdW56Z1dGTWNGbnJia2ItMkEycXZxcjdqRC1sN3hURzJuY2lQcW1idEphaw?oc=5 | https://news.google.com/rss/articles/CBMivwFBVV95cUxOcVotSkRjcWRYa25VU1NtbjFBMnh5RFBUSlQ0YkFvNVVqR1ZUMHFJVzVmbjY4TzRFdHFtbXhrTTlBZTc4VjkzazFhT3VUUXlmbUdIblk0VnhGUVdqc01Pak5OeU1OUkFNRE55WHF1MllNMWo3R3RObEtsU2U1VHJ0N2tibXhxcFVZTU9CQlpNZHBETThBRnFJZmh0NXJJT1NoRjgwTE43WUtSQ3V3UWdtVndjN0pOMnFLbEZqTmx3RQ?oc=5 | https://news.google.com/rss/articles/CBMi1AFBVV95cUxPaWFBdFFiYW1LYTVieFI3NjVqakhFWkRpZ0s2bHlDaFRIbXNyYndLd3l2WXlISEsxTTRGVFZHZXJnODBzU2dRQ2RqTVRxdlBhbWpHZ3FEUzFCcGhlazlWOUFqZ2I3d1puUHotbjJlWVBFdzNpRnBoWllHZnVxOV9lMFNYSmJMYWdYZzRQS0p6M1BEVFFJdFFjdjRiV1pkUFQ4WHhucEVSNnAtalhCTTJZV2lTQUFJa2RSZVdOMUlIZWRYNHc5MTFCcUNLU2p2VHF4TDhXStIB2gFBVV95cUxQLXhvVmpLQklhd19MLUV1T3Znd08yaHIzUGhuMUx2dmdCdm9PMk1Qd3NoTzRHVkF4Y0FaWmtXRXRSQUZuMG5YdDZpbUYzMTNlaExEQTBFTEItOHlILVZtM2dlLUl0WUVabU5jLTNfTnBXOTQ2dU5YR3d2REVwNkdlRGFwZWZzaTBmMDdWdFgwQmwxRVNxVVlkZzRuRUpNVURrY3IzQ3dLM3RueFd2T0MxaVFSM3dvQW5xbmtNa3J5cm1IdmV0ZWE1Vmk0TFBUREREWGJ2WFNuVUg1Zw?oc=5 | https://news.google.com/rss/articles/CBMiZEFVX3lxTE5CV2hVaWYtSXA0RWwtUHc1M1hMSnlVUWdBWWZPR291ZlhMaTN4eFNGeWF5dXRfQ3E1M3hjOHM0MDB4Y2p5ZjhVakozRnE5cEF4RlpOX29LcWpFSjdwY3RTV21SN3TSAXBBVV95cUxQd2JHUEZwTUF0ZmF6VHoyQ3BSM3pvSG91MUFkNWkyUWtZUG0wUDBtRmxsSTVqUHZCU2hUWkRxb21KRzdrc0hKSV8yZTBCMTYtWWZnNUZacHQwRG5xYk12dUFKZ3l6OFlSZjZjVURIOUM2?oc=5 | https://news.google.com/rss/articles/CBMirgFBVV95cUxPTzJsbzZRSDM1Z3JIMURCX25GWFhsWEU4ZjNhaXdacVN5c1lseS1YcWtpX0U2M2lZTTk3cmdSMVBTMnNDNmliS3RUVjBNRk5xT21uZ0pNbnc1M240Y2tVTVFwNXlDYWh3d0xOdFE1bmVNUWdhRlVwNVdVcmhSaEZMb056OWtxNjRmbDBPR2xWVC1kSXhjcDVMX3J4bk5taXloNmRURG5sVTFhbU13M3c?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.644Z",
+      "evidence": {
+        "outlets": 5,
+        "tier1": 2,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-swarm-ukraine-2026-09-24",
+      "conflict_name": "Ukraine",
+      "incident_title": "Russia strikes Ukraine with ballistic missiles and hundreds of drones overnight - RBC-Ukraine",
+      "incident_type": "swarm",
+      "occurred_at": "2026-09-24T06:19:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "1 outlet (0 tier-1) reported swarm in Ukraine on 2026-09-24. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMimgFBVV95cUxQX2VxYVZ2T1VsUGJoQzlVVkpSOUg0S001SWt3dExCcURnN2FrU3BaRi02YkdVcm05VFdYbTRzM2lCdHZFbWhGMU5GWkFGc0dqTUhfa3BlOXJad2RwamQ1VUxlVkZrdVdrM19qUGZHTjlIRExMVi02R3JRSUxrRkw0YUFtWnJzbkdCV0lnYzIzLUt2WmxpRmxNd0dn?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.644Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-uas_strike-india-pak-2026-09-24",
+      "conflict_name": "India / Pakistan",
+      "incident_title": "Pakistan says it launches air strikes on Afghanistan after drone attacks",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-24T06:29:00Z",
+      "lat": 32.5,
+      "lon": 74.5,
+      "summary": "3 outlets (1 tier-1) reported uas strike in India / Pakistan on 2026-09-24. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://www.aljazeera.com/news/2026/9/24/pakistan-says-it-launches-air-strikes-on-afghanistan-after-drone-attacks?traffic_source=rss | https://news.google.com/rss/articles/CBMiuwFBVV95cUxOanFpM0pIUV9USWE2VDNETlA2ZEtSbkY5UGRraUVxRWwwOHlac3NTUG1vZFNEMjBlYm5WcDdWZ0Znd19OYTJpOUhBSEpDTzJXWFlBZExnUDd6OU5KQmFhQ1VzTS1aVHhPTW03RGx6VktPWWZBTG1JZy1KeHFtTnVjM3MzN0Yta09KY21kV2IxME5TUXFWU3RyQ3h2SGc2ZW5UMnB4M0VoQXBac1RLc1lPOXBadDdjQVBtdDRZ?oc=5 | https://news.google.com/rss/articles/CBMi0wFBVV95cUxOSTl1Qm8yS21qY1lSbU1Nbmx6S1ZFVjRZN3JvQXZXb01Ubk8yQy13UlpFd3dwN1JDU1FWR3JmX3A1X0xFcEpPMks4QlBDWnZ4NXptdU1CLUNMNy1YbXItSzRqXzdqYkhodG10Q2hRYWN5N2VkRU9mTnJCcEdmNkhVbjNyLU1TUXcxZWYyUHB0T2FiTXFFTXFhcVItTmRmdFVaMmw2bFB3RXFHamdQam9RVnB1dFNPQlZzQTlpMTZuZFFNeWZ2ZDlJZk5UN2JIMmswM3Fj0gHTAUFVX3lxTE5JOXVCbzJLbWpjWVJtTU1ubHpLVkVWNFk3cm9BdldvTVRuTzJDLXdSWkV3d3A3UkNTUVZHcmZfcDVfTEVwSk8ySzhCUENadng1em11TUItQ0w3LVhtci1LNGpfN2piSGh0bXRDaFFhY3k3ZWRFT2ZOckJwR2Y2SFVuM3ItTVNRdzFlZjJQcHRPYWJNcUVNcWFxUi1OZGZ0VVoybDZsUHdFcUdqZ1Bqb1FWcHV0U09CVnNBOWkxNm5kUU15ZnZkOUlmTlQ3YkgyazAzcWM?oc=5",
+      "platforms_involved": [],
+      "confidence": "probable",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.644Z",
+      "evidence": {
+        "outlets": 3,
+        "tier1": 1,
+        "thermal24h": 3,
+        "thermalKm": 150,
+        "gdeltEvents24h": 20
+      }
+    },
+    {
+      "id": "osint-uas_strike-ukraine-2026-09-24",
+      "conflict_name": "Ukraine",
+      "incident_title": "In Kyiv, a mother and her infant were unable to reach a shelter during a drone attack",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-24T06:57:00Z",
+      "lat": 49,
+      "lon": 31.5,
+      "summary": "2 outlets (0 tier-1) reported uas strike in Ukraine on 2026-09-24. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPdXVNaXNxNGE3Y2IzcURPSGRLTlkydnprMFUzUWdTNzgwcDh1ZVdKMGdFRVp4dUJZc3ZmQTlHb296UkRKVEN3QkVzN3ZEcEJ6TDdQNmI5RGgzeld1RGdhTWN0bEdsN1BhSVcyQmFHNjVkZWtBeWpkY3VMZERrZTN6OEhUMkxYRnc5c0Y5dTVRN3dKbXUyWnRDWi15cEdXbE5ndDR6c1Z0Wnl5Y0pN?oc=5 | https://news.google.com/rss/articles/CBMiswFBVV95cUxOLTBNZlMwQ1pKUmw0b3FkNkV5MzZVd0w1V3NsTjUwLVE1bTBjYWZRMGJWT0NrZWhSUXhwZGRhOE5wTGkwMDhBbm1KLWtaeE5DaWFfcEdrcFAzYk1MakgxWnl0SXFiS1RLeXcxVmhLOHhsVno3Z002ODdLQzlrNUNPWGdBcDNYdnBDdzh5cmdFaUhYYlJtLUphRmJOdW12OWtPWGdGZWtVU3dFbnMxSmttNF9LYw?oc=5",
+      "platforms_involved": [],
+      "confidence": "possible",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.644Z",
+      "evidence": {
+        "outlets": 2,
+        "tier1": 0,
+        "thermal24h": 0,
+        "thermalKm": 150,
+        "gdeltEvents24h": 51
+      }
+    },
+    {
+      "id": "osint-uas_strike-iraq-2026-09-24",
+      "conflict_name": "Iraq",
+      "incident_title": "Three suspected drone strikes target Erbil province",
+      "incident_type": "uas_strike",
+      "occurred_at": "2026-09-24T06:58:00Z",
+      "lat": 33.3,
+      "lon": 44.4,
+      "summary": "1 outlet (0 tier-1) reported uas strike in Iraq on 2026-09-24. Location is theatre-level from the headline, not a geocoded strike point. Automated OSINT lead, unverified.",
+      "source_ref": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1DZTRFbVpMX1N4b2hIMl80cVp5UjZCcVZNRmoyQzRrQXJBdlZtc2drdnFIY1Ztb3BLeDhfNFRjaVJLNnpVcHRMWkZUSQ?oc=5",
+      "platforms_involved": [],
+      "confidence": "unconfirmed",
+      "classification": "UNCLASSIFIED // OSINT",
+      "created_at": "2026-09-24T08:08:49.644Z",
+      "evidence": {
+        "outlets": 1,
+        "tier1": 0,
+        "thermal24h": 35,
+        "thermalKm": 150,
+        "gdeltEvents24h": 21
+      }
+    }
+  ],
+  "attribution": [
+    "GDELT Project (gdeltproject.org)",
+    "Google News RSS (outlets as cited)",
+    "NASA FIRMS / LANCE (firms.modaps.eosdis.nasa.gov)",
+    "GPSJam by John Wiseman (gpsjam.org)",
+    "adsb.lol community ADS-B"
+  ],
+  "snapshots": {
+    "generatedAt": "2026-09-24T08:08:52.611Z",
+    "theatres": [
+      {
+        "key": "israel-gaza",
+        "theatre": "Israel / Gaza",
+        "thermal24h": 28,
+        "gdeltEvents24h": 799,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "lebanon",
+        "theatre": "Lebanon",
+        "thermal24h": 30,
+        "gdeltEvents24h": 451,
+        "milAirborne": 1,
+        "milTypes": [
+          {
+            "type": "A400",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "key": "ukraine",
+        "theatre": "Ukraine",
+        "thermal24h": 4,
+        "gdeltEvents24h": 223,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "india-pak",
+        "theatre": "India / Pakistan",
+        "thermal24h": 9,
+        "gdeltEvents24h": 151,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "russia",
+        "theatre": "Russia (interior)",
+        "thermal24h": 7,
+        "gdeltEvents24h": 121,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "iran",
+        "theatre": "Iran",
+        "thermal24h": 58,
+        "gdeltEvents24h": 111,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "syria",
+        "theatre": "Syria",
+        "thermal24h": 58,
+        "gdeltEvents24h": 49,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "romania",
+        "theatre": "Romania / Moldova",
+        "thermal24h": 21,
+        "gdeltEvents24h": 48,
+        "milAirborne": 2,
+        "milTypes": [
+          {
+            "type": "EC35",
+            "n": 1
+          },
+          {
+            "type": "R135",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "key": "red-sea",
+        "theatre": "Red Sea / Yemen",
+        "thermal24h": 2,
+        "gdeltEvents24h": 49,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "iraq",
+        "theatre": "Iraq",
+        "thermal24h": 206,
+        "gdeltEvents24h": 26,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "gulf",
+        "theatre": "Gulf / Hormuz",
+        "thermal24h": 25,
+        "gdeltEvents24h": 32,
+        "milAirborne": 11,
+        "milTypes": [
+          {
+            "type": "PC21",
+            "n": 8
+          },
+          {
+            "type": "B762",
+            "n": 1
+          },
+          {
+            "type": "A332",
+            "n": 1
+          },
+          {
+            "type": "A400",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "key": "crimea",
+        "theatre": "Crimea",
+        "thermal24h": 7,
+        "gdeltEvents24h": 32,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "korea",
+        "theatre": "Korean Peninsula",
+        "thermal24h": 29,
+        "gdeltEvents24h": 26,
+        "milAirborne": 3,
+        "milTypes": [
+          {
+            "type": "BE20",
+            "n": 1
+          },
+          {
+            "type": "C560",
+            "n": 1
+          },
+          {
+            "type": "H47",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "key": "poland",
+        "theatre": "Poland",
+        "thermal24h": 28,
+        "gdeltEvents24h": 25,
+        "milAirborne": 8,
+        "milTypes": [
+          {
+            "type": "C560",
+            "n": 1
+          },
+          {
+            "type": "W3",
+            "n": 1
+          },
+          {
+            "type": "B738",
+            "n": 1
+          },
+          {
+            "type": "BE20",
+            "n": 1
+          },
+          {
+            "type": "GLF5",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "key": "taiwan",
+        "theatre": "Taiwan Strait",
+        "thermal24h": 3,
+        "gdeltEvents24h": 10,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "sudan",
+        "theatre": "Sudan",
+        "thermal24h": 0,
+        "gdeltEvents24h": 7,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "libya",
+        "theatre": "Libya",
+        "thermal24h": 54,
+        "gdeltEvents24h": 0,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "sahel",
+        "theatre": "Sahel",
+        "thermal24h": 0,
+        "gdeltEvents24h": 2,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "baltic",
+        "theatre": "Baltic",
+        "thermal24h": 6,
+        "gdeltEvents24h": 1,
+        "milAirborne": 3,
+        "milTypes": [
+          {
+            "type": "C30J",
+            "n": 1
+          },
+          {
+            "type": "LJ35",
+            "n": 1
+          },
+          {
+            "type": "SF34",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "key": "scs",
+        "theatre": "South China Sea",
+        "thermal24h": 0,
+        "gdeltEvents24h": 0,
+        "milAirborne": 0,
+        "milTypes": []
+      },
+      {
+        "key": "myanmar",
+        "theatre": "Myanmar",
+        "thermal24h": 0,
+        "gdeltEvents24h": 0,
+        "milAirborne": 0,
+        "milTypes": []
+      }
+    ]
+  },
+  "signature": {
+    "scheme": "spectral-intel-bundle/1",
+    "alg": "ML-DSA-87",
+    "digestAlg": "SHA-384",
+    "digest": "e3bff49a0ae40244ce82669f89107c790e6b0c06ed764e58a6d80261f4ae0dc27175cd9770d7351cb276857dd479e652",
+    "keyId": "c3dec44532f3c6b4",
+    "signedAt": "2026-09-24T08:27:03.740Z",
+    "value": "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"
+  }
+}

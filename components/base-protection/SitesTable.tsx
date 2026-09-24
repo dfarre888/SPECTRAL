@@ -19,6 +19,8 @@ export interface SiteRow {
   a: SiteAssessment
   logCount: number
   packageLabel: string
+  /** Seeded demonstration package rather than a tenant's own plan. */
+  isExample: boolean
 }
 
 const NOT_PLANNED = (
@@ -140,8 +142,15 @@ export function SitesTable({
         className: 'clip',
         cell: (r) =>
           r.a.hasPackage ? (
-            <span className="text-[var(--store-ink-soft)]" title={r.packageLabel}>
-              {r.packageLabel}
+            <span className="flex min-w-0 items-center gap-1.5">
+              {r.isExample ? (
+                <span className="tag violet shrink-0 !h-5 !px-1.5" title="Demonstration package, not a Defence plan">
+                  Example
+                </span>
+              ) : null}
+              <span className="truncate text-[var(--store-ink-soft)]" title={r.packageLabel}>
+                {r.packageLabel}
+              </span>
             </span>
           ) : (
             <span className="text-[var(--store-ink-mute)]">None assigned</span>
@@ -158,7 +167,7 @@ export function SitesTable({
         key: 'cost',
         header: 'Cost to close',
         align: 'right',
-        width: 150,
+        width: 196,
         sortValue: (r) => (r.a.cost.status === 'no_package' ? null : r.a.cost.totalUsd),
         cell: (r) =>
           !r.a.hasPackage ? (
@@ -193,7 +202,7 @@ export function SitesTable({
       onRowClick={(r) => onSelect(r.site.id)}
       selectedKey={selectedId}
       layout="fixed"
-      minWidth={1200}
+      minWidth={1240}
       caption="Defence sites with planned counter-drone coverage"
       empty="No sites match this filter."
     />

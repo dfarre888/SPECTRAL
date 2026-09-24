@@ -59,6 +59,8 @@ export interface SitePlan {
   /** User override of the nominal radius, metres. Null means use the site default. */
   radiusM: number | null
   updatedAt: string | null
+  /** Seeded planning example for demonstration, not a tenant decision. Cleared on first save. */
+  isExample?: boolean
 }
 
 export type SystemRole = 'sensor' | 'effector' | 'integrated'

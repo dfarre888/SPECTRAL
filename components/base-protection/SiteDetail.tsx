@@ -161,6 +161,15 @@ export function SiteDetail({
           </h3>
           <span className="text-[11.5px] text-[var(--store-ink-mute)]">Planning only, not what is fielded</span>
         </div>
+        {plan?.isExample && !dirty ? (
+          <p className="mb-3 flex items-start gap-2 text-[12px] text-[var(--store-ink-soft)]">
+            <span className="tag violet shrink-0">Example</span>
+            <span>
+              A demonstration package built from catalogue systems. It is not a Defence plan. Edit and save to make it
+              yours, or clear it.
+            </span>
+          </p>
+        ) : null}
         <PackageEditor items={items} assessed={assessment.items} systems={systems} onChange={setItems} />
 
         <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-[12.5px]">

@@ -103,7 +103,7 @@ export function BaseProtectionClient(props: BaseProtectionProps) {
         const plan = plans.get(site.id) ?? null
         const a = assessSite(site, plan, catalogue)
         const packageLabel = a.items.map((i) => `${i.name}${i.qty > 1 ? ` ×${i.qty}` : ''}`).join(', ')
-        return { site, a, logCount: logBySite.get(site.id)?.all ?? 0, packageLabel }
+        return { site, a, logCount: logBySite.get(site.id)?.all ?? 0, packageLabel, isExample: plan?.isExample === true }
       }),
     [plans, catalogue, logBySite],
   )

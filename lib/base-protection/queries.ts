@@ -107,6 +107,7 @@ interface PlanRow {
   items: unknown
   radius_m: number | null
   updated_at: string | null
+  is_example?: boolean | null
 }
 
 function rowToPlan(r: PlanRow): SitePlan {
@@ -116,7 +117,13 @@ function rowToPlan(r: PlanRow): SitePlan {
         qty: Number(i.qty ?? 1),
       }))
     : []
-  return { siteId: r.site_id, items: normaliseItems(items), radiusM: r.radius_m ?? null, updatedAt: r.updated_at }
+  return {
+    siteId: r.site_id,
+    items: normaliseItems(items),
+    radiusM: r.radius_m ?? null,
+    updatedAt: r.updated_at,
+    isExample: r.is_example === true,
+  }
 }
 
 export async function listPlans(tenantId: string): Promise<{ plans: SitePlan[]; storage: Storage }> {
@@ -124,7 +131,8 @@ export async function listPlans(tenantId: string): Promise<{ plans: SitePlan[]; 
   if (!supabase) return { plans: [...memPlanMap(tenantId).values()], storage: 'memory' }
   const { data, error } = await supabase
     .from(PLANS_TABLE)
-    .select('site_id, items, radius_m, updated_at')
+    // '*' so a database without the is_example column still loads.
+    .select('*')
     .eq('tenant_id', tenantId)
   if (error) {
     if (isStorageUnavailable(error)) return { plans: [...memPlanMap(tenantId).values()], storage: 'memory' }
@@ -167,6 +175,7 @@ export async function savePlan(
           radius_m: radius,
           updated_by: userId,
           updated_at: now,
+          is_example: false,
         },
         { onConflict: 'tenant_id,site_id' },
       )

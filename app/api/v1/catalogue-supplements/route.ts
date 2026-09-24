@@ -102,6 +102,6 @@ export async function GET(request: Request) {
     classification: ctx.classification,
     provenance: 'training_contract_analogue',
     caveat:
-      'All supplements are training-contract analogues: not classified Edge data, accredited ERP, or MoD-verified Pk.',
+      'All supplements are training-contract analogues, not classified Edge data, accredited ERP, or MoD-verified Pk.',
   })
 }

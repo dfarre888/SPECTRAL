@@ -217,7 +217,7 @@ export class GnssAnalyticsEngine {
     // Finding 2: confirmation is rare
     const confirmed = incidents.filter(i => i.failure_mode.grade === 'confirmed').length;
     findings.push(
-      `Confirmed causes are rare: only ${confirmed} of ${n} incidents have a CONFIRMED mechanism: and that one (Docklands) was confirmed precisely because it was formally investigated by a safety bureau. For the rest, you will usually never know the exact cause, so you plan for GNSS denial regardless of source.`,
+      `Confirmed causes are rare: only ${confirmed} of ${n} incidents have a CONFIRMED mechanism, and that one (Docklands) was confirmed precisely because it was formally investigated by a safety bureau. For the rest, you will usually never know the exact cause, so you plan for GNSS denial regardless of source.`,
     );
 
     // Finding 3: spectrum survey works
@@ -248,7 +248,7 @@ export class GnssAnalyticsEngine {
     const controlledDescent = incidents.filter(i => i.outcome.failsafe_behaviour === 'controlled_descent').length;
     const injuries = incidents.reduce((s, i) => s + i.outcome.injuries, 0);
     findings.push(
-      `Controlled-descent failsafes functioned in ${controlledDescent} of ${n} incidents. But ${injuries} injuries still occurred, all from descent over or near crowds: and the zero-injury cases were largely over water. Crowd stand-off and over-water siting matter as much as the failsafe.`,
+      `Controlled-descent failsafes functioned in ${controlledDescent} of ${n} incidents. But ${injuries} injuries still occurred, all from descent over or near crowds, and the zero-injury cases were largely over water. Crowd stand-off and over-water siting matter as much as the failsafe.`,
     );
 
     // Finding 7: band honesty

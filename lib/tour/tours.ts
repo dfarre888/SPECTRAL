@@ -43,7 +43,7 @@ export interface Tour {
 export const ARENA_FOG_OF_WAR_TOUR: Tour = {
   id: 'arena-fog-of-war',
   label: 'Fog of war walkthrough',
-  description: 'Three views of one battlespace: and why they disagree.',
+  description: 'Three views of one battlespace, and why they disagree.',
   steps: [
     {
       id: 'intro',
@@ -82,7 +82,7 @@ export const ARENA_FOG_OF_WAR_TOUR: Tour = {
       settleMs: 2500,
       title: 'Blue picture: what Blue can see',
       body:
-        'Blue’s three units and their sensor envelopes. Notice what is missing: the red unit. It is still out there, unchanged: but it sits outside every Blue sensor, so it does not exist on this picture.',
+        'Blue’s three units and their sensor envelopes. Notice what is missing: the red unit. It is still out there, unchanged, but it sits outside every Blue sensor, so it does not exist on this picture.',
       say: 'Blue is about to make decisions on this. Not on the previous view. On this one.',
     },
     {

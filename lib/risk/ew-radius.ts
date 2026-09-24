@@ -97,7 +97,7 @@ export const JAMMER_DB: JammingRadii[] = [
     'RfPatrol in active countermeasure mode. Lower ERP than DroneGun: detect-and-jam at shorter range.'),
   makeJammer('djijammer-mini','Generic DJI Band Jammer','manpack',3,
     ['rc_2400','rc_5800','gps_l1'],'LOS_only',
-    'Commercial DJI-frequency jammer: not military grade. Limited frequency agility.'),
+    'Commercial DJI-frequency jammer, not military grade. Limited frequency agility.'),
   makeJammer('manpack-gnss-spoofer','GNSS Spoofer (Manpack)','manpack',1,
     ['gps_l1','gps_l2','glonass'],'LOS_only',
     'Low-power GPS/GLONASS spoofer: navigation deception rather than denial. Shorter effective range.'),

@@ -76,6 +76,14 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Also includes brand assets, icons, etc.
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
+# Watchfloor files (signed incident bundles, reporting window) and the public
+# signing key. Read at request time from process.cwd()/data, so they must sit
+# beside server.js. New bundles arrive by operator import into this folder.
+COPY --from=builder --chown=nextjs:nodejs /app/data/intel ./data/intel
+
+# AI audit log fallback store (used when the ai_audit_log table is unavailable).
+RUN mkdir -p /app/data/audit && chown nextjs:nodejs /app/data/audit
+
 USER nextjs
 
 EXPOSE 3000

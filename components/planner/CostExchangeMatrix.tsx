@@ -13,6 +13,7 @@ import {
   type ExchangeRatioBand,
   type ExchangeVerdict,
 } from '@/lib/planner/cost-model'
+import { plainCopy } from '@/lib/planner/days-of-fire'
 import { DataTable, type DataColumn } from '@/components/ui/DataTable'
 
 /**
@@ -63,7 +64,7 @@ function layerColumns(rankOf: (x: ExchangeRatioBand) => number | undefined): Dat
       sticky: true,
       sortValue: (x) => x.effector.label,
       cell: (x) => (
-        <span className="flex min-w-[260px] items-center gap-3" title={`${x.effector.label}: ${x.effector.note}`}>
+        <span className="flex min-w-[260px] items-center gap-3" title={`${x.effector.label}: ${plainCopy(x.effector.note)}`}>
           <span className="w-5 shrink-0 text-right font-mono text-xs tabular-nums store-text-muted">{rankOf(x)}</span>
           <span className="primary truncate">{x.effector.label}</span>
           {x.effector.reusable ? <span className="tag shrink-0">Reusable</span> : null}
@@ -107,7 +108,7 @@ const MATRIX_COLUMNS: DataColumn<ExchangeRatioBand>[] = [
     // Names wrap rather than truncate: the table fits the frame by wrapping
     // these two text columns before it ever scrolls sideways.
     cell: (x) => (
-      <span className="primary block min-w-[170px] leading-snug" title={x.effector.note}>
+      <span className="primary block min-w-[170px] leading-snug" title={plainCopy(x.effector.note)}>
         {x.effector.label}
       </span>
     ),
@@ -117,7 +118,7 @@ const MATRIX_COLUMNS: DataColumn<ExchangeRatioBand>[] = [
     header: 'Threat',
     sortValue: (x) => x.threat.label,
     cell: (x) => (
-      <span className="block min-w-[150px] leading-snug text-[var(--store-ink-soft)]" title={x.threat.note}>
+      <span className="block min-w-[150px] leading-snug text-[var(--store-ink-soft)]" title={plainCopy(x.threat.note)}>
         {x.threat.label}
       </span>
     ),
@@ -181,7 +182,7 @@ function PaneHead({ title, meta, children }: { title: string; meta?: string; chi
   )
 }
 
-export function CostExchangeMatrix() {
+export function CostExchangeMatrix({ afterRanking }: { afterRanking?: ReactNode } = {}) {
   const threats = useMemo(() => COST_ENTRIES.filter((c) => c.side === 'threat'), [])
   const [threatId, setThreatId] = useState(threats[0]?.id ?? 'shahed-136')
   const [showAll, setShowAll] = useState(false)
@@ -230,7 +231,7 @@ export function CostExchangeMatrix() {
                 </span>
               </p>
             </div>
-            <p className="max-w-[80ch] self-center text-[13px] leading-relaxed store-text-body">{threat.note}</p>
+            <p className="max-w-[80ch] self-center text-[13px] leading-relaxed store-text-body">{plainCopy(threat.note)}</p>
           </div>
         )}
 
@@ -249,6 +250,8 @@ export function CostExchangeMatrix() {
           end: if even the best reading is bad, the exchange is bad.
         </p>
       </section>
+
+      {afterRanking}
 
       {/* Full matrix */}
       <section>

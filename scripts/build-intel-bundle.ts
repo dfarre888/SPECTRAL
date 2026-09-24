@@ -225,7 +225,10 @@ async function main() {
     console.warn(`GPSJam ${yesterday}: not available yet`)
   }
 
-  const bundle = buildBundle(incidents, { producedBy: `${process.env.USER ?? 'operator'}@connected`, classification: 'UNCLASSIFIED // OSINT' })
+  // One row per id: the timeline and leads table key on it.
+  const ids = new Set<string>()
+  const unique = incidents.filter((i) => !ids.has(i.id) && !!ids.add(i.id))
+  const bundle = buildBundle(unique, { producedBy: `${process.env.USER ?? 'operator'}@connected`, classification: 'UNCLASSIFIED // OSINT' })
   const v = validateBundle(bundle)
   if (!v.ok) throw new Error(`Bundle failed self-validation: ${v.message}`)
   mkdirSync(OUT, { recursive: true })

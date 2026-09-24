@@ -20,8 +20,11 @@ export default async function ConflictIntelPage() {
 
   // Curated rows plus the newest OSINT bundle on one timeline. Bundle leads keep
   // their 'possible/unconfirmed' grades and theatre-level positions.
+  // Bundles built before 24 Sep 2026 could repeat a GNSS lead id; keep the first.
+  const leadIds = new Set<string>();
+  const leads = (latest?.bundle.incidents ?? []).filter((i) => !leadIds.has(i.id) && !!leadIds.add(i.id));
   const seen = new Set(dbIncidents.map((i) => i.id));
-  const incidents = [...dbIncidents, ...(latest?.bundle.incidents ?? []).filter((i) => !seen.has(i.id))]
+  const incidents = [...dbIncidents, ...leads.filter((i) => !seen.has(i.id))]
     .sort((a, b) => b.occurred_at.localeCompare(a.occurred_at));
 
   const briefs: Record<string, EngagementBrief> = {};
@@ -62,7 +65,7 @@ export default async function ConflictIntelPage() {
         counts={{
           incidents: incidents.length,
           reporting: reporting?.items.length ?? 0,
-          leads: latest?.bundle.incidents.length ?? 0,
+          leads: leads.length,
         }}
         incidents={
           <>
@@ -87,7 +90,7 @@ export default async function ConflictIntelPage() {
               Open news and GNSS-interference feeds harvested on a connected machine, graded by how many independent outlets carried each event, and matched against the platform catalogue. Leads, not findings; every row links to the outlets behind it.
             </p>
             {latest ? (
-              <OsintLeadsPanel incidents={latest.bundle.incidents} manifest={latest.bundle.manifest} attribution={latest.attribution} snapshots={latest.snapshots?.theatres ?? null} />
+              <OsintLeadsPanel incidents={leads} manifest={latest.bundle.manifest} attribution={latest.attribution} snapshots={latest.snapshots?.theatres ?? null} />
             ) : (
               <p className="text-[12px] store-text-muted">
                 No OSINT bundle on this instance. Build one on a connected machine with{' '}

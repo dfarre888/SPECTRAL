@@ -519,7 +519,7 @@ export function gpsJamClusterToIncident(c: GpsJamCluster, day: string): Conflict
   const share = Math.round((c.bad / Math.max(1, c.bad + c.good)) * 100)
   const where = c.theatre ? c.theatre.name : `${c.lat.toFixed(1)}, ${c.lon.toFixed(1)}`
   return {
-    id: `gpsjam-${day}-${c.lat.toFixed(0)}-${c.lon.toFixed(0)}`,
+    id: `gpsjam-${day}-${c.lat.toFixed(1)}-${c.lon.toFixed(1)}`,
     conflict_name: where,
     incident_title: `GNSS interference: ${share}% of ${c.bad + c.good} aircraft reporting degraded navigation near ${where}`,
     incident_type: 'gnss_denial',

@@ -52,7 +52,7 @@ export default async function ConflictIntelPage() {
           governments and analysts, and the raw OSINT leads behind them. Refreshed daily on a connected machine. For
           narrative case studies see{' '}
           <a href="/conflicts" className="text-[var(--wb-blue)] underline-offset-2 hover:underline">
-            Conflict Intel
+            Case Studies
           </a>
           .
         </p>

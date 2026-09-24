@@ -25,6 +25,7 @@ export type ModuleIconName =
   | 'globe'
   | 'layers'
   | 'map'
+  | 'network'
   | 'radio'
   | 'satellite'
   | 'shield'
@@ -152,7 +153,7 @@ export const SPECTRAL_MODULES: readonly SpectralModule[] = [
   {
     id: 'conflicts',
     href: '/conflicts',
-    label: 'Conflict Intel',
+    label: 'Case Studies',
     sub: 'Curated case studies',
     kicker: 'CASE STUDY',
     blurb: 'Named engagements and operational lessons',
@@ -211,8 +212,8 @@ export const SPECTRAL_MODULES: readonly SpectralModule[] = [
     label: 'Comms Linkage',
     sub: 'Coalition connectivity',
     kicker: 'INTEROP',
-    blurb: 'Who can share a track picture: and on what spectrum',
-    icon: 'radio',
+    blurb: 'Who can share a track picture, and on what spectrum',
+    icon: 'network',
     accent: 'cyan',
     group: 'intelligence',
     priority: 9,

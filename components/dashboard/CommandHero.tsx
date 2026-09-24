@@ -74,8 +74,10 @@ export function CommandHero({ title, subtitle, switcher, instruments, points, bu
       }
       groups.set(key, {
         key,
-        x: pos.x,
-        y: pos.y,
+        // Rounded: Node and Chrome trig can differ in the last digit, which
+        // breaks hydration of the inline style.
+        x: Math.round(pos.x * 1000) / 1000,
+        y: Math.round(pos.y * 1000) / 1000,
         // Same colours as the Watchfloor's incident type pills.
         colour: INCIDENT_TYPE_COLOR[normalizeIncidentType(p.type)],
         count: 1,

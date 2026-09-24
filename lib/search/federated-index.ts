@@ -58,7 +58,7 @@ export function federatedSearch(query: string, limit = 12): SearchHit[] {
         id: c.id,
         label: c.name,
         href: `/conflicts/${c.id}`,
-        module: 'Conflict Intel',
+        module: 'Case Studies',
         kind: 'conflict',
       })
     }

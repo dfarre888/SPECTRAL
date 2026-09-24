@@ -211,7 +211,7 @@ function buildOperators(snapshot: DashboardLiveSnapshot, copy: DashboardCopy): O
     rows.push({
       id: `wopr-${scenario.id}`,
       initials: initialsFromName(scenario.name),
-      name: scenario.name.slice(0, 24),
+      name: scenario.name,
       role: copy.crewPanelTitle.includes('Pilot') ? 'Remote Pilot' : 'WOPR Controller',
       flightCurrency: scenario.status === 'running' ? 'current' : 'due',
       medicalCurrency: 'current',

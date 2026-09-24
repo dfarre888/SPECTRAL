@@ -67,14 +67,14 @@ export default function ConflictsPage() {
   return (
     <div className="max-w-[100rem] mx-auto">
       <header>
-        <h1 className="page-title m-0">Conflict Intel</h1>
+        <h1 className="page-title m-0">Case Studies</h1>
         <p className="page-lede">
           Named engagements and the lessons they carry. OSINT case studies, date of information Jul 2026.
         </p>
       </header>
 
       <div className="mt-6 mb-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-        <div className="seg" role="tablist" aria-label="Conflict Intel views">
+        <div className="seg" role="tablist" aria-label="Case study views">
           <button type="button" role="tab" aria-selected={tab === 'cases'} onClick={() => setTab('cases')}>
             Case studies <span className="font-mono tabular-nums opacity-70">{cases.length}</span>
           </button>

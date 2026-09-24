@@ -18,7 +18,7 @@ export default function ConflictDetailPage({ params }: ConflictDetailPageProps) 
   return (
     <div className="max-w-[72rem] mx-auto">
       <nav aria-label="Breadcrumb" className="mb-3 text-[12px] store-text-muted">
-        <Link href="/conflicts" className="hover:text-[var(--store-ink)] transition-colors duration-150">Conflict Intel</Link>
+        <Link href="/conflicts" className="hover:text-[var(--store-ink)] transition-colors duration-150">Case Studies</Link>
         <span aria-hidden className="mx-2">/</span>
         <span>Case study</span>
       </nav>
@@ -35,7 +35,7 @@ export default function ConflictDetailPage({ params }: ConflictDetailPageProps) 
         <article className="w-full store-panel rounded-2xl p-6 md:p-8">
           <CaseStudyDetail study={study} />
         </article>
-        <Link href="/conflicts" className="fc-action">Back to Conflict Intel</Link>
+        <Link href="/conflicts" className="fc-action">Back to Case Studies</Link>
       </div>
     </div>
   )

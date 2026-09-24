@@ -87,7 +87,7 @@ export const REPORTING_TOPICS: readonly ReportingTopic[] = [
     id: 'region',
     label: 'Region',
     match: /china|\bpla\b|taiwan|south china sea|pacific|papua new guinea|\bpng\b|indonesia|philippines|north korea|\bdprk\b|pyongyang/i,
-    module: { href: '/conflicts', label: 'Conflict Intel' },
+    module: { href: '/conflicts', label: 'Case Studies' },
   },
 ]
 

@@ -35,7 +35,7 @@ export function OperatorReadinessPanel({
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--wb-blue)]" aria-hidden />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[13px] font-medium text-[var(--store-ink)] truncate">{op.name}</p>
+                  <p className="text-[13px] font-medium text-[var(--store-ink)] truncate" title={op.name}>{op.name}</p>
                   <div className="flex items-center gap-1.5 shrink-0" title={copy.crewCurrencyHint}>
                     <CurrencyDot status={op.flightCurrency} title={`Flight: ${op.flightCurrency}`} />
                     <CurrencyDot status={op.medicalCurrency} title={`Medical: ${op.medicalCurrency}`} />

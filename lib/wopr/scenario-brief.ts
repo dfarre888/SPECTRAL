@@ -1,7 +1,7 @@
 /**
  * Turns a live WOPR scenario into a printable commander's brief.
  *
- * Pure data — no React — so the shape is testable under node and the same
+ * Pure data, no React, so the shape is testable under node and the same
  * model can later feed a DOCX/AFSIM exporter without touching the renderer.
  *
  * The centrepiece is the detection delta: for each side, which opposing
@@ -86,7 +86,7 @@ function buildSideDetection(
   const byName = new Map<string, SensorTrack>()
   for (const t of picture) byName.set(normalise(t.name), t)
 
-  // A destroyed platform is no longer an intelligence problem — exclude it so
+  // A destroyed platform is no longer an intelligence problem: exclude it so
   // coverage is not flattered by kills.
   const live = opposing.filter((p) => !p.destroyed)
 
@@ -143,7 +143,7 @@ export function buildScenarioBrief(
   }
 }
 
-/** Filename for the printed/saved brief — safe across filesystems. */
+/** Filename for the printed/saved brief: safe across filesystems. */
 export function briefFilename(brief: ScenarioBrief): string {
   const slug = brief.title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
   const stamp = brief.generatedAt.slice(0, 16).replace(/[^0-9]/g, '')

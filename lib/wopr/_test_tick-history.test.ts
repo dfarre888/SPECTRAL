@@ -82,6 +82,6 @@ describe('tick history buffer', () => {
   it('labels frames for the scrubber readout', () => {
     const frames = build([4])
     expect(frameLabel(frames[0])).toBe('T+20 min · turn 4')
-    expect(frameLabel(null)).toBe('—')
+    expect(frameLabel(null)).toBe('No tick')
   })
 })

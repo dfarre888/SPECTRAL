@@ -1,7 +1,9 @@
 import { adjudicatePair, type LaydownPairInput } from '@/lib/operations/adjudication'
-import { cuasAssetToSpectrumBlue, resolveSpectrumUas } from '@/lib/map/spectrum-bridge'
+import { resolveSpectrumUas } from '@/lib/map/spectrum-bridge'
 import type { MapCuasAsset, MapUasAsset } from '@/lib/map/types'
-import type { WorldState, WoprPlatform } from '@/lib/wopr/types'
+import { haversineKm } from '@/lib/wopr/fog-of-war'
+import { canDefeatUas, platformRole } from '@/lib/wopr/roles'
+import type { WoprEventRecord, WorldState, WoprPlatform } from '@/lib/wopr/types'
 
 export interface PropagationCacheEntry {
   pairKey: string
@@ -10,6 +12,9 @@ export interface PropagationCacheEntry {
   combinedBlueSuccessPct: number
   propagationGated: boolean
 }
+
+/** Pairs further apart than this are not adjudicated: no RF effect at that range. */
+export const MAX_PAIR_KM = 50
 
 function platformToUasAsset(p: WoprPlatform): MapUasAsset | null {
   const spec = resolveSpectrumUas(p.platform_type)
@@ -42,35 +47,52 @@ function platformToCuasAsset(p: WoprPlatform): MapCuasAsset {
   }
 }
 
-function buildPairs(world: WorldState, tenantId: string): LaydownPairInput[] {
-  const pairs: LaydownPairInput[] = []
-  for (const red of world.red_orbat.platforms) {
-    if (red.destroyed) continue
-    for (const blue of world.blue_orbat.platforms) {
-      if (blue.destroyed) continue
-      const uasAsset = platformToUasAsset(red)
-      if (!uasAsset) continue
-      const cuasAsset = platformToCuasAsset(blue)
+interface NamedPair {
+  input: LaydownPairInput
+  uas: WoprPlatform
+  cuas: WoprPlatform
+}
+
+/**
+ * Every drone paired with every opposing platform that can deny or defeat it,
+ * whichever force owns the drones. Scenarios without roles fall back to
+ * Red drone versus Blue C-UAS (see `platformRole`).
+ */
+function buildPairs(world: WorldState, tenantId: string): NamedPair[] {
+  const pairs: NamedPair[] = []
+  const all = [...world.red_orbat.platforms, ...world.blue_orbat.platforms].filter((p) => !p.destroyed)
+  for (const uas of all) {
+    if (platformRole(uas) !== 'uas') continue
+    const uasAsset = platformToUasAsset(uas)
+    if (!uasAsset) continue
+    for (const cuas of all) {
+      if (cuas.side === uas.side) continue
+      if (!canDefeatUas(platformRole(cuas))) continue
+      if (haversineKm(uas.lat, uas.lon, cuas.lat, cuas.lon) > MAX_PAIR_KM) continue
       pairs.push({
-        uas: {
-          instanceId: red.id,
-          asset: uasAsset,
-          lat: red.lat,
-          lon: red.lon,
-          discAltitude_m: red.alt_m,
-          terrainAMSL: red.alt_m - 30,
+        uas,
+        cuas,
+        input: {
+          uas: {
+            instanceId: uas.id,
+            asset: uasAsset,
+            lat: uas.lat,
+            lon: uas.lon,
+            discAltitude_m: uas.alt_m,
+            terrainAMSL: uas.alt_m - 30,
+          },
+          cuas: {
+            instanceId: cuas.id,
+            asset: platformToCuasAsset(cuas),
+            lat: cuas.lat,
+            lon: cuas.lon,
+            terrainAMSL: cuas.alt_m,
+          },
+          defeatMatrixPk: 50,
+          inDefeatRange: true,
+          terrainMasked: false,
+          tenantId,
         },
-        cuas: {
-          instanceId: blue.id,
-          asset: cuasAsset,
-          lat: blue.lat,
-          lon: blue.lon,
-          terrainAMSL: blue.alt_m,
-        },
-        defeatMatrixPk: 50,
-        inDefeatRange: true,
-        terrainMasked: false,
-        tenantId,
       })
     }
   }
@@ -80,17 +102,28 @@ function buildPairs(world: WorldState, tenantId: string): LaydownPairInput[] {
 export async function refreshScenarioPropagation(
   world: WorldState,
   tenantId: string,
-): Promise<{ cache: Record<string, PropagationCacheEntry>; events: string[] }> {
+): Promise<{
+  cache: Record<string, PropagationCacheEntry>
+  events: string[]
+  records: WoprEventRecord[]
+}> {
   const pairs = buildPairs(world, tenantId)
   if (pairs.length === 0) {
-    return { cache: {}, events: ['No ORBAT pairs to adjudicate'] }
+    const detail = 'No drone and C-UAS pairs in range to adjudicate'
+    return {
+      cache: {},
+      events: [detail],
+      records: [{ type: 'propagation', side: 'referee', detail }],
+    }
   }
 
-  const results = await Promise.all(pairs.map((p) => adjudicatePair(p)))
+  const results = await Promise.all(pairs.map((p) => adjudicatePair(p.input)))
   const cache: Record<string, PropagationCacheEntry> = {}
   const events: string[] = []
+  const records: WoprEventRecord[] = []
 
-  for (const r of results) {
+  results.forEach((r, i) => {
+    const { uas, cuas } = pairs[i]
     const key = `${r.uasInstanceId}:${r.cuasInstanceId}`
     cache[key] = {
       pairKey: key,
@@ -99,10 +132,17 @@ export async function refreshScenarioPropagation(
       combinedBlueSuccessPct: r.combinedBlueSuccessPct,
       propagationGated: r.propagationGated,
     }
-    events.push(
-      `${key} J/S ${r.propagation.jam_to_signal_db?.toFixed(1) ?? '—'} dB · ${r.propagation.los_state}`,
-    )
-  }
+    const js = r.propagation.jam_to_signal_db
+    const detail = `${cuas.name} vs ${uas.name}: J/S ${js == null ? 'n/a' : `${js.toFixed(1)} dB`}, ${r.propagation.los_state}, defeat score ${r.combinedBlueSuccessPct}%`
+    events.push(detail)
+    records.push({
+      type: 'propagation',
+      side: 'referee',
+      entity_id: key,
+      entity: `${cuas.name} vs ${uas.name}`,
+      detail,
+    })
+  })
 
-  return { cache, events }
+  return { cache, events, records }
 }

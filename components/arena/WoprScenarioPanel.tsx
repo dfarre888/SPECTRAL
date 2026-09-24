@@ -5,10 +5,11 @@ import { EditionBadge } from '@/components/operations/EditionBadge'
 import { AdjudicationSourceBanner } from '@/components/operations/AdjudicationSourceBanner'
 import { StorePanel } from '@/components/ui/store-surface'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
+import { TURN_MINUTES } from '@/lib/wopr/engine'
 import { TRAINING_WOPR_SCENARIOS } from '@/lib/wopr/training-scenarios'
 import type { SensorTrack, TickResult, WoprScenario } from '@/lib/wopr/types'
 import { clsx } from 'clsx'
-import { Play, Plus, Radio, Swords } from 'lucide-react'
+import { GitBranch, Play, Plus, Radio, Swords } from 'lucide-react'
 
 export interface WoprScenarioPanelProps {
   onScenarioChange?: (scenario: WoprScenario | null) => void
@@ -19,6 +20,21 @@ export interface WoprScenarioPanelProps {
    * the COP and follow the replay scrubber.
    */
   layout?: 'stacked' | 'rail'
+  /**
+   * A scenario created elsewhere on the page (a branch). It joins the list if
+   * it is new and becomes the selection.
+   */
+  injectScenario?: WoprScenario | null
+}
+
+/** Scenario id requested in the URL (`/arena?scenario=<id>`, used by home page links). */
+function requestedScenarioId(): string | null {
+  if (typeof window === 'undefined') return null
+  try {
+    return new URLSearchParams(window.location.search).get('scenario')
+  } catch {
+    return null
+  }
 }
 
 function countActivePlatforms(scenario: WoprScenario | null): { red: number; blue: number } {
@@ -28,7 +44,12 @@ function countActivePlatforms(scenario: WoprScenario | null): { red: number; blu
   return { red, blue }
 }
 
-export function WoprScenarioPanel({ onScenarioChange, onTickChange, layout = 'stacked' }: WoprScenarioPanelProps) {
+export function WoprScenarioPanel({
+  onScenarioChange,
+  onTickChange,
+  layout = 'stacked',
+  injectScenario = null,
+}: WoprScenarioPanelProps) {
   const operations = isOperationsEditionClient()
   const [scenarios, setScenarios] = useState<WoprScenario[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -42,6 +63,10 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange, layout = 'st
   const [templateId, setTemplateId] = useState('')
   const [templates, setTemplates] = useState<{ id: string; name: string }[]>([])
   const streamRef = useRef<EventSource | null>(null)
+  const wantedIdRef = useRef<string | null>(null)
+  useEffect(() => {
+    wantedIdRef.current = requestedScenarioId()
+  }, [])
 
   const selected = scenarios.find((s) => s.id === selectedId) ?? null
   const orbatCounts = countActivePlatforms(selected)
@@ -94,9 +119,22 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange, layout = 'st
   useEffect(() => {
     if (!operations && TRAINING_WOPR_SCENARIOS.length > 0 && !selectedId) {
       setScenarios(TRAINING_WOPR_SCENARIOS)
-      selectScenario(TRAINING_WOPR_SCENARIOS[0].id, TRAINING_WOPR_SCENARIOS)
+      const wanted = TRAINING_WOPR_SCENARIOS.find((s) => s.id === wantedIdRef.current)
+      selectScenario((wanted ?? TRAINING_WOPR_SCENARIOS[0]).id, TRAINING_WOPR_SCENARIOS)
     }
   }, [operations, selectedId, selectScenario])
+
+  // A branch made from the scrubber joins the list and takes the selection.
+  const injectedRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!injectScenario || injectedRef.current === injectScenario.id) return
+    injectedRef.current = injectScenario.id
+    const next = scenarios.some((s) => s.id === injectScenario.id)
+      ? scenarios.map((s) => (s.id === injectScenario.id ? injectScenario : s))
+      : [injectScenario, ...scenarios]
+    setScenarios(next)
+    selectScenario(injectScenario.id, next)
+  }, [injectScenario, scenarios, selectScenario])
 
   useEffect(() => {
     if (!operations) return
@@ -110,7 +148,9 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange, layout = 'st
     if (scenarios.length === 0) return
     const stillSelected = selectedId && scenarios.some((s) => s.id === selectedId)
     if (!stillSelected) {
-      selectScenario(scenarios[0].id, scenarios)
+      const wanted = scenarios.find((s) => s.id === wantedIdRef.current)
+      wantedIdRef.current = null
+      selectScenario((wanted ?? scenarios[0]).id, scenarios)
     }
   }, [scenarios, selectedId, selectScenario])
 
@@ -174,11 +214,9 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange, layout = 'st
       }
       const json = await res.json()
       const created: WoprScenario = json.data
-      setScenarios((prev) => {
-        const next = [created, ...prev]
-        selectScenario(created.id, next)
-        return next
-      })
+      const next = [created, ...scenarios]
+      setScenarios(next)
+      selectScenario(created.id, next)
       setNewName('')
     } catch {
       setError('Network error creating scenario.')
@@ -273,6 +311,12 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange, layout = 'st
                 <>
                   <span className={clsx('tag capitalize', STATUS_TONE[s.status])}>{s.status}</span>
                   <span className="font-mono tabular-nums">T+{s.elapsed_min} min</span>
+                  {s.parent_scenario_id ? (
+                    <span className="tag violet" title="Forked from another scenario">
+                      <GitBranch className="h-3 w-3" aria-hidden />
+                      Branch
+                    </span>
+                  ) : null}
                 </>
               )}
             />
@@ -326,8 +370,21 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange, layout = 'st
       ) : (
         <>
           <StorePanel className="p-4">
-            <p className="text-[12px] store-text-muted">Selected scenario</p>
-            <h3 className="mt-0.5 text-[16px] font-semibold text-[var(--store-ink)]">{selected.name}</h3>
+            <p className="text-[12px] store-text-muted">
+              {selected.world_state.battlespace.area ?? 'Selected scenario'}
+            </p>
+            <h3 className="mt-0.5 text-[16px] font-semibold leading-snug text-[var(--store-ink)]">{selected.name}</h3>
+            {selected.parent_scenario_id ? (
+              <p className="mt-1 text-[12px] leading-relaxed store-text-muted">
+                <GitBranch className="mr-1 inline h-3.5 w-3.5 align-[-2px] text-[#A78BFA]" aria-hidden />
+                Branch of {scenarios.find((s) => s.id === selected.parent_scenario_id)?.name ?? 'another scenario'}
+                {selected.branch_turn != null ? (
+                  <>
+                    {' '}at <span className="font-mono tabular-nums">T+{selected.branch_turn * TURN_MINUTES} min</span>
+                  </>
+                ) : null}
+              </p>
+            ) : null}
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
               <span className="tag font-mono">{selected.classification}</span>
               <span className={clsx('tag capitalize', STATUS_TONE[selected.status])}>{selected.status}</span>
@@ -360,6 +417,12 @@ export function WoprScenarioPanel({ onScenarioChange, onTickChange, layout = 'st
               <Play className="h-3.5 w-3.5" aria-hidden />
               Advance tick (+15 min)
             </button>
+            {selected.world_state.battlespace.notes ? (
+              <details className="mt-3 text-[12px] leading-relaxed store-text-muted">
+                <summary className="cursor-pointer select-none text-[var(--store-ink-soft)]">Basis and sources</summary>
+                <p className="mt-1.5">{selected.world_state.battlespace.notes}</p>
+              </details>
+            ) : null}
           </StorePanel>
 
           {layout === 'stacked' ? (
@@ -435,7 +498,7 @@ function ScenarioList<T extends { id: string; name: string }>({
                   : 'hover:bg-white/[0.04]',
               )}
             >
-              <p className="truncate text-[13px] font-medium text-[var(--store-ink)]">{s.name}</p>
+              <p className="line-clamp-2 text-[13px] font-medium leading-snug text-[var(--store-ink)]" title={s.name}>{s.name}</p>
               <p className="mt-1 flex items-center gap-2 text-[12px] store-text-muted">{meta(s)}</p>
             </button>
           </li>

@@ -6,7 +6,7 @@ export default function ArenaPage() {
     <HubPageShell
       eyebrow="Wargaming"
       title="Red/Blue Arena"
-      subtitle="WOPR live scenario engine: a streamed common operating picture, fog of war and time-stepped propagation. The training tier uses OSINT vignettes when the Operations API is unavailable."
+      subtitle="WOPR scenario engine: a streamed common operating picture with fog of war and time-stepped propagation. Replay any turn, branch the game from it, and export for analysis or federation. The training tier uses OSINT vignettes when the Operations API is unavailable."
       maxWidthClass="max-w-[1600px]"
     >
       <ArenaWorkspace />

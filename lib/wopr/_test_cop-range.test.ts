@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { resolveCopRangeKm } from '@/lib/wopr/cop-range'
-import { worldStateToCopEntities } from '@/lib/wopr/cop-entities'
+import { MAX_COP_DISC_KM, worldStateToCopEntities } from '@/lib/wopr/cop-entities'
 import { createDefaultWorldState } from '@/lib/wopr/engine'
 import type { WoprPlatform, WoprScenario } from '@/lib/wopr/types'
 
@@ -71,7 +71,31 @@ describe('worldStateToCopEntities range_km', () => {
     }
     const entities = worldStateToCopEntities(scenario, 'orbat')
     expect(entities).toHaveLength(2)
-    expect(entities[0].range_km).toBeGreaterThan(0)
+    // A one-way attack drone's strategic reach is not drawn on the tactical COP.
+    expect(entities[0].range_km).toBeUndefined()
     expect(entities[1].range_km).toBeCloseTo(12, 0)
+  })
+
+  it('draws tactical drone ranges and honours explicit overrides', () => {
+    const world = createDefaultWorldState()
+    world.red_orbat.platforms = [
+      makePlatform({ id: 'red-fpv', platform_type: 'fpv-analog-5800' }),
+      makePlatform({ id: 'red-none', platform_type: 'fpv-analog-5800', range_km: 0 }),
+      makePlatform({ id: 'red-set', platform_type: 'fpv-analog-5800', range_km: 7 }),
+    ]
+    const scenario: WoprScenario = {
+      id: 's2',
+      tenant_id: 't1',
+      name: 'Tactical',
+      classification: 'UNCLASSIFIED',
+      world_state: world,
+      elapsed_min: 0,
+      status: 'draft',
+    }
+    const [fpv, none, set] = worldStateToCopEntities(scenario, 'orbat')
+    expect(fpv.range_km).toBeGreaterThan(0)
+    expect(fpv.range_km).toBeLessThanOrEqual(MAX_COP_DISC_KM)
+    expect(none.range_km).toBeUndefined()
+    expect(set.range_km).toBe(7)
   })
 })

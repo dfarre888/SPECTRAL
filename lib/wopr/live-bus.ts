@@ -2,7 +2,7 @@ import type { TickResult } from '@/lib/wopr/types'
 
 type Subscriber = (event: { type: string; payload: unknown }) => void
 
-/** Channel key: tenantId:scenarioId — prevents cross-tenant COP bleed. */
+/** Channel key: tenantId:scenarioId: prevents cross-tenant COP bleed. */
 const channels = new Map<string, Set<Subscriber>>()
 
 export function scenarioChannelKey(tenantId: string, scenarioId: string): string {
@@ -38,7 +38,7 @@ export function publishTick(tenantId: string, scenarioId: string, tick: TickResu
   publishScenarioEvent(tenantId, scenarioId, 'tick', tick)
 }
 
-/** Close all subscribers for a scenario — call on session end or scenario delete. */
+/** Close all subscribers for a scenario: call on session end or scenario delete. */
 export function closeScenarioChannel(tenantId: string, scenarioId: string): void {
   const key = scenarioChannelKey(tenantId, scenarioId)
   const subs = channels.get(key)

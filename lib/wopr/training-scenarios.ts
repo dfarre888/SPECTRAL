@@ -1,7 +1,10 @@
 /**
- * OSINT WOPR training vignettes — client-safe static scenarios when API unavailable.
+ * OSINT WOPR training vignettes: client-safe static scenarios for when the
+ * Operations API is unavailable. The three demo scenarios lead the list so
+ * the training tier shows the same library as the live Arena.
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
+import { demoWoprScenarios } from '@/lib/wopr/demo-scenarios'
 import type { WoprScenario } from '@/lib/wopr/types'
 
 const TRAINING_TENANT = 'training-tier'
@@ -51,9 +54,10 @@ function vignette(
 }
 
 export const TRAINING_WOPR_SCENARIOS: WoprScenario[] = [
+  ...demoWoprScenarios(TRAINING_TENANT),
   vignette(
     'vignette-kyiv-owa-saturation',
-    'Kyiv OWA Saturation — Shahed Wave 3',
+    'Kyiv OWA saturation: Shahed wave 3',
     [
       { id: 'red-shahed-1', name: 'Shahed-136 #1', lat: 50.45, lon: 30.52 },
       { id: 'red-shahed-2', name: 'Shahed-136 #2', lat: 50.44, lon: 30.48 },
@@ -66,7 +70,7 @@ export const TRAINING_WOPR_SCENARIOS: WoprScenario[] = [
   ),
   vignette(
     'vignette-red-sea-usv-strike',
-    'Red Sea USV Swarm — HVU Protection',
+    'Red Sea USV swarm: HVU protection',
     [
       { id: 'red-magura', name: 'Magura V5 USV', lat: 14.2, lon: 42.8 },
       { id: 'red-fpv', name: 'FPV relay UAS', lat: 14.25, lon: 42.75 },
@@ -78,7 +82,7 @@ export const TRAINING_WOPR_SCENARIOS: WoprScenario[] = [
   ),
   vignette(
     'vignette-bakhmut-fpv-corridor',
-    'Bakhmut FPV Corridor — Lancet vs Armour',
+    'Bakhmut FPV corridor: Lancet vs armour',
     [
       { id: 'red-lancet', name: 'Lancet-3 loitering munition', lat: 48.59, lon: 38.0 },
       { id: 'red-fpv-squad', name: 'FPV strike pair', lat: 48.58, lon: 37.98 },

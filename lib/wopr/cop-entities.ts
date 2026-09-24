@@ -20,8 +20,24 @@ function platformTypeToEntityType(platformType: string): Entity['type'] {
   return 'drone'
 }
 
+const ROLE_ENTITY: Record<NonNullable<WoprPlatform['role']>, Entity['type']> = {
+  uas: 'drone',
+  cuas: 'defeat_system',
+  ew: 'jammer',
+  sensor: 'radar',
+  c2: 'radar',
+  fires: 'defeat_system',
+}
+
+/**
+ * Discs wider than this are strategic ranges (a one-way attack drone's
+ * 2,000 km reach) and would bury the tactical picture, so none is drawn.
+ */
+export const MAX_COP_DISC_KM = 100
+
 function platformToEntity(p: WoprPlatform): Entity {
-  const type = platformTypeToEntityType(p.platform_type)
+  const type = p.role ? ROLE_ENTITY[p.role] : platformTypeToEntityType(p.platform_type)
+  const resolved = p.range_km ?? (p.role === 'c2' ? 0 : resolveCopRangeKm(p, type))
   return {
     id: p.id,
     name: p.name,
@@ -30,7 +46,7 @@ function platformToEntity(p: WoprPlatform): Entity {
     altM: p.alt_m,
     force: p.side,
     type,
-    range_km: resolveCopRangeKm(p, type),
+    range_km: resolved > 0 && resolved <= MAX_COP_DISC_KM ? resolved : undefined,
   }
 }
 

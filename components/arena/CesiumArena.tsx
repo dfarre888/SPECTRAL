@@ -1,6 +1,6 @@
 'use client'
 /**
- * CesiumArena — 3D Red/Blue scenario canvas
+ * CesiumArena: 3D Red/Blue scenario canvas
  *
  * Must be dynamically imported with ssr:false:
  *   const CesiumArena = dynamic(() => import('@/components/arena/CesiumArena'), { ssr: false })
@@ -21,7 +21,7 @@ export interface Entity {
   altM: number
   force: 'red' | 'blue'
   type: 'drone' | 'jammer' | 'radar' | 'defeat_system'
-  /** Operational range in km — if set, draws a translucent engagement sphere */
+  /** Operational range in km: if set, draws a translucent engagement sphere */
   range_km?: number
   speedKmh?: number
   headingDeg?: number
@@ -31,7 +31,7 @@ interface Props {
   entities: Entity[]
   center?: { lon: number; lat: number }
   onEntityClick?: (id: string) => void
-  /** AIS vessel positions — rendered in a separate CustomDataSource so they
+  /** AIS vessel positions: rendered in a separate CustomDataSource so they
    *  never interfere with scenario entities. Default: hidden. */
   aisVessels?: AisVessel[]
   /** Show or hide the AIS layer entirely */
@@ -50,7 +50,7 @@ export default function CesiumArena({
   const viewerRef = useRef<any>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cesiumRef = useRef<any>(null)
-  // Separate CustomDataSource for AIS — never cleared by scenario entity sync
+  // Separate CustomDataSource for AIS: never cleared by scenario entity sync
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const aisDataSourceRef = useRef<any>(null)
   const onEntityClickRef = useRef(onEntityClick)
@@ -66,7 +66,7 @@ export default function CesiumArena({
     // Viewer creation is async, so viewerRef is still null if React tears the
     // effect down mid-init (StrictMode double-mount in dev). Without these
     // guards cleanup destroys nothing, the guard above passes a second time,
-    // and two Viewers attach to the same container — later effects drive the
+    // and two Viewers attach to the same container: later effects drive the
     // second while the first paints a dead black canvas over the panel.
     let destroyed = false
     let pendingViewer: any = null
@@ -122,7 +122,7 @@ export default function CesiumArena({
         pendingViewer = null
         return
       }
-      aisDs.show = false // default OFF — controlled by showAisLayer prop
+      aisDs.show = false // default OFF: controlled by showAisLayer prop
       aisDataSourceRef.current = aisDs
 
       cesiumRef.current = Cesium
@@ -220,15 +220,38 @@ export default function CesiumArena({
 
     viewer.entities.removeAll()
 
+    // Same-side units within ~1.2 km stack their labels one line apart,
+    // pushing away from the marker: Red labels go up, so the northernmost
+    // is lifted most; Blue labels go down, so the southernmost drops most.
+    const stack = new Map<string, number>()
+    const placed: typeof entities = []
+    const order = [...entities].sort((a, b) =>
+      a.force === 'red' && b.force === 'red' ? a.lat - b.lat : b.lat - a.lat,
+    )
+    for (const ent of order) {
+      const kmPerDegLon = 111.32 * Math.cos((ent.lat * Math.PI) / 180)
+      const near = placed.filter(
+        (o) => o.force === ent.force && Math.hypot((o.lat - ent.lat) * 110.57, (o.lon - ent.lon) * kmPerDegLon) < 1.2,
+      ).length
+      stack.set(ent.id, near)
+      placed.push(ent)
+    }
+
     entities.forEach(ent => {
       const isRed   = ent.force === 'red'
+      const lift    = 14 + 20 * (stack.get(ent.id) ?? 0)
       const color   = isRed
         ? Color.fromCssColorString('#EF4444').withAlpha(0.9)
         : Color.fromCssColorString('#3B82F6').withAlpha(0.9)
 
       // ── Placemark: point + label ──────────────────────────────────────────
+      // Short name on the map (the bracketed qualifier stays in the ORBAT);
+      // Red labels sit above the marker and Blue below, so co-located
+      // opposing units do not print over each other.
+      const shortName = ent.name.replace(/\s*\([^)]*\)\s*$/, '') || ent.name
       viewer.entities.add({
         id: ent.id,
+        name: ent.name,
         position: Cartesian3.fromDegrees(ent.lon, ent.lat, ent.altM),
         point: {
           pixelSize: ent.type === 'drone' ? 10 : 14,
@@ -238,7 +261,7 @@ export default function CesiumArena({
           heightReference: HeightReference.NONE,
         },
         label: {
-          text: ent.name,
+          text: shortName,
           font: '11px JetBrains Mono',
           fillColor: isRed
             ? Color.fromCssColorString('#EF4444')
@@ -246,14 +269,17 @@ export default function CesiumArena({
           outlineColor: Color.BLACK,
           outlineWidth: 2,
           style: LabelStyle.FILL_AND_OUTLINE,
-          verticalOrigin: VerticalOrigin.BOTTOM,
-          pixelOffset: { x: 0, y: -14 } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+          verticalOrigin: isRed ? VerticalOrigin.BOTTOM : VerticalOrigin.TOP,
+          pixelOffset: { x: 0, y: isRed ? -lift : lift } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+          // Draw in front of markers and discs so a neighbour's point never covers the text.
+          eyeOffset: new Cartesian3(0, 0, -200),
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
           showBackground: true,
           backgroundColor: Color.fromCssColorString(SCENE_GROUND).withAlpha(0.8),
         },
       })
 
-      // ── Influence radius — ground disc (CLAMP_TO_GROUND) ─────────────────
+      // ── Influence radius: ground disc (CLAMP_TO_GROUND) ─────────────────
       if (ent.range_km && ent.range_km > 0) {
         const rangeM = ent.range_km * 1000
         const discId = `disc-${ent.id}`
@@ -296,7 +322,7 @@ export default function CesiumArena({
 
   // ── AIS layer: vessel sync ────────────────────────────────────────────────
   // Rebuilds AIS entities whenever the vessel list changes.
-  // Uses a separate CustomDataSource — viewer.entities.removeAll() in the
+  // Uses a separate CustomDataSource: viewer.entities.removeAll() in the
   // scenario sync effect above has no effect on this data source.
   useEffect(() => {
     const viewer = viewerRef.current

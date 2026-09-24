@@ -1,21 +1,32 @@
 'use client'
 import { SwarmSaturationPanel } from '@/components/arena/SwarmSaturationPanel'
+import { FiresLoopPanel } from '@/components/arena/FiresLoopPanel'
+import { ExportMenu } from '@/components/arena/ExportMenu'
 
 import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Anchor, CircleHelp, FileText, Radio } from 'lucide-react'
+import { Anchor, CircleHelp, Crosshair, FileText, Radio } from 'lucide-react'
 import { WoprScenarioPanel } from '@/components/arena/WoprScenarioPanel'
 import { StorePanel } from '@/components/ui/store-surface'
 import { ScrollArea } from '@/components/ui/ScrollArea'
 import { worldStateToCopEntities, type CopViewMode } from '@/lib/wopr/cop-entities'
-import type { SensorTrack, TickResult, WoprScenario } from '@/lib/wopr/types'
+import type { SensorTrack, TickRecord, TickResult, WoprScenario } from '@/lib/wopr/types'
 import { aisBboxSearchParams, type AisVessel } from '@/lib/ais/types'
 import { clsx } from 'clsx'
 import { GuidedTour } from '@/components/tour/GuidedTour'
 import { ARENA_FOG_OF_WAR_TOUR, tourSeenKey, type TourAction } from '@/lib/tour/tours'
 import { ScenarioBriefSheet } from '@/components/wopr/ScenarioBriefSheet'
 import { TickScrubber } from '@/components/wopr/TickScrubber'
-import { appendFrame, clampIndex, eventsThrough, frameAt, isLive, type TickFrame } from '@/lib/wopr/tick-history'
+import {
+  appendFrame,
+  clampIndex,
+  eventsThrough,
+  frameAt,
+  framesFromRecords,
+  isLive,
+  mergeHistory,
+  type TickFrame,
+} from '@/lib/wopr/tick-history'
 
 import { GlobeSkeleton } from '@/components/ui/loading-skeleton'
 
@@ -35,6 +46,11 @@ const LEGEND: Record<CopViewMode, { blue: string; red: string }> = {
   orbat: { blue: 'Blue units', red: 'Red units' },
   blue_picture: { blue: 'Blue units', red: 'Red tracks' },
   red_fow: { blue: 'Blue tracks', red: 'Red units' },
+}
+
+/** Training-tier vignettes live in the browser; everything else is served by the WOPR API. */
+function isApiBacked(scenario: WoprScenario | null): boolean {
+  return Boolean(scenario && scenario.tenant_id !== 'training-tier')
 }
 
 // How often to refresh AIS data while the layer is active (ms)
@@ -145,8 +161,80 @@ export function ArenaWorkspace() {
       setFrames([])
       setScrubIndex(0)
       setFollowing(true)
+      return
+    }
+    // Same scenario after a tick: the reply carries the world as it now
+    // stands, which is the world for the newest frame.
+    if (next) {
+      setFrames((prev) => {
+        const last = prev[prev.length - 1]
+        if (!last || last.world || last.tick.elapsed_min !== next.elapsed_min) return prev
+        return [...prev.slice(0, -1), { ...last, world: next.world_state }]
+      })
     }
   }, [])
+
+  // Recorded history for the selected scenario, so replay and branching work
+  // after a reload and a branch opens with its shared past.
+  const scenarioId = scenario?.id ?? null
+  const apiBacked = isApiBacked(scenario)
+  useEffect(() => {
+    if (!scenarioId || !apiBacked) return
+    let cancelled = false
+    fetch(`/api/v1/wopr/scenarios/${encodeURIComponent(scenarioId)}/ticks`)
+      .then((r) => (r.ok ? r.json() : { data: [] }))
+      .then((json: { data?: TickRecord[] }) => {
+        if (cancelled || scenarioIdRef.current !== scenarioId) return
+        const stored = framesFromRecords(json.data ?? [])
+        if (stored.length === 0) return
+        setFrames((prev) => {
+          const merged = mergeHistory(prev, stored)
+          setScrubIndex(merged.length - 1)
+          return merged
+        })
+        setFollowing(true)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [scenarioId, apiBacked])
+
+  // ── Branching ─────────────────────────────────────────────────────────────
+  const [injected, setInjected] = useState<WoprScenario | null>(null)
+  const [branching, setBranching] = useState(false)
+  const [branchNote, setBranchNote] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null)
+
+  const branchFrom = useCallback(
+    async (frame: TickFrame) => {
+      if (!scenario) return
+      setBranching(true)
+      setBranchNote(null)
+      try {
+        const res = await fetch(`/api/v1/wopr/scenarios/${encodeURIComponent(scenario.id)}/branch`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ turn: frame.tick.turn }),
+        })
+        const json = await res.json().catch(() => ({}))
+        if (!res.ok) {
+          setBranchNote({ tone: 'error', text: json.error ?? `Branch failed (${res.status}).` })
+          return
+        }
+        const created = json.data.scenario as WoprScenario
+        setInjected(created)
+        setBranchNote({
+          tone: 'ok',
+          text: `Created "${created.name}" with ${json.data.ticks?.length ?? 0} turns of history.${json.data.approximate ? ' Positions at that turn were approximated.' : ''}`,
+        })
+      } catch {
+        setBranchNote({ tone: 'error', text: 'Network error while branching.' })
+      } finally {
+        setBranching(false)
+      }
+    },
+    [scenario],
+  )
 
   const onTickChange = useCallback((next: TickResult | null) => {
     setTick(next)
@@ -175,7 +263,9 @@ export function ArenaWorkspace() {
 
   /** What the COP and the brief actually render: live tick, or a replayed one. */
   const activeTick = useMemo(() => {
-    if (following) return tick
+    // Following live with no tick received yet (fresh selection, a branch):
+    // show the newest recorded turn rather than an empty picture.
+    if (following) return tick ?? frames[frames.length - 1]?.tick ?? null
     return frameAt(frames, scrubIndex)?.tick ?? tick
   }, [following, tick, frames, scrubIndex])
 
@@ -185,9 +275,16 @@ export function ArenaWorkspace() {
     return eventsThrough(frames, at).reverse()
   }, [frames, following, scrubIndex])
 
+  /** The scenario as it stood at the playhead: replayed positions when a snapshot exists. */
+  const viewScenario = useMemo(() => {
+    if (!scenario || following) return scenario
+    const world = frameAt(frames, scrubIndex)?.world
+    return world ? { ...scenario, world_state: world } : scenario
+  }, [scenario, following, frames, scrubIndex])
+
   const entities = useMemo(
-    () => worldStateToCopEntities(scenario, copMode, activeTick),
-    [scenario, copMode, activeTick],
+    () => worldStateToCopEntities(viewScenario, copMode, activeTick),
+    [viewScenario, copMode, activeTick],
   )
 
   const forceCounts = useMemo(() => {
@@ -212,7 +309,12 @@ export function ArenaWorkspace() {
         .arena-cop .cesium-widget-credits * { font-size: 11px !important; }
       `}</style>
       <div className="min-w-0 space-y-5" data-tour="scenario-list">
-        <WoprScenarioPanel onScenarioChange={onScenarioChange} onTickChange={onTickChange} layout="rail" />
+        <WoprScenarioPanel
+          onScenarioChange={onScenarioChange}
+          onTickChange={onTickChange}
+          layout="rail"
+          injectScenario={injected}
+        />
         <SwarmSaturationPanel />
       </div>
 
@@ -306,6 +408,16 @@ export function ArenaWorkspace() {
                   <span aria-label="New" className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[var(--wb-blue)]" />
                 ) : null}
               </button>
+              <button
+                type="button"
+                onClick={() => document.getElementById('fires-loop')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                title="Compare a voice net with digital tasking in the drone-to-shooter loop"
+                className="lg-btn"
+              >
+                <Crosshair className="h-3.5 w-3.5" aria-hidden />
+                Fires loop
+              </button>
+              <ExportMenu scenario={scenario} frames={frames} apiBacked={apiBacked} />
               <span className="lg-sep" aria-hidden />
               <button
                 type="button"
@@ -338,7 +450,29 @@ export function ArenaWorkspace() {
             following={following}
             onScrub={scrubTo}
             onReturnToLive={returnToLive}
+            onBranch={branchFrom}
+            branching={branching}
+            branchDisabledReason={
+              !scenario
+                ? 'Select a scenario first'
+                : !apiBacked
+                  ? 'Branching needs the Operations API; training vignettes are read-only'
+                  : frames.length === 0
+                    ? 'Advance a tick first'
+                    : null
+            }
           />
+          {branchNote ? (
+            <p
+              role={branchNote.tone === 'error' ? 'alert' : 'status'}
+              className={clsx(
+                'border-t border-[var(--store-line)] px-4 py-2 text-[12px]',
+                branchNote.tone === 'error' ? 'text-[#FF8A98]' : 'store-text-body',
+              )}
+            >
+              {branchNote.text}
+            </p>
+          ) : null}
         </StorePanel>
 
         <div className="grid gap-5 lg:grid-cols-2">
@@ -361,6 +495,10 @@ export function ArenaWorkspace() {
         <EventLog events={events} tick={activeTick} />
       </div>
 
+      <div className="min-w-0 xl:col-span-2">
+        <FiresLoopPanel />
+      </div>
+
       <GuidedTour
         tour={ARENA_FOG_OF_WAR_TOUR}
         open={tourOpen}
@@ -369,7 +507,7 @@ export function ArenaWorkspace() {
       />
 
       <ScenarioBriefSheet
-        scenario={scenario}
+        scenario={viewScenario}
         tick={activeTick}
         open={briefOpen}
         onClose={() => setBriefOpen(false)}
@@ -427,8 +565,13 @@ function SensorPicture({
         </p>
       ) : (
         <ScrollArea frame={false} maxHeight="280px">
-          <table className="dt compact">
+          <table className="dt compact" style={{ tableLayout: 'fixed' }}>
             <caption className="sr-only">{title}</caption>
+            <colgroup>
+              <col />
+              <col style={{ width: 104 }} />
+              <col style={{ width: 76 }} />
+            </colgroup>
             <thead>
               <tr>
                 <th scope="col">Track</th>
@@ -440,7 +583,7 @@ function SensorPicture({
               {tracks.map((t) => (
                 <tr key={t.id}>
                   <td>
-                    <span className="primary block max-w-[220px] truncate" title={t.name}>{t.name}</span>
+                    <span className="primary block truncate" title={t.name}>{t.name}</span>
                     <span className="meta font-mono tabular-nums">
                       {t.lat.toFixed(2)}°, {t.lon.toFixed(2)}°
                     </span>

@@ -1,7 +1,7 @@
 'use client'
 
 import { clsx } from 'clsx'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, GitBranch } from 'lucide-react'
 import { frameAt, frameLabel, type TickFrame } from '@/lib/wopr/tick-history'
 
 interface TickScrubberProps {
@@ -10,6 +10,11 @@ interface TickScrubberProps {
   following: boolean
   onScrub: (index: number) => void
   onReturnToLive: () => void
+  /** Fork the scenario at the frame under the playhead. Omit to hide the action. */
+  onBranch?: (frame: TickFrame) => void
+  /** Why branching is unavailable (shown as the button's title and disables it). */
+  branchDisabledReason?: string | null
+  branching?: boolean
 }
 
 export function TickScrubber({
@@ -18,13 +23,18 @@ export function TickScrubber({
   following,
   onScrub,
   onReturnToLive,
+  onBranch,
+  branchDisabledReason,
+  branching = false,
 }: TickScrubberProps) {
   const max = Math.max(0, frames.length - 1)
   const current = frameAt(frames, index)
   const disabled = frames.length < 2
+  const at = current ? `T+${current.tick.elapsed_min}` : null
+  const branchBlocked = Boolean(branchDisabledReason) || !current || branching
 
   return (
-    <div className="flex items-center gap-2 border-t border-[var(--store-line)] px-3 py-2">
+    <div className="flex flex-wrap items-center gap-2 border-t border-[var(--store-line)] px-3 py-2">
       <button
         type="button"
         aria-label="Step back one tick"
@@ -52,11 +62,11 @@ export function TickScrubber({
         disabled={disabled}
         onChange={(e) => onScrub(Number(e.target.value))}
         aria-label="Scrub scenario history"
-        className="mx-1 h-1 min-w-0 flex-1 cursor-pointer accent-[var(--wb-blue)] disabled:cursor-default disabled:opacity-30"
+        className="mx-1 h-1 min-w-[120px] flex-1 cursor-pointer accent-[var(--wb-blue)] disabled:cursor-default disabled:opacity-30"
       />
 
       <span className="w-[150px] shrink-0 text-right font-mono text-[12px] tabular-nums store-text-muted">
-        {disabled ? 'Awaiting ticks' : frameLabel(current)}
+        {frames.length === 0 ? 'Awaiting ticks' : frameLabel(current)}
       </span>
 
       <button
@@ -75,6 +85,25 @@ export function TickScrubber({
         />
         {following ? 'Live' : 'Replay: back to live'}
       </button>
+
+      {onBranch ? (
+        <button
+          type="button"
+          onClick={() => current && onBranch(current)}
+          disabled={branchBlocked}
+          title={
+            branchDisabledReason ??
+            (current
+              ? `Fork this scenario at ${at} min into a new scenario that keeps the history to here`
+              : 'Advance a tick first')
+          }
+          className="btn-glass sm shrink-0 !min-h-[30px] !px-3 !text-[12px] disabled:opacity-40"
+          data-testid="branch-from-turn"
+        >
+          <GitBranch className="h-3.5 w-3.5" aria-hidden />
+          {branching ? 'Branching…' : at ? `Branch from ${at}` : 'Branch'}
+        </button>
+      ) : null}
     </div>
   )
 }

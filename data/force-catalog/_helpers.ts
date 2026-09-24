@@ -28,13 +28,13 @@ export const madl = (id: string): CommsBearer => ({
   id: `${id}-MADL`, platform_id: id, kind: 'datalink', standard: 'madl', band: 'Ku',
   label: 'MADL (F-35 LPI datalink)', gateway_capable: false,
   comsec_note: 'Stealth-optimised, F-35 flight only', pnt_dependent: true,
-  data_confidence: 'high', sources: ['OSINT — F-35 MADL descriptive'], boundary_note: null,
+  data_confidence: 'high', sources: ['OSINT: F-35 MADL descriptive'], boundary_note: null,
 })
 export const ifdl = (id: string): CommsBearer => ({
   id: `${id}-IFDL`, platform_id: id, kind: 'datalink', standard: 'ifdl', band: 'Ku',
   label: 'IFDL (F-22 intra-flight datalink)', gateway_capable: false,
   comsec_note: 'F-22 flight only', pnt_dependent: true,
-  data_confidence: 'high', sources: ['OSINT — F-22 IFDL descriptive'], boundary_note: null,
+  data_confidence: 'high', sources: ['OSINT: F-22 IFDL descriptive'], boundary_note: null,
 })
 /**
  * Indigenous / national tactical datalink (non-NATO). Used by Red forces — will
@@ -45,9 +45,9 @@ export const nationalDatalink = (
   id: string, label: string, band: CommsBearer['band'] = 'UHF', pnt = true,
 ): CommsBearer => ({
   id: `${id}-NDL`, platform_id: id, kind: 'datalink', standard: 'national', band,
-  label, gateway_capable: false, comsec_note: 'National crypto — not coalition-interoperable',
+  label, gateway_capable: false, comsec_note: 'National crypto, not coalition-interoperable',
   pnt_dependent: pnt, data_confidence: 'estimated',
-  sources: ['OSINT — indigenous datalink (descriptive)'], boundary_note: null,
+  sources: ['OSINT: indigenous datalink (descriptive)'], boundary_note: null,
 })
 export const uhfVoice = (id: string): CommsBearer => ({
   id: `${id}-UHF`, platform_id: id, kind: 'voice_uhf', standard: null, band: 'UHF',

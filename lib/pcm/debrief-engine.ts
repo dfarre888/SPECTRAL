@@ -36,16 +36,16 @@ function teachingPointsFromEvents(events: PCM.AdjudicationEvent[]): string[] {
   for (const e of events) {
     const d = e.description.toLowerCase();
     if (d.includes('magazine empty') || d.includes('depleted')) {
-      points.push('Magazine management — kinetic interceptors exhausted before wave defeated');
+      points.push('Magazine management: kinetic interceptors exhausted before wave defeated');
     }
     if (d.includes('scattered')) {
-      points.push('GNSS jamming swarm coherence — EW denied coordinated TOT');
+      points.push('GNSS jamming swarm coherence: EW denied coordinated TOT');
     }
     if (d.includes('ew-immune strategy')) {
-      points.push('Red adaptive response to Blue EW — FPV mix shift observed');
+      points.push('Red adaptive response to Blue EW: FPV mix shift observed');
     }
     if (d.includes('degraded_heavy') || d.includes('link to')) {
-      points.push('C2 resilience under EW — link health critical');
+      points.push('C2 resilience under EW: link health critical');
     }
   }
   return [...new Set(points)];

@@ -68,17 +68,17 @@ function ir(
   };
 }
 
-/** Tactical ISR — UHF C2 + 2.4 video + GNSS */
+/** Tactical ISR: UHF C2 + 2.4 video + GNSS */
 export function capsTacticalIsr(pid: string, rangeKm: number): SpectrumCapability[] {
   return [
-    rf(pid, 'control', 'comms', 'Command link — UHF', BANDS.UHF, { range_km: rangeKm }),
-    rf(pid, 'video', 'comms', 'Video downlink — 2.4 GHz', BANDS.ISM_24),
+    rf(pid, 'control', 'comms', 'Command link: UHF', BANDS.UHF, { range_km: rangeKm }),
+    rf(pid, 'video', 'comms', 'Video downlink: 2.4 GHz', BANDS.ISM_24),
     rf(pid, 'navigation', 'navigation', 'GPS L1', BANDS.GNSS_L1),
     ir(pid, 'sensor', 'EO ISR payload', 0.4, 0.9),
   ];
 }
 
-/** Loitering munition — datalink + GNSS + EO seeker */
+/** Loitering munition: datalink + GNSS + EO seeker */
 export function capsLoiteringMunition(
   pid: string,
   rangeKm: number,
@@ -88,12 +88,12 @@ export function capsLoiteringMunition(
     return [
       ir(pid, 'sensor', 'EO terminal seeker', 0.4, 0.9, {
         defeat_resistance: ['rf_silent', 'gnss_denied_capable'],
-        note: 'Pre-programmed / autonomous terminal — minimal RF in cruise',
+        note: 'Pre-programmed / autonomous terminal: minimal RF in cruise',
       }),
     ];
   }
   const caps: SpectrumCapability[] = [
-    rf(pid, 'datalink', 'comms', 'C2 datalink — 2.4 GHz', BANDS.ISM_24, { range_km: rangeKm }),
+    rf(pid, 'datalink', 'comms', 'C2 datalink: 2.4 GHz', BANDS.ISM_24, { range_km: rangeKm }),
     ir(pid, 'sensor', 'EO/IIR seeker', 0.7, 5.0),
   ];
   if (!opts?.gnssIndependent) {
@@ -102,47 +102,47 @@ export function capsLoiteringMunition(
   return caps;
 }
 
-/** MALE UCAV — C-band LOS + GNSS + EO/IR */
+/** MALE UCAV: C-band LOS + GNSS + EO/IR */
 export function capsMaleUcav(pid: string, rangeKm: number): SpectrumCapability[] {
   return [
-    rf(pid, 'datalink', 'comms', 'LOS datalink — C-band', BANDS.BAND_C, { range_km: rangeKm }),
+    rf(pid, 'datalink', 'comms', 'LOS datalink: C-band', BANDS.BAND_C, { range_km: rangeKm }),
     rf(pid, 'navigation', 'navigation', 'GPS L1', BANDS.GNSS_L1),
     rf(pid, 'navigation', 'navigation', 'BeiDou B1', BANDS.BEIDOU_B1),
     ir(pid, 'sensor', 'EO/IR gimbal (MWIR)', 3.0, 5.0),
   ];
 }
 
-/** OWA one-way attack — GNSS + INS cruise, MWIR terminal */
+/** OWA one-way attack: GNSS + INS cruise, MWIR terminal */
 export function capsOwaAttack(pid: string, rangeKm: number): SpectrumCapability[] {
   return [
     rf(pid, 'navigation', 'navigation', 'GPS L1', BANDS.GNSS_L1, { defeat_resistance: ['gnss_jamming_med'] }),
     rf(pid, 'navigation', 'navigation', 'GLONASS G1', BANDS.GLON_G1),
-    ir(pid, 'sensor', 'MWIR terminal seeker', 3.0, 5.0, { note: 'Terminal phase only — cruise is RF-quiet' }),
+    ir(pid, 'sensor', 'MWIR terminal seeker', 3.0, 5.0, { note: 'Terminal phase only: cruise is RF-quiet' }),
   ];
 }
 
-/** FPV strike — 2.4 control + 5.8 video */
+/** FPV strike: 2.4 control + 5.8 video */
 export function capsFpv(pid: string, rangeKm: number, fibre = false): SpectrumCapability[] {
   if (fibre) {
     return [
       ir(pid, 'sensor', 'EO camera (fibre)', 0.4, 0.7, {
         defeat_resistance: ['rf_silent'],
-        note: 'Fibre-optic control — RF jamming ineffective',
+        note: 'Fibre-optic control: RF jamming ineffective',
       }),
     ];
   }
   return [
-    rf(pid, 'control', 'comms', 'ELRS/Analog control — 2.4 GHz', BANDS.ISM_24, { range_km: rangeKm }),
-    rf(pid, 'video', 'comms', 'Analog video — 5.8 GHz', BANDS.ISM_58),
+    rf(pid, 'control', 'comms', 'ELRS/Analog control: 2.4 GHz', BANDS.ISM_24, { range_km: rangeKm }),
+    rf(pid, 'video', 'comms', 'Analog video: 5.8 GHz', BANDS.ISM_58),
   ];
 }
 
-/** Decoy OWA — strong RF signature by design */
+/** Decoy OWA: strong RF signature by design */
 export function capsDecoyOwa(pid: string): SpectrumCapability[] {
   return [
     rf(pid, 'navigation', 'navigation', 'GPS L1 (decoy signature)', BANDS.GNSS_L1),
-    rf(pid, 'datalink', 'comms', 'Inflated RF emitter — 2.4 GHz', BANDS.ISM_24, {
-      note: 'Decoy — defeats RF jammers economically wasteful; kinetic preferred',
+    rf(pid, 'datalink', 'comms', 'Inflated RF emitter: 2.4 GHz', BANDS.ISM_24, {
+      note: 'Decoy: defeats RF jammers economically wasteful; kinetic preferred',
     }),
   ];
 }
@@ -150,16 +150,16 @@ export function capsDecoyOwa(pid: string): SpectrumCapability[] {
 /** VTOL rotary ISR */
 export function capsVtolIsr(pid: string, rangeKm: number): SpectrumCapability[] {
   return [
-    rf(pid, 'control', 'comms', 'C2 — 2.4 GHz', BANDS.ISM_24, { range_km: rangeKm }),
+    rf(pid, 'control', 'comms', 'C2: 2.4 GHz', BANDS.ISM_24, { range_km: rangeKm }),
     rf(pid, 'navigation', 'navigation', 'GPS L1', BANDS.GNSS_L1),
     ir(pid, 'sensor', 'EO/IR payload', 0.4, 5.0),
   ];
 }
 
-/** Naval USV — RF C2 + GNSS */
+/** Naval USV: RF C2 + GNSS */
 export function capsNavalUsv(pid: string, rangeKm: number): SpectrumCapability[] {
   return [
-    rf(pid, 'datalink', 'comms', 'SATCOM/LOS C2 — Ku-band', BANDS.SAT_KU, { range_km: rangeKm }),
+    rf(pid, 'datalink', 'comms', 'SATCOM/LOS C2: Ku-band', BANDS.SAT_KU, { range_km: rangeKm }),
     rf(pid, 'navigation', 'navigation', 'GPS L1', BANDS.GNSS_L1),
     ir(pid, 'sensor', 'EO targeting', 0.4, 0.9),
   ];
@@ -171,18 +171,18 @@ export function capsRfJammer(pid: string, rangeKm: number): SpectrumCapability[]
     rf(pid, 'jam_control', 'comms', 'Jam 2.4 GHz', BANDS.ISM_24, {
       range_km: rangeKm,
       power_dbm: 40,
-      note: 'Assessed — typical man-portable C-UAS jammer ERP (OSINT)',
+      note: 'Assessed: typical man-portable C-UAS jammer ERP (OSINT)',
     }),
     rf(pid, 'jam_video', 'comms', 'Jam 5.8 GHz', BANDS.ISM_58, { power_dbm: 38 }),
     rf(pid, 'jam_gnss', 'navigation', 'GNSS denial', BANDS.GNSS_WIDE, { power_dbm: 42 }),
   ];
 }
 
-/** Blue kinetic CIWS — radar cue only */
+/** Blue kinetic CIWS: radar cue only */
 export function capsNavalCiws(pid: string, rangeKm: number): SpectrumCapability[] {
   return [
-    rf(pid, 'detect_radar', 'radar', 'Fire-control radar — Ku-band', { lo: GHz(12), hi: GHz(18) }, { range_km: rangeKm }),
-    ir(pid, 'detect_eo_ir', 'EO tracker', 0.4, 5.0, { note: 'Kinetic gun/missile — no RF jam' }),
+    rf(pid, 'detect_radar', 'radar', 'Fire-control radar: Ku-band', { lo: GHz(12), hi: GHz(18) }, { range_km: rangeKm }),
+    ir(pid, 'detect_eo_ir', 'EO tracker', 0.4, 5.0, { note: 'Kinetic gun/missile: no RF jam' }),
   ];
 }
 
@@ -193,10 +193,10 @@ export function capsHel(pid: string, rangeKm: number): SpectrumCapability[] {
   ];
 }
 
-/** Hero family LM — scale from hero-120 template */
+/** Hero family LM: scale from hero-120 template */
 export function capsHeroFamily(pid: string, rangeKm: number, warheadKg: number): SpectrumCapability[] {
   return [
-    rf(pid, 'datalink', 'comms', 'Encrypted datalink — 2.4 GHz', BANDS.ISM_24, { range_km: rangeKm }),
+    rf(pid, 'datalink', 'comms', 'Encrypted datalink: 2.4 GHz', BANDS.ISM_24, { range_km: rangeKm }),
     rf(pid, 'navigation', 'navigation', 'GPS L1', BANDS.GNSS_L1),
     ir(pid, 'sensor', `EO seeker (${warheadKg} kg warhead)`, 0.4, 0.9),
   ];

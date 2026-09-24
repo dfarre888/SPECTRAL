@@ -12,7 +12,7 @@ import {
 } from '@/lib/dashboard/laydown-bridge'
 import { OverviewDashboard } from '@/components/dashboard/OverviewDashboard'
 
-/** Caller: app/(main)/page.tsx via DashboardHomeTabs — merges live API + sessionStorage laydown. */
+/** Caller: app/(main)/page.tsx via DashboardHomeTabs: merges live API + sessionStorage laydown. */
 interface DashboardCommandCenterProps extends BuiltDashboardData {
   copy: DashboardCopy
   /** Instruments are already on the page (home hero). */

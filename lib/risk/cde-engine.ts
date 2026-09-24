@@ -1,4 +1,4 @@
-// SPECTRAL — Collateral Damage Estimation Engine
+// SPECTRAL: Collateral Damage Estimation Engine
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 //
 // Multi-zone CDE model for training simulation.
@@ -58,7 +58,7 @@ const ZONE_INJURY_PK = {
 
 const BUILT_UP_TIERS: ReadonlySet<PopulationDensityTier> = new Set(['urban', 'dense_urban'])
 
-/** Training-tier spatial density modifier — deterministic from impact coordinates. */
+/** Training-tier spatial density modifier: deterministic from impact coordinates. */
 export function locationDensityMultiplier(lon: number, lat: number): number {
   const x = Math.sin(lon * 12.9898 + lat * 78.233) * 43758.5453
   const frac = x - Math.floor(x)
@@ -108,25 +108,25 @@ function classifyRisk(expected_casualties: number): RiskCategory {
 function authorityFor(category: RiskCategory): string {
   switch (category) {
     case 'GREEN':
-      return 'Unit commander — proportionality check complete; low ECCas.'
+      return 'Unit commander: proportionality check complete; low ECCas.'
     case 'AMBER':
-      return 'Operations centre approval required — ECCas 1–10.'
+      return 'Operations centre approval required: ECCas 1 to 10.'
     case 'RED':
-      return 'Senior commander / JFC approval required — ECCas >10.'
+      return 'Senior commander / JFC approval required: ECCas >10.'
     case 'BLACK':
-      return 'No-strike recommended — catastrophic civilian casualty expectation.'
+      return 'No-strike recommended: catastrophic civilian casualty expectation.'
   }
 }
 
 function infraFlags(infra: CriticalInfraType[]): string[] {
   const labels: Record<CriticalInfraType, string | null> = {
-    hospital: 'Hospital within hazard footprint — medical CDE elevated',
-    school: 'School within hazard footprint — child CDE factor applies',
-    power_grid: 'Power grid node — cascading infrastructure risk',
+    hospital: 'Hospital within hazard footprint: medical CDE elevated',
+    school: 'School within hazard footprint: child CDE factor applies',
+    power_grid: 'Power grid node: cascading infrastructure risk',
     water_treatment: 'Water treatment within footprint',
-    comms_node: 'Comms node — dual-use infrastructure risk',
-    fuel_depot: 'Fuel depot — secondary explosion / fire risk',
-    bridge: 'Bridge / choke point — mobility + civilian transit risk',
+    comms_node: 'Comms node: dual-use infrastructure risk',
+    fuel_depot: 'Fuel depot: secondary explosion / fire risk',
+    bridge: 'Bridge / choke point: mobility + civilian transit risk',
     none: null,
   }
   return infra.filter((t) => t !== 'none').map((t) => labels[t]!).filter(Boolean)
@@ -263,7 +263,7 @@ export function assessEwCivilianImpact(
     flags.push('Automotive navigation and timing-dependent logistics affected')
   }
   if (radius_km >= 5) {
-    flags.push('GNSS-dependent aviation within jamming footprint — navigation degradation likely')
+    flags.push('GNSS-dependent aviation within jamming footprint: navigation degradation likely')
   }
   if (tier === 'urban' || tier === 'dense_urban') {
     flags.push('High density of civilian GNSS-dependent systems (rideshare, delivery, SCADA timing)')

@@ -4,7 +4,7 @@
  * The intercept calculator was correct but mute: it reported "out of engagement
  * envelope" without stating the envelope, so a user moving sliders had no way to
  * know where the valid region was or which axis had failed. An SA-7 at 8 km is
- * genuinely out of envelope — its reach is 4.2 km — but nothing on screen said so.
+ * genuinely out of envelope, its reach is 4.2 km, but nothing on screen said so.
  *
  * A calculator that says no must say why, and where yes begins.
  */
@@ -49,7 +49,7 @@ export function checkEnvelope(
   if (slantRangeM < envelope.minRangeM) {
     failures.push({
       axis: 'range_short',
-      message: `${km(slantRangeM)} is inside the ${km(envelope.minRangeM)} minimum range — the round cannot arm and guide in time.`,
+      message: `${km(slantRangeM)} is inside the ${km(envelope.minRangeM)} minimum range: the round cannot arm and guide in time.`,
       suggestM: envelope.minRangeM,
     })
   } else if (slantRangeM > envelope.maxRangeM) {
@@ -63,7 +63,7 @@ export function checkEnvelope(
   if (targetAltM < envelope.minAltM) {
     failures.push({
       axis: 'alt_low',
-      message: `${km(targetAltM)} is below the ${km(envelope.minAltM)} minimum engagement altitude — ground clutter and seeker geometry.`,
+      message: `${km(targetAltM)} is below the ${km(envelope.minAltM)} minimum engagement altitude: ground clutter and seeker geometry.`,
       suggestM: envelope.minAltM,
     })
   } else if (targetAltM > envelope.maxAltM) {
@@ -102,7 +102,7 @@ export function envelopeBandPct(
 }
 
 /**
- * Slider maximum for an axis — the envelope with headroom, so the user can see
+ * Slider maximum for an axis: the envelope with headroom, so the user can see
  * the edge and step past it deliberately rather than the control being pinned
  * to a scale on which every system looks identical.
  */

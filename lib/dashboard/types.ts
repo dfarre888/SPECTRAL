@@ -1,4 +1,4 @@
-/** Operational status — Haulix-style scan badges adapted for Spectral COP */
+/** Operational status: Haulix-style scan badges adapted for Spectral COP */
 export type OperationalStatus =
   | 'in-flight'
   | 'pre-flight'

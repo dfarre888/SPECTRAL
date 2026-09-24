@@ -12,7 +12,7 @@ export const FORCE_THEATRES: TheatreTemplate[] = [
     defaultRed: 'CHN',
     date_of_information: 'August 2026',
     briefing:
-      'Peer maritime-air contest. PRC holds mass in fighters, land-based AD, and surface combatants. Australia brings quality (F-35A, E-7A, Hobart-class) without the tanker and AEW depth the US would add. Do not play this as Australia alone vs the PLA — mark the coalition gap.',
+      'Peer maritime-air contest. PRC holds mass in fighters, land-based AD, and surface combatants. Australia brings quality (F-35A, E-7A, Hobart-class) without the tanker and AEW depth the US would add. Do not play this as Australia alone vs the PLA: mark the coalition gap.',
     so_what:
       'Blue loses if it fights a hull-count war. Blue holds if it keeps AEW&C up, tankers alive, and refuses to enter the densest AD ring without SEAD/DEAD that this catalog does not give Australia organically.',
   },

@@ -1,5 +1,5 @@
 /**
- * BMI interoperability solver — who can talk to whom, via gateway or direct.
+ * BMI interoperability solver: who can talk to whom, via gateway or direct.
  */
 
 import type {
@@ -109,7 +109,7 @@ export class InteropSolver {
       shared_bearers: [],
       comsec_caveat: false,
       pnt_caveat: false,
-      note: 'No common bearer — interop gap',
+      note: 'No common bearer: interop gap',
     }
   }
 

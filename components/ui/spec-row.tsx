@@ -11,7 +11,7 @@ interface SpecRowProps {
   className?: string
 }
 
-/** Jane's-style spec row — aligned label + mono value. */
+/** Jane's-style spec row: aligned label + mono value. */
 export function SpecRow({ label, value, unit, mono = true, confidence, className }: SpecRowProps) {
   return (
     <div

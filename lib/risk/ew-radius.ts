@@ -1,4 +1,4 @@
-// SPECTRAL — EW Jamming Radius Calculator
+// SPECTRAL: EW Jamming Radius Calculator
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 //
 // Jamming range modelled using simplified Friis transmission + J/S ratio.
@@ -30,15 +30,15 @@ export const EW_BANDS: Record<string, JammingFrequencyBand> = {
 // ─── Range Model ──────────────────────────────────────────────────────────────
 // Simplified: R_jam(m) = K_band × sqrt(ERP_watts)
 // K_band derived from:
-//   FSPL at 1 km for each freq — back-solved against receiver sensitivity (-130 dBm GNSS, -100 dBm RC)
+//   FSPL at 1 km for each freq: back-solved against receiver sensitivity (-130 dBm GNSS, -100 dBm RC)
 
 const BAND_K: Record<string, number> = {
   gps_l1:    18_500,  // GPS receiver very sensitive (~-130 dBm) → long jamming range
   gps_l2:    19_200,
   glonass:   18_000,
   beidou:    18_000,
-  navic_l5:  19_500,  // L5 co-band with GPS L5 — similar sensitivity
-  navic_s:   9_000,   // S-band 2.5 GHz — higher free-space loss
+  navic_l5:  19_500,  // L5 co-band with GPS L5: similar sensitivity
+  navic_s:   9_000,   // S-band 2.5 GHz: higher free-space loss
   rc_900:    5_200,   // RC receivers less sensitive, shorter range
   rc_2400:   3_800,
   rc_5800:   2_100,
@@ -94,13 +94,13 @@ export const JAMMER_DB: JammingRadii[] = [
     'DroneShield COTS C-UAS jammer. 5W ERP per band. Shoulder-fired. Effective vs off-the-shelf FPV/DJI.'),
   makeJammer('rf-patrol','DroneShield RfPatrol (jammer mode)','manpack',2,
     ['rc_2400','rc_5800','gps_l1'],'LOS_only',
-    'RfPatrol in active countermeasure mode. Lower ERP than DroneGun — detect-and-jam at shorter range.'),
+    'RfPatrol in active countermeasure mode. Lower ERP than DroneGun: detect-and-jam at shorter range.'),
   makeJammer('djijammer-mini','Generic DJI Band Jammer','manpack',3,
     ['rc_2400','rc_5800','gps_l1'],'LOS_only',
-    'Commercial DJI-frequency jammer — not military grade. Limited frequency agility.'),
+    'Commercial DJI-frequency jammer: not military grade. Limited frequency agility.'),
   makeJammer('manpack-gnss-spoofer','GNSS Spoofer (Manpack)','manpack',1,
     ['gps_l1','gps_l2','glonass'],'LOS_only',
-    'Low-power GPS/GLONASS spoofer — navigation deception rather than denial. Shorter effective range.'),
+    'Low-power GPS/GLONASS spoofer: navigation deception rather than denial. Shorter effective range.'),
 
   // ── Vehicle-mounted ────────────────────────────────────────────────────
   makeJammer('military-ew-generic','Military EW Suite (Vehicle, Generic)','vehicle',200,
@@ -114,18 +114,18 @@ export const JAMMER_DB: JammingRadii[] = [
     'Coyote Block 3 in active RF defeat mode. Intercept + jamming combined. US Army LIDS programme.'),
   makeJammer('shovel-ew-ru','Zhitel / R-330Zh EW Station','vehicle',500,
     ['gps_l1','gps_l2','glonass','rc_900','lband_data'],'extended',
-    'Russian R-330Zh GNSS/UHF/L-band jammer. Confirmed use Ukraine 2022-2025. High ERP — aviation GPS affected.'),
+    'Russian R-330Zh GNSS/UHF/L-band jammer. Confirmed use Ukraine 2022-2025. High ERP: aviation GPS affected.'),
   makeJammer('p18-counter-uav-ru','Repellent-1 GNSS Jammer (Russia)','vehicle',300,
     ['gps_l1','gps_l2','glonass','beidou'],'extended',
-    'Russian Repellent-1 — dedicated GNSS jammer complex. 300W class. Covers GPS+GLONASS+BeiDou simultaneously.'),
+    'Russian Repellent-1: dedicated GNSS jammer complex. 300W class. Covers GPS+GLONASS+BeiDou simultaneously.'),
 
   // ── Fixed Static ────────────────────────────────────────────────────────
   makeJammer('fixed-gnss-station','Fixed GNSS Jamming Station (Class)','fixed_static',2000,
     ['gps_l1','gps_l2','glonass','beidou','navic_l5'],'extended',
-    'Fixed installation high-power GNSS jamming. 2kW class — effects extend 300+ km. Eastern Med jamming zone type.'),
+    'Fixed installation high-power GNSS jamming. 2kW class: effects extend 300+ km. Eastern Med jamming zone type.'),
   makeJammer('kaliningrad-ew','Kaliningrad EW Complex (Krasuha-4 type)','fixed_static',5000,
     ['gps_l1','gps_l2','glonass','lband_data'],'extended',
-    'Large fixed EW complex — modelled on OSINT Krasuha-4. 5kW ERP. Black Sea / Baltic GPS denial zone.'),
+    'Large fixed EW complex: modelled on OSINT Krasuha-4. 5kW ERP. Black Sea / Baltic GPS denial zone.'),
 
   // ── Airborne ────────────────────────────────────────────────────────────
   makeJammer('airborne-pod-ew','Generic Airborne EW Pod (F/A-18 / Growler class)','airborne_pod',1000,
@@ -135,7 +135,7 @@ export const JAMMER_DB: JammingRadii[] = [
   // ── UAS-carried ────────────────────────────────────────────────────────
   makeJammer('uas-mini-jammer','UAS-carried Mini-Jammer (Orlan-10 payload)','uas_carried',20,
     ['gps_l1','rc_2400','rc_5800'],'LOS_only',
-    'Small jammer payload on ISR UAS. 20W class — Orlan-10 documented EW relay role. Elevates effective jamming horizon.'),
+    'Small jammer payload on ISR UAS. 20W class: Orlan-10 documented EW relay role. Elevates effective jamming horizon.'),
 ]
 
 /** Lookup jammer by id */

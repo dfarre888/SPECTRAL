@@ -23,12 +23,12 @@ export function analyzePropagation(req: PropagationRequest): PropagationResult {
   if (env.terrain_obstructed) {
     los = 'NLOS'
     tiers.push('terrain_los')
-    notes.push('Terrain obstruction flagged — LOS blocked (Assessed)')
+    notes.push('Terrain obstruction flagged: LOS blocked (Assessed)')
   }
   if (env.building_obstructed) {
     los = los === 'LOS' ? 'partial' : 'NLOS'
     tiers.push('building_occlusion')
-    notes.push('Building vector occlusion — partial/NLOS (Estimated)')
+    notes.push('Building vector occlusion: partial/NLOS (Estimated)')
   }
 
   const urban =
@@ -47,14 +47,14 @@ export function analyzePropagation(req: PropagationRequest): PropagationResult {
     pathLoss += diff
     tiers.push('deygout_chain')
     notes.push(
-      `Deygout chain — ${env.diffraction_edges.length} edge(s) (Estimated; not Bullington single-edge)`,
+      `Deygout chain: ${env.diffraction_edges.length} edge(s) (Estimated; not Bullington single-edge)`,
     )
   } else if (env.terrain_obstructed) {
     const clearance = -5
     const diff = knifeEdgeLossDb(clearance, req.emitter.freq_hz, dist)
     pathLoss += diff
     tiers.push('knife_edge')
-    notes.push('Single knife-edge fallback — supply diffraction_edges for ridge chains')
+    notes.push('Single knife-edge fallback: supply diffraction_edges for ridge chains')
   }
 
   if (los === 'NLOS' && urban) {

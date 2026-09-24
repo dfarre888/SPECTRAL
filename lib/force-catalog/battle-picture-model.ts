@@ -1,6 +1,6 @@
 /**
  * Callers: ForceCatalogBattlePicture.tsx, _test_battle-picture-model.test.ts
- * Purpose: Commander Battle Picture — presets, effect mapping, assessment bands
+ * Purpose: Commander Battle Picture: presets, effect mapping, assessment bands
  * Spec: docs/force-catalog/PROMPT-BATTLE-PICTURE.md
  */
 
@@ -282,7 +282,7 @@ export function buildBattlePictureView(
   const list = (xs: string[]) => (xs.length ? xs.join('; ') : 'none')
 
   const assessText = [
-    `ASSESS — ${presetLabel}. Blue ${blue.length} / Red ${red.length} platforms in scope.`,
+    `ASSESS: ${presetLabel}. Blue ${blue.length} / Red ${red.length} platforms in scope.`,
     `Overmatch: ${list(over)}. Contested: ${list(cont)}. Underdog: ${list(under)}.`,
     'So what: drill Compare on Underdog/Contested; confirm AMD magazine and OWA counters first.',
   ].join(' ')

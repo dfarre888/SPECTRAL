@@ -35,7 +35,7 @@ export function extractDiffractionEdges(
 
   if (edges.length <= 3) return edges
 
-  // Keep dominant obstructions — deepest clearance per 200 m segment
+  // Keep dominant obstructions: deepest clearance per 200 m segment
   const bucket_m = 200
   const byBucket = new Map<number, DiffractionEdgeInput>()
   for (const e of edges) {

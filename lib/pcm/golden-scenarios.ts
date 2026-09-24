@@ -1,5 +1,5 @@
 /**
- * PCM golden scenarios — regression anchors for detection + laydown spectrum.
+ * PCM golden scenarios: regression anchors for detection + laydown spectrum.
  */
 
 import { BAND_TILES } from '@/components/spectrum/band-tile-data';
@@ -29,23 +29,23 @@ export interface GoldenScenarioAssertion {
 export const GOLDEN_SCENARIOS: GoldenScenarioAssertion[] = [
   {
     id: 'iron_crow_shahed_krasukha',
-    label: 'IRON CROW — Shahed vs Krasukha',
+    label: 'IRON CROW: Shahed vs Krasukha',
     description:
       'Assessed: Krasukha-class noise collapses Shahed-136 radar Pd below engagement threshold.',
   },
   {
     id: 'shahed_dronegun_uhf',
-    label: 'Shahed × DroneGun — UHF laydown overlap',
+    label: 'Shahed × DroneGun: UHF laydown overlap',
     description: 'DroneGun and Shahed emissions intersect the UHF battlespace tile.',
   },
   {
     id: 'thaad_tpy2_xband',
-    label: 'THAAD AN/TPY-2 — X-band laydown + range decay',
+    label: 'THAAD AN/TPY-2: X-band laydown + range decay',
     description: 'TPY-2 on SHF tile; rangePdFactor suppresses Pd beyond instrumented range.',
   },
   {
     id: 'fibre_optic_rf_blind',
-    label: 'Fibre-optic FPV — RF blind',
+    label: 'Fibre-optic FPV: RF blind',
     description: 'RF SIGINT Pd near zero for fibre-optic FPV.',
   },
 ];

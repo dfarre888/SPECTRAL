@@ -80,7 +80,7 @@ const METHANE_IR: PayloadBandSpec = {
   note: 'OSINT: hydrocarbon absorption ~3.3 µm',
 }
 
-/** Per-SKU overrides — manufacturer-published or well-documented OSINT. */
+/** Per-SKU overrides: manufacturer-published or well-documented OSINT. */
 export const PAYLOAD_BANDS_BY_ID: Record<string, PayloadBandSpec[]> = {
   'PLD-0006': [VISUAL], // Z30 zoom EO
   'PLD-0007': [LWIR], // XT Tau 2

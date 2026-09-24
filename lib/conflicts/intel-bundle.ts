@@ -138,7 +138,7 @@ export interface ValidateBundleOptions {
  *
  * A future-dated bundle is rejected rather than warned about: it means either a
  * clock problem on the producing machine or deliberate alteration, and both
- * make the age figure meaningless — which is the whole point of the format.
+ * make the age figure meaningless: which is the whole point of the format.
  */
 export function validateBundle(
   input: unknown,

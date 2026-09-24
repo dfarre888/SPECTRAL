@@ -1,5 +1,5 @@
 /**
- * Force Catalogue — Hezbollah (HEZ).
+ * Force Catalogue: Hezbollah (HEZ).
  * OSINT only. Verified Jul 2026. Non-state red.
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY.
  */

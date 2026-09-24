@@ -16,7 +16,7 @@ const PHASE_LABEL: Record<string, string> = {
   archived: 'Archived',
 }
 
-/** Map Intel load picker — lists GET /api/v1/plans (BattlespacePlanRow[]). Caller: MapIntelView only. */
+/** Map Intel load picker: lists GET /api/v1/plans (BattlespacePlanRow[]). Caller: MapIntelView only. */
 export function PlanLoadDialog({ open, onClose, onSelect }: PlanLoadDialogProps) {
   const [plans, setPlans] = useState<BattlespacePlanRow[]>([])
   const [loading, setLoading] = useState(false)

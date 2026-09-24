@@ -4,7 +4,7 @@
  * Callers: ForceCatalogClient.tsx
  * Purpose: Nation-grouped Force / By Nation grid
  * API/schema: none
- * User: Force Catalogue — $10B OrBat workstation (UI polish v2)
+ * User: Force Catalogue: $10B OrBat workstation (UI polish v2)
  */
 
 import type { CatalogNation, ForceCatalogPlatformFull } from '@/lib/bmi/bmi-types'

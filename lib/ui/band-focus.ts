@@ -1,5 +1,5 @@
 /**
- * Band focus — Spectral's signature interaction.
+ * Band focus: Spectral's signature interaction.
  *
  * Every module in this product keys off frequency: comms bearers, GNSS
  * constellations, radar sets, jammers, defeat mechanisms. Nothing else in the
@@ -14,7 +14,7 @@
  * a flourish; here it has to do work, because an analyst who cannot get an
  * answer out of it will stop using it by the second session.
  *
- * Pure functions — the React binding is a thin provider over these.
+ * Pure functions: the React binding is a thin provider over these.
  */
 
 /** Canonical band names, low frequency to high. */
@@ -41,7 +41,7 @@ export type BandFocusState = 'focused' | 'dimmed' | 'neutral'
 /**
  * How an element should render given the currently focused band.
  *
- * 'neutral' when nothing is focused — the resting state must be the ordinary
+ * 'neutral' when nothing is focused: the resting state must be the ordinary
  * one, so the page is never left in a half-highlighted condition after the
  * pointer leaves.
  */
@@ -70,7 +70,7 @@ export function bandsOf(raw: readonly (string | null | undefined)[]): Band[] {
  * True when an element holding several bands should light up.
  *
  * A platform on both HF and UHF must respond to either, otherwise multi-band
- * platforms — the interesting ones — would appear to drop out of the picture.
+ * platforms, the interesting ones, would appear to drop out of the picture.
  */
 export function anyBandMatches(
   elementBands: readonly (string | null | undefined)[],

@@ -1,6 +1,6 @@
 'use client';
 /**
- * EvolutionArc — escaping the spectrum (Mockup Frame 10).
+ * EvolutionArc: escaping the spectrum (Mockup Frame 10).
  * A timeline scrubber over a platform's generational variants. As you scrub,
  * the band-set on the canvas changes and the "what defeats it" verdict shifts
  * from jam/spoof → struggles → HPM-only.

@@ -90,7 +90,7 @@ export function HubTabBar({
   )
 }
 
-/** URL-bound tab bar — reads and writes the active tab as a query parameter. */
+/** URL-bound tab bar: reads and writes the active tab as a query parameter. */
 export function HubUrlTabBar({
   basePath,
   tabs,

@@ -31,7 +31,7 @@ export async function GET(request: Request) {
       data,
       classification: ctx.classification,
       provenance: 'training_contract_analogue',
-      caveat: 'NOT classified vendor waveforms — training-contract analogues only.',
+      caveat: 'NOT classified vendor waveforms: training-contract analogues only.',
     })
   }
 
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
       data,
       classification: ctx.classification,
       provenance: 'training_contract_analogue',
-      caveat: 'NOT accredited propagation-engine figures — training-contract analogues only.',
+      caveat: 'NOT accredited propagation-engine figures: training-contract analogues only.',
     })
   }
 
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
         data: row ? [row] : [],
         classification: ctx.classification,
         provenance: 'training_contract_analogue',
-        caveat: 'NOT MoD-verified Pk tables — training-contract analogues only.',
+        caveat: 'NOT MoD-verified Pk tables: training-contract analogues only.',
       })
     }
     const map = await fetchAllAccreditedDefeatPk(
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
       data: Array.from(map.values()),
       classification: ctx.classification,
       provenance: 'training_contract_analogue',
-      caveat: 'NOT MoD-verified Pk tables — training-contract analogues only.',
+      caveat: 'NOT MoD-verified Pk tables: training-contract analogues only.',
     })
   }
 
@@ -102,6 +102,6 @@ export async function GET(request: Request) {
     classification: ctx.classification,
     provenance: 'training_contract_analogue',
     caveat:
-      'All supplements are training-contract analogues — not classified Edge data, accredited ERP, or MoD-verified Pk.',
+      'All supplements are training-contract analogues: not classified Edge data, accredited ERP, or MoD-verified Pk.',
   })
 }

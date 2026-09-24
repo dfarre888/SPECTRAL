@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Full-screen band tile viewer — used by Spectrum Workspace (catalog) and Map Intel laydown.
+ * Full-screen band tile viewer: used by Spectrum Workspace (catalog) and Map Intel laydown.
  * Callers: BandTileGrid DefaultBandTileGrid, LaydownTileModal wrapper.
  * User request: tile click should open screen-sized display.
  */

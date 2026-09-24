@@ -11,7 +11,7 @@ interface MiniCesiumPreviewProps {
   className?: string
 }
 
-/** Lightweight Cesium preview for dashboard — no terrain sync, lazy-loaded. */
+/** Lightweight Cesium preview for dashboard: no terrain sync, lazy-loaded. */
 export function MiniCesiumPreview({ center, tracks, className }: MiniCesiumPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const viewerRef = useRef<CesiumViewer | null>(null)

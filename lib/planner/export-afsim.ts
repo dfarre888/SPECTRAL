@@ -1,4 +1,4 @@
-/** AFSIM laydown export stub — SPECTRAL_INTEROP_SIM=AFSIM */
+/** AFSIM laydown export stub: SPECTRAL_INTEROP_SIM=AFSIM */
 import type { BattlespacePlanRow } from '@/lib/planner/battlespace-plan';
 
 export interface AfsimExportBundle {

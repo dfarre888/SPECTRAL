@@ -1,7 +1,7 @@
 /**
  * Callers: SpectrumWorkspace, BandTileFullscreenModal, BandTileGrid density
  * Purpose: Project Spectrum Platform capabilities → LaydownEmission for band tiles
- * Honesty: capabilityExtent only — never invent centre freqs / ERP
+ * Honesty: capabilityExtent only: never invent centre freqs / ERP
  * Spec: docs/spectrum/PROMPT-BAND-TILE-REMODEL.md
  */
 
@@ -59,7 +59,7 @@ function hay(p: Platform): string {
   return `${p.name} ${p.category ?? ''} ${p.role ?? ''} ${p.origin ?? ''}`.toLowerCase()
 }
 
-/** OSINT heuristics only — role/category/group/capability fn. */
+/** OSINT heuristics only: role/category/group/capability fn. */
 export function classifyAssetType(p: Platform): BandTileAssetType {
   const h = hay(p)
   const fns = new Set((p.capabilities ?? []).map((c) => c.fn))
@@ -104,7 +104,7 @@ export function classifyAssetType(p: Platform): BandTileAssetType {
 }
 
 /**
- * Map platform → LaydownAssetKind from OSINT role/type — not force side alone.
+ * Map platform → LaydownAssetKind from OSINT role/type: not force side alone.
  * Red radars must stay `radar` (not `uas`); side is carried on LaydownEmission.side.
  */
 export function kindForSpectrumPlatform(p: Platform): LaydownAssetKind {

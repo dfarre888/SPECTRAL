@@ -1,5 +1,5 @@
 /**
- * OSINT conflict incidents — seed fallback when Supabase is stale or empty.
+ * OSINT conflict incidents: seed fallback when Supabase is stale or empty.
  * CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 
@@ -11,7 +11,7 @@ export const SEED_CONFLICT_INCIDENTS: ConflictIncident[] = [
   {
     id: 'CI-GULF-008',
     conflict_name: 'Iran-Gulf 2019-2026',
-    incident_title: 'Iran cruise missile strike Bahrain — 2026 Campaign',
+    incident_title: 'Iran cruise missile strike Bahrain: 2026 Campaign',
     incident_type: 'cruise_strike',
     occurred_at: '2026-04-03T01:00:00Z',
     lat: 26.0667,
@@ -27,7 +27,7 @@ export const SEED_CONFLICT_INCIDENTS: ConflictIncident[] = [
   {
     id: 'CI-GULF-007',
     conflict_name: 'Iran-Gulf 2019-2026',
-    incident_title: 'Iran strike Qatar — Al Udeid Air Base 2026',
+    incident_title: 'Iran strike Qatar: Al Udeid Air Base 2026',
     incident_type: 'ballistic_strike',
     occurred_at: '2026-04-02T03:30:00Z',
     lat: 25.1173,
@@ -43,7 +43,7 @@ export const SEED_CONFLICT_INCIDENTS: ConflictIncident[] = [
   {
     id: 'CI-GULF-006',
     conflict_name: 'Iran-Gulf 2019-2026',
-    incident_title: 'Iran direct strike UAE — 2026 Campaign opening salvo',
+    incident_title: 'Iran direct strike UAE: 2026 Campaign opening salvo',
     incident_type: 'ballistic_strike',
     occurred_at: '2026-04-01T02:00:00Z',
     lat: 24.4539,
@@ -59,13 +59,13 @@ export const SEED_CONFLICT_INCIDENTS: ConflictIncident[] = [
   {
     id: 'CI-WEST-006',
     conflict_name: 'Iran-Gulf 2026 Campaign',
-    incident_title: '2026 Gulf Campaign — Coalition LACM employment',
+    incident_title: '2026 Gulf Campaign: Coalition LACM employment',
     incident_type: 'cruise_strike',
     occurred_at: '2026-01-20T02:00:00Z',
     lat: 24.4539,
     lon: 54.3773,
     summary:
-      'Coalition Tomahawk, JASSM-ER, and Storm Shadow vs Iranian missile infrastructure — multi-nation LACM operation.',
+      'Coalition Tomahawk, JASSM-ER, and Storm Shadow vs Iranian missile infrastructure: multi-nation LACM operation.',
     source_ref: 'OSINT: Reuters 2026; IISS Security Monitor 2026',
     platforms_involved: ['tomahawk-block-v', 'jassm-er', 'storm-shadow-scalp'],
     confidence: 'Confirmed',
@@ -75,7 +75,7 @@ export const SEED_CONFLICT_INCIDENTS: ConflictIncident[] = [
   {
     id: 'ci-kh101-ukraine-mass-strike-2024',
     conflict_name: 'Russo-Ukraine War 2022-present',
-    incident_title: 'Kh-101 / Kalibr mass salvo — Nov 2024',
+    incident_title: 'Kh-101 / Kalibr mass salvo: Nov 2024',
     incident_type: 'cruise_strike',
     occurred_at: '2024-11-28T00:00:00Z',
     lat: 50.0,
@@ -90,12 +90,12 @@ export const SEED_CONFLICT_INCIDENTS: ConflictIncident[] = [
   {
     id: 'ci-kinzhal-kyiv-intercept-2023',
     conflict_name: 'Russo-Ukraine War 2022-present',
-    incident_title: 'Patriot PAC-3 Kinzhal intercept — Kyiv, May 2023',
+    incident_title: 'Patriot PAC-3 Kinzhal intercept: Kyiv, May 2023',
     incident_type: 'intercept',
     occurred_at: '2023-05-04T00:00:00Z',
     lat: 50.4501,
     lon: 30.5234,
-    summary: 'First confirmed hypersonic missile intercept — PAC-3 MSE vs Kinzhal.',
+    summary: 'First confirmed hypersonic missile intercept: PAC-3 MSE vs Kinzhal.',
     source_ref: 'OSINT: US Pentagon briefing May 2023',
     platforms_involved: ['kinzhal', 'patriot-pac-3'],
     confidence: 'Confirmed',
@@ -105,12 +105,12 @@ export const SEED_CONFLICT_INCIDENTS: ConflictIncident[] = [
   {
     id: 'CI-GULF-001',
     conflict_name: 'Iran-Gulf 2019-2026',
-    incident_title: 'Abqaiq / Khurais Saudi Aramco strike — 2019',
+    incident_title: 'Abqaiq / Khurais Saudi Aramco strike: 2019',
     incident_type: 'cruise_strike',
     occurred_at: '2019-09-14T03:31:00Z',
     lat: 26.9654,
     lon: 49.1889,
-    summary: '18 Quds-1 + Shahed-136 struck Abqaiq/Khurais — 5.7M bbl/day output cut.',
+    summary: '18 Quds-1 + Shahed-136 struck Abqaiq/Khurais: 5.7M bbl/day output cut.',
     source_ref: 'OSINT: US CENTCOM; UN Panel of Experts 2020',
     platforms_involved: ['quds-1', 'shahed-136'],
     confidence: 'Confirmed',
@@ -150,7 +150,7 @@ export const SEED_CONFLICT_INCIDENTS: ConflictIncident[] = [
   {
     id: 'ci-lmadis-red-sea-2024',
     conflict_name: 'Red Sea / Houthi UAS Campaign',
-    incident_title: 'LMADIS Houthi drone defeat — USS Bataan Group',
+    incident_title: 'LMADIS Houthi drone defeat: USS Bataan Group',
     incident_type: 'intercept',
     occurred_at: '2024-01-15T00:00:00Z',
     lat: 15.0,

@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       count: platforms.length,
       platforms,
-      performance_note: 'All entries use SOVEREIGN_CORE_BOUNDARY — no controlled performance data in open build.',
+      performance_note: 'All entries use SOVEREIGN_CORE_BOUNDARY: no controlled performance data in open build.',
     });
   } catch (err) {
     console.error('[SPECTRAL] GET sovereign platforms error:', err);

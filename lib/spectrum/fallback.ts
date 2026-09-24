@@ -1,12 +1,12 @@
 /**
- * Spectrum Intelligence — capability fallback generator
+ * Spectrum Intelligence: capability fallback generator
  * -----------------------------------------------------
  * THE KEY FIX: when a platform has no curated `spectrum_capabilities` rows,
  * synthesise provisional bands from the legacy quick-reference fields so the
  * platform still renders something useful instead of an empty canvas.
  *
  * Derived bands are tagged `derived: true` so the UI can render them in a
- * distinct style (dashed / lower opacity) — honestly signalling
+ * distinct style (dashed / lower opacity): honestly signalling
  * "inferred from library data, not a curated spectrum signature".
  */
 

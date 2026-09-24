@@ -1,6 +1,6 @@
 /**
- * SPECTRAL — GNSS incident analytics engine.
- * Counts split by evidence grade — confirmed and inferred never blended.
+ * SPECTRAL: GNSS incident analytics engine.
+ * Counts split by evidence grade: confirmed and inferred never blended.
  */
 
 import {
@@ -35,7 +35,7 @@ export class GnssAnalyticsEngine {
     };
   }
 
-  // ── FAILURE-FAMILY ANALYSIS — the categorisation breakdown ──────────────────
+  // ── FAILURE-FAMILY ANALYSIS: the categorisation breakdown ──────────────────
 
   private analyseFamilies(incidents: GnssIncident[]) {
     const map = new Map<string, { primary: number; contributing: number }>();
@@ -54,7 +54,7 @@ export class GnssAnalyticsEngine {
       .sort((a, b) => b.total_involvement - a.total_involvement);
   }
 
-  // ── SPECTRUM ANALYSIS — which operating bands, and confirmed interference ────
+  // ── SPECTRUM ANALYSIS: which operating bands, and confirmed interference ────
 
   private analyseSpectrum(incidents: GnssIncident[]) {
     const bandDep = new Map<string, { operated_on: number; interference_confirmed: number; interference_reported: number; interference_inferred: number }>();
@@ -200,24 +200,24 @@ export class GnssAnalyticsEngine {
     return { earliest: dates[0] ?? '', latest: dates[dates.length - 1] ?? '' };
   }
 
-  // ── KEY FINDINGS — the insight layer ───────────────────────────────────────
+  // ── KEY FINDINGS: the insight layer ───────────────────────────────────────
 
   private deriveKeyFindings(incidents: GnssIncident[]): string[] {
     const findings: string[] = [];
     const n = incidents.length;
     if (!n) return ['No incidents in the dataset.'];
 
-    // Finding 1: categorisation — not every swarm loss is GNSS denial
+    // Finding 1: categorisation: not every swarm loss is GNSS denial
     const gnssDenial = incidents.filter(i => i.failure_family_primary === 'gnss_denial').length;
     const notGnss = n - gnssDenial;
     findings.push(
-      `Not every swarm failure is jamming. Of ${n} incidents, ${gnssDenial} are primarily GNSS denial and ${notGnss} are not (environmental, equipment, or undetermined). The largest fully-investigated swarm loss in the world — Docklands 2023, 427 drones — was a confirmed WIND exceedance with GNSS explicitly ruled out. Categorising honestly is what keeps this credible.`,
+      `Not every swarm failure is jamming. Of ${n} incidents, ${gnssDenial} are primarily GNSS denial and ${notGnss} are not (environmental, equipment, or undetermined). The largest fully-investigated swarm loss in the world, Docklands 2023, 427 drones, was a confirmed WIND exceedance with GNSS explicitly ruled out. Categorising honestly is what keeps this credible.`,
     );
 
     // Finding 2: confirmation is rare
     const confirmed = incidents.filter(i => i.failure_mode.grade === 'confirmed').length;
     findings.push(
-      `Confirmed causes are rare: only ${confirmed} of ${n} incidents have a CONFIRMED mechanism — and that one (Docklands) was confirmed precisely because it was formally investigated by a safety bureau. For the rest, you will usually never know the exact cause, so you plan for GNSS denial regardless of source.`,
+      `Confirmed causes are rare: only ${confirmed} of ${n} incidents have a CONFIRMED mechanism: and that one (Docklands) was confirmed precisely because it was formally investigated by a safety bureau. For the rest, you will usually never know the exact cause, so you plan for GNSS denial regardless of source.`,
     );
 
     // Finding 3: spectrum survey works
@@ -232,7 +232,7 @@ export class GnssAnalyticsEngine {
     const urbanDense = incidents.filter(i => i.environment.environment_type === 'urban_dense').length;
     if (urbanDense > 0) {
       findings.push(
-        `${urbanDense} of ${n} incidents occurred in dense-urban environments — the strongest common environmental factor across the dataset.`,
+        `${urbanDense} of ${n} incidents occurred in dense-urban environments: the strongest common environmental factor across the dataset.`,
       );
     }
 
@@ -248,7 +248,7 @@ export class GnssAnalyticsEngine {
     const controlledDescent = incidents.filter(i => i.outcome.failsafe_behaviour === 'controlled_descent').length;
     const injuries = incidents.reduce((s, i) => s + i.outcome.injuries, 0);
     findings.push(
-      `Controlled-descent failsafes functioned in ${controlledDescent} of ${n} incidents. But ${injuries} injuries still occurred, all from descent over or near crowds — and the zero-injury cases were largely over water. Crowd stand-off and over-water siting matter as much as the failsafe.`,
+      `Controlled-descent failsafes functioned in ${controlledDescent} of ${n} incidents. But ${injuries} injuries still occurred, all from descent over or near crowds: and the zero-injury cases were largely over water. Crowd stand-off and over-water siting matter as much as the failsafe.`,
     );
 
     // Finding 7: band honesty
@@ -257,7 +257,7 @@ export class GnssAnalyticsEngine {
     );
     if (!anyConfirmedBandAffected) {
       findings.push(
-        `No incident has a CONFIRMED affected band. The one confirmed band-level finding in the dataset is a negative — Docklands confirmed its bands were CLEAN. Any claim that "L1 is the most jammed band" is inference, not measured fact, and the dataset refuses to manufacture that precision.`,
+        `No incident has a CONFIRMED affected band. The one confirmed band-level finding in the dataset is a negative: Docklands confirmed its bands were CLEAN. Any claim that "L1 is the most jammed band" is inference, not measured fact, and the dataset refuses to manufacture that precision.`,
       );
     }
 

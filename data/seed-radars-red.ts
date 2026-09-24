@@ -1,5 +1,5 @@
 /**
- * Radar seed — RED (threat) radar systems.
+ * Radar seed: RED (threat) radar systems.
  * Sources: IEEE 521-2002 (bands); radartutorial.eu, Army Recognition,
  * CSIS Missile Threat, Wikipedia, manufacturer & defence-press reporting.
  * Figures are open-source; verify against current intelligence before use.
@@ -11,7 +11,7 @@ import { RADAR_BAND_HZ } from '@/lib/spectrum/radar-types';
 const B = RADAR_BAND_HZ;
 
 export const RED_RADARS: RadarSystem[] = [
-  /* ===================== RUSSIAN — S-400 / S-300 family ===================== */
+  /* ===================== RUSSIAN: S-400 / S-300 family ===================== */
   {
     id: 'radar-91n6e-big-bird',
     name: '91N6E',
@@ -34,7 +34,7 @@ export const RED_RADARS: RadarSystem[] = [
     eccm: 'high',
     can_detect: ['aircraft', 'cruise_missile', 'ballistic_missile', 'large_uas'],
     cannot_detect: ['small_uas'],
-    limitations: ['Large, high-emission — vulnerable to ARM/SEAD', 'S-band detects but does not give weapons-grade lock on VLO targets'],
+    limitations: ['Large, high-emission: vulnerable to ARM/SEAD', 'S-band detects but does not give weapons-grade lock on VLO targets'],
     strengths: ['Detects up to 300 targets', 'Counter-stealth-leaning S-band', '5-minute setup'],
     confidence: 'curated',
     intel_note: 'S-400 acquisition & battle-management radar. Truck-mounted (MZKT-7930). Provides target data to the 55K6E command post.',
@@ -110,7 +110,7 @@ export const RED_RADARS: RadarSystem[] = [
     eccm: 'medium',
     can_detect: ['aircraft', 'cruise_missile', 'ballistic_missile'],
     cannot_detect: ['small_uas', 'stealth'],
-    limitations: ['Predecessor to 92N6 — shorter range, lower track count'],
+    limitations: ['Predecessor to 92N6: shorter range, lower track count'],
     strengths: ['Proven engagement radar across S-300 family'],
     confidence: 'curated',
     intel_note: 'S-300 fire-control radar; the lineage the 92N6 Grave Stone replaced.',
@@ -141,7 +141,7 @@ export const RED_RADARS: RadarSystem[] = [
     intel_note: 'S-300 acquisition radar; the 91N6E Big Bird is its higher-power successor.',
   },
 
-  /* ===================== RUSSIAN — point defence ===================== */
+  /* ===================== RUSSIAN: point defence ===================== */
   {
     id: 'radar-pantsir-2rl80',
     name: '2RL80 (Pantsir acquisition)',
@@ -246,7 +246,7 @@ export const RED_RADARS: RadarSystem[] = [
     intel_note: 'Buk-M2 target-acquisition radar; works with the 9S36 fire-control radar.',
   },
 
-  /* ===================== RUSSIAN — counter-stealth / EW surveillance ===================== */
+  /* ===================== RUSSIAN: counter-stealth / EW surveillance ===================== */
   {
     id: 'radar-nebo-svu',
     name: 'Nebo-SVU (1L119)',
@@ -267,8 +267,8 @@ export const RED_RADARS: RadarSystem[] = [
     eccm: 'medium',
     can_detect: ['aircraft', 'stealth', 'cruise_missile', 'ballistic_missile'],
     cannot_detect: ['small_uas'],
-    strengths: ['VHF counter-stealth — detects ~0.1 m² RCS at 100 km', 'First AESA at metric wavelengths'],
-    limitations: ['Poor resolution/accuracy at VHF — cues but cannot guide weapons', 'Large antenna, slow to relocate'],
+    strengths: ['VHF counter-stealth: detects ~0.1 m² RCS at 100 km', 'First AESA at metric wavelengths'],
+    limitations: ['Poor resolution/accuracy at VHF: cues but cannot guide weapons', 'Large antenna, slow to relocate'],
     confidence: 'curated',
     intel_note: 'VHF multifunction counter-stealth radar; exploits airframe resonance to detect low-observables.',
   },
@@ -342,7 +342,7 @@ export const RED_RADARS: RadarSystem[] = [
     can_detect: ['aircraft', 'stealth', 'cruise_missile', 'ballistic_missile', 'hypersonic'],
     cannot_detect: ['small_uas'],
     strengths: ['Claimed detection of stealth & hypersonic at long range', 'Resonance-band design'],
-    limitations: ['Fixed-ish — long setup; low accuracy typical of VHF'],
+    limitations: ['Fixed-ish: long setup; low accuracy typical of VHF'],
     confidence: 'estimated',
     intel_note: 'VHF counter-stealth early-warning radar; marketed for hypersonic/stealth early warning.',
   },
@@ -393,7 +393,7 @@ export const RED_RADARS: RadarSystem[] = [
     can_detect: ['aircraft', 'cruise_missile', 'ballistic_missile'],
     cannot_detect: ['small_uas'],
     strengths: ['HQ-9 multifunction engagement radar', 'Phased-array, 100-target track'],
-    limitations: ['C-band — detect/lock VLO at short range only'],
+    limitations: ['C-band: detect/lock VLO at short range only'],
     confidence: 'estimated',
     intel_note: 'HQ-9 long-range SAM engagement radar; broadly analogous to the Patriot AN/MPQ-65 role.',
   },
@@ -496,7 +496,7 @@ export const RED_RADARS: RadarSystem[] = [
     intel_note: 'Russian naval 3D air-search radar fitted to frigates/destroyers.',
   },
 
-  /* ===================== RUSSIAN — legacy/mobile SAM radars (IADS batch) ===================== */
+  /* ===================== RUSSIAN: legacy/mobile SAM radars (IADS batch) ===================== */
   {
     id: 'radar-kub-1s91',
     name: '1S91 Straight Flush',
@@ -517,7 +517,7 @@ export const RED_RADARS: RadarSystem[] = [
     eccm: 'medium',
     can_detect: ['aircraft', 'helicopter', 'cruise_missile'],
     cannot_detect: ['small_uas', 'stealth'],
-    limitations: ['Track-via-missile illumination — continuous emissions during engagement'],
+    limitations: ['Track-via-missile illumination: continuous emissions during engagement'],
     strengths: ['Proven Kub fire-control radar', 'Mobile with Kub TEL'],
     confidence: 'curated',
     intel_note: '1S91 Straight Flush X-band fire-control radar for 2K12 Kub track-via-missile guidance.',
@@ -568,7 +568,7 @@ export const RED_RADARS: RadarSystem[] = [
     can_detect: ['aircraft', 'helicopter', 'large_uas'],
     cannot_detect: ['small_uas', 'stealth', 'cruise_missile'],
     strengths: ['Cues passive IR Strela-10 engagement', 'Low-power acquisition emissions'],
-    limitations: ['Does not provide fire-control guidance — IR seeker only'],
+    limitations: ['Does not provide fire-control guidance: IR seeker only'],
     confidence: 'estimated',
     intel_note: '9S86 Flat Box-A acquisition radar on Strela-10M; cues the passive IR missile seeker.',
   },
@@ -621,7 +621,7 @@ export const RED_RADARS: RadarSystem[] = [
     can_detect: ['aircraft', 'helicopter', 'cruise_missile', 'ballistic_missile', 'large_uas'],
     cannot_detect: ['small_uas', 'stealth'],
     strengths: ['All-altitude 3D acquisition for Antey-2500', 'Dual ballistic/aerodynamic cueing'],
-    limitations: ['High emissions — SEAD-vulnerable'],
+    limitations: ['High emissions: SEAD-vulnerable'],
     confidence: 'estimated',
     intel_note: '9S15MT Bill Board acquisition radar for S-300VM export IADS nodes.',
   },

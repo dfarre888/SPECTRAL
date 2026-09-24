@@ -17,7 +17,7 @@ export const DEMO_SHAhed_DEFEAT_COVERAGE: DefeatCoverageRow[] = [
     dew_pct: null,
     data_confidence: 'estimated',
     is_immune: false,
-    special_notes: 'Ukraine OSINT — primary OWA point-defence economics anchor',
+    special_notes: 'Ukraine OSINT: primary OWA point-defence economics anchor',
   },
   {
     platform_id: 'shahed-136',
@@ -28,7 +28,7 @@ export const DEMO_SHAhed_DEFEAT_COVERAGE: DefeatCoverageRow[] = [
     dew_pct: null,
     data_confidence: 'high',
     is_immune: false,
-    special_notes: 'Layered GBAD — unfavourable exchange vs cheap OWA',
+    special_notes: 'Layered GBAD: unfavourable exchange vs cheap OWA',
   },
   {
     platform_id: 'shahed-136',
@@ -39,7 +39,7 @@ export const DEMO_SHAhed_DEFEAT_COVERAGE: DefeatCoverageRow[] = [
     dew_pct: null,
     data_confidence: 'estimated',
     is_immune: false,
-    special_notes: 'Strategic SAM — reserve for confirmed LACM, not routine OWA',
+    special_notes: 'Strategic SAM: reserve for confirmed LACM, not routine OWA',
   },
   {
     platform_id: 'shahed-136',
@@ -63,7 +63,7 @@ export const DEMO_SHAhed_ECONOMICS: EconomicsRow[] = [
     magazineRounds: 1000,
     reloadMin: 0.5,
     costConfidence: 'Assessed',
-    sourceRef: 'OSINT: RUSI Ukraine 2023 — Gepard AHEAD ~EUR 40k/kill vs Shahed ~$20k',
+    sourceRef: 'OSINT: RUSI Ukraine 2023: Gepard AHEAD ~EUR 40k/kill vs Shahed ~$20k',
   },
   {
     platformId: 'shahed-136',
@@ -83,7 +83,7 @@ export const DEMO_SHAhed_ECONOMICS: EconomicsRow[] = [
     magazineRounds: 16,
     reloadMin: 30,
     costConfidence: 'Estimated',
-    sourceRef: 'OSINT: PAC-3 MSE unit cost ~$4M vs Shahed ~$20k — 200:1 exchange',
+    sourceRef: 'OSINT: PAC-3 MSE unit cost ~$4M vs Shahed ~$20k: 200:1 exchange',
   },
 ]
 

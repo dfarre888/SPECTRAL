@@ -1,7 +1,7 @@
 /**
  * Callers: components/spectrum/data.ts (usePlatforms merge)
  * Purpose: Project Force Catalogue OrBat rows onto Spectrum Platform + band-envelope capabilities.
- * Honesty: IEEE / COMMS_BAND_REFERENCE envelopes only — never invent centre freqs or ERP.
+ * Honesty: IEEE / COMMS_BAND_REFERENCE envelopes only: never invent centre freqs or ERP.
  * Spec: PCM → Spectrum bridge (OSINT / ITAR-safe)
  */
 
@@ -73,7 +73,7 @@ function bearerToCapability(
     label: `${b.label || b.kind} · ${ref.label} (band envelope)`,
     freq_low_hz: mhzToHz(loMhz),
     freq_high_hz: mhzToHz(hiMhz),
-    note: `PCM OrBat — IEEE/band envelope only (${b.band}). Not a measured centre frequency.`,
+    note: `PCM OrBat: IEEE/band envelope only (${b.band}). Not a measured centre frequency.`,
     derived: true,
   }
 }
@@ -96,7 +96,7 @@ function sensorRadarToCapability(
     label: `${label || 'Radar'} · ${band}-band (IEEE envelope)`,
     freq_low_hz: lo,
     freq_high_hz: hi,
-    note: 'PCM OrBat — IEEE 521-2002 band envelope only. Not a curated fire-control dossier.',
+    note: 'PCM OrBat: IEEE 521-2002 band envelope only. Not a curated fire-control dossier.',
     derived: true,
   }
 }
@@ -147,7 +147,7 @@ export function catalogPlatformToSpectrum(p: ForceCatalogPlatformFull): Platform
     role: p.role,
     confidence: mapConfidence(p.data_confidence),
     intel_note: [
-      'Source: Force Catalogue (PCM) OrBat — OSINT band envelopes.',
+      'Source: Force Catalogue (PCM) OrBat: OSINT band envelopes.',
       p.open_source_summary?.slice(0, 280) || '',
     ]
       .filter(Boolean)
@@ -196,7 +196,7 @@ export function mergeCatalogIntoSpectrum(seed: Platform[]): CatalogSpectrumMerge
   return { platforms: out, added, skippedNoRf, skippedSeedOverlap }
 }
 
-/** Convenience for hooks — full merged library. */
+/** Convenience for hooks: full merged library. */
 export function loadSpectrumPlatformsWithCatalog(seed: Platform[]): Platform[] {
   return mergeCatalogIntoSpectrum(seed).platforms
 }

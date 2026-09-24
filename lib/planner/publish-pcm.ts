@@ -25,7 +25,7 @@ export async function publishPlanToPcm(
     .from('spectral_scenarios')
     .insert({
       name: scenarioName,
-      description: `Battlespace plan ${plan.id} — ${plan.vignette_id ?? 'custom laydown'}`,
+      description: `Battlespace plan ${plan.id}: ${plan.vignette_id ?? 'custom laydown'}`,
       red_platforms: laydownWorld.red_orbat.platforms.map((p) => p.platform_type),
       blue_systems: laydownWorld.blue_orbat.platforms.map((p) => p.platform_type),
       duration_mins: 120,

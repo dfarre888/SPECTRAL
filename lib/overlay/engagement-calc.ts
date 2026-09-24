@@ -1,4 +1,4 @@
-// SPECTRAL — 1v1 SAM Engagement Calculator
+// SPECTRAL: 1v1 SAM Engagement Calculator
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 
 import {

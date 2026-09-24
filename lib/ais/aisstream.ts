@@ -1,7 +1,7 @@
 /**
  * AISStream.io WebSocket snapshot client (server-side only).
  *
- * AISStream has no REST bbox API — we open a short-lived WebSocket,
+ * AISStream has no REST bbox API: we open a short-lived WebSocket,
  * subscribe with BoundingBoxes, collect PositionReports, then close.
  */
 

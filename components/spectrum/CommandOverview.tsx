@@ -1,6 +1,6 @@
 'use client';
 /**
- * CommandOverview — the landing canvas (Mockup Frame 01).
+ * CommandOverview: the landing canvas (Mockup Frame 01).
  * Posture at a glance: one instrument row (threats, Blue systems, bands,
  * radars, effectors, defeat coverage), a congestion ribbon on the true log
  * scale, and the Spectrum Advisor feed.

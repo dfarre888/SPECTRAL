@@ -25,7 +25,7 @@ export function gnssVulnerabilityForPlatform(
 
 /**
  * Count red threats that lose primary GNSS navigation under active jamming.
- * Pure helper for PCM adjudication — no Supabase I/O.
+ * Pure helper for PCM adjudication: no Supabase I/O.
  */
 export function countGnssDependentThreats(
   threatIds: string[],

@@ -1,6 +1,6 @@
 'use client';
 /**
- * PlatformDetail — the spectral dossier (Mockup Frame 03).
+ * PlatformDetail: the spectral dossier (Mockup Frame 03).
  * Identity hero + key specs, full capability ledger (incl. explicit
  * "no control link" rows), and a defeat-assessment readout.
  */

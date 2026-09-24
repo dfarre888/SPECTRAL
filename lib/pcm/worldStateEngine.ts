@@ -1,11 +1,11 @@
 /**
  * SPECTRAL Persistent Combat Model
- * Phase 1 — World State Engine (WSE)
+ * Phase 1: World State Engine (WSE)
  *
  * The WSE is the single source of truth for the battlespace.
  * All reads/writes to world state pass through this module.
  * SPECTRAL-REF is the only caller with full access.
- * Players receive filtered sensor pictures only — never raw world state.
+ * Players receive filtered sensor pictures only: never raw world state.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -169,7 +169,7 @@ export class WorldStateEngine {
         return {
           turn_complete: false,
           awaiting_force: null,
-          error: `Exercise is ${exercise.status} — cannot accept orders`,
+          error: `Exercise is ${exercise.status}: cannot accept orders`,
         };
       }
 
@@ -481,7 +481,7 @@ export class WorldStateEngine {
       world_state: worldState,
       sensor_picture: sensorPicture,
       adjudication_result: adjudication,
-      feed_classification: 'SYNTHETIC — OPEN BUILD — NO REAL DATA',
+      feed_classification: 'SYNTHETIC, OPEN BUILD, NO REAL DATA',
     };
   }
 

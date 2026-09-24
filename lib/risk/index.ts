@@ -1,4 +1,4 @@
-// SPECTRAL — Risk Module Index
+// SPECTRAL: Risk Module Index
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 
 export * from './types'

@@ -11,7 +11,7 @@ export function hashTurnSeed(exerciseId: string, turn: number, seed: number): nu
   return (h + turn) >>> 0;
 }
 
-/** Mulberry32 — deterministic given seed. */
+/** Mulberry32: deterministic given seed. */
 export function createSeededRng(seed: number): () => number {
   let state = seed >>> 0;
   return () => {

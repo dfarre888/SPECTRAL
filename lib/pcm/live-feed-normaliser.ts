@@ -1,5 +1,5 @@
 /**
- * SPECTRAL PCM — normalise external feed tracks to PCM contacts
+ * SPECTRAL PCM: normalise external feed tracks to PCM contacts
  */
 import type { PCM } from '@/lib/pcm/spectral.types';
 import { gridToLatLon } from '@/lib/pcm/pcm-spectrum-bridge';

@@ -1,4 +1,4 @@
-/** SAM engagement map envelopes — upper-hemisphere domes (same pattern as Map Intel C-UAS spheres). */
+/** SAM engagement map envelopes: upper-hemisphere domes (same pattern as Map Intel C-UAS spheres). */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CesiumAny = any

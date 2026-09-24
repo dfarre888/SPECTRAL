@@ -1,5 +1,5 @@
 /**
- * Force Catalogue — Wagner / Africa Corps (WAG).
+ * Force Catalogue: Wagner / Africa Corps (WAG).
  * OSINT only. Verified Jul 2026. Non-state red PMC.
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY.
  */

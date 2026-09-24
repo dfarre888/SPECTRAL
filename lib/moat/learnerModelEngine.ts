@@ -1,5 +1,5 @@
 /**
- * SPECTRAL — Moat-Builder 1
+ * SPECTRAL: Moat-Builder 1
  * Longitudinal Learner Model Engine
  *
  * Builds and maintains the per-commander competency record across a career.
@@ -7,7 +7,7 @@
  * accreditation-grade competency picture, blind-spot detection, and measured
  * improvement evidence.
  *
- * Fully buildable now — no controlled logic. It reads what the trainee did;
+ * Fully buildable now: no controlled logic. It reads what the trainee did;
  * it does not adjudicate combat.
  */
 
@@ -24,7 +24,7 @@ import {
 } from '@/lib/moat/learnerModel.types';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TURN OBSERVATION — the input to the learner model
+// TURN OBSERVATION: the input to the learner model
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
@@ -60,7 +60,7 @@ export class LearnerModelEngine {
   /**
    * ingestTurn
    * Updates the longitudinal record with one turn's observations.
-   * Idempotent per (exercise, turn) — safe to replay.
+   * Idempotent per (exercise, turn): safe to replay.
    */
   ingestTurn(
     record: LongitudinalCompetencyRecord,
@@ -150,7 +150,7 @@ export class LearnerModelEngine {
   /**
    * deriveAssessment
    * Translates accumulated evidence into a competency state using a
-   * transparent, defensible rule set (not a black box — this is an
+   * transparent, defensible rule set (not a black box: this is an
    * accreditation artifact and must be explainable).
    */
   private deriveAssessment(assessment: CompetencyAssessment): CompetencyAssessment {
@@ -215,7 +215,7 @@ export class LearnerModelEngine {
    * updateBlindSpots
    * A blind spot is a competency that is failing repeatedly under specific
    * conditions, across more than one session. This is the heart of the
-   * differentiator — persistent, condition-specific weakness detection.
+   * differentiator: persistent, condition-specific weakness detection.
    */
   private updateBlindSpots(
     record: LongitudinalCompetencyRecord,
@@ -223,12 +223,12 @@ export class LearnerModelEngine {
   ): void {
     for (const b of observation.behaviours) {
       if (b.met_standard) {
-        // success — may resolve an active blind spot
+        // success: may resolve an active blind spot
         this.maybeResolveBlindSpot(record, b.competency, observation);
         continue;
       }
 
-      // failure — does it constitute or extend a blind spot?
+      // failure: does it constitute or extend a blind spot?
       const assessment = record.competencies[b.competency];
       const recentFailures = assessment.evidence_trail
         .slice(-6)
@@ -305,13 +305,13 @@ export class LearnerModelEngine {
     recentFailureCount: number,
     competency: SpectralCompetency,
   ): BlindSpot['severity'] {
-    // Some competencies are safety/mission critical — weight them up
+    // Some competencies are safety/mission critical: weight them up
     const critical: SpectralCompetency[] = ['roe_application', 'threat_classification', 'emcon_discipline'];
     const isCritical = critical.includes(competency);
 
     // Intensity = how badly it's failing right now (within-session), combined
     // with recurrence across sessions. A critical competency failing repeatedly
-    // within a single session is already critical — you don't wait for it to
+    // within a single session is already critical: you don't wait for it to
     // recur across sessions before flagging an ROE breach pattern.
     const intensity = recurrence + Math.max(0, recentFailureCount - 3); // 3 is the trigger threshold
 

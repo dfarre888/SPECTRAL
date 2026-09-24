@@ -40,7 +40,7 @@ export function OverviewDashboard({
     <section aria-label="Command center overview">
       <div className={instrumentsElsewhere ? 'mb-4' : 'mb-6'}>
         <h2 className="text-[19px] store-display font-semibold tracking-[-0.02em] text-[var(--store-ink)] m-0">{copy.commandTitle}</h2>
-        <p className="text-[13px] store-text-body mt-1 max-w-2xl">{copy.commandSubtitle.replace(' — ', ': ')}</p>
+        <p className="text-[13px] store-text-body mt-1 max-w-2xl">{copy.commandSubtitle.replace(': ', ': ')}</p>
       </div>
 
       {!instrumentsElsewhere && <MetricSummaryBar metrics={metrics} copy={copy} />}

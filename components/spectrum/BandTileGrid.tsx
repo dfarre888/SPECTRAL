@@ -1,6 +1,6 @@
 'use client';
 /**
- * BandTileGrid — Band Tiles view mode for SpectrumWorkspace and Map Intel laydown.
+ * BandTileGrid: Band Tiles view mode for SpectrumWorkspace and Map Intel laydown.
  */
 
 import React, { useCallback, useMemo, useRef, useState } from 'react';

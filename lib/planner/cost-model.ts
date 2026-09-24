@@ -1,5 +1,5 @@
 /**
- * Engagement cost model — OSINT.
+ * Engagement cost model: OSINT.
  *
  * The economics page showed three exchange ratios because three was all the data
  * there was: one of 119 seed platforms carried a unit cost and none of the 38
@@ -9,7 +9,7 @@
  * Costs are intervals, for the same reason engagement envelopes are. Published
  * Shahed-136 figures run from roughly $4k for Iranian domestic production,
  * through the $20-50k band CSIS settled on in 2025, to a $375k sticker price
- * reported in 2024 — and the 2022 figures were higher again as production
+ * reported in 2024: and the 2022 figures were higher again as production
  * scaled. A single number would be a fiction dressed as precision.
  *
  * The consequence is that an exchange ratio is also an interval, and its width
@@ -200,7 +200,7 @@ export const COST_ENTRIES: CostEntry[] = [
     reusable: true,
     confidence: 'order_of_magnitude',
     note:
-      'Marginal cost only — power and wear. The capital cost is real but is not what an exchange ratio compares. This is why RF is the first layer against cheap mass.',
+      'Marginal cost only: power and wear. The capital cost is real but is not what an exchange ratio compares. This is why RF is the first layer against cheap mass.',
     sources: [SRC_MFR],
   },
   {
@@ -237,7 +237,7 @@ export interface ExchangeRatioBand {
   loRatio: number
   /** Dearest plausible ratio: expensive interceptor against cheap threat. */
   hiRatio: number
-  /** Geometric midpoint — appropriate for a ratio spanning orders of magnitude. */
+  /** Geometric midpoint: appropriate for a ratio spanning orders of magnitude. */
   midRatio: number
   /** Weaker of the two provenances. */
   confidence: CostConfidenceBand

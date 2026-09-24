@@ -33,7 +33,7 @@ export default async function ConflictIntelPage() {
   }
 
   // No egress on a deployed instance, so incidents arrive by operator import.
-  // The newest row insertion is the last import — no separate table needed.
+  // The newest row insertion is the last import: no separate table needed.
   const lastDb = dbIncidents.reduce<string | null>(
     (acc, i) => (!acc || i.created_at > acc ? i.created_at : acc),
     null,

@@ -1,5 +1,5 @@
 /**
- * PCM Accredited Data Layer — pre-fetched Pk/Pd cache for in-turn adjudication.
+ * PCM Accredited Data Layer: pre-fetched Pk/Pd cache for in-turn adjudication.
  * ITAR boundary: this layer is PCM-scoped only. Never expose to learner model or client.
  */
 

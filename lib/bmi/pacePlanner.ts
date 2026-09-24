@@ -1,5 +1,5 @@
 /**
- * BMI PACE plan builder — Primary / Alternate / Contingency / Emergency comms ladder.
+ * BMI PACE plan builder: Primary / Alternate / Contingency / Emergency comms ladder.
  */
 
 import type {
@@ -34,16 +34,16 @@ function tierRationale(tier: PaceTier, b: CommsBearer): string {
   switch (tier) {
     case 'primary':
       return b.kind === 'datalink'
-        ? 'Best shared datalink — highest SA capacity'
+        ? 'Best shared datalink: highest SA capacity'
         : 'Primary voice when no datalink common'
     case 'alternate':
       return b.kind === 'datalink'
         ? 'Secondary datalink or secure SATCOM voice path'
         : 'Alternate secure voice (UHF/SATCOM)'
     case 'contingency':
-      return 'HF long-range resilient voice — low-tech backup'
+      return 'HF long-range resilient voice: low-tech backup'
     case 'emergency':
-      return 'Guard/UHF emergency net — pre-briefed'
+      return 'Guard/UHF emergency net: pre-briefed'
     default:
       return ''
   }
@@ -98,7 +98,7 @@ export class PacePlanner {
       bearers = rankBearers(a.bearers.filter((x) => x.kind === 'datalink' || x.kind.startsWith('voice_')))
       warnings.push(`Gateway required: ${interop.gateway_id}`)
     } else {
-      warnings.push('Incomplete PACE — no shared bearers between platforms')
+      warnings.push('Incomplete PACE: no shared bearers between platforms')
     }
 
     for (const tier of TIERS) {
@@ -107,7 +107,7 @@ export class PacePlanner {
       used.add(picked.id)
       const caveat =
         picked.pnt_dependent
-          ? 'PNT-dependent — degrades under GNSS jamming'
+          ? 'PNT-dependent: degrades under GNSS jamming'
           : picked.comsec_note
             ? 'COMSEC keying must be coordinated'
             : null
@@ -119,7 +119,7 @@ export class PacePlanner {
         caveat,
       })
       if (picked.pnt_dependent && tier === 'primary') {
-        warnings.push('Primary is PNT-dependent — degrades under GNSS jamming')
+        warnings.push('Primary is PNT-dependent: degrades under GNSS jamming')
       }
       if (picked.comsec_note && tier === 'primary') {
         warnings.push('Primary bearer requires common crypto keying')
@@ -190,7 +190,7 @@ export class PacePlanner {
 
   toCommsCard(plan: PacePlan): string {
     const lines: string[] = [
-      'UNCLASSIFIED // EXERCISE — COMMS CARD',
+      'UNCLASSIFIED // EXERCISE: COMMS CARD',
       `FROM: ${plan.from_id}  TO: ${plan.to_id}`,
       plan.gateway_required ? `GATEWAY REQUIRED: ${plan.gateway_required}` : '',
       '---',
@@ -199,11 +199,11 @@ export class PacePlanner {
       const entry = plan.entries.find((e) => e.tier === tier)
       if (entry) {
         lines.push(
-          `${tier.toUpperCase()}: ${entry.bearer_label} (${entry.band}) — ${entry.rationale}`,
+          `${tier.toUpperCase()}: ${entry.bearer_label} (${entry.band}): ${entry.rationale}`,
         )
         if (entry.caveat) lines.push(`  CAVEAT: ${entry.caveat}`)
       } else {
-        lines.push(`${tier.toUpperCase()}: — GAP —`)
+        lines.push(`${tier.toUpperCase()}:: GAP —`)
       }
     }
     if (plan.warnings.length) {

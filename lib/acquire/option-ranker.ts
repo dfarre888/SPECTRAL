@@ -1,5 +1,5 @@
 /**
- * OPTION ranker — effectors by exchange ratio, magazine depth, Pk
+ * OPTION ranker: effectors by exchange ratio, magazine depth, Pk
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 

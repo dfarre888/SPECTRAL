@@ -1,5 +1,5 @@
 /**
- * Force Catalogue — Conflict Capability Classes (XCC).
+ * Force Catalogue: Conflict Capability Classes (XCC).
  * OSINT only. Verified Jul 2026. Cross-cutting conflict-proven capability classes.
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY.
  */
@@ -19,7 +19,7 @@ export const XCC_CATALOG: ForceCatalogPlatformFull[] = [
     id: 'XCC-CAT-FO-FPV', designation: 'Fibre-optic FPV class', short_name: 'Fibre-optic FPV',
     manufacturer: null, domain: 'air', role: 'other', force_side: 'neutral',
     service_status: 'in_service', program_stage: 'fielded', ioc_year: 2024,
-    open_source_summary: 'combat-proven: Ukraine 2024–26. Jam-resistant FPV guided by fibre tether — reshaped EW/C-UAS problem set.',
+    open_source_summary: 'combat-proven: Ukraine 2024–26. Jam-resistant FPV guided by fibre tether: reshaped EW/C-UAS problem set.',
     data_confidence: 'medium', sources: ['OSINT Ukraine force reporting 2022–26', 'defence press'],
     comms: [uhfVoice('XCC-CAT-FO-FPV')],
     sensors: [],
@@ -73,7 +73,7 @@ export const XCC_CATALOG: ForceCatalogPlatformFull[] = [
     id: 'XCC-CAT-CUAS-LAYER', designation: 'Layered C-UAS defeat class', short_name: 'Layered C-UAS',
     manufacturer: null, domain: 'ground', role: 'other', force_side: 'neutral',
     service_status: 'in_service', program_stage: 'fielded', ioc_year: 2023,
-    open_source_summary: 'combat-proven: Ukraine 2022–26. RF guns, Coyote, Roadrunner-M, Skynex, HPM, vehicle lasers — layered stack.',
+    open_source_summary: 'combat-proven: Ukraine 2022–26. RF guns, Coyote, Roadrunner-M, Skynex, HPM, vehicle lasers: layered stack.',
     data_confidence: 'estimated', sources: ['OSINT C-UAS fielding reports'],
     comms: [uhfVoice('XCC-CAT-CUAS-LAYER')],
     sensors: [],
@@ -86,7 +86,7 @@ export const XCC_CATALOG: ForceCatalogPlatformFull[] = [
     data_confidence: 'medium', sources: ['OSINT GNSS interference reports'],
     comms: [uhfVoice('XCC-CAT-GNSS-DENY')],
     sensors: [pinnedSensor('XCC-CAT-GNSS-DENY', 'esm', 'GNSS jamming/spoofing emitters', 'L', 'NAVWAR',
-      ['gnss_receivers'], [], 'Theatre NAVWAR — descriptive')],
+      ['gnss_receivers'], [], 'Theatre NAVWAR: descriptive')],
   }),
   P({
     id: 'XCC-CAT-COTS-MIL', designation: 'COTS militarisation class', short_name: 'COTS militarised',

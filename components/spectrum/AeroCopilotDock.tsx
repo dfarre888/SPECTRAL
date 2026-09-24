@@ -1,6 +1,6 @@
 'use client';
 /**
- * AeroCopilotDock — the persistent, always-available Level-4 assistant.
+ * AeroCopilotDock: the persistent, always-available Level-4 assistant.
  * A Liquid Glass bar floating at the bottom of the spectrum content area (the
  * parent positions it; it never covers the app sidebar). The user types a
  * question; the dock runs the reasoning engine (offline) or the Claude API,

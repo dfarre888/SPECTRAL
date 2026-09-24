@@ -1,5 +1,5 @@
 /**
- * A3DM Store design tokens — zinc canvas + orange accent.
+ * A3DM Store design tokens: zinc canvas + orange accent.
  * CSS mirrors: --store-* in globals.css
  */
 export const STORE = {
@@ -21,7 +21,7 @@ export const STORE = {
   statusWarn: 'var(--store-status-warn)',
 } as const
 
-/** Map Intel chrome classes — light theme proving ground for program rollout. */
+/** Map Intel chrome classes: light theme proving ground for program rollout. */
 export const MAP_THEME = {
   scope: 'map-intel',
   material: 'map-material',
@@ -41,7 +41,7 @@ export const storeCanvasGradient =
  *
  * Cesium and raw canvas cannot read CSS custom properties, so the ground has to
  * be handed to them as a literal. Keeping that literal here means there is still
- * one place to change it — before this existed, nine components each carried
+ * one place to change it: before this existed, nine components each carried
  * their own #0A0A0F and every one of them painted lighter than the page after
  * the ground moved to true black.
  */

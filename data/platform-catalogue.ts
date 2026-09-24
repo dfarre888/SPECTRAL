@@ -1,5 +1,5 @@
 /**
- * Unified platform catalogue metadata — IDs, tiers, aliases.
+ * Unified platform catalogue metadata: IDs, tiers, aliases.
  * CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 

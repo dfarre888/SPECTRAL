@@ -1,4 +1,4 @@
-// SPECTRAL — C-UAS coverage & siting engine
+// SPECTRAL: C-UAS coverage & siting engine
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 
 import { haversineM } from '@/lib/propagation/geo'
@@ -65,7 +65,7 @@ export class CuasCoverageEngine {
           nearest_cuas_m: Infinity,
         })),
         siting_recommendations: [],
-        notes: 'No C-UAS assets placed — laydown cannot defeat inbound UAS.',
+        notes: 'No C-UAS assets placed: laydown cannot defeat inbound UAS.',
       }
     }
 
@@ -112,7 +112,7 @@ export class CuasCoverageEngine {
       notes:
         verdict === 'adequate'
           ? 'All placed threats fall within at least one C-UAS defeat envelope (OSINT range).'
-          : 'Gap analysis uses haversine ground range vs catalog defeat_range_m — terrain masking not applied in this training layer.',
+          : 'Gap analysis uses haversine ground range vs catalog defeat_range_m: terrain masking not applied in this training layer.',
     }
   }
 
@@ -145,7 +145,7 @@ export class CuasCoverageEngine {
       return {
         lon,
         lat,
-        rationale: 'Maintain overlap at threat centroid — no uncovered threats.',
+        rationale: 'Maintain overlap at threat centroid: no uncovered threats.',
         expected_additional_coverage: 0,
       }
     }

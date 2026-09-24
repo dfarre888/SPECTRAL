@@ -1,6 +1,6 @@
 'use client';
 /**
- * Spectrum Intelligence — data access
+ * Spectrum Intelligence: data access
  * Queries Supabase for platforms, capabilities and variants. Falls back to the
  * bundled seed data when Supabase is unavailable (offline / pre-seed dev).
  *
@@ -44,7 +44,7 @@ function hydrateSeed(): Platform[] {
 const SEED = hydrateSeed();
 
 /**
- * usePlatforms — returns all platforms with resolved capabilities.
+ * usePlatforms: returns all platforms with resolved capabilities.
  * Tries Supabase first; falls back to seed.
  */
 export function usePlatforms() {

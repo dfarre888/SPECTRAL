@@ -1,5 +1,5 @@
 /**
- * SPECTRAL PCM — Adjudication Core interface boundary.
+ * SPECTRAL PCM: Adjudication Core interface boundary.
  * Training implementation: trainingAdjudicationCore.ts
  * Placeholder: for stub-only / export-control accredited swap-in.
  */

@@ -13,7 +13,7 @@ interface EmptyStateProps {
   className?: string
 }
 
-/** Standard empty module state — avoids generic centered-icon templates. */
+/** Standard empty module state: avoids generic centered-icon templates. */
 export function EmptyState({
   icon: Icon,
   title,

@@ -1,10 +1,10 @@
 /**
- * SPECTRAL — Moat-Builder 4 (analytic half)
+ * SPECTRAL: Moat-Builder 4 (analytic half)
  * Force-Design & Procurement Decision-Support Output
  *
  * The training use case gets SPECTRAL in the door. THIS gets a capability
  * manager to fund it: a defensible analytic artifact answering procurement
- * questions — "how many interceptors does this force structure need against an
+ * questions: "how many interceptors does this force structure need against an
  * adaptive peer threat, and where does it break?"
  *
  * IMPORTANT BOUNDARY: this module STRUCTURES and PRESENTS analysis. The
@@ -77,9 +77,9 @@ export interface ForceDesignReport {
   findings: ForceDesignFinding[];
   // The headline a capability manager reads
   recommendation: string;
-  // Honest caveats — credibility with an analytic audience depends on these
+  // Honest caveats: credibility with an analytic audience depends on these
   caveats: string[];
-  // Provenance — is this from the accredited engine or open placeholder?
+  // Provenance: is this from the accredited engine or open placeholder?
   data_provenance: 'accredited_engine' | 'external_accredited_sim' | 'open_build_placeholder';
 }
 
@@ -92,7 +92,7 @@ export class ForceDesignEngine {
   /**
    * analyse
    * Aggregates run outcomes into a procurement-grade finding set.
-   * Pure aggregation and presentation — no lethality computation.
+   * Pure aggregation and presentation: no lethality computation.
    */
   analyseFromParallelResult(
     question: ForceDesignQuestion,
@@ -141,7 +141,7 @@ export class ForceDesignEngine {
         common_failure_points: [],
         mean_resource_expenditure: {},
         assessment: 'No run data available in the open build. In the accredited environment this option would be exercised against the adaptive threat for the requested number of runs.',
-        confidence_note: 'Placeholder — no statistical confidence in the open build.',
+        confidence_note: 'Placeholder: no statistical confidence in the open build.',
       };
     }
 
@@ -180,8 +180,8 @@ export class ForceDesignEngine {
       mean_resource_expenditure,
       assessment: this.assessOption(successRate, common_failure_points),
       confidence_note: n < 20
-        ? `Indicative only — ${n} runs. Recommend ≥30 runs for a procurement-grade confidence interval.`
-        : `${n} runs — adequate for an indicative procurement finding.`,
+        ? `Indicative only: ${n} runs. Recommend ≥30 runs for a procurement-grade confidence interval.`
+        : `${n} runs: adequate for an indicative procurement finding.`,
     };
   }
 
@@ -192,7 +192,7 @@ export class ForceDesignEngine {
     const pct = Math.round(successRate * 100);
     let base: string;
     if (successRate >= 0.85) base = `Robust: succeeds in ${pct}% of adaptive runs.`;
-    else if (successRate >= 0.6) base = `Marginal: succeeds in ${pct}% of adaptive runs — sensitive to threat adaptation.`;
+    else if (successRate >= 0.6) base = `Marginal: succeeds in ${pct}% of adaptive runs: sensitive to threat adaptation.`;
     else base = `Insufficient: succeeds in only ${pct}% of adaptive runs.`;
 
     if (failurePoints.length) {
@@ -217,7 +217,7 @@ export class ForceDesignEngine {
       'The adaptive adversary optimises against the trainee/force; results are a stress-test, not a prediction.',
     ];
     if (isPlaceholder) {
-      caveats.unshift('OPEN BUILD PLACEHOLDER — no real engagement data. Run in the accredited environment for a usable finding.');
+      caveats.unshift('OPEN BUILD PLACEHOLDER: no real engagement data. Run in the accredited environment for a usable finding.');
     }
     if (question.runs_requested < 30) {
       caveats.push(`Requested ${question.runs_requested} runs; ≥30 recommended for procurement-grade confidence.`);

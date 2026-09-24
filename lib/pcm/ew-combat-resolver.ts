@@ -1,5 +1,5 @@
 /**
- * EW combat resolution — Red EW pressure (pre-salvo), Blue jam tasks (post-salvo).
+ * EW combat resolution: Red EW pressure (pre-salvo), Blue jam tasks (post-salvo).
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';
@@ -108,7 +108,7 @@ function resolvePreSalvoRedEw(
         type: 'ew_effect',
         description:
           `Red L-band jamming degrading Blue GNSS-guided system accuracy. ` +
-          `${blueGnssPlatforms.length} platform(s) affected — CEP growth modelled as -25% effective range.`,
+          `${blueGnssPlatforms.length} platform(s) affected: CEP growth modelled as -25% effective range.`,
         affected_platform_ids: blueGnssPlatforms.map((p) => p.id),
         visible_to_red: false,
         visible_to_blue: true,

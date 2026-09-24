@@ -1,20 +1,20 @@
 /**
  * SPECTRAL Persistent Combat Model
- * Phase 2 — Fog of War Engine (FWE)
+ * Phase 2: Fog of War Engine (FWE)
  *
  * The FWE is the physics layer that sits between the World State Engine
  * and each force's sensor picture. It is the most operationally critical
  * module in Phase 1–2: get it wrong and the entire training value of SPECTRAL
- * collapses — students will see things they shouldn't, miss things they should
+ * collapses: students will see things they shouldn't, miss things they should
  * detect, and the physics of the battlespace will feel wrong.
  *
  * Architecture:
- *   1. calculatePd()       — Master Pd calculator. Takes platform + sensor environment.
- *   2. generateSensorPicture() — Produces filtered contact list per force.
- *   3. applyDelay()        — Applies reporting chain latency.
- *   4. applyMisclassification() — Applies target type error probability.
- *   5. computeLineOfSight() — Terrain masking for ground-based sensors.
- *   6. computeTimeToImpact() — For OWA/LM — how many turns to impact.
+ *   1. calculatePd()      : Master Pd calculator. Takes platform + sensor environment.
+ *   2. generateSensorPicture(): Produces filtered contact list per force.
+ *   3. applyDelay()       : Applies reporting chain latency.
+ *   4. applyMisclassification(): Applies target type error probability.
+ *   5. computeLineOfSight(): Terrain masking for ground-based sensors.
+ *   6. computeTimeToImpact(), For OWA/LM, how many turns to impact.
  *
  * Called by WorldStateEngine after each turn to generate sensor pictures.
  * Called by SPECTRAL-REF (Phase 3) to validate AI orders against detection state.
@@ -127,7 +127,7 @@ export class FogOfWarEngine {
       sensorType === 'radar' ? this.getTerrainMaskingModifier(platform, env.terrain_type) : 1.0;
     const counterMod = this.getCountermeasuresModifier(platform, sensorType);
 
-    // Time-of-day IR modulation — OSINT basis:
+    // Time-of-day IR modulation: OSINT basis:
     // Dawn/dusk thermal crossover: target/background ΔT peaks → Pd +25%
     // Night: reduced background clutter for uncooled LWIR → Pd +10%
     // Midday: solar loading creates thermal noise floor → Pd -10%
@@ -148,7 +148,7 @@ export class FogOfWarEngine {
       }
     }
 
-    // Final Pd — clamped 0.0–1.0
+    // Final Pd: clamped 0.0–1.0
     let rawPd = adjustedBasePd * weatherMod * ewMod * altitudeMod * rcsMod * terrainMod * counterMod;
     if (sensorType === 'eo_ir') {
       rawPd = Math.min(1.0, rawPd * timeOfDayMod);
@@ -182,14 +182,14 @@ export class FogOfWarEngine {
   /**
    * generateSensorPicture
    * Produces the complete filtered contact list for a force.
-   * This is what the player actually sees — never the raw world state.
+   * This is what the player actually sees: never the raw world state.
    *
    * Process:
    * 1. For each enemy platform, attempt detection by each available sensor type
    * 2. Use the highest Pd across all sensor types (best available picture)
    * 3. Roll against Pd to determine if detected this turn
-   * 4. Apply misclassification — what does the sensor think it is?
-   * 5. Apply reporting delay — how many turns before commander sees it?
+   * 4. Apply misclassification: what does the sensor think it is?
+   * 5. Apply reporting delay: how many turns before commander sees it?
    * 6. Compute time-to-impact for OWA/LM contacts
    */
   generateSensorPicture(
@@ -221,7 +221,7 @@ export class FogOfWarEngine {
       // Destroyed platforms cannot be detected as new contacts
       if (platform.status === 'destroyed') continue;
 
-      // Pre-launch platforms on the ground — very limited detection options
+      // Pre-launch platforms on the ground: very limited detection options
       if (platform.status === 'pre_launch' && !this.isPlatformEmitting(platform)) {
         // Only detect via HUMINT/OSINT (not modelled in Phase 2)
         continue;
@@ -231,7 +231,7 @@ export class FogOfWarEngine {
       const c2Grid = detectingOrbat.c2?.gcs_location ?? 'ALPHA-4';
       const rangeKm = estimateGridRangeKm(c2Grid, gridRef(platform));
 
-      // Try each available sensor type — take best result
+      // Try each available sensor type: take best result
       const sensorTypes = this.getAvailableSensors(detectingOrbat.platforms, platform);
       let bestPdComponents: PdComponents | null = null;
 
@@ -248,7 +248,7 @@ export class FogOfWarEngine {
       const detectionRoll = roll();
       if (detectionRoll > bestPdComponents.final_pd) continue; // Not detected this turn
 
-      // Platform detected — now apply classification and delay
+      // Platform detected: now apply classification and delay
       const misclassResult = this.applyMisclassification(platform, bestPdComponents.sensor_type, roll);
       const delayTurns = this.applyDelay(detectingOrbat.c2.comms_status, bestPdComponents.sensor_type);
       const timeToImpact = this.computeTimeToImpact(platform, rangeKm);
@@ -261,7 +261,7 @@ export class FogOfWarEngine {
 
       contacts.push({
         contact_id: existingContactId || `CONTACT-${detectingForce}-${platform.id}-T${worldState.turn}`,
-        true_platform_id: platform.id,    // SPECTRAL-REF only — stripped before sending to player
+        true_platform_id: platform.id,    // SPECTRAL-REF only: stripped before sending to player
         detected_by: detectingForce,
         confidence,
         classification: misclassResult.reported_classification,
@@ -286,7 +286,7 @@ export class FogOfWarEngine {
     }
 
     // Retain contacts from previous turns that weren't re-detected this turn
-    // (fading track — confidence degrades each turn without redetection)
+    // (fading track: confidence degrades each turn without redetection)
     const retainedContacts = this.retainFadingTracks(
       worldState, detectingForce, contacts, worldState.turn
     );
@@ -295,7 +295,7 @@ export class FogOfWarEngine {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // BASE Pd — sensor type × platform type
+  // BASE Pd: sensor type × platform type
   // ─────────────────────────────────────────────────────────────────────────
 
   private getBasePd(platform: Platform, sensorType: DetectionMethod, rangeKm: number): number {
@@ -363,10 +363,10 @@ export class FogOfWarEngine {
     // EO/IR detection depends heavily on time of day
     // Night Pd uses thermal contrast modifier
     if (platform.group === 'FPV' && platform.ew_immune) {
-      // Fibre-optic FPV — minimal motor heat
+      // Fibre-optic FPV: minimal motor heat
       return BASE_PD.EO_IR.STEALTH_LOW_THERMAL;
     }
-    return BASE_PD.EO_IR.ANY_DAY_CLEAR; // day default — weather modifier applied later
+    return BASE_PD.EO_IR.ANY_DAY_CLEAR; // day default: weather modifier applied later
   }
 
   private getRFBasePd(platform: Platform): number {
@@ -382,7 +382,7 @@ export class FogOfWarEngine {
       return BASE_PD.RF_SIGINT.EMITTING_COMMS;
     }
 
-    return BASE_PD.RF_SIGINT.EO_IR_PASSIVE; // passive — very low
+    return BASE_PD.RF_SIGINT.EO_IR_PASSIVE; // passive: very low
   }
 
   private getAcousticBasePd(platform: Platform, rangeKm: number): number {
@@ -391,7 +391,7 @@ export class FogOfWarEngine {
     if (rangeKm > 2)  return BASE_PD.ACOUSTIC.SMALL_UAS_5KM;
 
     if (platform.group === 'FPV' && platform.ew_immune) {
-      // Fibre-optic FPV — still audible, props are the giveaway
+      // Fibre-optic FPV: still audible, props are the giveaway
       return BASE_PD.ACOUSTIC.FIBRE_OPTIC_FPV;
     }
 
@@ -478,7 +478,7 @@ export class FogOfWarEngine {
       if (ewAsset.status !== 'active') continue;
 
       // Is this EW asset within effective range?
-      // (simplified — Phase 3 will use actual grid distances)
+      // (simplified: Phase 3 will use actual grid distances)
       const withinRange = rangeKm <= ewAsset.effective_radius_km;
       if (!withinRange) continue;
 
@@ -510,7 +510,7 @@ export class FogOfWarEngine {
 
     // Fibre-optic FPV is immune to RF jamming
     if (platform.ew_immune && (sensorType === 'radar' || sensorType === 'rf_sigint')) {
-      return 1.0; // No EW effect — the platform doesn't transmit
+      return 1.0; // No EW effect: the platform doesn't transmit
     }
 
     return worstModifier;
@@ -552,13 +552,13 @@ export class FogOfWarEngine {
   private getTerrainMaskingModifier(platform: Platform, terrainType: string): number {
     const altitude = platform.altitude_m ?? 0;
 
-    // Airborne platforms at significant altitude — terrain rarely masks
+    // Airborne platforms at significant altitude: terrain rarely masks
     if (altitude > 5000) return 1 - TERRAIN.MASKING_PROBABILITY.ABOVE_TERRAIN_BY_200M;
     if (altitude > 200) return 1 - TERRAIN.MASKING_PROBABILITY.ABOVE_BY_100M;
     if (altitude > 100)  return 1 - TERRAIN.MASKING_PROBABILITY.ABOVE_BY_100M;
     if (altitude > 50)   return 1 - TERRAIN.MASKING_PROBABILITY.ABOVE_BY_50M;
 
-    // Nap of earth / low altitude — terrain masking significant
+    // Nap of earth / low altitude: terrain masking significant
     if (terrainType.includes('mountain') || terrainType.includes('highland')) {
       return 1 - TERRAIN.MASKING_PROBABILITY.AT_OR_BELOW_RIDGE;
     }
@@ -593,7 +593,7 @@ export class FogOfWarEngine {
     // (Single sensor has higher misclass rate)
     let misclassRate = this.getMisclassRate(platform);
 
-    // SIGINT detection doesn't help classification — no signature library
+    // SIGINT detection doesn't help classification: no signature library
     if (sensorType === 'acoustic') {
       misclassRate = misclassRate * 1.4; // acoustic classification is worse
     }
@@ -608,7 +608,7 @@ export class FogOfWarEngine {
       };
     }
 
-    // Misclassified — determine what it's reported as
+    // Misclassified: determine what it's reported as
     const reportedClassification = this.getMisclassifiedAs(platform, roll);
     return {
       misclassified: true,
@@ -621,7 +621,7 @@ export class FogOfWarEngine {
     switch (platform.group) {
       case 'OWA':              return MISCLASSIFICATION.OWA_AS_COMMERCIAL_DRONE + MISCLASSIFICATION.OWA_AS_BIRD;
       case 'FPV':              return MISCLASSIFICATION.FPV_AS_BIRD;
-      case 'decoy':            return MISCLASSIFICATION.DECOY_AS_REAL_OWA; // inverted — decoy classified as real
+      case 'decoy':            return MISCLASSIFICATION.DECOY_AS_REAL_OWA; // inverted: decoy classified as real
       case 'loitering_munition': return MISCLASSIFICATION.LOITERING_MUNITION_AS_FPV;
       case 'USV':              return MISCLASSIFICATION.USV_AS_DEBRIS;
       case 'MALE_strike':      return 1 - MISCLASSIFICATION.MALE_UAV_CORRECT; // 0.09
@@ -712,7 +712,7 @@ export class FogOfWarEngine {
     } else if (platform.group === 'FPV') {
       kmPerTurn = IMPACT_TIMING.FPV.KM_PER_TURN;
     } else {
-      // Loitering munition — assume similar to FPV terminal speed
+      // Loitering munition: assume similar to FPV terminal speed
       kmPerTurn = 50 / 4; // 50 km/h terminal
     }
 
@@ -721,7 +721,7 @@ export class FogOfWarEngine {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // TRACK MANAGEMENT — fading contacts from previous turns
+  // TRACK MANAGEMENT: fading contacts from previous turns
   // ─────────────────────────────────────────────────────────────────────────
 
   /**
@@ -799,7 +799,7 @@ export class FogOfWarEngine {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // MEASUREMENT ERROR — realistic sensor imprecision
+  // MEASUREMENT ERROR: realistic sensor imprecision
   // ─────────────────────────────────────────────────────────────────────────
 
   /**
@@ -843,7 +843,7 @@ export class FogOfWarEngine {
     _targetPlatform: Platform,
   ): DetectionMethod[] {
     // Determine what sensors the detecting force has available
-    // Phase 2: simplified — all sensor types always available
+    // Phase 2: simplified: all sensor types always available
     // Phase 3: will check specific c-UAS detect assets and their operational status
     const sensors: DetectionMethod[] = ['radar', 'eo_ir', 'acoustic', 'visual'];
 
@@ -878,7 +878,7 @@ export class FogOfWarEngine {
       : platform.location_grid || 'ECHO-7';
 
     // Map grid letters to rough distances (A = close, Z = far)
-    // This is a placeholder — Phase 3 replaces with actual coordinate math
+    // This is a placeholder: Phase 3 replaces with actual coordinate math
     const gridLetter = grid.charAt(0).toUpperCase();
     const letterIndex = gridLetter.charCodeAt(0) - 'A'.charCodeAt(0); // 0=A, 25=Z
     const baseRange = 20 + letterIndex * 5; // A=20km, E=40km, H=55km, Z=145km
@@ -891,7 +891,7 @@ export class FogOfWarEngine {
     detectingForce: ForceId,
     platform: Platform,
   ): number {
-    // Phase 2: return a plausible bearing — Phase 3 will compute from coordinates
+    // Phase 2: return a plausible bearing: Phase 3 will compute from coordinates
     // Red typically attacks from East/NE in IRON CROW, Blue defends from West/NW
     const grid = Array.isArray(platform.location_grid)
       ? platform.location_grid[0]
@@ -945,7 +945,7 @@ export class FogOfWarEngine {
     const lines: string[] = [];
 
     lines.push(`Platform: ${platform.type} (${platform.group})`);
-    lines.push(`Final Pd: ${(pdComponents.final_pd * 100).toFixed(1)}% — ${detected ? 'DETECTED' : 'NOT DETECTED'}`);
+    lines.push(`Final Pd: ${(pdComponents.final_pd * 100).toFixed(1)}%: ${detected ? 'DETECTED' : 'NOT DETECTED'}`);
     lines.push('');
     lines.push('Component breakdown:');
     lines.push(`  Base Pd (${pdComponents.sensor_type}): ${(pdComponents.base_pd * 100).toFixed(1)}%`);
@@ -960,7 +960,7 @@ export class FogOfWarEngine {
       lines.push('');
       lines.push('⚠ INSTRUCTOR NOTE: OWA at low altitude is the most common Blue Force');
       lines.push('  detection failure. At 200m AGL under EW conditions, Pd approaches');
-      lines.push('  0.019 — effectively undetectable by radar alone. Multi-sensor');
+      lines.push('  0.019: effectively undetectable by radar alone. Multi-sensor');
       lines.push('  confirmation and ISR asset pre-positioning is the only reliable counter.');
     }
 

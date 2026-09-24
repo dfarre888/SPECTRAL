@@ -2,7 +2,7 @@
  * Catalogue data-gap register.
  *
  * 667 of 855 catalogue platforms carry no sensor fit. That is not a defect to
- * be hidden — it is the honest state of an OSINT dataset, and stating it is a
+ * be hidden: it is the honest state of an OSINT dataset, and stating it is a
  * stronger position than a polished report that quietly interpolates.
  *
  * A flat count is not actionable though, so gaps are scored. What matters is
@@ -27,7 +27,7 @@ export interface GapPlatform {
   kind: GapKind
   /** 0-100. Higher means the gap distorts more analysis. */
   priority: number
-  /** Why it scored what it did — shown to the user, never a bare number. */
+  /** Why it scored what it did: shown to the user, never a bare number. */
   reasons: string[]
 }
 
@@ -90,7 +90,7 @@ export function scoreGap(row: GapSourceRow): GapPlatform | null {
   }
   if (side === 'red') {
     score += 15
-    reasons.push('Red platform — gap understates the threat')
+    reasons.push('Red platform: gap understates the threat')
   }
   if (kind === 'both') {
     score += 10
@@ -100,7 +100,7 @@ export function scoreGap(row: GapSourceRow): GapPlatform | null {
   // worse than an untouched record: it looks complete at a glance.
   if (kind === 'sensors' && hasComms) {
     score += 5
-    reasons.push('Partially specified — reads as complete but is not')
+    reasons.push('Partially specified: reads as complete but is not')
   }
 
   score = Math.round(score * (DOMAIN_WEIGHT[domain] ?? 0.7))

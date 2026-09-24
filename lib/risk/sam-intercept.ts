@@ -1,4 +1,4 @@
-// SPECTRAL — SAM Intercept Calculator
+// SPECTRAL: SAM Intercept Calculator
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 //
 // Calculates probability of kill (Pk) for Surface-to-Air Missile systems
@@ -9,7 +9,7 @@
 //
 // All base Pk values from OSINT sources:
 //   • Ukraine conflict battle-damage assessment (2022-2025)
-//   • Jane's Air & Space — SAM Engagement Effectiveness
+//   • Jane's Air & Space: SAM Engagement Effectiveness
 //   • DIA open assessment of Buk/Tor vs small UAS
 //   • GlobalSecurity MANPADS technical survey
 // No classified sources. All values suitable for UNCLASSIFIED training use.
@@ -25,12 +25,12 @@ export type UasTargetCategory =
   | 'hale'                // RQ-4 class, >20 m² RCS, 400–650 km/h, 15 000+ m
 
 export type SeekerGeneration =
-  | 'gen1_ir'        // SA-7 uncooled IR — tail-chase only
-  | 'gen2_ir'        // SA-14/SA-16 cooled — limited all-aspect
-  | 'iir'            // SA-18/SA-24 IIR — two-colour, all-aspect, flare-resistant
-  | 'sarh'           // Semi-active radar homing — needs illumination to terminal
-  | 'active_radar'   // Active radar terminal — fire-and-forget
-  | 'tvm'            // Track-via-missile (S-300P family) — uplink guidance + TVM
+  | 'gen1_ir'        // SA-7 uncooled IR: tail-chase only
+  | 'gen2_ir'        // SA-14/SA-16 cooled: limited all-aspect
+  | 'iir'            // SA-18/SA-24 IIR: two-colour, all-aspect, flare-resistant
+  | 'sarh'           // Semi-active radar homing: needs illumination to terminal
+  | 'active_radar'   // Active radar terminal: fire-and-forget
+  | 'tvm'            // Track-via-missile (S-300P family): uplink guidance + TVM
 
 export type EcmLevel = 'none' | 'basic' | 'advanced' | 'military_grade'
 
@@ -49,9 +49,9 @@ export interface SamEngagementProfile {
   max_alt_m: number
   /** Maximum target speed (km/h) the system can kinematically intercept */
   max_target_speed_kmh: number
-  /** Minimum target speed (km/h) — below this, SARH/radar may lose track */
+  /** Minimum target speed (km/h): below this, SARH/radar may lose track */
   min_target_speed_kmh: number
-  /** Warhead NET explosive weight (kg) — larger = bigger lethal radius vs small UAS */
+  /** Warhead NET explosive weight (kg): larger = bigger lethal radius vs small UAS */
   warhead_kg: number
   /** Reaction time: detection-to-launch (seconds) */
   reaction_time_s: number
@@ -128,7 +128,7 @@ function altitudeFactor(target_alt_m: number, sys: SamEngagementProfile): number
 }
 
 // ─── ECM Resistance ───────────────────────────────────────────────────────────
-// SARH most vulnerable — needs radar illumination on target.
+// SARH most vulnerable: needs radar illumination on target.
 // Active radar and IIR most resistant.
 
 const ECM_RESISTANCE: Record<SeekerGeneration, Record<EcmLevel, number>> = {
@@ -170,29 +170,29 @@ export function computeSamIntercept(
   const pk_salvo = salvoFk(pk_single, salvo)
 
   const notes: string[] = []
-  if (!in_envelope) notes.push('Target outside engagement envelope — do not engage')
-  if (af === 0.70) notes.push('Ground clutter zone — radar track degraded')
-  if (target_category === 'fpv') notes.push('Low RCS / minimal IR signature — seeker acquisition marginal')
+  if (!in_envelope) notes.push('Target outside engagement envelope: do not engage')
+  if (af === 0.70) notes.push('Ground clutter zone: radar track degraded')
+  if (target_category === 'fpv') notes.push('Low RCS / minimal IR signature: seeker acquisition marginal')
   if (target_category === 'owa' && sys.seeker === 'sarh') {
     notes.push('Slow OWA targets challenge SARH track stability in ground clutter')
   }
   if (ecm_level !== 'none') {
-    notes.push(`ECM (${ecm_level}) applied — Pk multiplied by ${ef.toFixed(2)} (seeker: ${sys.seeker})`)
+    notes.push(`ECM (${ecm_level}) applied: Pk multiplied by ${ef.toFixed(2)} (seeker: ${sys.seeker})`)
   }
   if (salvo > 1) {
     notes.push(`${salvo}-missile salvo Pk ${pk_salvo} vs single-shot ${pk_single}`)
   }
   if (sys.reaction_time_s > 30) {
-    notes.push(`Long reaction time ${sys.reaction_time_s}s — FPV/OWA may manoeuvre through dead zone`)
+    notes.push(`Long reaction time ${sys.reaction_time_s}s: FPV/OWA may manoeuvre through dead zone`)
   }
 
   const recommended_response = !in_envelope
-    ? `Do not engage — target outside ${sys.nato_designation} envelope`
+    ? `Do not engage: target outside ${sys.nato_designation} envelope`
     : pk_single >= 0.60
-    ? `Engage — ${sys.nato_designation} single-shot Pk ${pk_single}`
+    ? `Engage: ${sys.nato_designation} single-shot Pk ${pk_single}`
     : pk_single >= 0.30
-    ? `Marginal — recommend ${salvo > 1 ? 'salvo maintained' : '2-missile salvo'} (salvo Pk ${salvoFk(pk_single, 2)})`
-    : `Low Pk ${pk_single} — assign alternate C-UAS layer or priority asset`
+    ? `Marginal: recommend ${salvo > 1 ? 'salvo maintained' : '2-missile salvo'} (salvo Pk ${salvoFk(pk_single, 2)})`
+    : `Low Pk ${pk_single}: assign alternate C-UAS layer or priority asset`
 
   return {
     system_id: input.system_id,
@@ -234,7 +234,7 @@ export const SAM_PROFILES: SamEngagementProfile[] = [
       fpv: 0.02, owa: 0.08, loitering_munition: 0.05,
       tactical_isr: 0.18, male: 0.55, hale: 0.00,
     },
-    uas_notes: 'Gen 1 uncooled IR — tail-chase only, minimal effectiveness vs low-IR UAS. HALE beyond altitude ceiling (~2300 m). Widely proliferated in export inventories.',
+    uas_notes: 'Gen 1 uncooled IR: tail-chase only, minimal effectiveness vs low-IR UAS. HALE beyond altitude ceiling (~2300 m). Widely proliferated in export inventories.',
   },
 
   {
@@ -253,7 +253,7 @@ export const SAM_PROFILES: SamEngagementProfile[] = [
       fpv: 0.04, owa: 0.15, loitering_munition: 0.10,
       tactical_isr: 0.28, male: 0.62, hale: 0.00,
     },
-    uas_notes: 'Gen 2 cooled seeker — limited all-aspect capability vs prop-driven OWA. Better flare rejection than SA-7. Africa/Middle East export inventory.',
+    uas_notes: 'Gen 2 cooled seeker: limited all-aspect capability vs prop-driven OWA. Better flare rejection than SA-7. Africa/Middle East export inventory.',
   },
 
   {
@@ -272,7 +272,7 @@ export const SAM_PROFILES: SamEngagementProfile[] = [
       fpv: 0.08, owa: 0.22, loitering_munition: 0.15,
       tactical_isr: 0.38, male: 0.68, hale: 0.00,
     },
-    uas_notes: 'IFF interrogator fitted — reduces blue-on-blue risk. Ukraine-confirmed OWA/Shahed kills at marginal ranges. Better low-altitude performance than SA-14.',
+    uas_notes: 'IFF interrogator fitted: reduces blue-on-blue risk. Ukraine-confirmed OWA/Shahed kills at marginal ranges. Better low-altitude performance than SA-14.',
   },
 
   {
@@ -291,7 +291,7 @@ export const SAM_PROFILES: SamEngagementProfile[] = [
       fpv: 0.14, owa: 0.35, loitering_munition: 0.22,
       tactical_isr: 0.50, male: 0.75, hale: 0.00,
     },
-    uas_notes: 'IIR two-colour seeker — discrimination rejects most flares. Most capable Russian MANPADS vs OWA before Igla-S. Low IR signature of FPV remains limiting.',
+    uas_notes: 'IIR two-colour seeker: discrimination rejects most flares. Most capable Russian MANPADS vs OWA before Igla-S. Low IR signature of FPV remains limiting.',
   },
 
   {
@@ -331,7 +331,7 @@ export const SAM_PROFILES: SamEngagementProfile[] = [
       fpv: 0.05, owa: 0.28, loitering_munition: 0.20,
       tactical_isr: 0.42, male: 0.65, hale: 0.45,
     },
-    uas_notes: 'SARH seeker — ground clutter at low altitude limits OWA Pk. 6-missile launcher allows rapid re-engagement. Min speed 40 km/h excludes hovering FPV.',
+    uas_notes: 'SARH seeker: ground clutter at low altitude limits OWA Pk. 6-missile launcher allows rapid re-engagement. Min speed 40 km/h excludes hovering FPV.',
   },
 
   {
@@ -350,7 +350,7 @@ export const SAM_PROFILES: SamEngagementProfile[] = [
       fpv: 0.05, owa: 0.22, loitering_munition: 0.18,
       tactical_isr: 0.38, male: 0.62, hale: 0.00,
     },
-    uas_notes: 'Passive IR — zero RF emissions useful for emissions-silent operations. 4-missile launcher limits sustained engagement vs swarms. Shorter range reduces MALE Pk.',
+    uas_notes: 'Passive IR: zero RF emissions useful for emissions-silent operations. 4-missile launcher limits sustained engagement vs swarms. Shorter range reduces MALE Pk.',
   },
 
   {
@@ -447,7 +447,7 @@ export const SAM_PROFILES: SamEngagementProfile[] = [
       fpv: 0.06, owa: 0.45, loitering_munition: 0.38,
       tactical_isr: 0.65, male: 0.80, hale: 0.72,
     },
-    uas_notes: '9M317 active radar terminal — improved small-target performance vs SA-11 SARH. Ukraine: confirmed OWA and MALE kills 2022-2025. Reload time 15 min limits sustained mass-attack response.',
+    uas_notes: '9M317 active radar terminal: improved small-target performance vs SA-11 SARH. Ukraine: confirmed OWA and MALE kills 2022-2025. Reload time 15 min limits sustained mass-attack response.',
   },
 
   // ═══ LONG-RANGE SAM ═══════════════════════════════════════════════════════
@@ -487,7 +487,7 @@ export const SAM_PROFILES: SamEngagementProfile[] = [
       fpv: 0.05, owa: 0.38, loitering_munition: 0.30,
       tactical_isr: 0.48, male: 0.78, hale: 0.83,
     },
-    uas_notes: '48N6DM missile — lower min altitude vs base S-300, improved ECM resistance. Wide export: China, India, Algeria, Vietnam, Slovakia. Key IADS backbone node.',
+    uas_notes: '48N6DM missile: lower min altitude vs base S-300, improved ECM resistance. Wide export: China, India, Algeria, Vietnam, Slovakia. Key IADS backbone node.',
   },
 
   {
@@ -565,7 +565,7 @@ export const SAM_PROFILES: SamEngagementProfile[] = [
       fpv: 0.03, owa: 0.25, loitering_munition: 0.18,
       tactical_isr: 0.40, male: 0.68, hale: 0.72,
     },
-    uas_notes: 'Army air-defence variant — tracked vehicles. Active radar 9M83 better vs manoeuvring targets than TVM family. Primary role: ballistic missile defence. UAS engagement secondary capability.',
+    uas_notes: 'Army air-defence variant: tracked vehicles. Active radar 9M83 better vs manoeuvring targets than TVM family. Primary role: ballistic missile defence. UAS engagement secondary capability.',
   },
 
   {

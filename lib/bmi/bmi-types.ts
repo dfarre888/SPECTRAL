@@ -1,5 +1,5 @@
 /**
- * BMI — Battlespace Management & Interoperability types
+ * BMI: Battlespace Management & Interoperability types
  * Exercise OrBat, comms matrix, interop graph, PACE plans.
  * OSINT-only; ITAR-compliant.
  */
@@ -259,7 +259,7 @@ export interface CatalogNation {
   region: string | null
 }
 
-/** Where a platform sits in its lifecycle — drives the "future capabilities" view. */
+/** Where a platform sits in its lifecycle: drives the "future capabilities" view. */
 export type ServiceStatus =
   | 'in_service'
   | 'ordered'
@@ -282,7 +282,7 @@ export type ProgramStage =
 /**
  * A catalogue platform. Reuses domain/role/sensor/comms from the exercise layer.
  * Extends with nation, manufacturer and lifecycle fields. Detection ranges,
- * weapons performance and ECCM are NEVER stored here — those pin to
+ * weapons performance and ECCM are NEVER stored here: those pin to
  * SOVEREIGN_CORE_BOUNDARY and resolve in the defence IDE.
  */
 export interface ForceCatalogPlatform {

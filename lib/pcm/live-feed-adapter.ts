@@ -1,5 +1,5 @@
 /**
- * SPECTRAL PCM — live feed adapter boundary
+ * SPECTRAL PCM: live feed adapter boundary
  */
 import type { PCM } from '@/lib/pcm/spectral.types';
 

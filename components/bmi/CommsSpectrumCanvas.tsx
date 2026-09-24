@@ -239,7 +239,7 @@ export function CommsSpectrumCanvas({ plan, points, platformLabels = {} }: Comms
           <p className="text-[13px] store-text-body m-0">{plan.pnt_note}</p>
           {plan.warnings.map((w) => (
             <p key={w} className="text-[13px] text-[#FCD34D] m-0">
-              {w.replace(' — ', ': ')}
+              {w.replace(': ', ': ')}
             </p>
           ))}
         </div>

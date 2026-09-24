@@ -1,18 +1,18 @@
-// SPECTRAL — Risk Calculation Types
+// SPECTRAL: Risk Calculation Types
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 //
 // Implements simplified NATO/US CDE methodology for training purposes.
-// All population density and casualty estimates are illustrative — not drawn
+// All population density and casualty estimates are illustrative: not drawn
 // from classified sources. Methodology references:
-//   • US Army FM 3-34.214 (Explosives and Demolitions) — Hopkinson-Cranz scaling
-//   • STANAG 2526 — Collateral Damage Estimation (open methodology)
-//   • UK JDP 0-01.1 — Rules of Engagement and LOAC proportionality
+//   • US Army FM 3-34.214 (Explosives and Demolitions): Hopkinson-Cranz scaling
+//   • STANAG 2526: Collateral Damage Estimation (open methodology)
+//   • UK JDP 0-01.1: Rules of Engagement and LOAC proportionality
 
 // ─── Blast / Effect Radii ────────────────────────────────────────────────────
 
 export type EffectZone =
   | 'lethal'         // >50% PK personnel, open area
-  | 'injury'         // blast lung / tertiary fragment — incapacitation likely
+  | 'injury'         // blast lung / tertiary fragment: incapacitation likely
   | 'structural'     // light structures / vehicles destroyed/damaged
   | 'hazard'         // glass / debris hazard, hearing damage
 
@@ -73,22 +73,22 @@ export type PopulationDensityTier =
   | 'dense_urban'      // >10000 / km²
 
 export type TimeOfDay =
-  | 'early_hours'      // 0200–0500 local — low outdoor pop
-  | 'morning_peak'     // 0600–0900 — transit
-  | 'business_day'     // 0900–1700 — full activity
-  | 'evening_peak'     // 1700–2100 — elevated outdoor
-  | 'night'            // 2100–0200 — reduced
+  | 'early_hours'      // 0200–0500 local: low outdoor pop
+  | 'morning_peak'     // 0600–0900: transit
+  | 'business_day'     // 0900–1700: full activity
+  | 'evening_peak'     // 1700–2100: elevated outdoor
+  | 'night'            // 2100–0200: reduced
 
 export type BuildingProtection =
   | 'open'             // personnel in open, vehicles
   | 'light'            // timber/masonry, minimal blast protection
-  | 'reinforced'       // reinforced concrete — significant attenuation
+  | 'reinforced'       // reinforced concrete: significant attenuation
 
 export type RiskCategory =
-  | 'GREEN'            // <1 expected civilian casualty — low risk
-  | 'AMBER'            // 1–10 expected — requires authority approval
-  | 'RED'              // >10 expected — senior authority required or no-strike
-  | 'BLACK'            // civilian casualty expectation catastrophic — no-strike
+  | 'GREEN'            // <1 expected civilian casualty: low risk
+  | 'AMBER'            // 1–10 expected: requires authority approval
+  | 'RED'              // >10 expected: senior authority required or no-strike
+  | 'BLACK'            // civilian casualty expectation catastrophic: no-strike
 
 export type CriticalInfraType =
   | 'hospital'
@@ -134,9 +134,9 @@ export interface CdeResult {
   exposure_fraction: number
   /** Estimated persons physically within hazard disk (before lethality) */
   population_in_hazard_disk: number
-  /** Expected civilian casualties (ECCas) — fatalities */
+  /** Expected civilian casualties (ECCas): fatalities */
   expected_casualties: number
-  /** Risk category — determines engagement authority */
+  /** Risk category: determines engagement authority */
   risk_category: RiskCategory
   /** Injury zone civilian count (wider radius) */
   expected_injured: number
@@ -148,7 +148,7 @@ export interface CdeResult {
   authority_required: string
   /** Optimal strike window to minimise ECCas */
   recommended_time_window: TimeOfDay
-  /** EW blast/structural effect radius — used to size visual rings on map */
+  /** EW blast/structural effect radius: used to size visual rings on map */
   rings: {
     lethal_m: number
     injury_m: number

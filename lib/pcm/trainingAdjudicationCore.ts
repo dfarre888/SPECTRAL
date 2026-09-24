@@ -1,5 +1,5 @@
 /**
- * SPECTRAL PCM — Full combat adjudication core (extends training implementation).
+ * SPECTRAL PCM: Full combat adjudication core (extends training implementation).
  * OSINT defeat matrix, layered defence, swarm saturation, EW effects.
  * Edition-gated: Training grid physics | Operations buildings/terrain.
  */
@@ -48,18 +48,18 @@ function defaultContext(seed: number): AdjudicationContext {
 }
 
 /**
- * Adaptive Red Force — training-grade behaviour heuristics.
+ * Adaptive Red Force: training-grade behaviour heuristics.
  * Modifies Red platform states after each turn based on cumulative battle
  * damage and Blue posture.  Three mechanisms (all deterministic / seeded):
  *
- *  1. Saturation surge  — activate reserve platforms when Red has taken >30%
+ *  1. Saturation surge : activate reserve platforms when Red has taken >30%
  *     losses, flooding Blue defences before the next intercept window.
  *
- *  2. Altitude adaptation — descend inbound threats to a nap-of-earth profile
+ *  2. Altitude adaptation: descend inbound threats to a nap-of-earth profile
  *     (≥40 m AGL) when Blue EW systems are active, reducing exposure to
  *     the jammer's horizontal beam.
  *
- *  3. Bearing jitter — randomise the grid-row approach axis by ±2 squares
+ *  3. Bearing jitter: randomise the grid-row approach axis by ±2 squares
  *     from turn 3 onward, preventing Blue from pre-stacking interceptors on
  *     a single axis.
  *
@@ -80,7 +80,7 @@ function adaptRedForce(state: WorldState, seed: number): void {
     DEFENCE_GROUPS.has(p.group),
   );
 
-  // 1 — Saturation surge on heavy losses
+  // 1: Saturation surge on heavy losses
   if (lossRate > 0.3 && turn >= 2) {
     const reserves = activePlatforms.filter((p) => p.status === 'pre_launch');
     const surgeCount = Math.min(Math.ceil(reserves.length * 0.5), 4);
@@ -89,7 +89,7 @@ function adaptRedForce(state: WorldState, seed: number): void {
     });
   }
 
-  // 2 — Drop to NOE profile to reduce jammer exposure
+  // 2: Drop to NOE profile to reduce jammer exposure
   if (turn >= 3 && blueHasEw) {
     activePlatforms
       .filter((p) => p.status === 'airborne_tasked' && isInboundThreat(p))
@@ -98,7 +98,7 @@ function adaptRedForce(state: WorldState, seed: number): void {
       });
   }
 
-  // 3 — Bearing jitter to deny Blue predictive stacking
+  // 3: Bearing jitter to deny Blue predictive stacking
   if (turn > 2) {
     const rng = createSeededRng(seed + 7919);
     activePlatforms

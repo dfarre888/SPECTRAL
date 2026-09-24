@@ -146,7 +146,7 @@ export function GuidedTour({ tour, open, onClose, onAction }: GuidedTourProps) {
 
   return createPortal(
     <div className="fixed inset-0 z-[9999]" role="dialog" aria-modal="true" aria-label={tour.label}>
-      {/* Scrim. Clicking outside the callout exits — same as Escape. */}
+      {/* Scrim. Clicking outside the callout exits: same as Escape. */}
       <button
         type="button"
         aria-label="Exit walkthrough"

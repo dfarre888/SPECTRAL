@@ -1,5 +1,5 @@
 /**
- * SPECTRAL — Moat-Builder 5
+ * SPECTRAL: Moat-Builder 5
  * Interoperability Layer
  *
  * The smartest competitive move for a small sovereign player: be the adaptive-
@@ -18,7 +18,7 @@
 // WorldState where the orchestrator builds intent. No direct import is needed here.
 
 // ─────────────────────────────────────────────────────────────────────────────
-// EXTERNAL SIMULATION ADAPTER — generic contract
+// EXTERNAL SIMULATION ADAPTER: generic contract
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type ExternalSim = 'AFSIM' | 'VBS4' | 'EADSIM' | 'CUSTOM';
@@ -59,23 +59,23 @@ export interface ExternalSimAdapter {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ADVERSARY INTENT — the safe, non-controlled output SPECTRAL produces
+// ADVERSARY INTENT: the safe, non-controlled output SPECTRAL produces
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * AdversaryIntent is deliberately INTENT, not EFFECT. SPECTRAL says
  * "the adversary attempts a decoy-heavy saturation from the east to deplete
- * the magazine" — it does NOT compute whether that succeeds. The external
+ * the magazine": it does NOT compute whether that succeeds. The external
  * accredited sim resolves the outcome. This is the boundary that keeps the
  * adaptive-adversary differentiator on the safe side of the line.
  */
 export interface AdversaryIntent {
   exercise_id: string;
   turn: number;
-  // High-level intent — the adaptive, pedagogically-motivated choice
+  // High-level intent: the adaptive, pedagogically-motivated choice
   objective: string;                 // "deplete interceptor magazine"
   approach: string;                  // "decoy-heavy saturation from eastern axis"
-  // Why SPECTRAL chose this — tied to the trainee's blind spot
+  // Why SPECTRAL chose this: tied to the trainee's blind spot
   pedagogical_rationale: string;     // "trainee weak on magazine discipline under saturation"
   targets_competency: string;        // which competency this pressures
   // Force composition described at the TASKING level, not the lethality level
@@ -127,7 +127,7 @@ export function makeOpenBuildAdapter(sim: ExternalSim, mode: IntegrationMode): E
       };
     },
     async pullObservations(_exerciseId: string): Promise<NormalisedObservation[]> {
-      // Open build returns nothing — real adapter pulls from the external sim.
+      // Open build returns nothing: real adapter pulls from the external sim.
       return [];
     },
   };

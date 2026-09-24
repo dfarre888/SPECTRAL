@@ -64,7 +64,7 @@ export const CATALOGUE_DATA_GAPS: CatalogueDataGap[] = [
     id: 'edge-horizon-erp-accredited',
     label: 'Horizon ERP accredited figures',
     reason:
-      'Exact effective radiated power (ERP) figures require accredited propagation engine data under customer contract — not OSINT-publishable.',
+      'Exact effective radiated power (ERP) figures require accredited propagation engine data under customer contract: not OSINT-publishable.',
     resolution_path: 'tenant_defeat_effectiveness',
     related_platform_id: null,
     related_system_id: 'edge-horizon',
@@ -181,7 +181,7 @@ export async function fetchTenantDefeatRows(
       }
     }
   } catch {
-    // offline — no tenant overrides
+    // offline: no tenant overrides
   }
 
   return map

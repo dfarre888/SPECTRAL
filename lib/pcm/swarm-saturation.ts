@@ -147,8 +147,8 @@ export function applyGnssSwarmDegradation(
       description:
         `GNSS L-band jamming scattered ${scatterCount}/${gnssPlatforms.length} swarm platforms. ` +
         (coherenceLost
-          ? 'Coordinated time-on-target BROKEN — swarm attacking in dispersed pattern.'
-          : 'Partial scatter — swarm cohesion degraded but attack continues.'),
+          ? 'Coordinated time-on-target BROKEN: swarm attacking in dispersed pattern.'
+          : 'Partial scatter: swarm cohesion degraded but attack continues.'),
       affected_platform_ids: gnssPlatforms.map((p) => p.id),
       visible_to_red: true,
       visible_to_blue: true,

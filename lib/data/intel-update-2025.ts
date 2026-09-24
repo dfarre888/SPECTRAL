@@ -49,16 +49,16 @@ export const INTEL_2025_DEFEAT_SYSTEM_IDS = [
   'jco-swarm-kit',
 ] as const
 
-/** Documented defeat matrix special cases — see §4 defeat_effectiveness */
+/** Documented defeat matrix special cases: see §4 defeat_effectiveness */
 export const INTEL_2025_SPECIAL_CASES = [
-  { platform: 'v2u', note: 'RF jamming ineffective — CV/GNSS-free nav' },
-  { platform: 'fpv-fibre-optic', note: 'RF jamming IMMUNE — fibre-optic tether' },
+  { platform: 'v2u', note: 'RF jamming ineffective: CV/GNSS-free nav' },
+  { platform: 'fpv-fibre-optic', note: 'RF jamming IMMUNE: fibre-optic tether' },
   { platform: 'kargu-2', note: 'Swarm saturation degrades single RF jammer to ~20%' },
-  { platform: 'gerbera-parody', note: 'Decoy OWA — RF jam effective but kinetic exchange ratio poor' },
+  { platform: 'gerbera-parody', note: 'Decoy OWA: RF jam effective but kinetic exchange ratio poor' },
   { platform: 'molniya-2-fpv', note: 'Fibre variant RF-immune; RF variant jammable on 2.4/5.8' },
-  { platform: 'samad-2', note: 'Maritime OWA — naval CIWS kinetic adjudication primary' },
-  { platform: 'houthi-owa-maritime', note: 'Red Sea anti-ship profile — SeaRAM/Goalkeeper lesson set' },
-  { platform: '*', system: 'iron-beam', note: '~90% DEW — weather-limited' },
-  { platform: '*', system: 'goalkeeper-ciws', note: 'Last-ditch naval PD — magazine depth vs saturation' },
-  { platform: '*', system: 'searam', note: '~9 km envelope — Red Sea HVU benchmark' },
+  { platform: 'samad-2', note: 'Maritime OWA: naval CIWS kinetic adjudication primary' },
+  { platform: 'houthi-owa-maritime', note: 'Red Sea anti-ship profile: SeaRAM/Goalkeeper lesson set' },
+  { platform: '*', system: 'iron-beam', note: '~90% DEW: weather-limited' },
+  { platform: '*', system: 'goalkeeper-ciws', note: 'Last-ditch naval PD: magazine depth vs saturation' },
+  { platform: '*', system: 'searam', note: '~9 km envelope: Red Sea HVU benchmark' },
 ] as const

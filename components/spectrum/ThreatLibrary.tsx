@@ -1,13 +1,13 @@
 'use client';
 /**
- * ThreatLibrary — the catalogue (Mockup Frame 02).
+ * ThreatLibrary: the catalogue (Mockup Frame 02).
  * Red threats and Blue effectors as a sortable table (default) or a gallery
  * of cards, each showing its spectral footprint. Filter by side, group, and
  * text search.
  *
- * v2 — surfaces year_introduced, gnss_dependency, defeat_note, control_link_freq
+ * v2: surfaces year_introduced, gnss_dependency, defeat_note, control_link_freq
  *      adds Group 1–5 filter chips below the side filter row
- * v3 — table view with sticky header and pinned name column; gallery optional
+ * v3: table view with sticky header and pinned name column; gallery optional
  */
 
 import React, { useMemo, useState } from 'react';
@@ -558,7 +558,7 @@ function Footprint({ platform }: { platform: Platform }) {
   );
 }
 
-// ─── quickTags — derived from capabilities + control_link_freq ────────────────
+// ─── quickTags: derived from capabilities + control_link_freq ────────────────
 function quickTags(p: Platform): { text: string; cls: string; style?: React.CSSProperties }[] {
   const tags: { text: string; cls: string; style?: React.CSSProperties }[] = [];
   const caps = p.capabilities ?? [];

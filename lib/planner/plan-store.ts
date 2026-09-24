@@ -9,7 +9,7 @@ import type { IadsStackInstance } from '@/lib/planner/iads-stacks';
 import type { LaydownSessionPair } from '@/lib/map/laydown-session';
 import type { EconomicsScenarioRef } from '@/lib/planner/battlespace-plan';
 
-/** Read-through cache only — DB is source of truth for mutations. */
+/** Read-through cache only: DB is source of truth for mutations. */
 const memory = new Map<string, BattlespacePlanRow>();
 const MEMORY_MAX = 500;
 const memoryOrder: string[] = [];
@@ -162,7 +162,7 @@ export async function deletePlan(id: string, userId: string): Promise<boolean> {
 const REVISION_PRUNE_THRESHOLD = 50;
 const REVISION_KEEP_LAST = 50;
 
-/** Prune old plan revisions — owner-scoped via RLS. */
+/** Prune old plan revisions: owner-scoped via RLS. */
 export async function prunePlanRevisions(planId: string, keepLastN = REVISION_KEEP_LAST): Promise<void> {
   const supabase = await createClient();
   const { data, error } = await supabase

@@ -1,5 +1,5 @@
 /**
- * OSINT training fixtures — PCM / force-design when DB auth is unavailable.
+ * OSINT training fixtures: PCM / force-design when DB auth is unavailable.
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 import type { ForceDesignQuestion, ForceDesignReport, RunOutcome } from '@/lib/moat/forceDesignEngine'
@@ -17,7 +17,7 @@ export const TRAINING_FORCE_DESIGN_QUESTION: ForceDesignQuestion = {
     {
       label: 'Option A: 12× Coyote Block 2',
       composition: [{ platform_ref: 'coyote-b2', quantity: 12 }],
-      notes: 'Baseline magazine — Ukraine exchange-ratio reference',
+      notes: 'Baseline magazine: Ukraine exchange-ratio reference',
     },
     {
       label: 'Option B: 18× Coyote Block 2',
@@ -39,7 +39,7 @@ function trainingRunOutcomes(question: ForceDesignQuestion): RunOutcome[] {
         run_index: i,
         outcome: roll >= 0.75 ? 'force_succeeded' : roll >= 0.5 ? 'marginal' : 'force_failed',
         resources_expended: { interceptors: opt.composition[0]?.quantity ?? 12 },
-        failure_point: roll < 0.5 ? 'Magazine empty before final wave — decoy saturation' : null,
+        failure_point: roll < 0.5 ? 'Magazine empty before final wave: decoy saturation' : null,
         is_placeholder: true,
       })
     }
@@ -139,7 +139,7 @@ function demoTurnRecords(exerciseId: string): PCM.TurnRecord[] {
             type: 'impact',
             description:
               turn === 9
-                ? 'Blue magazine empty — layer=2'
+                ? 'Blue magazine empty: layer=2'
                 : 'Blue intercept Shahed-class OWA',
             affected_platform_ids: [],
             visible_to_red: true,

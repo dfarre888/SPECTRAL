@@ -1,5 +1,5 @@
 /**
- * Engagement economics — server fetch from engagement_economics table
+ * Engagement economics: server fetch from engagement_economics table
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 
@@ -54,7 +54,7 @@ async function buildPkMap(platformIds: string[]): Promise<Map<string, number>> {
         }
       }
     } catch {
-      // skip platform — fallback pk applied per row
+      // skip platform: fallback pk applied per row
     }
   }
   return map

@@ -7,7 +7,7 @@
  * lib/navigation/_test_module-registry.test.ts, which is what stops the three
  * lists from drifting apart again.
  *
- * Data only — no React, no lucide imports — so it stays testable under node.
+ * Data only, no React, no lucide imports, so it stays testable under node.
  */
 
 export type ModuleGroupId = 'intelligence' | 'planning' | 'training' | 'administration'
@@ -59,7 +59,7 @@ export interface SpectralModule {
   icon: ModuleIconName
   accent: ModuleAccent
   group: ModuleGroupId
-  /** Catalog ordering — roughly threat priority. */
+  /** Catalog ordering: roughly threat priority. */
   priority: number
   /** Live count key, else staticCount is used. */
   countKey?: ModuleCountKey
@@ -71,8 +71,8 @@ export interface SpectralModule {
   edition?: 'operations'
   /**
    * Lifted above every group in the sidebar. For the one or two modules that
-   * are the product's front door — a commander opens the map first, not a
-   * catalogue — and must never be a scroll away.
+   * are the product's front door: a commander opens the map first, not a
+   * catalogue: and must never be a scroll away.
    */
   pinned?: boolean
 }
@@ -211,7 +211,7 @@ export const SPECTRAL_MODULES: readonly SpectralModule[] = [
     label: 'Comms Linkage',
     sub: 'Coalition connectivity',
     kicker: 'INTEROP',
-    blurb: 'Who can share a track picture — and on what spectrum',
+    blurb: 'Who can share a track picture: and on what spectrum',
     icon: 'radio',
     accent: 'cyan',
     group: 'intelligence',

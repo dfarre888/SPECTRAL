@@ -13,7 +13,7 @@ interface StoreHeroProps {
   subtitle: ReactNode
   trustChip?: ReactNode
   trustItems?: StoreTrustItem[]
-  /** Compact ops header — Command Center above the fold */
+  /** Compact ops header: Command Center above the fold */
   variant?: 'default' | 'compact'
   className?: string
 }

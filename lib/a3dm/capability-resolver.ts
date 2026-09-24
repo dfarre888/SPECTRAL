@@ -18,21 +18,21 @@ function airframeRf(platformId: string, rangeKm: number | undefined): SpectrumCa
 
   add({
     axis: 'rf', layer: 'comms', fn: 'control',
-    label: 'C2 — 2.4 GHz ISM',
+    label: 'C2: 2.4 GHz ISM',
     freq_low_hz: MHz(2400), freq_high_hz: MHz(2483.5),
     range_km: rangeKm ?? perf?.range_km ?? null,
     derived: !perf,
   })
   add({
     axis: 'rf', layer: 'comms', fn: 'video',
-    label: 'Video — 5.8 GHz ISM',
+    label: 'Video: 5.8 GHz ISM',
     freq_low_hz: MHz(5725), freq_high_hz: MHz(5875),
     derived: !perf,
   })
   if (link.includes('900')) {
     add({
       axis: 'rf', layer: 'comms', fn: 'control',
-      label: 'C2 — 900 MHz',
+      label: 'C2: 900 MHz',
       freq_low_hz: MHz(902), freq_high_hz: MHz(928),
     })
   }

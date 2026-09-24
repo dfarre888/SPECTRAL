@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   const ctx = await requireTenantContext(request)
   if (!ctx.userId) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   if (!roleCanImportPlatforms(ctx.role)) {
-    return NextResponse.json({ error: 'Forbidden — analyst or admin required' }, { status: 403 })
+    return NextResponse.json({ error: 'Forbidden: analyst or admin required' }, { status: 403 })
   }
 
   const body = (await request.json()) as {

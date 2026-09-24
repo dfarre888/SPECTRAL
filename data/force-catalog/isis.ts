@@ -1,5 +1,5 @@
 /**
- * Force Catalogue — ISIS (historical) (ISI).
+ * Force Catalogue: ISIS (historical) (ISI).
  * OSINT only. Verified Jul 2026. Non-state red historical precedent.
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY.
  */

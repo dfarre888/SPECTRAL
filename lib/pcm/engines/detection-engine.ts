@@ -1,5 +1,5 @@
 /**
- * PCM detection phase — fog-of-war sensor pictures.
+ * PCM detection phase: fog-of-war sensor pictures.
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';

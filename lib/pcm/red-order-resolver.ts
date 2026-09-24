@@ -1,5 +1,5 @@
 /**
- * Red Force order resolution — launches, strikes, EW, decoys.
+ * Red Force order resolution: launches, strikes, EW, decoys.
  *
  * Adaptive AI integration:
  * If state.red_force.ai_state is present (populated by worldStateEngine after
@@ -10,7 +10,7 @@
  *
  * Red EW pressure (ewPressure) is no longer a flat +0.12 per Krasukha activation.
  * The returned ewPressure feeds into ctx.ewInterceptPenalty in the NEXT turn via
- * AdjudicationContext — the actual penalty model lives in ew-combat-resolver.ts
+ * AdjudicationContext: the actual penalty model lives in ew-combat-resolver.ts
  * which reads from the preloaded pair cache. This resolver now emits ewPressure as
  * a signal only; the propagation-accurate penalty is computed downstream.
  */
@@ -47,7 +47,7 @@ export interface RedOrderResult {
 }
 
 /**
- * Open-build offensive Pk table — used ONLY when no pair-cache result is available
+ * Open-build offensive Pk table: used ONLY when no pair-cache result is available
  * (e.g. loitering munition strike on a non-EW target outside the pairing model).
  * These values are conservative OSINT proxies, not accredited lethality data.
  */
@@ -89,7 +89,7 @@ export function resolveRedOrders(
     const diag = buildRedAiDiagnostic(aiState, state.turn);
     events.push({
       event_id: `EVT-RED-AI-${state.turn}`,
-      type: 'ew_effect', // closest existing type — treated as DS-only intel event
+      type: 'ew_effect', // closest existing type: treated as DS-only intel event
       description: `[RED AI] ${diag.reasoning}`,
       affected_platform_ids: [],
       visible_to_red: false,
@@ -115,7 +115,7 @@ export function resolveRedOrders(
       events.push({
         event_id: `EVT-RED-LAUNCH-${state.turn}-${p.id}`,
         type: 'weapon_release',
-        description: `${p.type} launched — ${task.task}${p.ew_immune ? ' [EW-IMMUNE]' : ''}`,
+        description: `${p.type} launched: ${task.task}${p.ew_immune ? ' [EW-IMMUNE]' : ''}`,
         affected_platform_ids: [p.id],
         visible_to_red: true,
         visible_to_blue: false,
@@ -136,7 +136,7 @@ export function resolveRedOrders(
         target = state.blue_force.platforms.find((bp) => gridRef(bp) === task.target_grid);
       }
       if (target && target.status !== 'destroyed') {
-        // OSINT proxy Pk — conservative open-build value.
+        // OSINT proxy Pk: conservative open-build value.
         const redPk = OFFENSIVE_PK_OSINT_PROXY[p.group] ?? 45;
         const hit = rng() < redPk / 100;
         if (hit) {
@@ -168,7 +168,7 @@ export function resolveRedOrders(
     // ── EW activation ────────────────────────────────────────────────────────
     // ewPressure here is a SIGNAL to the next turn's AdjudicationContext.
     // The actual intercept penalty is computed from the pair cache in
-    // ew-combat-resolver.ts — this flat accumulation is NOT the final penalty.
+    // ew-combat-resolver.ts: this flat accumulation is NOT the final penalty.
     if (/krasukha|ew|jam/i.test(task.task) || task.weapon_release === 'ew_jam') {
       const ew = state.red_force.ew_assets.find(
         (a) => a.id === task.platform_id || a.type.includes('Krasukha'),
@@ -176,13 +176,13 @@ export function resolveRedOrders(
       if (ew) {
         ew.status = 'active';
         ew.affected_platform_ids = state.blue_force.platforms.map((bp) => bp.id);
-        // Accumulate pressure signal — capped at 0.35, used as ctx.ewInterceptPenalty seed.
+        // Accumulate pressure signal: capped at 0.35, used as ctx.ewInterceptPenalty seed.
         ewPressure = Math.min(0.35, ewPressure + 0.10);
         events.push({
           event_id: `EVT-RED-EW-${state.turn}-${ew.id}`,
           type: 'ew_effect',
           description:
-            `${ew.type} active — spectrum suppression engaged ` +
+            `${ew.type} active: spectrum suppression engaged ` +
             `(pressure signal ${Math.round(ewPressure * 100)}%, ` +
             `propagation-accurate penalty computed in adjudication).`,
           affected_platform_ids: [ew.id],

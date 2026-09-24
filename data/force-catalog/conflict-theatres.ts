@@ -1,5 +1,5 @@
 /**
- * Force Catalogue — Conflict Theatre Lessons (XTH).
+ * Force Catalogue: Conflict Theatre Lessons (XTH).
  * OSINT only. Verified Jul 2026. Thin C3 theatre lessons (NK 2020 covered in XCC; Sindoor tags on IND/PAK munitions).
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY.
  */
@@ -37,7 +37,7 @@ export const CONFLICT_THEATRES_CATALOG: ForceCatalogPlatformFull[] = [
     id: 'XTH-CAT-SYRIA-SAA', designation: 'Syrian Arab Army legacy AD gap class', short_name: 'SAA AD gap',
     manufacturer: null, domain: 'ground', role: 'radar_ground', force_side: 'neutral',
     service_status: 'in_service', program_stage: 'fielded', ioc_year: 2011,
-    open_source_summary: 'combat-proven: Syria. Legacy SAM density vs modern UAS/cruise — gap lesson.',
+    open_source_summary: 'combat-proven: Syria. Legacy SAM density vs modern UAS/cruise: gap lesson.',
     data_confidence: 'estimated', sources: ['OSINT multi-theatre conflict lessons 2011–26', 'defence press'],
     comms: [uhfVoice('XTH-CAT-SYRIA-SAA')],
     sensors: [],

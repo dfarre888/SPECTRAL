@@ -1,5 +1,5 @@
 /**
- * Per-turn adjudication context — defeat matrix cache + preloaded pair results.
+ * Per-turn adjudication context: defeat matrix cache + preloaded pair results.
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';
@@ -21,7 +21,7 @@ export interface AdjudicationContext {
   gnssDependencies?: GnssPlatformDependency[];
   /**
    * Pre-fetched accredited Pk/Pd rows for this turn.
-   * PCM-scoped only — must never flow to learner model or client.
+   * PCM-scoped only: must never flow to learner model or client.
    */
   accreditedData?: AccreditedDataLayer;
   /** Pre-fetched accredited ERP rows for jam/propagation. PCM-scoped only. */

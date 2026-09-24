@@ -1,13 +1,13 @@
 'use client';
 /**
- * RadarSpectrum — the radar EW band view.
+ * RadarSpectrum: the radar EW band view.
  * A dedicated spectrum canvas for radar systems: every catalogued radar plotted
  * by its actual frequency span across HF→Ka, split Red (threat) vs Blue
  * (friendly). Hover for band, range, mobility, and what it can/can't detect.
  * Below the chart, the same radars as a sortable order-of-battle table;
  * selecting a row lights its bar.
  *
- * This is the "another EW spectrum for radar" the brief asked for — distinct
+ * This is the "another EW spectrum for radar" the brief asked for: distinct
  * from the comms RF canvas because the lanes are sides and the intel surfaced
  * is radar-specific (mobility, detection envelope).
  */

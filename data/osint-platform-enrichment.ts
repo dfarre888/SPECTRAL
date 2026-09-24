@@ -1,5 +1,5 @@
 /**
- * Canonical OSINT enrichment records — Jun 2026 deep-dive
+ * Canonical OSINT enrichment records: Jun 2026 deep-dive
  * CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  *
  * Used to drive Supabase migrations and seed file updates.
@@ -41,7 +41,7 @@ export const OSINT_ENRICHMENT: OsintPlatformRecord[] = [
     id: 'bayraktar-tb2',
     supabase_id: 'tb2-bayraktar',
     confidence: 'assessed',
-    sources: ['Deagel — Bayraktar TB2', 'Baykar public datasheet'],
+    sources: ['Deagel: Bayraktar TB2', 'Baykar public datasheet'],
     date_of_information: '2026-06-08',
     updates: {
       length_m: 6.5,
@@ -55,7 +55,7 @@ export const OSINT_ENRICHMENT: OsintPlatformRecord[] = [
       engine_type: 'Rotax 912 iS (piston, pusher)',
     },
     capability_notes: [
-      'C-band LOS datalink — primary tactical C2',
+      'C-band LOS datalink: primary tactical C2',
       'Optional Ku-band SATCOM on export variants',
       'EO/IR + laser designator for MAM-L/C',
     ],
@@ -63,7 +63,7 @@ export const OSINT_ENRICHMENT: OsintPlatformRecord[] = [
   {
     id: 'lancet-3',
     confidence: 'assessed',
-    sources: ['Deagel — Zala Lancet', 'OSINT: Oryx Ukraine losses'],
+    sources: ['Deagel: Zala Lancet', 'OSINT: Oryx Ukraine losses'],
     date_of_information: '2026-06-08',
     updates: {
       mtow_kg: 12,
@@ -78,14 +78,14 @@ export const OSINT_ENRICHMENT: OsintPlatformRecord[] = [
     },
     capability_notes: [
       '2.4 GHz C2 + 5.8 GHz video in cruise',
-      'EO terminal seeker — 300 km/h impact speed',
+      'EO terminal seeker: 300 km/h impact speed',
       '300 mm armour penetration (Deagel performance table)',
     ],
   },
   {
     id: 'shahed-136',
     confidence: 'confirmed',
-    sources: ['OSMP — Shahed-136 entry', 'ARES engine identification'],
+    sources: ['OSMP: Shahed-136 entry', 'ARES engine identification'],
     date_of_information: '2026-06-08',
     updates: {
       length_m: 3.5,
@@ -95,15 +95,15 @@ export const OSINT_ENRICHMENT: OsintPlatformRecord[] = [
       range_km: 2500,
     },
     capability_notes: [
-      'GNSS + INS pre-programmed — no C2 in cruise',
+      'GNSS + INS pre-programmed: no C2 in cruise',
       'Gen 4: CRPA anti-jam, LTE RTK, Jetson Orin MWIR terminal',
-      'Warhead variants reported up to 90 kg (Estimated — Ukraine field reporting)',
+      'Warhead variants reported up to 90 kg (Estimated: Ukraine field reporting)',
     ],
   },
   {
     id: 'mq-9-reaper',
     confidence: 'assessed',
-    sources: ['Airforce Technology — MQ-9', 'GA-ASI / USAF fact sheet'],
+    sources: ['Airforce Technology: MQ-9', 'GA-ASI / USAF fact sheet'],
     date_of_information: '2026-06-08',
     updates: {
       sensor_suite: ['Lynx SAR/GMTI', 'ASIP SIGINT', 'RDESS ESM', 'MTS-B EO/IR'],
@@ -118,47 +118,47 @@ export const OSINT_ENRICHMENT: OsintPlatformRecord[] = [
   {
     id: 'tb3',
     confidence: 'assessed',
-    sources: ['Deagel — Bayraktar TB3 (under development)'],
+    sources: ['Deagel: Bayraktar TB3 (under development)'],
     date_of_information: '2026-06-08',
     updates: {
       length_m: 8.4,
       wingspan_m: 14,
       height_m: 2.6,
       mass_kg: 1450,
-      engine_type: 'turboprop (assessed — carrier MALE)',
+      engine_type: 'turboprop (assessed: carrier MALE)',
     },
   },
 ];
 
-/** Batch OSINT records for catalogue expansion — Jun 2026 */
+/** Batch OSINT records for catalogue expansion: Jun 2026 */
 export const CATALOGUE_OSINT_RECORDS: OsintPlatformRecord[] = [
   {
     id: 'shahed-129',
     confidence: 'assessed',
-    sources: ['Military Factory — HESA Shahed-129', 'GlobalSecurity'],
+    sources: ['Military Factory: HESA Shahed-129', 'GlobalSecurity'],
     date_of_information: '2026-06-12',
     updates: { range_km: 1700, mass_kg: 450, warhead_kg: 40, ioc_year: 2012 },
-    capability_notes: ['Sadid-1/345 missile armament — different kill chain to Shahed-136'],
+    capability_notes: ['Sadid-1/345 missile armament: different kill chain to Shahed-136'],
   },
   {
     id: 'mohajer-6',
     confidence: 'assessed',
-    sources: ['Military Factory — Qods Mohajer-6', 'ODIN WEG'],
+    sources: ['Military Factory: Qods Mohajer-6', 'ODIN WEG'],
     date_of_information: '2026-06-12',
     updates: { range_km: 200, mass_kg: 600, warhead_kg: 40 },
   },
   {
     id: 'gerbera-parody',
     confidence: 'reported',
-    sources: ['Oryx — decoy OWA tracking', 'Conflict analytics'],
+    sources: ['Oryx: decoy OWA tracking', 'Conflict analytics'],
     date_of_information: '2026-06-12',
     updates: { range_km: 500 },
-    capability_notes: ['Decoy saturation — RF signature defeat problem distinct from Shahed'],
+    capability_notes: ['Decoy saturation: RF signature defeat problem distinct from Shahed'],
   },
   {
     id: 'bayraktar-kizilelma',
     confidence: 'assessed',
-    sources: ['Military Factory — Bayraktar Kizilelma'],
+    sources: ['Military Factory: Bayraktar Kizilelma'],
     date_of_information: '2026-06-12',
     updates: { range_km: 900, max_speed_kmh: 900, mass_kg: 5500 },
   },
@@ -168,7 +168,7 @@ export const CATALOGUE_OSINT_RECORDS: OsintPlatformRecord[] = [
     sources: ['SPECTRAL_INTEL_UPDATE_2025', 'Taiwan ADIZ OSINT'],
     date_of_information: '2026-06-12',
     updates: { range_km: 6000, mass_kg: 2800 },
-    capability_notes: ['Map Intel combat envelope capped at 1500 km — not raw ferry'],
+    capability_notes: ['Map Intel combat envelope capped at 1500 km: not raw ferry'],
   },
 ];
 

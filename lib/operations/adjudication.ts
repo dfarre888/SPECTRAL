@@ -106,7 +106,7 @@ export async function adjudicatePair(input: LaydownPairInput): Promise<Adjudicat
   })
 
   const isRfJammer = input.cuas.asset.defeat_methods.includes('RF_jamming')
-  // Band overlap alone is insufficient — propagationEngagementViable checks that the RF link
+  // Band overlap alone is insufficient: propagationEngagementViable checks that the RF link
   // can physically reach the target (not NLOS, J/S ≥ 3 dB). A jammer that overlaps every band
   // but can't reach the receiver scores no better than no_engagement on the spectrum component.
   const rfViable = isRfJammer
@@ -139,7 +139,7 @@ export async function adjudicatePair(input: LaydownPairInput): Promise<Adjudicat
     ? Math.round(matrixPk * 0.4 + spectrumScore * 0.35 + Math.min(100, 50 + jamBonus) * 0.25)
     : 0
 
-  // Partial propagation degradation — RF jammer has a viable link but path is degraded
+  // Partial propagation degradation: RF jammer has a viable link but path is degraded
   // (terrain shadow or building attenuation, not a hard NLOS fail)
   if (propagationGated && isRfJammer && rfViable) {
     combined = Math.round(combined * 0.55)

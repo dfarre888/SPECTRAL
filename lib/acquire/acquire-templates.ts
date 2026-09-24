@@ -1,5 +1,5 @@
 /**
- * Capability Acquisition — scenario templates
+ * Capability Acquisition: scenario templates
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 

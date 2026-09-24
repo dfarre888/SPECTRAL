@@ -1,6 +1,6 @@
 /**
  * Two-ray ground reflection model for low-altitude links.
- * Assessed — classic EW reference model, not site-specific.
+ * Assessed: classic EW reference model, not site-specific.
  */
 export function twoRayPathLossDb(
   distance_m: number,

@@ -104,7 +104,7 @@ export function FootprintStrip({ platform, height = 20 }: { platform: Platform; 
   const scale = makeLogScale(cfg.domain, cfg.range);
 
   if (caps.length === 0) {
-    // RF-silent — the teaching signal
+    // RF-silent: the teaching signal
     return (
       <div
         style={{
@@ -194,7 +194,7 @@ export function PlatformIcon({ platform, size = 54 }: { platform: Platform; size
 /**
  * SVG line-art silhouette for a platform, keyed to its category string.
  * Color: red (#F87171) for Red, cyan (#06B6D4) for Blue.
- * viewBox is always 0 0 80 80 — rendered at `size` px square.
+ * viewBox is always 0 0 80 80: rendered at `size` px square.
  */
 export function PlatformSilhouette({ platform, size = 76 }: { platform: Platform; size?: number }) {
   const red = platform.side === 'red';
@@ -212,7 +212,7 @@ export function PlatformSilhouette({ platform, size = 76 }: { platform: Platform
     style: { opacity: 0.88, flexShrink: 0 },
   };
 
-  /* ── Quadcopter (COTS / Autonomous) — top view ── */
+  /* ── Quadcopter (COTS / Autonomous): top view ── */
   if (cat.includes('quad') || cat.includes('cots') || cat.includes('autonomous')) {
     return (
       <svg {...shared}>
@@ -239,7 +239,7 @@ export function PlatformSilhouette({ platform, size = 76 }: { platform: Platform
     );
   }
 
-  /* ── FPV racer (H-frame) — top view ── */
+  /* ── FPV racer (H-frame): top view ── */
   if (cat.includes('fpv')) {
     return (
       <svg {...shared}>
@@ -265,7 +265,7 @@ export function PlatformSilhouette({ platform, size = 76 }: { platform: Platform
     );
   }
 
-  /* ── OWA / delta-wing loitering munition (Shahed) — top view ── */
+  /* ── OWA / delta-wing loitering munition (Shahed): top view ── */
   if (cat.includes('owa')) {
     return (
       <svg {...shared}>
@@ -281,7 +281,7 @@ export function PlatformSilhouette({ platform, size = 76 }: { platform: Platform
     );
   }
 
-  /* ── Tube-launched loitering munition (Lancet / Switchblade) — side view ── */
+  /* ── Tube-launched loitering munition (Lancet / Switchblade): side view ── */
   if (cat.includes('loitering')) {
     return (
       <svg {...shared}>
@@ -299,7 +299,7 @@ export function PlatformSilhouette({ platform, size = 76 }: { platform: Platform
     );
   }
 
-  /* ── MALE UCAV (TB2 / MQ-9 / CH-4) — top view, wide wingspan ── */
+  /* ── MALE UCAV (TB2 / MQ-9 / CH-4): top view, wide wingspan ── */
   if (cat.includes('male') || cat.includes('ucav')) {
     return (
       <svg {...shared}>
@@ -318,7 +318,7 @@ export function PlatformSilhouette({ platform, size = 76 }: { platform: Platform
     );
   }
 
-  /* ── Kinetic interceptor (Anduril Anvil) — compact dart ── */
+  /* ── Kinetic interceptor (Anduril Anvil): compact dart ── */
   if (cat.includes('kinetic')) {
     return (
       <svg {...shared}>
@@ -337,7 +337,7 @@ export function PlatformSilhouette({ platform, size = 76 }: { platform: Platform
     );
   }
 
-  /* ── ISR / tactical fixed wing (Orlan-10, Ababil) — top view ── */
+  /* ── ISR / tactical fixed wing (Orlan-10, Ababil): top view ── */
   if (cat.includes('isr') || cat.includes('tactical')) {
     return (
       <svg {...shared}>
@@ -463,7 +463,7 @@ export function PlatformSilhouette({ platform, size = 76 }: { platform: Platform
     );
   }
 
-  /* ── Default fallback — quadcopter silhouette ── */
+  /* ── Default fallback: quadcopter silhouette ── */
   return (
     <svg {...shared}>
       <line x1="32" y1="32" x2="14" y2="14" strokeWidth="1.8" />

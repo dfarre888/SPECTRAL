@@ -2,7 +2,7 @@
 
 /**
  * Callers: app/(main)/force-catalog/page.tsx
- * Purpose: Platform Capability Matrix — Battle Picture (default) → Compare → Dossier
+ * Purpose: Platform Capability Matrix: Battle Picture (default) → Compare → Dossier
  * Spec: docs/force-catalog/PROMPT-BATTLE-PICTURE.md
  */
 

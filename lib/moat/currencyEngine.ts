@@ -1,11 +1,11 @@
 /**
- * SPECTRAL — Moat-Builder 3
+ * SPECTRAL: Moat-Builder 3
  * Tactical Currency Engine
  *
  * The edge a sovereign tool has over a US program-of-record: speed of update.
  * The drone fight changes monthly. This module is the intake and review
  * pipeline that lets SPECTRAL incorporate new tactics, techniques and threats
- * faster than a slow procurement cycle — WITHOUT auto-trusting open-source
+ * faster than a slow procurement cycle: WITHOUT auto-trusting open-source
  * data and without touching the controlled core.
  *
  * Design principle: every update is a PROPOSAL that a subject-matter expert
@@ -28,7 +28,7 @@ export type UpdateType =
 export type UpdateStatus =
   | 'proposed'                   // ingested, awaiting SME review
   | 'under_review'
-  | 'approved'                   // SME approved — may inform scenarios
+  | 'approved'                   // SME approved: may inform scenarios
   | 'rejected'
   | 'superseded';
 
@@ -37,7 +37,7 @@ export interface CurrencyUpdate {
   type: UpdateType;
   title: string;
   summary: string;               // plain-language, SME-authored or SME-reviewed
-  // Where it came from — provenance is mandatory
+  // Where it came from: provenance is mandatory
   source_type: 'osint' | 'sme_input' | 'after_action' | 'partner_share';
   source_reference: string;
   detected_at: string;
@@ -48,7 +48,7 @@ export interface CurrencyUpdate {
     scenarios: string[];         // which scenarios should be updated
     injects: string[];           // which injects this might add/modify
   };
-  // Review workflow — the human gate
+  // Review workflow: the human gate
   status: UpdateStatus;
   reviewed_by: string | null;
   reviewed_at: string | null;
@@ -106,7 +106,7 @@ export class CurrencyEngine {
 
   /**
    * currencyReport
-   * Snapshot of how current the training content is — a selling point in
+   * Snapshot of how current the training content is: a selling point in
    * itself ("SPECTRAL reflects TTPs as recent as X").
    */
   currencyReport(updates: CurrencyUpdate[]): {
@@ -134,7 +134,7 @@ export class CurrencyEngine {
 export const currencyEngine = new CurrencyEngine();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SEED — illustrative current TTPs (UNCLASSIFIED, open-source derived)
+// SEED: illustrative current TTPs (UNCLASSIFIED, open-source derived)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const SEED_CURRENCY_UPDATES: Partial<CurrencyUpdate>[] = [

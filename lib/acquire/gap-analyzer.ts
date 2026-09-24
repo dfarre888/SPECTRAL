@@ -1,5 +1,5 @@
 /**
- * GAP analysis — required effect vs current OrBat + defeat coverage
+ * GAP analysis: required effect vs current OrBat + defeat coverage
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 

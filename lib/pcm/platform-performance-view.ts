@@ -77,7 +77,7 @@ function spectrumSummary(platformId: string): { summary: string; confidence: Per
     return {
       summary: 'No spectrum capabilities resolved',
       confidence: 'estimated',
-      notes: ['Capability seed missing — using PCM defaults'],
+      notes: ['Capability seed missing: using PCM defaults'],
     };
   }
 
@@ -88,7 +88,7 @@ function spectrumSummary(platformId: string): { summary: string; confidence: Per
 
   const rfSilent = spec.capabilities.some((c) => c.defeat_resistance?.includes('rf_silent'));
   const summary = rfSilent
-    ? 'RF-silent / fibre-optic — no control-link emissions'
+    ? 'RF-silent / fibre-optic: no control-link emissions'
     : bands.length
       ? `Emits: ${bands.join('; ')}`
       : `${spec.capabilities.length} capability region(s)`;

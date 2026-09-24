@@ -1,12 +1,12 @@
 /**
- * /api/ais/vessels — Server-side AIS proxy
+ * /api/ais/vessels: Server-side AIS proxy
  *
  * Keeps your AIS API key server-side only (never exposed to the browser).
  *
  * ── Configuration (.env.local) ───────────────────────────────────────────────
  *
  *   AIS_API_KEY=your_key_here
- *   AIS_PROVIDER=aisstream          # default — aisstream.io WebSocket key
+ *   AIS_PROVIDER=aisstream          # default: aisstream.io WebSocket key
  *   AIS_PROVIDER=marinetraffic      # MarineTraffic REST exportvessels
  *
  *   # MarineTraffic only:

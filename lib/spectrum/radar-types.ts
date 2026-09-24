@@ -1,5 +1,5 @@
 /**
- * Spectrum Intelligence — radar layer types
+ * Spectrum Intelligence: radar layer types
  * -----------------------------------------
  * Extends the platform model with radar systems. A radar is a Platform with
  * side='red'|'blue' and one or more radar capabilities, but it carries extra
@@ -52,7 +52,7 @@ export type RadarRole =
   | 'gap_filler'
   | 'pesa' | 'aesa';       // antenna type as a coarse role hint
 
-/** Mobility class — affects survivability and placement on the map. */
+/** Mobility class: affects survivability and placement on the map. */
 export type RadarMobility =
   | 'fixed'                // permanent site
   | 'relocatable'          // can move but slow to set up (hours)

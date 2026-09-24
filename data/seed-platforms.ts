@@ -1,5 +1,5 @@
 /**
- * Spectrum Intelligence — seed library
+ * Spectrum Intelligence: seed library
  * ---------------------------------------------------
  * Core 42 + catalogue expansion (Tiers 1–5).
  * Open-source / OSINT figures only.
@@ -16,7 +16,7 @@ import { CATALOGUE_EXPANSION_PLATFORMS } from '@/data/catalogue-expansion';
 import type { Platform } from '@/lib/spectrum/types';
 
 export const CORE_PLATFORMS: Platform[] = [
-  /* ============================ RED — THREATS ============================ */
+  /* ============================ RED: THREATS ============================ */
 
   // ─────────────────── Group 1 · Small / FPV / COTS ───────────────────────
 
@@ -59,13 +59,13 @@ export const CORE_PLATFORMS: Platform[] = [
     year_introduced: 2024,
     propulsion: 'electric',
     guidance_type: 'AI visual autonomy (6 trinocular nav cameras); GPS/Galileo/GLONASS/BeiDou; multi-band encrypted radio',
-    defeat_note: 'Visual autonomy reduces RF/GNSS defeat efficacy — autonomous nav continues with link degraded; kinetic or laser most reliable',
+    defeat_note: 'Visual autonomy reduces RF/GNSS defeat efficacy: autonomous nav continues with link degraded; kinetic or laser most reliable',
     control_link_freq: 'Multi-band encrypted (contested-environment hardened)',
     gnss_dependency: 'medium',
     confidence: 'curated',
     icon: '⊹',
     intel_note:
-      'Strong onboard visual autonomy; navigates GPS-denied using vision. Government/military X10D hardened against EW — representative of next-gen autonomous ISR that breaks the RF-jamming model. Listed Red as capability exemplar.',
+      'Strong onboard visual autonomy; navigates GPS-denied using vision. Government/military X10D hardened against EW: representative of next-gen autonomous ISR that breaks the RF-jamming model. Listed Red as capability exemplar.',
   },
 
   {
@@ -108,14 +108,14 @@ export const CORE_PLATFORMS: Platform[] = [
     warhead_kg: 1.0,
     year_introduced: 2024,
     propulsion: 'electric (brushless quadrotor, 10–13" props)',
-    guidance_type: 'Fibre-optic tethered — immune to all RF jamming; HD video over cable up to 65 km; no GNSS required',
+    guidance_type: 'Fibre-optic tethered: immune to all RF jamming; HD video over cable up to 65 km; no GNSS required',
     defeat_note: 'RF jamming INEFFECTIVE; GNSS spoofing INEFFECTIVE; HPM (Leonidas defeated FOC Dec 2025); kinetic only; sever tether; physical barriers',
     control_link_freq: 'fiber-optic (RF-immune)',
     gnss_dependency: 'none',
     confidence: 'curated',
     icon: '⊹',
     intel_note:
-      'Spooled fibre-optic control + video. ZERO RF emission — immune to RF jamming and GNSS spoofing. Deep-strike threat to logistics at up to 65 km. The case that breaks the RF model. Epirus Leonidas achieved HPM defeat of a fibre-optic FPV in December 2025 — the only confirmed electronic defeat method.',
+      'Spooled fibre-optic control + video. ZERO RF emission, immune to RF jamming and GNSS spoofing. Deep-strike threat to logistics at up to 65 km. The case that breaks the RF model. Epirus Leonidas achieved HPM defeat of a fibre-optic FPV in December 2025, the only confirmed electronic defeat method.',
   },
 
   {
@@ -133,7 +133,7 @@ export const CORE_PLATFORMS: Platform[] = [
     year_introduced: 2023,
     propulsion: 'electric (brushless quadrotor, foldable)',
     guidance_type: 'GPS/GLONASS/Galileo/BeiDou + mmWave radar obstacle avoidance; SkyLink 900 MHz/2.4/5.2/5.8 GHz quad-band auto-hop; AES-256',
-    defeat_note: 'Quad-band link auto-selects cleanest frequency — single-band jamming insufficient; broad-spectrum jam or kinetic required; GNSS denial degraded by optical/radar autonomy',
+    defeat_note: 'Quad-band link auto-selects cleanest frequency: single-band jamming insufficient; broad-spectrum jam or kinetic required; GNSS denial degraded by optical/radar autonomy',
     control_link_freq: '900 MHz / 2.4 / 5.2 / 5.8 GHz quad-band (SkyLink 3.0)',
     gnss_dependency: 'medium',
     confidence: 'curated',
@@ -175,7 +175,7 @@ export const CORE_PLATFORMS: Platform[] = [
     group: 2,
     origin: 'Russia (ZALA)',
     category: 'Loitering munition',
-    role: 'Precision strike — armour / air defence',
+    role: 'Precision strike: armour / air defence',
     mass_kg: 12,
     range_km: 40,
     speed_kmh: 110,
@@ -211,14 +211,14 @@ export const CORE_PLATFORMS: Platform[] = [
     ceiling_m: 5000,
     year_introduced: 2015,
     propulsion: 'electric (brushless pusher prop; pneumatic catapult launch; belly landing)',
-    guidance_type: 'GPS/GLONASS INS; ~1.4 GHz encrypted LOS datalink; SIGINT payload — passive RF spectrum monitoring, emitter geolocation, records DF bearing for artillery cueing',
-    defeat_note: 'GNSS jamming/spoofing effective; RF C2 disruption on ~1.4 GHz; Bukovel-AD class EW confirmed captures of ZALA family; HIGH-VALUE ISR target — SIGINT payload identifies and geolocates friendly emitters',
+    guidance_type: 'GPS/GLONASS INS; ~1.4 GHz encrypted LOS datalink; SIGINT payload: passive RF spectrum monitoring, emitter geolocation, records DF bearing for artillery cueing',
+    defeat_note: 'GNSS jamming/spoofing effective; RF C2 disruption on ~1.4 GHz; Bukovel-AD class EW confirmed captures of ZALA family; HIGH-VALUE ISR target: SIGINT payload identifies and geolocates friendly emitters',
     control_link_freq: '~1.4 GHz encrypted LOS datalink',
     gnss_dependency: 'high',
     confidence: 'curated',
     icon: '✈',
     intel_note:
-      'Tactical ISR platform from ZALA Aero (Kalashnikov Group subsidiary). The -16EM carries a passive SIGINT payload for RF spectrum monitoring and emitter geolocation — its primary mission is mapping enemy communications/radar emitters for artillery cueing, not just video ISR. Pneumatic catapult-launched, belly-lands. Deployed in Ukraine alongside Orlan-10; documented losses to Ukrainian EW. Represents the ISR/SIGINT-fed kill chain that drives Russian artillery correction.',
+      'Tactical ISR platform from ZALA Aero (Kalashnikov Group subsidiary). The -16EM carries a passive SIGINT payload for RF spectrum monitoring and emitter geolocation: its primary mission is mapping enemy communications/radar emitters for artillery cueing, not just video ISR. Pneumatic catapult-launched, belly-lands. Deployed in Ukraine alongside Orlan-10; documented losses to Ukrainian EW. Represents the ISR/SIGINT-fed kill chain that drives Russian artillery correction.',
   },
 
   {
@@ -226,7 +226,7 @@ export const CORE_PLATFORMS: Platform[] = [
     name: 'Forpost-R',
     side: 'red',
     group: 3,
-    origin: 'Russia (Ural PNPZ — licensed IAI Searcher Mk II)',
+    origin: 'Russia (Ural PNPZ: licensed IAI Searcher Mk II)',
     category: 'MALE ISR',
     role: 'Tactical-operational ISR',
     mass_kg: 500,
@@ -234,7 +234,7 @@ export const CORE_PLATFORMS: Platform[] = [
     speed_kmh: 200,
     ceiling_m: 6096,
     year_introduced: 2012,
-    propulsion: 'piston (APD-85, 85 hp — Russian replacement for Israeli Limbach engine)',
+    propulsion: 'piston (APD-85, 85 hp: Russian replacement for Israeli Limbach engine)',
     guidance_type: 'GPS/GLONASS INS; Russian-developed OFP; GOES-540 dual-channel EO/IR payload',
     defeat_note: 'GNSS jamming/spoofing effective; RF datalink disruption; older avionics vulnerable to Bukovel-AD class EW',
     control_link_freq: '~1.4 GHz encrypted LOS datalink',
@@ -242,7 +242,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '✈',
     intel_note:
-      'Russian licensed copy of IAI Searcher Mk II — Israel cut all support after 2014 Crimea annexation, driving full localization of avionics and engine. Forpost-M UCAV variant adds limited strike capability. Extensively used in Ukraine for ISR; vulnerable to EW given legacy GNSS receivers.',
+      'Russian licensed copy of IAI Searcher Mk II: Israel cut all support after 2014 Crimea annexation, driving full localization of avionics and engine. Forpost-M UCAV variant adds limited strike capability. Extensively used in Ukraine for ISR; vulnerable to EW given legacy GNSS receivers.',
   },
 
   {
@@ -267,7 +267,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '⊹',
     intel_note:
-      'Mid-tier Hero family — integrates on armoured vehicles, naval vessels, and rotary-wing platforms for multi-domain strike. 60-minute loiter enables persistent surveillance before engagement. 3.5 kg tandem HEAT effective against light-to-medium armour. Rheinmetall distribution partnership 2023 opens European market.',
+      'Mid-tier Hero family: integrates on armoured vehicles, naval vessels, and rotary-wing platforms for multi-domain strike. 60-minute loiter enables persistent surveillance before engagement. 3.5 kg tandem HEAT effective against light-to-medium armour. Rheinmetall distribution partnership 2023 opens European market.',
   },
 
   {
@@ -277,7 +277,7 @@ export const CORE_PLATFORMS: Platform[] = [
     group: 2,
     origin: 'Poland (WB Electronics)',
     category: 'Loitering munition',
-    role: 'Tactical loitering munition — direct fire support',
+    role: 'Tactical loitering munition: direct fire support',
     mass_kg: 5.7,
     range_km: 30,
     speed_kmh: 150,
@@ -292,7 +292,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '⊹',
     intel_note:
-      'Combat-proven NATO/Ukraine loitering munition with modular warhead bay — FRAG, HEAT, or thermobaric. Poland ordered 10,000 units 2025, the largest European loitering munition order to date. Warmate 5 variant extends to 100 km range at 5,000 m ceiling for standoff strike.',
+      'Combat-proven NATO/Ukraine loitering munition with modular warhead bay: FRAG, HEAT, or thermobaric. Poland ordered 10,000 units 2025, the largest European loitering munition order to date. Warmate 5 variant extends to 100 km range at 5,000 m ceiling for standoff strike.',
   },
 
   {
@@ -302,7 +302,7 @@ export const CORE_PLATFORMS: Platform[] = [
     group: 1,
     origin: 'Turkey (STM)',
     category: 'Autonomous loitering munition',
-    role: 'AI-autonomous precision strike — anti-personnel / light armour',
+    role: 'AI-autonomous precision strike: anti-personnel / light armour',
     mass_kg: 7.0,
     range_km: 10,
     speed_kmh: 140,
@@ -311,13 +311,13 @@ export const CORE_PLATFORMS: Platform[] = [
     year_introduced: 2019,
     propulsion: 'electric (quadrotor)',
     guidance_type: 'AI facial/vehicle recognition via EO/IR (10× optical zoom); GPS/INS; swarm-capable via STM swarm AI; operator-authorised engagement',
-    defeat_note: 'RF jamming of C2/GNSS link; kinetic intercept; HPM if available — high speed in terminal phase limits soft-kill window; swarm saturation is primary threat',
+    defeat_note: 'RF jamming of C2/GNSS link; kinetic intercept; HPM if available: high speed in terminal phase limits soft-kill window; swarm saturation is primary threat',
     control_link_freq: '2.4 / 5.8 GHz encrypted',
     gnss_dependency: 'high',
     confidence: 'curated',
     icon: '⊹',
     intel_note:
-      'First UAS cited in a UN Panel of Experts report (2021) for a potentially autonomous lethal engagement without explicit human authorisation — Libya 2020. Swarm-capable via STM algorithm. Rotary-wing allows precise low-speed engagement unlike fixed-wing OWA platforms. Exported to multiple nations; STM delivering to European NATO member in 2026.',
+      'First UAS cited in a UN Panel of Experts report (2021) for a potentially autonomous lethal engagement without explicit human authorisation: Libya 2020. Swarm-capable via STM algorithm. Rotary-wing allows precise low-speed engagement unlike fixed-wing OWA platforms. Exported to multiple nations; STM delivering to European NATO member in 2026.',
   },
 
   {
@@ -325,7 +325,7 @@ export const CORE_PLATFORMS: Platform[] = [
     name: 'IAI Harop',
     side: 'red',
     group: 3,
-    origin: 'Israel (IAI — MBT Missiles Division)',
+    origin: 'Israel (IAI: MBT Missiles Division)',
     category: 'Loitering munition',
     role: 'Anti-radiation / long-endurance precision strike',
     mass_kg: 135,
@@ -336,13 +336,13 @@ export const CORE_PLATFORMS: Platform[] = [
     year_introduced: 2009,
     propulsion: 'jet (small turbojet, canister-launched)',
     guidance_type: 'Passive RF anti-radiation seeker + EO/IR man-in-the-loop terminal; GPS/INS; 6+ hour loiter endurance; RCS <0.5 m²',
-    defeat_note: 'RCS <0.5 m² — difficult to radar-track; kinetic intercept during 6-hr loiter window; passive RF homing in terminal phase makes RF jamming ineffective once locked',
+    defeat_note: 'RCS <0.5 m²: difficult to radar-track; kinetic intercept during 6-hr loiter window; passive RF homing in terminal phase makes RF jamming ineffective once locked',
     control_link_freq: 'Encrypted relay datalink (manned approach); passive RF in terminal homing',
     gnss_dependency: 'medium',
     confidence: 'curated',
     icon: '✈',
     intel_note:
-      'Decisive in 2020 Nagorno-Karabakh war — Azerbaijan used Harop to destroy Armenian SAM batteries and armour with devastating effect before any kinetic exchange. Man-in-the-loop EO guidance (distinguishes it from the Harpy passive-only variant). 6-hour loiter, canister-launched from ground vehicles or ships.',
+      'Decisive in 2020 Nagorno-Karabakh war: Azerbaijan used Harop to destroy Armenian SAM batteries and armour with devastating effect before any kinetic exchange. Man-in-the-loop EO guidance (distinguishes it from the Harpy passive-only variant). 6-hour loiter, canister-launched from ground vehicles or ships.',
   },
 
   // ─────────────────── Group 2 · Small OWA / Short-Range Strike ───────────────
@@ -355,22 +355,22 @@ export const CORE_PLATFORMS: Platform[] = [
     group: 2,
     origin: 'Iran (HESA)',
     category: 'OWA loitering munition (small)',
-    role: 'Short- to medium-range one-way attack — precision strike / anti-armour',
+    role: 'Short- to medium-range one-way attack: precision strike / anti-armour',
     mass_kg: 25,
     range_km: 700,
     speed_kmh: 180,
     ceiling_m: 3000,
     warhead_kg: 10,
     year_introduced: 2020,
-    propulsion: 'piston (small petrol engine, pusher prop — smaller than MD550 Wankel)',
+    propulsion: 'piston (small petrol engine, pusher prop: smaller than MD550 Wankel)',
     guidance_type: 'GPS/INS pre-programmed; NO active C2 link in cruise (same doctrine as Shahed-131/136); smaller airframe for tactical targets where Shahed-131/136 warhead is excessive',
-    defeat_note: 'GNSS jamming/spoofing disrupts navigation; kinetic intercept (smaller RCS than -131/-136 — gun systems preferred; missile intercept uneconomical); pre-programmed = no C2 link to jam',
+    defeat_note: 'GNSS jamming/spoofing disrupts navigation; kinetic intercept (smaller RCS than -131/-136: gun systems preferred; missile intercept uneconomical); pre-programmed = no C2 link to jam',
     control_link_freq: 'None in cruise (fully pre-programmed)',
     gnss_dependency: 'medium',
     confidence: 'estimated',
     icon: '✈',
     intel_note:
-      'Smaller siblings in the Shahed OWA family — Shahed-101 (~300 km assessed) and Shahed-107 (~700 km assessed) fill the tactical precision-strike role where the heavier -131/-136 warhead is unnecessary. Smaller delta-wing profile reduces radar cross-section relative to -131/-136, increasing engagement difficulty for interceptors. Follow-on to Ababil-3/Qasef lineage with updated GPS/INS navigation. Documented Houthi export employment alongside -131/-136 variants.',
+      'Smaller siblings in the Shahed OWA family: Shahed-101 (~300 km assessed) and Shahed-107 (~700 km assessed) fill the tactical precision-strike role where the heavier -131/-136 warhead is unnecessary. Smaller delta-wing profile reduces radar cross-section relative to -131/-136, increasing engagement difficulty for interceptors. Follow-on to Ababil-3/Qasef lineage with updated GPS/INS navigation. Documented Houthi export employment alongside -131/-136 variants.',
   },
 
   // ─────────────────── Group 3 · OWA Loitering Munitions ───────────────────
@@ -383,7 +383,7 @@ export const CORE_PLATFORMS: Platform[] = [
     group: 3,
     origin: 'Iran / Russia (Geran-2)',
     category: 'OWA loitering munition',
-    role: 'Long-range one-way attack — infrastructure / logistics',
+    role: 'Long-range one-way attack: infrastructure / logistics',
     mass_kg: 200,
     length_m: 3.5,
     wingspan_m: 2.5,
@@ -401,7 +401,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '✈',
     intel_note:
-      'The reference OWA threat. OSMP-confirmed: 3.5 m × 2.5 m wingspan, Mado MD550 engine, warhead up to 50 kg (heavier variants to ~90 kg — Estimated). Gen 4: 8-element CRPA, LTE RTK, Jetson Orin MWIR terminal — strikes GNSS-denied. ~$20K–50K unit cost vs missile intercept exchange ratio.',
+      'The reference OWA threat. OSMP-confirmed: 3.5 m × 2.5 m wingspan, Mado MD550 engine, warhead up to 50 kg (heavier variants to ~90 kg, Estimated). Gen 4: 8-element CRPA, LTE RTK, Jetson Orin MWIR terminal, strikes GNSS-denied. ~$20K–50K unit cost vs missile intercept exchange ratio.',
   },
 
   {
@@ -411,7 +411,7 @@ export const CORE_PLATFORMS: Platform[] = [
     group: 3,
     origin: 'Iran / Russia (Geran-1)',
     category: 'OWA loitering munition',
-    role: 'One-way attack — precision strike',
+    role: 'One-way attack: precision strike',
     mass_kg: 135,
     range_km: 900,
     speed_kmh: 180,
@@ -491,21 +491,21 @@ export const CORE_PLATFORMS: Platform[] = [
     group: 3,
     origin: 'Israel (Elbit Systems)',
     category: 'MALE ISR / light strike',
-    role: 'Multi-domain ISR — EO/IR/SAR/SIGINT; light strike',
+    role: 'Multi-domain ISR: EO/IR/SAR/SIGINT; light strike',
     mass_kg: 1180,
     range_km: 1000,
     speed_kmh: 220,
     ceiling_m: 9000,
     year_introduced: 2012,
-    propulsion: 'piston (Rotax 912 turbocharged, 115 hp, tractor — some variants Rotax 914)',
+    propulsion: 'piston (Rotax 912 turbocharged, 115 hp, tractor: some variants Rotax 914)',
     guidance_type: 'GPS/INS; Ku-band SATCOM; multi-payload bay (EO/IR/SAR/SIGINT/ELINT); encrypted datalink; 36-hr endurance; Israel, Chile, Honduras, Colombia, Philippines, Azerbaijan, Cameroon operators',
-    defeat_note: 'Ku-band SATCOM jamming (Krasukha-4 class); GPS/GNSS denial; SHORAD within engagement range at lower altitudes; widely exported — diverse operator C2 configurations complicate defeat planning',
+    defeat_note: 'Ku-band SATCOM jamming (Krasukha-4 class); GPS/GNSS denial; SHORAD within engagement range at lower altitudes; widely exported: diverse operator C2 configurations complicate defeat planning',
     control_link_freq: 'Ku-band SATCOM + encrypted LOS datalink',
     gnss_dependency: 'high',
     confidence: 'curated',
     icon: '✦',
     intel_note:
-      'Israeli MALE ISR platform with 30,000 ft ceiling and 36-hour endurance. Widely exported: Israel, Chile, Colombia, Honduras, Philippines, Azerbaijan, Cameroon — operators across NATO, non-aligned, and adversary-adjacent nations. Modular payload bay supports EO/IR, SAR, SIGINT, and ELINT pods. Light strike variant integrates Rafael Spike NLOS or mini-Spike missiles. Listed as red threat exemplar given export proliferation to adversary-adjacent operators. Hermes 450 (smaller) and Hermes 900 ER/Star9 family covers the operational MALE gap between TB2 and MQ-9.',
+      'Israeli MALE ISR platform with 30,000 ft ceiling and 36-hour endurance. Widely exported: Israel, Chile, Colombia, Honduras, Philippines, Azerbaijan, Cameroon: operators across NATO, non-aligned, and adversary-adjacent nations. Modular payload bay supports EO/IR, SAR, SIGINT, and ELINT pods. Light strike variant integrates Rafael Spike NLOS or mini-Spike missiles. Listed as red threat exemplar given export proliferation to adversary-adjacent operators. Hermes 450 (smaller) and Hermes 900 ER/Star9 family covers the operational MALE gap between TB2 and MQ-9.',
   },
 
   {
@@ -535,7 +535,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '✈',
     intel_note:
-      'Line-of-sight datalink with SATCOM-relay variants; GPS/GLONASS nav. Degraded by Krasukha-class EW in early Ukraine operations — a clean EW case study. Combat debut Libya 2019; Azerbaijan 2020 demonstrated decisive effect vs legacy SHORAD.',
+      'Line-of-sight datalink with SATCOM-relay variants; GPS/GLONASS nav. Degraded by Krasukha-class EW in early Ukraine operations: a clean EW case study. Combat debut Libya 2019; Azerbaijan 2020 demonstrated decisive effect vs legacy SHORAD.',
   },
 
   {
@@ -560,7 +560,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '✦',
     intel_note:
-      "World's first STOBAR carrier-capable UCAV in operational service — first carrier take-off/landing from TCG Anadolu 2024. Foldable wings enable deployment from amphibious assault ships. Proved cold-weather carrier operations in Baltic NATO exercise 2026. Represents a major expansion of Turkish maritime air power.",
+      "World's first STOBAR carrier-capable UCAV in operational service: first carrier take-off/landing from TCG Anadolu 2024. Foldable wings enable deployment from amphibious assault ships. Proved cold-weather carrier operations in Baltic NATO exercise 2026. Represents a major expansion of Turkish maritime air power.",
   },
 
   {
@@ -609,7 +609,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '✦',
     intel_note:
-      "China's primary MALE export — analogous to MQ-9 in role and market reach. 32-hour endurance, 480 kg payload. Customers: UAE, Saudi Arabia, Egypt, Nigeria, Pakistan, Jordan, Iraq, Myanmar, Serbia. Combat confirmed in Yemen, Libya, Iraq. Represents China's expanding global UAS export posture.",
+      "China's primary MALE export: analogous to MQ-9 in role and market reach. 32-hour endurance, 480 kg payload. Customers: UAE, Saudi Arabia, Egypt, Nigeria, Pakistan, Jordan, Iraq, Myanmar, Serbia. Combat confirmed in Yemen, Libya, Iraq. Represents China's expanding global UAS export posture.",
   },
 
   {
@@ -634,7 +634,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '✦',
     intel_note:
-      "Turkey's flagship HALE UCAV — substantially larger and more capable than TB2. 24-hour endurance. Integrates IHA-230 supersonic missile (demonstrated 2024), marking entry into contested-environment precision strike. Saudi Arabia committed $3B acquisition deal 2026. Represents NATO-adjacent proliferation of HALE UCAV capability.",
+      "Turkey's flagship HALE UCAV: substantially larger and more capable than TB2. 24-hour endurance. Integrates IHA-230 supersonic missile (demonstrated 2024), marking entry into contested-environment precision strike. Saudi Arabia committed $3B acquisition deal 2026. Represents NATO-adjacent proliferation of HALE UCAV capability.",
   },
 
   // ─────────────────── Group 5 · MALE/HALE ─────────────────────────────────
@@ -672,7 +672,7 @@ export const CORE_PLATFORMS: Platform[] = [
     group: null,
     origin: 'Yemen/Houthi (Iran-backed; assessed IRGC design)',
     category: 'Naval USV / fast attack',
-    role: 'Anti-ship one-way attack — Red Sea maritime threat',
+    role: 'Anti-ship one-way attack: Red Sea maritime threat',
     mass_kg: 500,
     range_km: 100,
     speed_kmh: 65,
@@ -687,7 +687,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'estimated',
     icon: '⊹',
     intel_note:
-      'Iran-backed Houthi fast-attack USV deployed in Red Sea operations 2023–2026. Hull derived from commercial jet ski / RIB technology; explosively packed. Barq-1 operates alongside Shahed-series OWA-UAVs in coordinated multi-domain attack profiles — the USV engages naval vessels at sea level while UAVs attack from above, requiring split-layer defence simultaneously. Multiple Royal Navy and commercial vessel engagements confirmed. Represents the spread of cheap maritime UAS tactics (analogous to Magura V5 on Ukrainian side) to asymmetric non-state actors.',
+      'Iran-backed Houthi fast-attack USV deployed in Red Sea operations 2023–2026. Hull derived from commercial jet ski / RIB technology; explosively packed. Barq-1 operates alongside Shahed-series OWA-UAVs in coordinated multi-domain attack profiles: the USV engages naval vessels at sea level while UAVs attack from above, requiring split-layer defence simultaneously. Multiple Royal Navy and commercial vessel engagements confirmed. Represents the spread of cheap maritime UAS tactics (analogous to Magura V5 on Ukrainian side) to asymmetric non-state actors.',
   },
 
   // ─────────────── Stealth UCAV / Penetrating Strike ───────────────────────
@@ -708,13 +708,13 @@ export const CORE_PLATFORMS: Platform[] = [
     year_introduced: 2019,
     propulsion: 'turbofan (single AL-31F-class derivative, fully buried; tailless flying wing)',
     guidance_type: 'INS + satellite navigation (GLONASS/GPS); encrypted SATCOM + MUM-T C2 datalink to Su-57; two internal weapons bays; AI-enabled autonomous targeting assessed; low-observable flying-wing planform',
-    defeat_note: 'Low-observable flying wing — reduced RCS requires persistent IRST or advanced AESA for detection; strategic-level airspace access required; Su-57 escort extends threat envelope; within S-400 engagement range at operational altitude; peer-competitor equivalent of GJ-11',
+    defeat_note: 'Low-observable flying wing: reduced RCS requires persistent IRST or advanced AESA for detection; strategic-level airspace access required; Su-57 escort extends threat envelope; within S-400 engagement range at operational altitude; peer-competitor equivalent of GJ-11',
     control_link_freq: 'Encrypted SATCOM + Su-57 MUM-T datalink',
     gnss_dependency: 'medium',
     confidence: 'estimated',
     icon: '✦',
     intel_note:
-      "Russia's primary stealth UCAV demonstrator — tailless flying wing with low-observable planform broadly analogous to the GJ-11 / B-21 in design philosophy. First flight August 2019; demonstrated MUM-T operations with Su-57 in 2020–2022 trials. Two internal weapons bays assessed for ~2 tonnes ordnance. Production status uncertain (conflict prioritization per 2025 OSINT). Peer to GJ-11 as China's strategic UCAV — both represent the convergence of manned-unmanned teaming and penetrating strike in near-peer forces.",
+      "Russia's primary stealth UCAV demonstrator, tailless flying wing with low-observable planform broadly analogous to the GJ-11 / B-21 in design philosophy. First flight August 2019; demonstrated MUM-T operations with Su-57 in 2020–2022 trials. Two internal weapons bays assessed for ~2 tonnes ordnance. Production status uncertain (conflict prioritization per 2025 OSINT). Peer to GJ-11 as China's strategic UCAV, both represent the convergence of manned-unmanned teaming and penetrating strike in near-peer forces.",
   },
 
   {
@@ -733,16 +733,16 @@ export const CORE_PLATFORMS: Platform[] = [
     year_introduced: 2013,
     propulsion: 'turbofan (single, classified)',
     guidance_type: 'INS + GPS/BeiDou; 2 internal weapons bays (stealth); AI-enabled; MUM-T with J-20 and J-16D EW demonstrated 2025',
-    defeat_note: 'Stealth reduces radar detection range — requires persistent IRST or advanced AESA; SAM engagement at altitude; J-20 escort complicates engagement timeline',
+    defeat_note: 'Stealth reduces radar detection range: requires persistent IRST or advanced AESA; SAM engagement at altitude; J-20 escort complicates engagement timeline',
     control_link_freq: 'Encrypted SATCOM (details classified)',
     gnss_dependency: 'medium',
     confidence: 'estimated',
     icon: '✦',
     intel_note:
-      "China's primary stealth UCAV — tailless flying wing with serrated bay doors and RAM coatings. Demonstrated in formation with J-20 and J-16D EW aircraft in 2025 confirming manned-unmanned teaming (MUM-T) integration. Two internal bays carry ~2 tonnes ordnance. Carrier-based variant under reported development.",
+      "China's primary stealth UCAV: tailless flying wing with serrated bay doors and RAM coatings. Demonstrated in formation with J-20 and J-16D EW aircraft in 2025 confirming manned-unmanned teaming (MUM-T) integration. Two internal bays carry ~2 tonnes ordnance. Carrier-based variant under reported development.",
   },
 
-  /* ============================ BLUE — EFFECTORS ============================ */
+  /* ============================ BLUE: EFFECTORS ============================ */
 
   // ─────────────────── Handheld / Dismounted RF Defeat ─────────────────────
 
@@ -758,13 +758,13 @@ export const CORE_PLATFORMS: Platform[] = [
     year_introduced: 2016,
     propulsion: 'N/A',
     guidance_type: 'N/A (handheld jammer)',
-    defeat_note: 'Forces land/RTH/hover on commercial UAS; 2.5 km effective; INEFFECTIVE vs fibre-optic FPV; no permanent damage — drone recoverable',
+    defeat_note: 'Forces land/RTH/hover on commercial UAS; 2.5 km effective; INEFFECTIVE vs fibre-optic FPV; no permanent damage: drone recoverable',
     control_link_freq: 'Jams 2.4 / 5.8 GHz + GNSS (GPS, GLONASS, Galileo, BeiDou)',
     gnss_dependency: 'none',
     confidence: 'curated',
     icon: '⊺',
     intel_note:
-      'Rifle-form jammer covering 433 / 915 MHz, 2.4 / 5.8 GHz control & video plus GNSS. Forces land/RTH. 2.5 km effective range. Australian ASX-listed. Does not destroy the drone — adversary can recover for intelligence.',
+      'Rifle-form jammer covering 433 / 915 MHz, 2.4 / 5.8 GHz control & video plus GNSS. Forces land/RTH. 2.5 km effective range. Australian ASX-listed. Does not destroy the drone: adversary can recover for intelligence.',
   },
 
   {
@@ -802,13 +802,13 @@ export const CORE_PLATFORMS: Platform[] = [
     year_introduced: 2020,
     propulsion: 'N/A',
     guidance_type: 'N/A (passive SDR 400 MHz–6 GHz; AI threat library; no emissions)',
-    defeat_note: 'Detection-only — 1 km urban / 4 km rural; alerts via visual/haptic/audio; blind to FOC systems; must pair with effector for defeat',
+    defeat_note: 'Detection-only: 1 km urban / 4 km rural; alerts via visual/haptic/audio; blind to FOC systems; must pair with effector for defeat',
     control_link_freq: 'Passive scan 400 MHz–6 GHz',
     gnss_dependency: 'none',
     confidence: 'curated',
     icon: '◎',
     intel_note:
-      'Body-worn passive RF direction-finder across the drone bands. No intentional emissions — covert. Detect-only. Completely blind to fibre-optic FPV systems.',
+      'Body-worn passive RF direction-finder across the drone bands. No intentional emissions: covert. Detect-only. Completely blind to fibre-optic FPV systems.',
   },
 
   // ─────────────────── Fixed / Mobile Layered C-UAS ────────────────────────
@@ -839,7 +839,7 @@ export const CORE_PLATFORMS: Platform[] = [
     side: 'blue',
     origin: 'Israel (Rafael Advanced Defense Systems)',
     category: 'C-UAS (integrated multi-layer)',
-    role: 'Fixed/mobile layered C-UAS — soft and hard kill',
+    role: 'Fixed/mobile layered C-UAS: soft and hard kill',
     range_km: 3.5,
     year_introduced: 2016,
     propulsion: 'N/A (vehicle-mounted multi-truck system)',
@@ -850,7 +850,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '⊞',
     intel_note:
-      'Layered C-UAS combining RF detection (70 MHz–6 GHz), radar tracking, EO/IR, and a laser hard-kill channel. Pentagon-certified 2022. UK licensed technology for own C-UAS programme. Demonstrated simultaneous defeat of multiple manoeuvring drone targets. Ineffective against fibre-optic FPV — limitation shared with all RF-dependent C-UAS.',
+      'Layered C-UAS combining RF detection (70 MHz–6 GHz), radar tracking, EO/IR, and a laser hard-kill channel. Pentagon-certified 2022. UK licensed technology for own C-UAS programme. Demonstrated simultaneous defeat of multiple manoeuvring drone targets. Ineffective against fibre-optic FPV: limitation shared with all RF-dependent C-UAS.',
   },
 
   // ─────────────────── Kinetic Interceptors ────────────────────────────────
@@ -867,13 +867,13 @@ export const CORE_PLATFORMS: Platform[] = [
     year_introduced: 2021,
     propulsion: 'N/A (HX truck mobile)',
     guidance_type: 'N/A; X-TAR3D 3D radar (20–30 km detection); EO/IR tracker; CN-1 command node; 4-gun battery; 35×228 mm AHEAD programmable ammo',
-    defeat_note: 'AHEAD programmable ammo — 152 tungsten sub-projectiles per burst at Mach 4+ muzzle velocity; 1,000 rd/min; 3,500 m engagement ceiling; effective vs swarms',
+    defeat_note: 'AHEAD programmable ammo: 152 tungsten sub-projectiles per burst at Mach 4+ muzzle velocity; 1,000 rd/min; 3,500 m engagement ceiling; effective vs swarms',
     control_link_freq: 'N/A (kinetic effector)',
     gnss_dependency: 'none',
     confidence: 'curated',
     icon: '⊻',
     intel_note:
-      'Germany provided two Skynex batteries to Ukraine 2023 — proved highly effective against Shahed-136/Geran-2 swarms on Ukrainian cities. AHEAD ammunition detonates a cloud of 152 tungsten sub-projectiles in the drone path — one burst defeats a drone. Rate-of-fire enables swarm engagement. Decisive cost exchange vs Russian OWA threat.',
+      'Germany provided two Skynex batteries to Ukraine 2023, proved highly effective against Shahed-136/Geran-2 swarms on Ukrainian cities. AHEAD ammunition detonates a cloud of 152 tungsten sub-projectiles in the drone path, one burst defeats a drone. Rate-of-fire enables swarm engagement. Decisive cost exchange vs Russian OWA threat.',
   },
 
   {
@@ -918,7 +918,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '⊻',
     intel_note:
-      'Key distinction from Block 2 (single-shot kinetic): Block 3 NK uses HPM payload to electronically disable multiple drones per sortie and is recovered for reuse. RTX defeated multiple drone swarms in Feb 2026 tests. Fundamentally changes swarm defence cost calculus — one Coyote can sequentially defeat 10+ $500 FPV drones.',
+      'Key distinction from Block 2 (single-shot kinetic): Block 3 NK uses HPM payload to electronically disable multiple drones per sortie and is recovered for reuse. RTX defeated multiple drone swarms in Feb 2026 tests. Fundamentally changes swarm defence cost calculus: one Coyote can sequentially defeat 10+ $500 FPV drones.',
   },
 
   {
@@ -937,7 +937,7 @@ export const CORE_PLATFORMS: Platform[] = [
     year_introduced: 2020,
     propulsion: 'electric',
     guidance_type: 'GPS/INS + EO/IR operator-in-the-loop; wave-off capable; AI-assisted target recognition (Block 2)',
-    defeat_note: 'Blue precision strike asset — Javelin-derived HEAT warhead defeats light armour and Group 2–3 UAS; 40-min endurance enables persistent ISR before engagement',
+    defeat_note: 'Blue precision strike asset: Javelin-derived HEAT warhead defeats light armour and Group 2–3 UAS; 40-min endurance enables persistent ISR before engagement',
     control_link_freq: '2.4 / 5.8 GHz encrypted',
     gnss_dependency: 'high',
     confidence: 'curated',
@@ -952,7 +952,7 @@ export const CORE_PLATFORMS: Platform[] = [
     side: 'blue',
     origin: 'USA (Raytheon)',
     category: 'C-UAS / MANPADS',
-    role: 'Man-portable IR SAM — low-altitude air defence / UAV defeat',
+    role: 'Man-portable IR SAM: low-altitude air defence / UAV defeat',
     mass_kg: 15.2,
     range_km: 8,
     speed_kmh: 2700,
@@ -967,7 +967,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '⊻',
     intel_note:
-      'FIM-92J upgrade added proximity fuze to improve kill probability against small, low-heat-signature UAS where direct hit was previously required. Ukraine received thousands from US/European stockpiles. Complementary to gun systems (Gepard/Skynex) — proximity fuze makes it viable vs Group 1–2 UAS.',
+      'FIM-92J upgrade added proximity fuze to improve kill probability against small, low-heat-signature UAS where direct hit was previously required. Ukraine received thousands from US/European stockpiles. Complementary to gun systems (Gepard/Skynex): proximity fuze makes it viable vs Group 1–2 UAS.',
   },
 
   {
@@ -985,14 +985,14 @@ export const CORE_PLATFORMS: Platform[] = [
     warhead_kg: 22,
     year_introduced: 2022,
     propulsion: 'electric (pusher prop)',
-    guidance_type: 'Visual landmark navigation — GPS-degraded environment capable; reduced GNSS dependency; EO terminal guidance; 3 m fuselage / 4.8 m wingspan',
-    defeat_note: 'Blue OWA — visual navigation specifically designed to defeat Russian GPS jamming; one-way attack, no C2 link to jam',
+    guidance_type: 'Visual landmark navigation: GPS-degraded environment capable; reduced GNSS dependency; EO terminal guidance; 3 m fuselage / 4.8 m wingspan',
+    defeat_note: 'Blue OWA: visual navigation specifically designed to defeat Russian GPS jamming; one-way attack, no C2 link to jam',
     control_link_freq: 'None in flight (one-way attack)',
     gnss_dependency: 'low',
     confidence: 'estimated',
     icon: '⊻',
     intel_note:
-      'Accelerated development for Ukraine post-invasion — publicly revealed AUSA October 2024. Visual navigation designed to defeat Russian GPS jamming: a tactically significant design choice. 5,000+ units delivered to Ukraine by Dec 2024 at peak ~230/month. Disruptor variant: 600 km range, 22 kg warhead.',
+      'Accelerated development for Ukraine post-invasion: publicly revealed AUSA October 2024. Visual navigation designed to defeat Russian GPS jamming: a tactically significant design choice. 5,000+ units delivered to Ukraine by Dec 2024 at peak ~230/month. Disruptor variant: 600 km range, 22 kg warhead.',
   },
 
   {
@@ -1002,7 +1002,7 @@ export const CORE_PLATFORMS: Platform[] = [
     group: 2,
     origin: 'USA (Anduril / Area-I)',
     category: 'Tube-launched multi-mission UAS',
-    role: 'Organic effects delivery — ISR, EW, or strike from tube on ground/air/sea platforms',
+    role: 'Organic effects delivery: ISR, EW, or strike from tube on ground/air/sea platforms',
     mass_kg: 5.4,
     range_km: 440,
     speed_kmh: 160,
@@ -1011,13 +1011,13 @@ export const CORE_PLATFORMS: Platform[] = [
     year_introduced: 2020,
     propulsion: 'electric (brushless pusher prop; folding wings; VTOL-capable -M variant adds hover)',
     guidance_type: 'GPS/INS + Lattice OS integration; AES-256 encrypted frequency-agile datalink; AI-assisted target recognition; Sensor-to-Shooter autonomy; modular payload bay (ISR / EW / HE strike pod)',
-    defeat_note: 'Blue multi-mission asset — small RCS, encrypted link, AI target recognition; adversary countermeasures: broad-spectrum GNSS jam degrades mid-course; kinetic intercept in cruise phase; Lattice-linked engagement reduces dwell time in threat envelope',
+    defeat_note: 'Blue multi-mission asset: small RCS, encrypted link, AI target recognition; adversary countermeasures: broad-spectrum GNSS jam degrades mid-course; kinetic intercept in cruise phase; Lattice-linked engagement reduces dwell time in threat envelope',
     control_link_freq: 'Encrypted tactical datalink (frequency-agile); Lattice OS mesh',
     gnss_dependency: 'high',
     confidence: 'curated',
     icon: '⊻',
     intel_note:
-      'Tube-launched, folding-wing multi-mission UAS developed by Area-I, acquired by Anduril 2021. Ships from standard launcher tubes on ground vehicles, rotary-wing aircraft, surface vessels, or submarines. Modular payload bay enables same airframe to carry ISR sensor pod, EW payload, or shaped-charge munition — logistics force-multiplier. ALTIUS-600M variant adds VTOL hover capability. Selected for US Army FTUAS competition (2024), USAF CCA-class teaming trials, and multiple international customers. Lattice OS integration enables autonomous sensor-to-shooter within human-on-the-loop C2. ITAR-controlled.',
+      'Tube-launched, folding-wing multi-mission UAS developed by Area-I, acquired by Anduril 2021. Ships from standard launcher tubes on ground vehicles, rotary-wing aircraft, surface vessels, or submarines. Modular payload bay enables same airframe to carry ISR sensor pod, EW payload, or shaped-charge munition: logistics force-multiplier. ALTIUS-600M variant adds VTOL hover capability. Selected for US Army FTUAS competition (2024), USAF CCA-class teaming trials, and multiple international customers. Lattice OS integration enables autonomous sensor-to-shooter within human-on-the-loop C2. ITAR-controlled.',
   },
 
   // ─────────────────── EW Jamming Systems ──────────────────────────────────
@@ -1068,7 +1068,7 @@ export const CORE_PLATFORMS: Platform[] = [
     side: 'blue',
     origin: 'Ukraine (Proximus)',
     category: 'Anti-drone EW (GNSS jam + spoof)',
-    role: 'Drone detect + jam — active C-UAS EW',
+    role: 'Drone detect + jam: active C-UAS EW',
     range_km: 50,
     year_introduced: 2014,
     propulsion: 'N/A (vehicle/tripod, 2-min deploy)',
@@ -1094,14 +1094,14 @@ export const CORE_PLATFORMS: Platform[] = [
     range_km: 2,
     year_introduced: 2023,
     propulsion: 'N/A (vehicle/fixed-site GaN solid-state array)',
-    guidance_type: 'N/A (software-defined wideband GaN HPM; swarm engagement — single shot neutralises multiple targets in beam cone)',
-    defeat_note: 'Attacks electronics directly — effective vs FOC fibre-optic FPV (defeated Dec 2025); unlimited shots from prime power; 1–3 km vs Group 1–3; no magazine depth constraint',
+    guidance_type: 'N/A (software-defined wideband GaN HPM; swarm engagement: single shot neutralises multiple targets in beam cone)',
+    defeat_note: 'Attacks electronics directly: effective vs FOC fibre-optic FPV (defeated Dec 2025); unlimited shots from prime power; 1–3 km vs Group 1–3; no magazine depth constraint',
     control_link_freq: 'N/A (HPM emission across electronics-vulnerable bands)',
     gnss_dependency: 'none',
     confidence: 'curated',
     icon: '◉',
     intel_note:
-      'Software-defined wideband HPM. Disabled 61/61 drones including a 49-drone swarm (2025); defeated a fibre-optic FPV drone (Dec 2025) — the only confirmed electronic defeat of a FOC system. Attacks electronics directly — the answer to RF-silent threats. US Army & USMC fielding.',
+      'Software-defined wideband HPM. Disabled 61/61 drones including a 49-drone swarm (2025); defeated a fibre-optic FPV drone (Dec 2025), the only confirmed electronic defeat of a FOC system. Attacks electronics directly, the answer to RF-silent threats. US Army & USMC fielding.',
   },
 
   {
@@ -1130,10 +1130,10 @@ export const CORE_PLATFORMS: Platform[] = [
     side: 'blue',
     origin: 'Israel (Rafael Advanced Defense Systems)',
     category: 'High-Energy Laser',
-    role: 'Ground HEL — UAV, rocket, mortar, cruise missile defeat',
+    role: 'Ground HEL: UAV, rocket, mortar, cruise missile defeat',
     range_km: 10,
     year_introduced: 2025,
-    propulsion: 'N/A (prime power — grid or generator; Iron Beam M on X88 truck)',
+    propulsion: 'N/A (prime power: grid or generator; Iron Beam M on X88 truck)',
     guidance_type: 'N/A (100 kW HEL full system; 50 kW Iron Beam M mobile variant); $3 per interception; speed-of-light engagement',
     defeat_note: 'Engages UAVs, RPGs, mortars, rockets, cruise missiles; weather-limited in heavy rain/fog; unlimited shots from prime power',
     control_link_freq: 'N/A (laser)',
@@ -1141,7 +1141,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '◉',
     intel_note:
-      "World's first combat-proven HEL intercept system — 40 Hezbollah UAV kills confirmed in October 2024 Gaza War engagements. Three variants including mobile Iron Beam M (50 kW on truck). Designed to complement Iron Dome by handling <$10,000 threats where $3–4M missile intercepts are uneconomical. Israel represents the first operational high-energy laser air defence in history.",
+      "World's first combat-proven HEL intercept system: 40 Hezbollah UAV kills confirmed in October 2024 Gaza War engagements. Three variants including mobile Iron Beam M (50 kW on truck). Designed to complement Iron Dome by handling <$10,000 threats where $3–4M missile intercepts are uneconomical. Israel represents the first operational high-energy laser air defence in history.",
   },
 
   {
@@ -1150,7 +1150,7 @@ export const CORE_PLATFORMS: Platform[] = [
     side: 'blue',
     origin: 'UK (MBDA/Leonardo/QinetiQ/dstl consortium)',
     category: 'High-Energy Laser',
-    role: 'Shipborne/land laser DEW — UAV and missile defeat',
+    role: 'Shipborne/land laser DEW: UAV and missile defeat',
     range_km: 5,
     year_introduced: 2024,
     propulsion: 'N/A (ship/vehicle prime power)',
@@ -1161,7 +1161,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'curated',
     icon: '◉',
     intel_note:
-      'UK flagship DEW programme — MBDA, Leonardo, QinetiQ, DSTL consortium. First airborne target engagement January 2024 at Hebrides range. Two production systems contracted for Royal Navy Type 45 destroyers January 2026 (service expected 2027). ~£10 per shot vs ~£1M per Aster 30 missile intercept.',
+      'UK flagship DEW programme: MBDA, Leonardo, QinetiQ, DSTL consortium. First airborne target engagement January 2024 at Hebrides range. Two production systems contracted for Royal Navy Type 45 destroyers January 2026 (service expected 2027). ~£10 per shot vs ~£1M per Aster 30 missile intercept.',
   },
 
   {
@@ -1170,7 +1170,7 @@ export const CORE_PLATFORMS: Platform[] = [
     side: 'blue',
     origin: 'USA (Raytheon RTX)',
     category: 'High-Energy Laser',
-    role: 'HMMWV/JLTV-mounted HEL — C-UAS, mortar and RPG defeat',
+    role: 'HMMWV/JLTV-mounted HEL: C-UAS, mortar and RPG defeat',
     range_km: 2,
     year_introduced: 2022,
     propulsion: 'N/A (HMMWV or JLTV prime power; 20 kW solid-state fiber-combined laser)',
@@ -1181,7 +1181,7 @@ export const CORE_PLATFORMS: Platform[] = [
     confidence: 'estimated',
     icon: '◉',
     intel_note:
-      'Raytheon RTX High Energy Laser Weapon System — marketed as Apollo HELW from 2024. 20 kW solid-state fiber laser on HMMWV/JLTV platform. Extensively tested at White Sands Missile Range against Group 1–3 UAS, mortars, and artillery projectiles. Part of the US Army IFPC (Indirect Fire Protection Capability) layered defence stack alongside Coyote and Stinger. Under evaluation for SHORAD integration and international partner sales. <$1/shot cost structure designed to address uneconomical exchange ratios against low-cost drone threats.',
+      'Raytheon RTX High Energy Laser Weapon System: marketed as Apollo HELW from 2024. 20 kW solid-state fiber laser on HMMWV/JLTV platform. Extensively tested at White Sands Missile Range against Group 1–3 UAS, mortars, and artillery projectiles. Part of the US Army IFPC (Indirect Fire Protection Capability) layered defence stack alongside Coyote and Stinger. Under evaluation for SHORAD integration and international partner sales. <$1/shot cost structure designed to address uneconomical exchange ratios against low-cost drone threats.',
   },
 
   // ─────────────────── Autonomous Sensing ──────────────────────────────────
@@ -1192,12 +1192,12 @@ export const CORE_PLATFORMS: Platform[] = [
     side: 'blue',
     origin: 'USA (Anduril)',
     category: 'Multi-sensor detection',
-    role: 'Autonomous detect & track — Lattice C2 node',
+    role: 'Autonomous detect & track: Lattice C2 node',
     range_km: 12,
     year_introduced: 2019,
     propulsion: 'N/A (solar + battery; fixed or semi-fixed mast)',
     guidance_type: 'N/A; wide-area radar + EO/IR turret + RF detector + AI classifier; Lattice OS mesh; XRST up to 12 km detection range',
-    defeat_note: 'Detection/C2 node only — cueing system for Anvil interceptors or external effectors; detect-and-track across all UAS categories',
+    defeat_note: 'Detection/C2 node only: cueing system for Anvil interceptors or external effectors; detect-and-track across all UAS categories',
     control_link_freq: 'Detects RF; Lattice C2 mesh networking',
     gnss_dependency: 'none',
     confidence: 'curated',
@@ -1207,7 +1207,7 @@ export const CORE_PLATFORMS: Platform[] = [
   },
 ];
 
-/** Full catalogue — core + Tiers 1–5 expansion */
+/** Full catalogue: core + Tiers 1–5 expansion */
 export const PLATFORMS: Platform[] = [
   ...CORE_PLATFORMS,
   ...CATALOGUE_EXPANSION_PLATFORMS,

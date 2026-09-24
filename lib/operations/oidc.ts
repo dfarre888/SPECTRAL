@@ -2,7 +2,7 @@ import { getOidcConfig } from '@/lib/operations/auth-config'
 
 /**
  * OIDC/SAML scaffold for Operations edition.
- * Full IdP handshake is customer-specific — configure via SPECTRAL_OIDC_* env vars.
+ * Full IdP handshake is customer-specific: configure via SPECTRAL_OIDC_* env vars.
  */
 export function getOidcLoginUrl(redirectUri: string): string | null {
   const cfg = getOidcConfig()

@@ -1,5 +1,5 @@
 /**
- * Layered defence salvo coordinator — magazine allocation, best defender selection.
+ * Layered defence salvo coordinator: magazine allocation, best defender selection.
  *
  * Layering model (updated):
  * True EW → kinetic → DEW sequencing. Each threat faces ALL available defender
@@ -150,18 +150,18 @@ export function runSalvoCoordinator(
       const spent = spentDefendersThisThreat.get(threat.id) ?? new Set<string>();
       if (spent.has(defender.id)) continue;
 
-      // Kinetic magazine exhausted — skip THIS layer but continue to DEW/EW layers.
+      // Kinetic magazine exhausted: skip THIS layer but continue to DEW/EW layers.
       if (defender.group === 'c_uas_defeat_kinetic' && !kineticAvailable(state)) {
         events.push({
           event_id: `EVT-MAG-EMPTY-${state.turn}-${threat.id}-${defender.id}`,
           type: 'intercept_fail',
-          description: `Kinetic interceptors exhausted — Coyote/Stinger rounds depleted. Skipped ${threat.type}; DEW/EW layers continue.`,
+          description: `Kinetic interceptors exhausted: Coyote/Stinger rounds depleted. Skipped ${threat.type}; DEW/EW layers continue.`,
           affected_platform_ids: [defender.id],
           visible_to_red: false,
           visible_to_blue: true,
           visible_to_ds: true,
         });
-        continue; // ← continue, not break — DEW terminal layer may still engage
+        continue; // ← continue, not break: DEW terminal layer may still engage
       }
 
       if (preferredContact) {
@@ -177,7 +177,7 @@ export function runSalvoCoordinator(
             visible_to_blue: true,
             visible_to_ds: true,
           });
-          break; // Wasted shot on decoy — stop pursuing this contact
+          break; // Wasted shot on decoy: stop pursuing this contact
         }
       }
 
@@ -185,7 +185,7 @@ export function runSalvoCoordinator(
         events.push({
           event_id: `EVT-DEW-EMPTY-${state.turn}-${threat.id}-${defender.id}`,
           type: 'intercept_fail',
-          description: `DEW charge cycles exhausted — thermal/power limit reached for ${threat.type}.`,
+          description: `DEW charge cycles exhausted: thermal/power limit reached for ${threat.type}.`,
           affected_platform_ids: [defender.id],
           visible_to_red: false,
           visible_to_blue: true,
@@ -232,20 +232,20 @@ export function runSalvoCoordinator(
             visible_to_ds: true,
           });
         } else {
-          // Low-Pk success — damages but doesn't destroy; next layer still gets a shot.
+          // Low-Pk success: damages but doesn't destroy; next layer still gets a shot.
           threat.damage_state = 'degraded';
           events.push({
             event_id: 'EVT-INT-OK-' + state.turn + '-' + threat.id,
             type: 'intercept_success',
             description:
               defender.type + ' damaged ' + threat.type +
-              ' (layer=' + defenderLayer(defender) + ', Pk~' + pk + '% — degraded, next layer engages).',
+              ' (layer=' + defenderLayer(defender) + ', Pk~' + pk + '%: degraded, next layer engages).',
             affected_platform_ids: [threat.id, defender.id],
             visible_to_red: false,
             visible_to_blue: true,
             visible_to_ds: true,
           });
-          // Do NOT break — outer loop check handles destroyed state; degraded continues to next layer
+          // Do NOT break: outer loop check handles destroyed state; degraded continues to next layer
         }
       } else {
         if (pk > 40) {
@@ -268,13 +268,13 @@ export function runSalvoCoordinator(
           type: 'intercept_fail',
           description:
             defender.type + ' missed ' + threat.type +
-            ' (layer=' + defenderLayer(defender) + ', Pk~' + pk + '% — next layer).',
+            ' (layer=' + defenderLayer(defender) + ', Pk~' + pk + '%: next layer).',
           affected_platform_ids: [threat.id, defender.id],
           visible_to_red: true,
           visible_to_blue: true,
           visible_to_ds: true,
         });
-        // Miss — loop continues to next defender layer automatically
+        // Miss: loop continues to next defender layer automatically
       }
       // ← No break here. The interceptedThreatIds check at the top of this loop
       //    handles early exit when a layer successfully destroys the threat.

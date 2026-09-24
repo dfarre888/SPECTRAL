@@ -1,5 +1,5 @@
 /**
- * Swarm Saturation — defeat system profiles (OSINT training estimates).
+ * Swarm Saturation: defeat system profiles (OSINT training estimates).
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  *
  * Magazine = normalised engagement capacity (single-target kill attempts).
@@ -10,14 +10,14 @@
 export type DefeatSystemType = 'missile' | 'dew' | 'hpm' | 'cannon' | 'rf'
 
 export type SwarmDefeatGroup =
-  | 'Blue — Directed energy'
-  | 'Blue — C-UAS / SHORAD'
-  | 'Blue — Naval CIWS'
-  | 'Blue — Theatre SAM / BMD'
-  | 'Red — Long-range SAM / BMD'
-  | 'Red — Medium SAM'
-  | 'Red — SHORAD / point defence'
-  | 'Red — EW / soft-kill'
+  | 'Blue: Directed energy'
+  | 'Blue: C-UAS / SHORAD'
+  | 'Blue: Naval CIWS'
+  | 'Blue: Theatre SAM / BMD'
+  | 'Red: Long-range SAM / BMD'
+  | 'Red: Medium SAM'
+  | 'Red: SHORAD / point defence'
+  | 'Red: EW / soft-kill'
 
 export interface DefeatSystem {
   id: string
@@ -44,7 +44,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 30,
     pk: 0.88,
     type: 'dew',
-    group: 'Blue — Directed energy',
+    group: 'Blue: Directed energy',
     note: '100 kW laser · EL/M-2084 cue · ~30 engagements/sortie (dwell-limited)',
   },
   {
@@ -54,7 +54,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 25,
     pk: 0.85,
     type: 'dew',
-    group: 'Blue — Directed energy',
+    group: 'Blue: Directed energy',
     note: 'UK 50 kW laser · RN deploy ~2027 · power-limited sortie',
   },
   {
@@ -64,7 +64,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: DEEP_MAGAZINE,
     pk: 0.75,
     type: 'hpm',
-    group: 'Blue — Directed energy',
+    group: 'Blue: Directed energy',
     note: 'Area HPM · power-budget limited · effective vs RF-silent swarms',
   },
 
@@ -76,7 +76,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 45,
     pk: 0.70,
     type: 'rf',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'RF + laser stack · 1 km hard-kill · INEFFECTIVE vs FOC',
   },
   {
@@ -86,7 +86,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 45,
     pk: 0.62,
     type: 'rf',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'RADA + RfOne + EO/IR cue · RF defeat to ~5 km',
   },
   {
@@ -96,7 +96,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 60,
     pk: 0.60,
     type: 'rf',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'Man-portable RF jam · ~60 battery engagements',
   },
   {
@@ -106,7 +106,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 120,
     pk: 0.58,
     type: 'rf',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'Vehicle RF jammer · FOC-blind · cue with kinetic layer',
   },
 
@@ -118,7 +118,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 80,
     pk: 0.70,
     type: 'cannon',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: '35 mm AHEAD · X-TAR3D cue · Ukraine Shahed swarm lessons',
   },
   {
@@ -128,7 +128,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 40,
     pk: 0.55,
     type: 'cannon',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: '~40 burst engagements · twin 35 mm cannon',
   },
   {
@@ -138,7 +138,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 40,
     pk: 0.65,
     type: 'cannon',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'Australian 30 mm gun C-UAS · cost-exchange optimised',
   },
   {
@@ -148,7 +148,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 49,
     pk: 0.65,
     type: 'cannon',
-    group: 'Blue — Naval CIWS',
+    group: 'Blue: Naval CIWS',
     note: '~49 burst engagements (20 mm · 4500 rpm)',
   },
   {
@@ -158,7 +158,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 60,
     pk: 0.75,
     type: 'cannon',
-    group: 'Blue — Naval CIWS',
+    group: 'Blue: Naval CIWS',
     note: '30 mm GAU-8 derivative · ~60 burst engagements',
   },
 
@@ -170,7 +170,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 6,
     pk: 0.72,
     type: 'missile',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'Reusable HPM loitering interceptor · swarm cost-exchange',
   },
   {
@@ -180,7 +180,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 4,
     pk: 0.85,
     type: 'missile',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'KuRFS Ku-band cue · kinetic hard-kill · 4 tubes',
   },
   {
@@ -190,7 +190,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 12,
     pk: 0.78,
     type: 'missile',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'Lattice sensor fusion cue · FOC-resilient ram-kill',
   },
   {
@@ -200,7 +200,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 9,
     pk: 0.75,
     type: 'missile',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: '3×3 launcher · laser-beam rider',
   },
   {
@@ -210,7 +210,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 4,
     pk: 0.70,
     type: 'missile',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'Stinger + Hellfire · 4 ready rounds',
   },
   {
@@ -220,7 +220,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 2,
     pk: 0.68,
     type: 'missile',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: '2-tube team · proximity fuze for UAS',
   },
   {
@@ -230,7 +230,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 11,
     pk: 0.85,
     type: 'missile',
-    group: 'Blue — Naval CIWS',
+    group: 'Blue: Naval CIWS',
     note: 'RIM-116 on Phalanx mount · Red Sea lesson',
   },
 
@@ -242,7 +242,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 20,
     pk: 0.90,
     type: 'missile',
-    group: 'Blue — Theatre SAM / BMD',
+    group: 'Blue: Theatre SAM / BMD',
     note: 'EL/M-2084 multi-mission cue · 20 Tamir ready',
   },
   {
@@ -252,7 +252,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 8,
     pk: 0.82,
     type: 'missile',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'Saab Giraffe AMB cue · 8 CAMM cells',
   },
   {
@@ -262,7 +262,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 8,
     pk: 0.85,
     type: 'missile',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'TRML-4D / Ground Master radar cue · 8 rounds',
   },
   {
@@ -272,7 +272,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 12,
     pk: 0.80,
     type: 'missile',
-    group: 'Blue — C-UAS / SHORAD',
+    group: 'Blue: C-UAS / SHORAD',
     note: 'AN/MPQ-64 cue · 12-cell VLS · medium-range SAM',
   },
   {
@@ -282,7 +282,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 8,
     pk: 0.78,
     type: 'missile',
-    group: 'Blue — Theatre SAM / BMD',
+    group: 'Blue: Theatre SAM / BMD',
     note: 'CEA CEAFAR cue · Taipan Strike prototype · 166 km',
   },
   {
@@ -292,7 +292,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 12,
     pk: 0.90,
     type: 'missile',
-    group: 'Blue — Theatre SAM / BMD',
+    group: 'Blue: Theatre SAM / BMD',
     note: 'EL/M-2084-class cue · 12 Stunner interceptors',
   },
   {
@@ -302,7 +302,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 16,
     pk: 0.88,
     type: 'missile',
-    group: 'Blue — Theatre SAM / BMD',
+    group: 'Blue: Theatre SAM / BMD',
     note: 'LTAMDS / MPQ-65 cue · poor cost-exchange vs Shahed',
   },
   {
@@ -312,7 +312,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 32,
     pk: 0.75,
     type: 'missile',
-    group: 'Blue — Naval CIWS',
+    group: 'Blue: Naval CIWS',
     note: 'Naval VLS slice · SPY-1/6 cue · costly vs OWA swarms',
   },
 
@@ -326,7 +326,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 4,
     pk: 0.80,
     type: 'missile',
-    group: 'Red — Long-range SAM / BMD',
+    group: 'Red: Long-range SAM / BMD',
     note: 'Big Bird / Grave Stone cue · 380 km aero · irrational vs cheap swarms',
   },
   {
@@ -336,7 +336,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 4,
     pk: 0.80,
     type: 'missile',
-    group: 'Red — Long-range SAM / BMD',
+    group: 'Red: Long-range SAM / BMD',
     note: 'Tombstone / Flap Lid cue · 250 km · ABM-capable',
   },
   {
@@ -346,7 +346,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 4,
     pk: 0.80,
     type: 'missile',
-    group: 'Red — Long-range SAM / BMD',
+    group: 'Red: Long-range SAM / BMD',
     note: '91N6A / Nebo-M cue · claimed hypersonic intercept · unverified',
   },
   {
@@ -356,7 +356,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 4,
     pk: 0.80,
     type: 'missile',
-    group: 'Red — Long-range SAM / BMD',
+    group: 'Red: Long-range SAM / BMD',
     note: '30N6 Flap Lid + 64N6 Tombstone · IADS backbone · high SEAD signature',
   },
   {
@@ -366,7 +366,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 4,
     pk: 0.80,
     type: 'missile',
-    group: 'Red — Long-range SAM / BMD',
+    group: 'Red: Long-range SAM / BMD',
     note: '9S15MT Bill Board + 9S19M2 cue · dual ballistic/aero',
   },
   {
@@ -376,7 +376,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 4,
     pk: 0.80,
     type: 'missile',
-    group: 'Red — Long-range SAM / BMD',
+    group: 'Red: Long-range SAM / BMD',
     note: 'HT-233 engagement radar cue · 260 km · Chinese IADS backbone',
   },
 
@@ -388,7 +388,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 16,
     pk: 0.85,
     type: 'missile',
-    group: 'Red — Medium SAM',
+    group: 'Red: Medium SAM',
     note: 'Grave Stone / 50N6A cue · quad-packed · 5 m floor · best swarm depth',
   },
   {
@@ -398,7 +398,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 6,
     pk: 0.80,
     type: 'missile',
-    group: 'Red — Medium SAM',
+    group: 'Red: Medium SAM',
     note: 'Snow Drift + 9S36 fire control · 70 km · mast-mounted low-altitude',
   },
   {
@@ -408,7 +408,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 4,
     pk: 0.75,
     type: 'missile',
-    group: 'Red — Medium SAM',
+    group: 'Red: Medium SAM',
     note: 'Snow Drift acquisition · Ukraine-confirmed MALE/OWA kills',
   },
   {
@@ -418,7 +418,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 3,
     pk: 0.65,
     type: 'missile',
-    group: 'Red — Medium SAM',
+    group: 'Red: Medium SAM',
     note: '1S91 Straight Flush TVM · 22 km · 4 km dead zone',
   },
 
@@ -430,7 +430,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 28,
     pk: 0.70,
     type: 'cannon',
-    group: 'Red — SHORAD / point defence',
+    group: 'Red: SHORAD / point defence',
     note: '2RL80 + Shlem cue · 12 missiles + 2×30 mm guns · S-400 inner layer',
   },
   {
@@ -440,7 +440,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 16,
     pk: 0.75,
     type: 'missile',
-    group: 'Red — SHORAD / point defence',
+    group: 'Red: SHORAD / point defence',
     note: 'Integrated 9S20 cue · strong vs PGM/drones · 16-round magazine',
   },
   {
@@ -450,7 +450,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 35,
     pk: 0.65,
     type: 'cannon',
-    group: 'Red — SHORAD / point defence',
+    group: 'Red: SHORAD / point defence',
     note: '1RL144 Hot Shot cue · 8 missiles + 2×30 mm · FPV gun envelope',
   },
   {
@@ -460,7 +460,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 6,
     pk: 0.70,
     type: 'missile',
-    group: 'Red — SHORAD / point defence',
+    group: 'Red: SHORAD / point defence',
     note: '9S80 Land Roll cue · self-contained TELAR · IR backup in ECM',
   },
   {
@@ -470,7 +470,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 4,
     pk: 0.60,
     type: 'missile',
-    group: 'Red — SHORAD / point defence',
+    group: 'Red: SHORAD / point defence',
     note: '9S86 Flat Box-A cue · passive IR · emissions-silent engagement',
   },
   {
@@ -480,7 +480,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 8,
     pk: 0.75,
     type: 'missile',
-    group: 'Red — SHORAD / point defence',
+    group: 'Red: SHORAD / point defence',
     note: 'Chinese Tor-class SHORAD · 15 km · export/proxy ORBAT',
   },
   {
@@ -490,7 +490,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 1,
     pk: 0.55,
     type: 'missile',
-    group: 'Red — SHORAD / point defence',
+    group: 'Red: SHORAD / point defence',
     note: 'Single-shot IR · no radar emissions · poor vs swarm saturation alone',
   },
 
@@ -502,7 +502,7 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: DEEP_MAGAZINE,
     pk: 0.45,
     type: 'rf',
-    group: 'Red — EW / soft-kill',
+    group: 'Red: EW / soft-kill',
     note: 'X/Ku-band broadband jam · 200+ km vs SATCOM/radar · FOC-blind',
   },
   {
@@ -512,20 +512,20 @@ export const SWARM_DEFEAT_SYSTEMS: DefeatSystem[] = [
     magazine: 80,
     pk: 0.58,
     type: 'rf',
-    group: 'Red — EW / soft-kill',
+    group: 'Red: EW / soft-kill',
     note: 'GNSS jam + spoof to ~50 km · INEFFECTIVE vs fibre-optic FPV',
   },
 ]
 
 export const SWARM_DEFEAT_GROUPS = [
-  'Blue — Directed energy',
-  'Blue — C-UAS / SHORAD',
-  'Blue — Naval CIWS',
-  'Blue — Theatre SAM / BMD',
-  'Red — Long-range SAM / BMD',
-  'Red — Medium SAM',
-  'Red — SHORAD / point defence',
-  'Red — EW / soft-kill',
+  'Blue: Directed energy',
+  'Blue: C-UAS / SHORAD',
+  'Blue: Naval CIWS',
+  'Blue: Theatre SAM / BMD',
+  'Red: Long-range SAM / BMD',
+  'Red: Medium SAM',
+  'Red: SHORAD / point defence',
+  'Red: EW / soft-kill',
 ] as const satisfies readonly SwarmDefeatGroup[]
 
 export function getSwarmDefeatSystem(id: string): DefeatSystem {

@@ -12,7 +12,7 @@ interface OpsPanelProps {
   bodyClassName?: string
 }
 
-/** Standard operations panel — header + mono kicker + action slot. */
+/** Standard operations panel: header + mono kicker + action slot. */
 export function OpsPanel({
   title,
   kicker,

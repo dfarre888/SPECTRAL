@@ -1,6 +1,6 @@
 'use client';
 /**
- * OutcomePanel — the engagement verdict (Mockup Frames 04 & 09).
+ * OutcomePanel: the engagement verdict (Mockup Frames 04 & 09).
  * Reads an EngagementResult and renders a plain-language outcome: a coloured
  * verdict tag, the headline, the reasoning and recommendations.
  */

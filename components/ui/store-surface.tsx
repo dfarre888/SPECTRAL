@@ -8,7 +8,7 @@ interface StorePanelProps {
   'data-testid'?: string
 }
 
-/** Shop-style card surface — solid zinc panel with subtle border */
+/** Shop-style card surface: solid zinc panel with subtle border */
 export function StorePanel({
   children,
   className,

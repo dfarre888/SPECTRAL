@@ -1,6 +1,6 @@
 /**
  * ITU-R P.1411 short-range urban NLOS excess loss (statistical).
- * Estimated — street-canyon heuristic for training/planning.
+ * Estimated: street-canyon heuristic for training/planning.
  */
 export function p1411UrbanExcessLossDb(
   distance_m: number,

@@ -1,5 +1,5 @@
 /**
- * SPECTRAL — Detection Physics Constants
+ * SPECTRAL: Detection Physics Constants
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  *
  * All RCS values in this file are OSINT PLANNING NOMINALS derived from:
@@ -11,14 +11,14 @@
  *    (Skolnik, Stimson, IEEE Transactions on Aerospace)
  *
  * NONE of these are measured signature data.
- * Real measured signatures are SOVEREIGN_CORE_BOUNDARY — resolved in the
+ * Real measured signatures are SOVEREIGN_CORE_BOUNDARY: resolved in the
  * accredited environment only. The open build must never contain them.
  */
 
 // ─── Physical constants ────────────────────────────────────────────────────────
 export const EARTH_RADIUS_M  = 6_371_000;
 export const REFRACTION_K    = 4 / 3;           // standard 4/3 effective Earth radius
-export const RADAR_HORIZON_K = 4.12;            // km per sqrt(m) — standard formula
+export const RADAR_HORIZON_K = 4.12;            // km per sqrt(m): standard formula
 
 // ─── SNR → Pd logistic mapping ────────────────────────────────────────────────
 export const SNR_THRESHOLD_DB  = 13;    // nominal detection threshold (dB above noise)
@@ -27,7 +27,7 @@ export const SNR_LOGISTIC_A    = 0.35;  // steepness: +3dB ≈ Pd 0.50, +10dB �
 // ─── Terrain sampling ─────────────────────────────────────────────────────────
 export const LOS_SAMPLE_STEP_M = 150;   // profile sample spacing (m)
 
-// ─── Pd bands — route colouring and optimiser threshold ───────────────────────
+// ─── Pd bands: route colouring and optimiser threshold ───────────────────────
 export const PD_BANDS = [
   { max: 0.05, level: 'undetected', colour: '#22c55e' },   // green
   { max: 0.20, level: 'low',        colour: '#a3e635' },   // lime
@@ -44,10 +44,10 @@ export const PD_LAUNCH_THRESHOLD = 0.45;   // optimiser must route below this
 
 /**
  * Four-facet aspect-dependent RCS model (m²).
- *   nose  — front-on (lowest for most aircraft; dominant scatterer: camera/inlet)
- *   beam  — side-on (largest physical cross-section; dominant scatterer: wing/fuselage)
- *   tail  — rear aspect (engine exhaust/prop; second highest)
- *   top   — top-down (used when radar depression angle > 45°; wing planform area)
+ *   nose : front-on (lowest for most aircraft; dominant scatterer: camera/inlet)
+ *   beam : side-on (largest physical cross-section; dominant scatterer: wing/fuselage)
+ *   tail : rear aspect (engine exhaust/prop; second highest)
+ *   top  : top-down (used when radar depression angle > 45°; wing planform area)
  *
  * For ground-based radars at tactical ranges, the depression angle from the
  * target down to the radar antenna is typically 1–10° for distant threats and
@@ -67,7 +67,7 @@ export interface RcsFacets {
  */
 export interface PlatformRcsEntry {
   facets:       RcsFacets;
-  /** Boundary marker — 'OSINT_NOMINAL' in open build; 'SOVEREIGN_CORE_BOUNDARY' for
+  /** Boundary marker: 'OSINT_NOMINAL' in open build; 'SOVEREIGN_CORE_BOUNDARY' for
    *  platforms where real measurement data exists and must be resolved server-side. */
   rcs_ref:      'OSINT_NOMINAL' | 'SOVEREIGN_CORE_BOUNDARY';
   /** Short description of derivation basis for training transparency. */
@@ -87,7 +87,7 @@ export type RcsCategoryKey =
   | 'medium_uas'      // 15–200 kg (Orlan, OWA)
   | 'large_uas'       // 200–2000 kg (MALE UCAV, larger OWA)
   | 'hale_uas'        // >2000 kg (HALE, heavy MALE)
-  | 'cruise_missile'  // LACM (generic — not LO)
+  | 'cruise_missile'  // LACM (generic: not LO)
   | 'lo_cruise_missile' // Low-observable LACM
   | 'stealth_ucav'    // Flying-wing VLO UCAV
   | 'fast_jet';       // manned fighter class (for reference)
@@ -108,14 +108,14 @@ export const RCS_CATEGORY_DEFAULTS: Record<RcsCategoryKey, RcsFacets> = {
 // PLATFORM RCS CATALOGUE
 //
 // Named entries for every SPECTRAL platform, keyed by platform ID.
-// Values are OSINT planning nominals — NOT measured signatures.
+// Values are OSINT planning nominals: NOT measured signatures.
 // Platforms where real signatures exist and are militarily significant
 // carry rcs_ref: 'SOVEREIGN_CORE_BOUNDARY'.
 //
 // OSINT BASIS METHODOLOGY:
 //   Physical cross-section:  wingspan × fuselage depth (beam aspect estimate)
 //   Construction factor:     composite/carbon fibre ≈ 0.3× metal equivalent
-//   Shape factor:            delta-wing, cylinder, conventional — see notes
+//   Shape factor:            delta-wing, cylinder, conventional: see notes
 //   Conflict evidence:       detection ranges from Ukraine conflict reporting
 //   Academic calibration:    IEEE/SPIE UAS RCS studies (2018–2024)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -123,7 +123,7 @@ export const RCS_CATEGORY_DEFAULTS: Record<RcsCategoryKey, RcsFacets> = {
 export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
 
   // ──────────────────────────────────────────────────────────────────────────
-  // GROUP 1 — MICRO/COTS UAS (<3 kg)
+  // GROUP 1: MICRO/COTS UAS (<3 kg)
   // Dominant scatterers at X-band: rotating blades (Doppler), gimbal housings.
   // Static RCS is very small; academic X-band studies put DJI-class at -20 to -13 dBsm.
   // ──────────────────────────────────────────────────────────────────────────
@@ -159,7 +159,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
     rcs_ref: 'OSINT_NOMINAL',
     osint_basis: 'Larger frame than 5" FPV (10–13" props, ~400mm diagonal) to carry '
       + 'fibre-optic spool. Slightly elevated RCS vs smaller FPV. '
-      + 'Zero RF emissions — radar return is the ONLY electronic detection path.',
+      + 'Zero RF emissions: radar return is the ONLY electronic detection path.',
     confidence: 'medium',
   },
 
@@ -172,7 +172,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
   },
 
   // ──────────────────────────────────────────────────────────────────────────
-  // GROUP 2 — SMALL TACTICAL / LOITERING MUNITIONS (3–50 kg)
+  // GROUP 2: SMALL TACTICAL / LOITERING MUNITIONS (3–50 kg)
   // ──────────────────────────────────────────────────────────────────────────
 
   'switchblade-300': {
@@ -244,7 +244,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
     rcs_ref: 'OSINT_NOMINAL',
     osint_basis: '3.1m wingspan, 15 kg, piston pusher engine, fibre-glass/plastic. '
       + 'Pusher prop disc is dominant rear scatterer. Ukraine EW evidence: '
-      + 'Bukovel-AD and Nota EW systems detect/engage at 10–30 km — consistent '
+      + 'Bukovel-AD and Nota EW systems detect/engage at 10–30 km: consistent '
       + 'with ~0.3 m² beam RCS at X-band on their respective frequencies. '
       + 'Detected at 50+ km by Giraffe AMB (S-band, wider aperture).',
     confidence: 'high',
@@ -269,7 +269,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
   },
 
   // ──────────────────────────────────────────────────────────────────────────
-  // GROUP 2/3 TRANSITIONAL — MEDIUM OWA / LARGER LOITERING MUNITIONS (50–250 kg)
+  // GROUP 2/3 TRANSITIONAL: MEDIUM OWA / LARGER LOITERING MUNITIONS (50–250 kg)
   // ──────────────────────────────────────────────────────────────────────────
 
   'shahed-131': {
@@ -290,7 +290,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
       + 'and Oerlikon Skyshield/Gepard engagements at 4–8 km (X-band fire control). '
       + 'Delta planform: nose-on ingress is the most survivable aspect (smallest '
       + 'frontal cross-section ~0.05 m²); beam and top expose the 2.5m wingspan. '
-      + 'Operational altitude 100–200m AGL — ground clutter dominates over RCS '
+      + 'Operational altitude 100–200m AGL: ground clutter dominates over RCS '
       + 'as primary detection challenge, not intrinsic signature.',
     confidence: 'high',
   },
@@ -333,7 +333,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
   },
 
   // ──────────────────────────────────────────────────────────────────────────
-  // GROUP 3/4 — MALE/HALE UCAV (200–6000 kg)
+  // GROUP 3/4: MALE/HALE UCAV (200–6000 kg)
   // ──────────────────────────────────────────────────────────────────────────
 
   'forpost-r': {
@@ -379,7 +379,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
     facets: { nose: 0.850, beam: 7.000, tail: 3.500, top: 5.000 },
     rcs_ref: 'OSINT_NOMINAL',
     osint_basis: '20m wingspan, 5500 kg, twin-turboprop HALE UCAV. Large planform '
-      + 'and twin engines dominate signature. Not designed for LO — '
+      + 'and twin engines dominate signature. Not designed for LO: '
       + 'survives through altitude, standoff range and EW systems.',
     confidence: 'medium',
   },
@@ -406,7 +406,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
     facets: { nose: 0.480, beam: 4.500, tail: 2.000, top: 3.200 },
     rcs_ref: 'OSINT_NOMINAL',
     osint_basis: '18m wingspan, 1330 kg. MQ-9 Reaper lineage geometry. '
-      + 'Conventional MALE — survives through altitude not LO shaping.',
+      + 'Conventional MALE: survives through altitude not LO shaping.',
     confidence: 'medium',
   },
 
@@ -437,7 +437,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
     osint_basis: '~8m length, 3m pop-out wingspan, 2200 kg. Cylindrical body + '
       + 'pop-out folded wings; not a stealth design. '
       + 'Ukraine conflict: Ukrainian S-300, Buk-M1 and Gepard systems have engaged '
-      + 'Kalibr at engagement ranges implying detection at 30–80 km — consistent '
+      + 'Kalibr at engagement ranges implying detection at 30–80 km: consistent '
       + 'with ~0.5–1.0 m² RCS at S/X-band. Primary survivability is terrain-following '
       + 'at 5–50m AGL, not signature reduction.',
     confidence: 'high',
@@ -447,14 +447,14 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
     facets: { nose: 0.048, beam: 0.450, tail: 0.180, top: 0.320 },
     rcs_ref: 'OSINT_NOMINAL',
     osint_basis: 'Geran-2 is the Russian export designation of Shahed-136. '
-      + 'Identical airframe — same facet values apply.',
+      + 'Identical airframe: same facet values apply.',
     confidence: 'high',
   },
 
   'jassm-er': {
     facets: { nose: 0.035, beam: 0.220, tail: 0.090, top: 0.140 },
     rcs_ref: 'SOVEREIGN_CORE_BOUNDARY',
-    osint_basis: 'AGM-158B JASSM-ER — low-observable LACM with faceted fuselage, '
+    osint_basis: 'AGM-158B JASSM-ER: low-observable LACM with faceted fuselage, '
       + 'inward-canted fins, and embedded engine intake. Open build uses geometry-'
       + 'inference nominal only. REAL measured signature: SOVEREIGN_CORE_BOUNDARY. '
       + 'Accredited resolver must substitute before any Pk calculation against '
@@ -465,7 +465,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
   'storm-shadow-scalp': {
     facets: { nose: 0.042, beam: 0.280, tail: 0.110, top: 0.170 },
     rcs_ref: 'SOVEREIGN_CORE_BOUNDARY',
-    osint_basis: 'Storm Shadow/SCALP-EG — contoured fuselage with dorsal WR87B intake '
+    osint_basis: 'Storm Shadow/SCALP-EG: contoured fuselage with dorsal WR87B intake '
       + 'shielded for LO. Open build nominal is geometry inference only. '
       + 'REAL measured signature: SOVEREIGN_CORE_BOUNDARY. Combat proven in '
       + 'Ukraine but specific detection ranges not open-source declassified.',
@@ -475,7 +475,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
   'taurus-kepd-350': {
     facets: { nose: 0.038, beam: 0.250, tail: 0.100, top: 0.160 },
     rcs_ref: 'SOVEREIGN_CORE_BOUNDARY',
-    osint_basis: 'Taurus KEPD-350 — similar LO design philosophy to Storm Shadow. '
+    osint_basis: 'Taurus KEPD-350: similar LO design philosophy to Storm Shadow. '
       + 'Open build nominal is geometry inference. REAL measured signature: SOVEREIGN_CORE_BOUNDARY.',
     confidence: 'low',
   },
@@ -485,13 +485,13 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
     rcs_ref: 'OSINT_NOMINAL',
     osint_basis: '5400 kg strategic LACM, ~5.4m length, 4.4m wingspan. '
       + 'Russian LO-shaped design with blended fuselage; not equivalent to Western '
-      + 'LO standard. Ukraine IADS has engaged Kh-101 with mid-range SAMs — '
+      + 'LO standard. Ukraine IADS has engaged Kh-101 with mid-range SAMs: '
       + 'detection at 60–100 km reported (S-band), consistent with 0.2–0.6 m² class.',
     confidence: 'medium',
   },
 
   // ──────────────────────────────────────────────────────────────────────────
-  // STEALTH UCAV — SOVEREIGN_CORE_BOUNDARY
+  // STEALTH UCAV: SOVEREIGN_CORE_BOUNDARY
   // Open-build values are geometry-inference ONLY from published silhouettes.
   // The RCS disparity between open estimate and real value is likely extreme.
   // ──────────────────────────────────────────────────────────────────────────
@@ -499,18 +499,18 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
   's-70-okhotnik': {
     facets: { nose: 0.008, beam: 0.080, tail: 0.040, top: 0.025 },
     rcs_ref: 'SOVEREIGN_CORE_BOUNDARY',
-    osint_basis: 'Sukhoi S-70 Okhotnik-B — 20t flying-wing VLO UCAV. '
+    osint_basis: 'Sukhoi S-70 Okhotnik-B: 20t flying-wing VLO UCAV. '
       + 'Published silhouettes show blended flying-wing with shielded exhaust nozzle. '
       + 'Open nominal from radar-absorbing-material (RAM) flying-wing shape inference. '
       + 'ACTUAL signature: SOVEREIGN_CORE_BOUNDARY. These values should NOT be used '
-      + 'for any ADF threat-assessment briefing — use accredited values only.',
+      + 'for any ADF threat-assessment briefing: use accredited values only.',
     confidence: 'low',
   },
 
   'gj-11': {
     facets: { nose: 0.004, beam: 0.050, tail: 0.025, top: 0.015 },
     rcs_ref: 'SOVEREIGN_CORE_BOUNDARY',
-    osint_basis: 'Hongdu GJ-11 Sharp Sword — 10t tailless delta flying-wing UCAV. '
+    osint_basis: 'Hongdu GJ-11 Sharp Sword: 10t tailless delta flying-wing UCAV. '
       + 'B-2-inspired design with engine inlet shielded by leading-edge blending. '
       + 'Published air-show images show smooth outer mold line with no exposed '
       + 'control surfaces visible from below. Open nominal is geometry inference. '
@@ -529,7 +529,7 @@ export const PLATFORM_RCS_CATALOGUE: Record<string, PlatformRcsEntry> = {
 //   2. Category fallback when platform not found
 //   3. SOVEREIGN_CORE_BOUNDARY pass-through (open build returns open nominal;
 //      accredited build resolver intercepts before this function is called
-//      and substitutes real data — this function itself never has the real data)
+//      and substitutes real data: this function itself never has the real data)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function getRcsFacets(
@@ -540,7 +540,7 @@ export function getRcsFacets(
   if (entry) {
     return { facets: entry.facets, rcs_ref: entry.rcs_ref, confidence: entry.confidence };
   }
-  // Platform not found — use category default, flag as low confidence
+  // Platform not found: use category default, flag as low confidence
   return {
     facets: RCS_CATEGORY_DEFAULTS[categoryFallback],
     rcs_ref: 'OSINT_NOMINAL',

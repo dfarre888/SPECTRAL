@@ -1,5 +1,5 @@
 /**
- * SPECTRAL — Detection Field Engine
+ * SPECTRAL: Detection Field Engine
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 import { maskedByEarthBulge, maskedByRadioHorizon } from '@/lib/map/radio-horizon';

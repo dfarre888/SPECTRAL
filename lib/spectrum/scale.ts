@@ -1,5 +1,5 @@
 /**
- * Spectrum Intelligence — scale & projection engine
+ * Spectrum Intelligence: scale & projection engine
  * -------------------------------------------------
  * Pure functions, no React, no D3 dependency required (we implement the log
  * scale ourselves so the engine is portable and testable). If you prefer D3,

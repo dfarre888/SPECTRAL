@@ -1,4 +1,4 @@
-/** Swarm / saturation planner — leak-through vs magazine depth */
+/** Swarm / saturation planner: leak-through vs magazine depth */
 import { simulateSalvoDeterministic } from '@/lib/planner/engagement-economics';
 
 export interface SwarmPreset {
@@ -21,8 +21,8 @@ export function analyseSwarm(preset: SwarmPreset) {
     ...sim,
     preset,
     recommendation: sim.leakThroughProbability > 0.3
-      ? 'Magazine insufficient — add Gepard/point-defence layer or accept leak-through ROE.'
-      : 'Magazine adequate at stated Pk — monitor exchange ratio.',
+      ? 'Magazine insufficient: add Gepard/point-defence layer or accept leak-through ROE.'
+      : 'Magazine adequate at stated Pk: monitor exchange ratio.',
   };
 }
 
@@ -50,9 +50,9 @@ export function computeSwarmSaturation(input: SwarmSaturationInput) {
     leakThroughProbability: sim.leakThroughProbability,
     magazineExhausted,
     assessment: magazineExhausted
-      ? 'Magazine exhausted before swarm defeated — unfavourable exchange; add point-defence layer.'
+      ? 'Magazine exhausted before swarm defeated: unfavourable exchange; add point-defence layer.'
       : leakers > 0
-        ? `${leakers} leaker(s) expected at stated Pk — tighten cueing or add RF layer.`
+        ? `${leakers} leaker(s) expected at stated Pk: tighten cueing or add RF layer.`
         : 'Magazine sufficient for inbound count at stated Pk.',
   };
 }

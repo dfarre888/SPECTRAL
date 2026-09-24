@@ -40,7 +40,7 @@ export interface PropagationEnvironment {
   building_obstructed?: boolean
   /** Material penetration loss when ray intersects building footprint (dB). */
   building_penetration_loss_db?: number
-  /** Multiple ridge/rooftop edges — triggers Deygout chain instead of single Bullington edge. */
+  /** Multiple ridge/rooftop edges: triggers Deygout chain instead of single Bullington edge. */
   diffraction_edges?: DiffractionEdgeInput[]
   rain_rate_mm_h?: number
   foliage?: boolean

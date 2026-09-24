@@ -7,13 +7,13 @@
  * Selecting or dropping a platform changes three things at once, and they are
  * easy to reason about separately and impossible to hold together by eye:
  *
- *   Bands      — how many platforms sit on HF, VHF, UHF, L, Ku and so on. Drop
+ *   Bands     : how many platforms sit on HF, VHF, UHF, L, Ku and so on. Drop
  *                every HF-capable airframe and the package loses its only
  *                beyond-line-of-sight voice path, which no headline count shows.
- *   Tiers      — how many can exchange machine tracks versus only voice. See
+ *   Tiers     : how many can exchange machine tracks versus only voice. See
  *                lib/coalition/interop.ts; a vehicle on a combat-net radio is
  *                voice-connected, not absent.
- *   Spectrum   — which sensor bands the package still covers. Losing the only
+ *   Spectrum  : which sensor bands the package still covers. Losing the only
  *                L-band AEW radar is a different loss from losing one of six
  *                X-band fire-control sets.
  *
@@ -160,7 +160,7 @@ export function composeOrbat(
 /**
  * What changes between two package compositions.
  *
- * Framed as a delta because that is how the decision is made — not "this package
+ * Framed as a delta because that is how the decision is made: not "this package
  * has four HF platforms" but "dropping these two costs you HF entirely".
  */
 export interface RollupDelta {

@@ -1,5 +1,5 @@
 /**
- * Spectrum Intelligence — core type system
+ * Spectrum Intelligence: core type system
  * ----------------------------------------
  * Every platform (Red threat or Blue effector) has a set of "capabilities".
  * Each capability occupies a region of the electromagnetic spectrum, expressed
@@ -13,20 +13,20 @@
 /** Which physical canvas a capability belongs on. */
 export type SpectrumAxis = 'rf' | 'gnss' | 'eo_ir' | 'cbrn';
 
-/** Functional layer — drives colour and lane within a canvas. */
+/** Functional layer: drives colour and lane within a canvas. */
 export type SpectrumLayer =
   | 'comms'        // control / video / datalink / SATCOM / cellular
   | 'navigation'   // GNSS L-band
   | 'radar'        // detection / fire-control / SAR
   | 'eo_ir'        // optical & infrared sensing
-  | 'cbrn';        // ionising — radiological payload detection only
+  | 'cbrn';        // ionising: radiological payload detection only
 
 /** Side in the engagement model. */
 export type Side = 'red' | 'blue' | 'neutral';
 
 /** What a capability *does*. */
 export type CapabilityFunction =
-  // Red (threat) functions — things the drone uses / emits / depends on
+  // Red (threat) functions: things the drone uses / emits / depends on
   | 'control'        // operator → aircraft command link
   | 'video'          // aircraft → operator FPV / ISR downlink
   | 'telemetry'      // low-rate health / position downlink
@@ -35,14 +35,14 @@ export type CapabilityFunction =
   | 'sensor'         // EO/IR imaging payload
   | 'laser'          // active laser designator / rangefinder
   | 'radar_emit'     // onboard radar
-  // Blue (effector) functions — things the counter-system does
+  // Blue (effector) functions: things the counter-system does
   | 'jam_control'
   | 'jam_video'
   | 'jam_gnss'
   | 'jam_datalink'
   | 'spoof_gnss'
   | 'takeover'       // RF-cyber protocol takeover
-  | 'hpm'            // high-power microwave (wideband — attacks electronics)
+  | 'hpm'            // high-power microwave (wideband: attacks electronics)
   | 'laser_defeat'   // high-energy laser
   | 'detect_rf'      // passive RF direction-finding
   | 'detect_radar'   // detection radar
@@ -90,7 +90,7 @@ export type UASGroup = 1 | 2 | 3 | 4 | 5 | null;
 /** Provenance / confidence of the platform record. */
 export type SourceConfidence = 'curated' | 'derived' | 'estimated';
 
-/** GNSS dependency level — determines jamming/spoofing defeat viability. */
+/** GNSS dependency level: determines jamming/spoofing defeat viability. */
 export type GnssDependency = 'high' | 'medium' | 'low' | 'none';
 
 export interface Platform {
@@ -125,7 +125,7 @@ export interface Platform {
   satcom_band?: string | null;       // 'L' | 'Ku' | 'Ka'
   confidence?: SourceConfidence;
   intel_note?: string | null;
-  // enriched OSINT fields — added post-deep-research
+  // enriched OSINT fields: added post-deep-research
   year_introduced?: number | null;
   propulsion?: string | null;           // 'electric' | 'piston' | 'turboprop' | 'turbofan' | 'jet' | 'N/A'
   guidance_type?: string | null;        // navigation / seeker description
@@ -179,7 +179,7 @@ export interface EngagementResult {
    * Continuous effective coverage score 0–1 (defeat-resistance weighted).
    * 0 = no RF coverage, detect-only, or no-engagement.
    * 1 = all threat RF/GNSS dependencies fully defeatable with no hardening.
-   * HPM uses 0.92 (band-agnostic electronic attack — not link-based).
+   * HPM uses 0.92 (band-agnostic electronic attack: not link-based).
    * Used by the adjudication engine as a higher-fidelity Pk input than
    * the 4-bucket verdict alone.
    */

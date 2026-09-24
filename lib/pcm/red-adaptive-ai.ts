@@ -1,5 +1,5 @@
 /**
- * Red Force Adaptive AI — turn-memory vector learning.
+ * Red Force Adaptive AI: turn-memory vector learning.
  *
  * Principle: Red observes its own intercept loss rates per approach vector and
  * platform type each turn, then shifts subsequent wave composition toward the
@@ -13,7 +13,7 @@
  *   and recognises EW-immune (fibre-optic FPV) as a preferred mix component
  *   after observing SIGINT-transparent leakers.
  *
- * Open-build only — all learning is from adjudication outcomes, no accredited
+ * Open-build only: all learning is from adjudication outcomes, no accredited
  * lethality values are involved.
  *
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
@@ -44,7 +44,7 @@ export interface RedTurnMemory {
 
 /** Adaptive state persisted on state.red_force between turns. */
 export interface RedAdaptiveState {
-  /** Rolling history — last N_TURNS turns. */
+  /** Rolling history: last N_TURNS turns. */
   history: RedTurnMemory[];
   /** Sector to preferentially launch from next turn (lowest intercept rate). */
   preferredSector: string | null;
@@ -197,7 +197,7 @@ function adaptStrategy(ai: RedAdaptiveState): void {
   // ── EW-immune strategy ─────────────────────────────────────────────────────
   const totalEwLeakers = ai.history.reduce((s, m) => s + m.ewImmuneLeakers, 0);
   if (totalEwLeakers >= 2) {
-    // Red has observed fibre-optic FPVs getting through EW layers — activate
+    // Red has observed fibre-optic FPVs getting through EW layers: activate
     // strategy to weight EW-immune platforms.
     ai.ewImmuneStrategyActive = true;
     ai.preferredGroup = 'FPV'; // EW-immune FPV mix
@@ -234,7 +234,7 @@ function adaptStrategy(ai: RedAdaptiveState): void {
 
 /**
  * Reorder pre-launch platforms to weight preferred sector and group at the front
- * of the wave batch. Does NOT change total platform count — allocation remains
+ * of the wave batch. Does NOT change total platform count: allocation remains
  * the responsibility of resolveRedOrders().
  *
  * @param preLaunch All pre-launch Red platforms.
@@ -248,7 +248,7 @@ export function applyRedAiOrdering(
   return [...preLaunch].sort((a, b) => {
     const scoreA = platformScore(a, ai);
     const scoreB = platformScore(b, ai);
-    return scoreB - scoreA; // descending — highest-preference first
+    return scoreB - scoreA; // descending: highest-preference first
   });
 }
 
@@ -280,7 +280,7 @@ export function buildRedAiDiagnostic(ai: RedAdaptiveState, turn: number): RedAiD
   const parts: string[] = [];
   if (ai.preferredSector) parts.push(`Preferring sector ${ai.preferredSector} (lowest intercept rate).`);
   if (ai.preferredGroup) parts.push(`Weighting ${ai.preferredGroup} platforms (lowest loss rate).`);
-  if (ai.ewImmuneStrategyActive) parts.push(`EW-immune strategy active — fibre-optic leakers observed.`);
+  if (ai.ewImmuneStrategyActive) parts.push(`EW-immune strategy active: fibre-optic leakers observed.`);
   parts.push(`Decoy ratio target: ${Math.round(ai.decoyRatioTarget * 100)}%.`);
   if (ai.history.length < N_TURNS) parts.push(`Building history (${ai.history.length}/${N_TURNS} turns).`);
 
@@ -290,6 +290,6 @@ export function buildRedAiDiagnostic(ai: RedAdaptiveState, turn: number): RedAiD
     preferredGroup: ai.preferredGroup,
     decoyRatioTarget: ai.decoyRatioTarget,
     ewImmuneStrategyActive: ai.ewImmuneStrategyActive,
-    reasoning: parts.join(' ') || 'No adaptation active — insufficient history.',
+    reasoning: parts.join(' ') || 'No adaptation active: insufficient history.',
   };
 }

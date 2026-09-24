@@ -1,12 +1,12 @@
 /**
- * SPECTRAL — Moat-Builder 1
+ * SPECTRAL: Moat-Builder 1
  * Longitudinal Learner Model (LLM-1)
  *
  * The single most defensible differentiator. Every competitor models the FORCE.
  * None model the STUDENT across a career. This module builds a persistent,
  * accreditation-grade competency record per commander.
  *
- * This is buildable in full NOW — it touches no controlled adjudication logic.
+ * This is buildable in full NOW: it touches no controlled adjudication logic.
  * It consumes the OUTPUT of a turn (what the trainee decided, what they saw,
  * how long they took) and builds a longitudinal record from it.
  *
@@ -15,7 +15,7 @@
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
-// COMPETENCY FRAMEWORK — the spine of the learner model
+// COMPETENCY FRAMEWORK: the spine of the learner model
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
@@ -28,7 +28,7 @@ export type SpectralCompetency =
   | 'threat_classification'        // discriminating real / decoy / civilian / unknown
   | 'magazine_management'          // interceptor economy under saturation
   | 'sensor_employment'            // tasking the right sensor, confirming before acting
-  | 'emcon_discipline'             // emissions control — not being found
+  | 'emcon_discipline'             // emissions control: not being found
   | 'decision_under_uncertainty'   // acting correctly on low-confidence information
   | 'tempo_and_initiative'         // forcing the adversary to react vs reacting
   | 'resource_prioritisation'      // competing demands, finite assets
@@ -143,7 +143,7 @@ export const COMPETENCY_LIBRARY: Record<SpectralCompetency, {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// COMPETENCY STATE — four-state currency model (CBT-derived)
+// COMPETENCY STATE: four-state currency model (CBT-derived)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type CompetencyState =
@@ -161,7 +161,7 @@ export interface CompetencyAssessment {
   last_assessed_exercise_id: string;
   last_assessed_at: string;
   trend: 'improving' | 'stable' | 'declining' | 'insufficient_data';
-  // Evidence trail — every assessment is auditable
+  // Evidence trail: every assessment is auditable
   evidence_trail: CompetencyEvidence[];
 }
 
@@ -177,7 +177,7 @@ export interface CompetencyEvidence {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// BLIND SPOT — a persistent, recurring weakness detected across sessions
+// BLIND SPOT: a persistent, recurring weakness detected across sessions
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface BlindSpot {
@@ -199,7 +199,7 @@ export interface BlindSpot {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LONGITUDINAL COMPETENCY RECORD — the career-spanning artifact
+// LONGITUDINAL COMPETENCY RECORD: the career-spanning artifact
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface LongitudinalCompetencyRecord {
@@ -237,7 +237,7 @@ export interface CompetencySummary {
   resolved_blind_spots: number;
   // The headline an instructor / training authority reads
   narrative: string;
-  // Measured improvement — the evidence artifact
+  // Measured improvement: the evidence artifact
   improvement_highlights: ImprovementHighlight[];
 }
 

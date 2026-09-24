@@ -8,7 +8,7 @@ interface FullBleedShellProps {
 
 /**
  * Slim top bar for full-bleed routes (/map, /spectrum).
- * Same zinc tokens; no sidebar — collapsible nav lives in-page.
+ * Same zinc tokens; no sidebar: collapsible nav lives in-page.
  */
 export function FullBleedShell({ children, title }: FullBleedShellProps) {
   return (

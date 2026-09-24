@@ -1,5 +1,5 @@
 /**
- * PCM engagement phase — salvo, EW, impacts, kinematics.
+ * PCM engagement phase: salvo, EW, impacts, kinematics.
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';

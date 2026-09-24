@@ -1,5 +1,5 @@
 /**
- * SPECTRAL PCM Phase 3 — REF orchestrator, suggestion engine, profile hooks.
+ * SPECTRAL PCM Phase 3: REF orchestrator, suggestion engine, profile hooks.
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';
@@ -40,7 +40,7 @@ async function pushInteropAdversaryIntent(worldState: WorldState): Promise<void>
     approach: 'Sustain inbound OWA saturation from eastern axis',
     pedagogical_rationale: 'Post-adjudication intent export for external sim validation',
     targets_competency: 'layered_defence',
-    composition_summary: 'Mixed OWA package — training tier OSINT laydown',
+    composition_summary: 'Mixed OWA package: training tier OSINT laydown',
     platform_refs: worldState.red_force.platforms
       .filter((pl) => pl.status !== 'destroyed')
       .map((pl) => pl.id),

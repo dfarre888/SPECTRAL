@@ -1,5 +1,5 @@
 /**
- * SPECTRAL PCM — AAR document persistence (service-role write path)
+ * SPECTRAL PCM: AAR document persistence (service-role write path)
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 import type { SupabaseClient } from '@supabase/supabase-js';

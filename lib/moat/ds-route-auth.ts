@@ -1,13 +1,13 @@
-// SPECTRAL — DS route authorization helpers
+// SPECTRAL: DS route authorization helpers
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 //
 // Closes the authorization scope gap where client-supplied ds_player_id
 // was never bound to the authenticated Supabase session.
 //
 // Pattern (currency/actions precedent):
-//   1. resolveSessionDsPlayerId  — derive DS player UUID from auth.uid()
-//   2. assertDsPlayerMatchesSession — 403 if supplied ID doesn't match session
-//   3. dsCanAccessLearner — 403 if DS has no exercise with this learner as a player
+//   1. resolveSessionDsPlayerId : derive DS player UUID from auth.uid()
+//   2. assertDsPlayerMatchesSession: 403 if supplied ID doesn't match session
+//   3. dsCanAccessLearner: 403 if DS has no exercise with this learner as a player
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'

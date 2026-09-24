@@ -1,5 +1,5 @@
 /**
- * IADS Stack Builder — preset layered air defence templates
+ * IADS Stack Builder: preset layered air defence templates
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 
@@ -34,10 +34,10 @@ export interface IadsStackInstance {
 export const IADS_STACK_PRESETS: IadsStackPreset[] = [
   {
     id: 'stack-syria-2018',
-    name: 'Syria 2018 — Nebo → S-400 → Pantsir',
+    name: 'Syria 2018: Nebo → S-400 → Pantsir',
     description: 'CI-WEST-003 layered IADS as employed against Tomahawk/JASSM strike packages.',
     anchor: { lon: 36.2, lat: 33.5 },
-    threatContext: 'Tomahawk / JASSM saturation — CI-WEST-003',
+    threatContext: 'Tomahawk / JASSM saturation: CI-WEST-003',
     confidence: 'Assessed',
     layers: [
       { role: 'early_warning', platformId: 'nebo-m', label: 'Nebo-M VHF', offsetKm: { dx: 0, dy: 15 }, cueDelay_s: 0 },
@@ -47,7 +47,7 @@ export const IADS_STACK_PRESETS: IadsStackPreset[] = [
   },
   {
     id: 'stack-ukraine-layered',
-    name: 'Ukraine Layered — Nebo → S-300PM2 → Buk → Pantsir',
+    name: 'Ukraine Layered: Nebo → S-300PM2 → Buk → Pantsir',
     description: 'OSINT Ukrainian IADS layering against Shahed/cruise corridors.',
     anchor: { lon: 30.5, lat: 50.4 },
     threatContext: 'Shahed-136 / Kalibr mixed salvo',
@@ -61,8 +61,8 @@ export const IADS_STACK_PRESETS: IadsStackPreset[] = [
   },
   {
     id: 'stack-taipan-gbad',
-    name: 'Taipan Strike 26 — CEAFAR2-L → GBAD CEA-SM-2',
-    description: 'ADF GBAD live-fire anchor — CEAFAR2-L cueing SM-2 Block IIIB against LACM.',
+    name: 'Taipan Strike 26: CEAFAR2-L → GBAD CEA-SM-2',
+    description: 'ADF GBAD live-fire anchor: CEAFAR2-L cueing SM-2 Block IIIB against LACM.',
     anchor: { lon: 150.8, lat: -21.1 },
     threatContext: 'Kalibr / Kh-101 LACM penetration at 50–100m AGL',
     confidence: 'Assessed',
@@ -73,10 +73,10 @@ export const IADS_STACK_PRESETS: IadsStackPreset[] = [
   },
   {
     id: 'stack-north-qld-cuas',
-    name: 'North QLD C-UAS Belt — Giraffe → NASAMS → Gepard',
-    description: 'Shahed swarm economics — layered C-UAS belt for northern Australia AO.',
+    name: 'North QLD C-UAS Belt: Giraffe → NASAMS → Gepard',
+    description: 'Shahed swarm economics: layered C-UAS belt for northern Australia AO.',
     anchor: { lon: 145.7, lat: -16.9 },
-    threatContext: '8× Shahed-136 saturation — 125:1 exchange risk',
+    threatContext: '8× Shahed-136 saturation: 125:1 exchange risk',
     confidence: 'Estimated',
     layers: [
       { role: 'early_warning', platformId: 'giraffe-amb', label: 'Giraffe AMB', offsetKm: { dx: 0, dy: 0 } },

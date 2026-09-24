@@ -1,5 +1,5 @@
 /**
- * BRIEF builder — markdown acquisition brief with OSINT sources
+ * BRIEF builder: markdown acquisition brief with OSINT sources
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 

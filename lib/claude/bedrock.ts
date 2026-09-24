@@ -1,16 +1,16 @@
 /**
- * SPECTRAL — AWS Bedrock client (sovereign AU inference layer)
+ * SPECTRAL: AWS Bedrock client (sovereign AU inference layer)
  * ─────────────────────────────────────────────────────────────
  * All Claude inference routes through this module.
  * DO NOT instantiate Anthropic SDK anywhere in the codebase —
  * use callBedrock() instead.
  *
  * Data residency:
- *   - Supabase:  ap-southeast-2 (Sydney) — strict in-region ✓
+ *   - Supabase:  ap-southeast-2 (Sydney): strict in-region ✓
  *   - Bedrock:   ap-southeast-2 via Geo cross-region routing
  *                Primary inference node: Sydney (ap-southeast-2)
  *                Geo routing keeps data within the AP geography (AU/NZ AWS zone)
- *                Strict in-region Claude not yet available on Bedrock — Geo is
+ *                Strict in-region Claude not yet available on Bedrock: Geo is
  *                the closest option and satisfies UNCLASSIFIED data sovereignty.
  *
  * Prerequisites (one-time setup):
@@ -71,7 +71,7 @@ export interface BedrockTextParams {
 /**
  * Send a single user-turn message to Claude via Bedrock Converse API.
  * Returns the assistant text response.
- * Throws on API or auth error — callers should handle.
+ * Throws on API or auth error: callers should handle.
  */
 export async function callBedrock({
   system,
@@ -98,7 +98,7 @@ export async function callBedrock({
 }
 
 /**
- * Multi-turn variant — accepts the full message history.
+ * Multi-turn variant: accepts the full message history.
  * Use for conversational flows (AeroCopilot follow-ups etc).
  */
 export async function callBedrockMultiTurn({

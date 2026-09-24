@@ -1,5 +1,5 @@
 /**
- * Phase 3 difficulty modifiers — ORBAT adjustments at exercise creation.
+ * Phase 3 difficulty modifiers: ORBAT adjustments at exercise creation.
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';
@@ -118,7 +118,7 @@ export function applyDifficultyModifiers(
     }
   }
 
-  // Phase 3 difficulty modifiers — GAP 6 complete
+  // Phase 3 difficulty modifiers: GAP 6 complete
   return orbat;
 }
 

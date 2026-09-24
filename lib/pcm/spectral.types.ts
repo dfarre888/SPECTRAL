@@ -1,6 +1,6 @@
 /**
  * SPECTRAL Persistent Combat Model
- * Phase 1 — Type Definitions
+ * Phase 1: Type Definitions
  *
  * Types live in the PCM namespace to avoid collision with lib/types Platform etc.
  * Import as: import type { PCM } from '@/lib/pcm/spectral.types'
@@ -146,7 +146,7 @@ export interface Weather {
   temperature_c: number;
   precipitation: 'none' | 'light_rain' | 'heavy_rain' | 'snow' | 'hail' | 'dust' | 'fog';
   sea_state: number;         // Douglas scale
-  // Derived modifiers — calculated by FWE, stored for performance
+  // Derived modifiers: calculated by FWE, stored for performance
   eo_ir_modifier: number;    // 0.0–1.0
   radar_modifier: number;    // 0.0–1.0
   rf_propagation_modifier: number; // 0.0–1.0
@@ -227,8 +227,8 @@ export interface ForceOrbat {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface Contact {
-  contact_id: string;          // internal SPECTRAL ID — may not match true platform ID
-  true_platform_id: string;    // SPECTRAL-REF only — never exposed to players
+  contact_id: string;          // internal SPECTRAL ID: may not match true platform ID
+  true_platform_id: string;    // SPECTRAL-REF only: never exposed to players
   detected_by: ForceId;
   confidence: ContactConfidence;
   classification: string;      // what the detecting force thinks it is
@@ -243,7 +243,7 @@ export interface Contact {
   last_updated_turn: number;
   time_to_impact_turns: number | null; // for OWA/LM on approach
   location_grid: string | null;
-  misclassified: boolean;      // SPECTRAL-REF only — did sensor misidentify?
+  misclassified: boolean;      // SPECTRAL-REF only: did sensor misidentify?
   report_delay_turns: number;  // how many turns before this contact reached commander
 }
 
@@ -370,7 +370,7 @@ export interface WorldState {
   red_force: ForceOrbat;
   blue_force: ForceOrbat;
 
-  // Contacts (SPECTRAL-REF ground truth — never exposed directly to players)
+  // Contacts (SPECTRAL-REF ground truth: never exposed directly to players)
   all_contacts: Contact[];
 
   // Orders submitted this turn
@@ -580,7 +580,7 @@ export interface CreateExerciseRequest {
   blue_player_id: string | null;
   ds_player_id: string;
   blind_mode: boolean;          // each side sees only own ORBAT
-  /** Optional Map Intel laydown override — platforms only; EW/C2 from scenario template. */
+  /** Optional Map Intel laydown override: platforms only; EW/C2 from scenario template. */
   custom_orbat?: { red: Platform[]; blue: Platform[] };
 }
 
@@ -635,7 +635,7 @@ export type GetWorldStateResponse =
 export interface AdvanceTurnRequest {
   exercise_id: string;
   ds_player_id: string;
-  force_advance?: boolean;      // DS override — advance even if orders not received
+  force_advance?: boolean;      // DS override: advance even if orders not received
 }
 
 export interface AdvanceTurnResponse {

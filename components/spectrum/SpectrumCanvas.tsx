@@ -1,6 +1,6 @@
 'use client';
 /**
- * SpectrumCanvas — the shared spectrum renderer.
+ * SpectrumCanvas: the shared spectrum renderer.
  * Used by RF, GNSS, EO/IR, CBRN and the Red-vs-Blue engagement view.
  *
  * It is axis-agnostic: pass an `axis` and it builds the right log scale and

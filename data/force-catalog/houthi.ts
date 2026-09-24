@@ -1,5 +1,5 @@
 /**
- * Force Catalogue — Ansar Allah (Houthi) (HOU).
+ * Force Catalogue: Ansar Allah (Houthi) (HOU).
  * OSINT only. Verified Jul 2026. Non-state Red Sea threat.
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY.
  */

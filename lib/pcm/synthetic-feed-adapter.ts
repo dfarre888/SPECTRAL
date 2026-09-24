@@ -2,7 +2,7 @@ import type { LiveFeedAdapter, LiveFeedSnapshot } from '@/lib/pcm/live-feed-adap
 import { SOVEREIGN_FEED_BOUNDARY } from '@/lib/pcm/live-feed-normaliser';
 
 export class SyntheticFeedAdapter implements LiveFeedAdapter {
-  readonly label = 'SYNTHETIC — OPEN BUILD — NO REAL DATA';
+  readonly label = 'SYNTHETIC, OPEN BUILD, NO REAL DATA';
 
   async fetchSnapshot(): Promise<LiveFeedSnapshot> {
     void SOVEREIGN_FEED_BOUNDARY;

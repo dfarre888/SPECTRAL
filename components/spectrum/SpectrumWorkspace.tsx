@@ -1,6 +1,6 @@
 'use client';
 /**
- * SpectrumWorkspace — the multi-canvas shell (Mockup Frame 05).
+ * SpectrumWorkspace: the multi-canvas shell (Mockup Frame 05).
  * Segregates the spectrum by physics: RF / GNSS / EO-IR / CBRN tabs.
  * Hosts layer toggles, the selected-platform tray, and view-mode switching.
  * This is the container for the five analysis canvases.
@@ -118,7 +118,7 @@ export function SpectrumWorkspace({
     }));
   }, [mode, platforms, selected, activeLayers]);
 
-  // 'tiles' is not a canvas mode — fall back to 'reference' for lane building
+  // 'tiles' is not a canvas mode: fall back to 'reference' for lane building
   const canvasMode = mode === 'tiles' ? 'reference' : mode;
 
   const lanes = useMemo(
@@ -173,7 +173,7 @@ export function SpectrumWorkspace({
         </div>
       </div>
 
-      {/* tiles mode — full-width, no sidebar */}
+      {/* tiles mode: full-width, no sidebar */}
       {mode === 'tiles' && (
         <section className="sx-glass" style={{ padding: 20 }}>
           <BandTileGrid />

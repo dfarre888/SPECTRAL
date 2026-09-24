@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Capability workbench — the Compare tab.
+ * Capability workbench: the Compare tab.
  * Roster (bench platforms) · Coverage (what the package still has) ·
  * Inspector (platform / capability / talk graph), under a spectrum ribbon.
  * Bench state lives in the URL (`bench=ID,ID`) so a demo can be shared.

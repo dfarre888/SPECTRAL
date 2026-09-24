@@ -1,6 +1,6 @@
 /**
- * BMI comms spectrum planner — frequency-band occupancy for coalition datalinks.
- * Communications frequency planning only — not threat emitters.
+ * BMI comms spectrum planner: frequency-band occupancy for coalition datalinks.
+ * Communications frequency planning only: not threat emitters.
  */
 
 import type {

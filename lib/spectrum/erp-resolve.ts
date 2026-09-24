@@ -72,7 +72,7 @@ export function resolveJamTransmit(
       erp_dbm: ESTIMATED_RF_JAM_DBM,
       freq_hz,
       confidence: 'Estimated',
-      source: 'No jam capability — OSINT default',
+      source: 'No jam capability: OSINT default',
     }
   }
 
@@ -104,7 +104,7 @@ export function resolveJamTransmit(
     erp_dbm: isRfJam ? ASSESSED_RF_JAM_DBM : ESTIMATED_RF_JAM_DBM,
     freq_hz,
     confidence: 'Assessed',
-    source: `${cap.label} — template ERP`,
+    source: `${cap.label}: template ERP`,
   }
 }
 

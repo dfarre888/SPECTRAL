@@ -1,4 +1,4 @@
-// SPECTRAL — ground risk near C-UAS laydown (training)
+// SPECTRAL: ground risk near C-UAS laydown (training)
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 
 import type { GradedClaim } from '@/lib/gnss/types'
@@ -45,14 +45,14 @@ export class GroundRiskEngine {
       overall: {
         value: level,
         grade: level === 'low' ? 'confirmed' : 'inferred',
-        basis: `${input.cuas_name} — ground risk tier for Map Intel training.`,
+        basis: `${input.cuas_name}: ground risk tier for Map Intel training.`,
         source_ref: null,
       },
       kinetic_flyout: grade(kinetic),
       rf_hazard: grade(rf),
       summary:
         level === 'high'
-          ? 'Review siting — kinetic debris and RF spillover may affect civilian receivers.'
+          ? 'Review siting: kinetic debris and RF spillover may affect civilian receivers.'
           : level === 'medium'
             ? 'Monitor proximity to structures / GNSS-dependent systems during jamming TTPs.'
             : 'Ground risk within training thresholds for current laydown.',

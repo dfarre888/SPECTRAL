@@ -1,5 +1,5 @@
 /**
- * AeroCopilot — Level-4 reasoning engine (offline rules core).
+ * AeroCopilot: Level-4 reasoning engine (offline rules core).
  * ------------------------------------------------------------
  * Parses a natural-language query, reasons over the full data model
  * (platforms, radars, capabilities, engagement engine), and returns:
@@ -244,13 +244,13 @@ function handlePlacement(
 
   return {
     answer:
-      'For a layered defence, place sensors and effectors in depth so each covers the gap the next one can\'t. Long-range early-warning at the back to cue everything, medium-range acquisition mid-depth, and short-range counter-UAS plus a hard-kill option at the asset you\'re protecting. I\'ve highlighted a recommended laydown — open the map to position them.',
+      'For a layered defence, place sensors and effectors in depth so each covers the gap the next one can\'t. Long-range early-warning at the back to cue everything, medium-range acquisition mid-depth, and short-range counter-UAS plus a hard-kill option at the asset you\'re protecting. I\'ve highlighted a recommended laydown: open the map to position them.',
     reasoning: [
-      ew ? `Early warning: ${ew.name} (${ew.bands.join('/')}-band, ~${ew.instrumented_range_km} km) — site high/rearward for maximum cueing range.` : 'No long-range EW radar in the library — consider adding one.',
-      acq ? `Acquisition: ${acq.name} (~${acq.instrumented_range_km} km) — mid-depth, overlapping the EW coverage.` : '',
-      cuas ? `Point defence: ${cuas.name} (small-UAS ~${cuas.range_vs_small_uas_km} km) — at the protected asset; cues the effector.` : '',
-      jammer ? `Soft-kill: ${jammer.name} — co-locate with point defence for RF/GNSS engagement.` : '',
-      hpm ? `Hard-kill / last resort: ${hpm.name} (HPM) — covers fibre-optic & swarm threats jamming can\'t touch.` : '',
+      ew ? `Early warning: ${ew.name} (${ew.bands.join('/')}-band, ~${ew.instrumented_range_km} km), site high/rearward for maximum cueing range.` : 'No long-range EW radar in the library, consider adding one.',
+      acq ? `Acquisition: ${acq.name} (~${acq.instrumented_range_km} km): mid-depth, overlapping the EW coverage.` : '',
+      cuas ? `Point defence: ${cuas.name} (small-UAS ~${cuas.range_vs_small_uas_km} km): at the protected asset; cues the effector.` : '',
+      jammer ? `Soft-kill: ${jammer.name}: co-locate with point defence for RF/GNSS engagement.` : '',
+      hpm ? `Hard-kill / last resort: ${hpm.name} (HPM): covers fibre-optic & swarm threats jamming can\'t touch.` : '',
       'Avoid co-siting emitters: separate radars so one ARM/SEAD strike cannot kill the whole picture.',
     ].filter(Boolean),
     action: { navigate: 'map', placeIds, highlightIds: placeIds },
@@ -268,7 +268,7 @@ function handleWhatCanIUse(
   ctx: CopilotContext,
   radars: RadarSystem[]
 ): CopilotResponse {
-  // "what drones can I use in this threat environment" — survivability vs the
+  // "what drones can I use in this threat environment": survivability vs the
   // threat radars/effectors present. Score each Red/own UAS by how detectable it is.
   const threatRadars = radars.length
     ? radars
@@ -292,7 +292,7 @@ function handleWhatCanIUse(
 
   return {
     answer: survivable.length
-      ? `Against the threat radars present, these airframes have the best chance of penetrating — I\'ve highlighted them in the library so you can select and place them. ${detectsSmall ? 'Note the environment includes small-UAS-capable radar, so even small drones are at risk.' : 'The environment lacks dedicated small-UAS radar, so small/low/slow platforms are favoured.'}`
+      ? `Against the threat radars present, these airframes have the best chance of penetrating: I\'ve highlighted them in the library so you can select and place them. ${detectsSmall ? 'Note the environment includes small-UAS-capable radar, so even small drones are at risk.' : 'The environment lacks dedicated small-UAS radar, so small/low/slow platforms are favoured.'}`
       : 'Every airframe in the library is detectable by at least one threat radar present. Favour the lowest-RCS or RF-silent options and plan for attrition or stand-off employment.',
     reasoning: [
       `Threat radars considered: ${threatRadars.slice(0, 4).map((r) => r.name).join(', ')}${threatRadars.length > 4 ? '…' : ''}.`,
@@ -338,7 +338,7 @@ function handleWhatIf(
 
   if (matched.length) {
     return {
-      answer: `I can run that engagement — pick the other side. You named ${matched.map((m) => m.name).join(' and ')}. Tell me the opposing threat or effector and I\'ll compute the outcome.`,
+      answer: `I can run that engagement: pick the other side. You named ${matched.map((m) => m.name).join(' and ')}. Tell me the opposing threat or effector and I\'ll compute the outcome.`,
       action: { navigate: 'engagement', ...(red ? { selectRedId: red.id } : {}), ...(blue ? { selectBlueId: blue.id } : {}) },
       refs: matched.map((m) => ({ id: m.id, name: m.name, side: m.side })),
     };
@@ -381,9 +381,9 @@ function handleCounter(
       answer: best.length
         ? `Against ${red.name}, your best kinetic/DE options are ${best.map((a) => a.effector.name).join(', ')}. ${exchange ? `Top pick exchange: ${exchange}.` : ''} I\'ve staged them; open the map to see engagement envelopes.`
         : marginal.length
-        ? `Nothing gives a clean, economical kill of ${red.name}. Marginal options: ${marginal.slice(0, 3).map((a) => a.effector.name).join(', ')} — capable but a poor cost-exchange. Favour a cheap layer (HPM/gun) if available.`
-        : `No effector in your inventory can finish ${red.name}. You have a FINISH gap — add an appropriate shooter.`,
-      reasoning: ranked.slice(0, 5).map((a) => `${a.effector.name}: ${a.verdict}${a.reasons[0] ? ` — ${a.reasons[0]}` : ''}`),
+        ? `Nothing gives a clean, economical kill of ${red.name}. Marginal options: ${marginal.slice(0, 3).map((a) => a.effector.name).join(', ')}: capable but a poor cost-exchange. Favour a cheap layer (HPM/gun) if available.`
+        : `No effector in your inventory can finish ${red.name}. You have a FINISH gap: add an appropriate shooter.`,
+      reasoning: ranked.slice(0, 5).map((a) => `${a.effector.name}: ${a.verdict}${a.reasons[0] ? `: ${a.reasons[0]}` : ''}`),
       action: { navigate: 'map', highlightIds: best.map((a) => a.effector.id), placeIds: best.map((a) => a.effector.id), detailId: red.id },
       refs: [{ id: red.id, name: red.name, side: 'red' }, ...best.map((a) => ({ id: a.effector.id, name: a.effector.name, side: 'blue' as Side }))],
       followups: [`What's the full kill chain on ${red.name}?`, `Can I find and fix ${red.name}?`, `What if ${red.name} comes in a swarm?`],
@@ -415,13 +415,13 @@ function handleKillChain(
   const threat = matched.find((p) => p.side === 'red') ?? matched[0];
   if (!threat || !ctx.effectors) {
     return {
-      answer: 'Name a threat and I\'ll walk the Find → Fix → Finish chain — whether you can detect it, get a weapons-quality track, and finish it, plus where the chain breaks.',
+      answer: 'Name a threat and I\'ll walk the Find → Fix → Finish chain: whether you can detect it, get a weapons-quality track, and finish it, plus where the chain breaks.',
       followups: ['What\'s the kill chain on a Shahed-136?', 'Can I find, fix and finish a fibre-optic FPV?'],
     };
   }
   const kc = killChainStatus(threat, ctx.radars, ctx.effectors, 'blue');
   return {
-    answer: `${kc.summary}. ${kc.broken_link ? `The weak link is ${kc.broken_link.toUpperCase()} — fix that first.` : 'All three links are in place.'}`,
+    answer: `${kc.summary}. ${kc.broken_link ? `The weak link is ${kc.broken_link.toUpperCase()}: fix that first.` : 'All three links are in place.'}`,
     reasoning: [
       `FIND: ${kc.find.ok ? '✓' : '✗'} ${kc.find.note}${kc.find.radars.length ? ` (${kc.find.radars.map((r) => r.name).slice(0, 3).join(', ')})` : ''}`,
       `FIX: ${kc.fix.ok ? '✓' : '✗'} ${kc.fix.note}`,
@@ -493,10 +493,10 @@ function handleExplainDefeat(
   const threat = platforms.find((p) => p.side === 'red') ?? platforms[0];
   const name = threat?.name ?? 'the threat';
   return {
-    answer: `Engagement economics for ${name}: compare effector unit cost vs threat unit cost at stated Pk. Shahed-class threats (~$20k OSINT) against NASAMS AMRAAM-ER (~$1M) yields ~50:1 unfavourable exchange — cue Gepard/point-defence first. Open /economics or Defeat Matrix for full pairing table.`,
+    answer: `Engagement economics for ${name}: compare effector unit cost vs threat unit cost at stated Pk. Shahed-class threats (~$20k OSINT) against NASAMS AMRAAM-ER (~$1M) yields ~50:1 unfavourable exchange: cue Gepard/point-defence first. Open /economics or Defeat Matrix for full pairing table.`,
     reasoning: [
       'Cost-exchange ratio = (effector round cost / Pk) / threat unit cost.',
-      'Magazine depth limits saturation defence — salvo simulator models leak-through.',
+      'Magazine depth limits saturation defence: salvo simulator models leak-through.',
       'Training tier uses OSINT unit costs with Assessed/Estimated confidence labels.',
     ],
     action: { navigate: 'map', highlightIds: threat ? [threat.id] : [] },

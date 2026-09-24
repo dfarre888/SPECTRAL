@@ -1,7 +1,7 @@
 /**
  * Places comms bearers on the frequency axis.
  *
- * Band allocations below are published military/ITU allocations — the kind of
+ * Band allocations below are published military/ITU allocations: the kind of
  * thing printed in a frequency plan. No waveform, hopping pattern, power or
  * keying detail is represented: that stays behind the accredited boundary.
  *
@@ -11,7 +11,7 @@
  *   1. Which links share spectrum, and therefore contend or can be jammed
  *      together. One barrage in 225-400 MHz takes UHF voice and the UHF leg of
  *      Link 22 at the same time.
- *   2. Which links survive when a band is denied — HF is slow and awkward, but
+ *   2. Which links survive when a band is denied: HF is slow and awkward, but
  *      it is nowhere near the jammed UHF stack.
  */
 
@@ -37,7 +37,7 @@ export const BEARER_SPECTRUM: Record<string, BearerSpectrum> = {
   'std:link16': {
     key: 'std:link16', label: 'Link 16', tier: 'track',
     spans: [{ loMhz: 960, hiMhz: 1215 }],
-    note: 'Lx band, shared with civil aeronautical radionavigation — hence notching.',
+    note: 'Lx band, shared with civil aeronautical radionavigation: hence notching.',
   },
   'std:link22': {
     key: 'std:link22', label: 'Link 22', tier: 'track',

@@ -1,6 +1,6 @@
 /**
  * OSINT performance overlays for A3DM COTS airframes.
- * Only published manufacturer / datasheet figures — never invent MTOW.
+ * Only published manufacturer / datasheet figures: never invent MTOW.
  * Date of information: Aug 2026.
  */
 import type { OsintPerformance } from '@/lib/a3dm/types'
@@ -10,7 +10,7 @@ const MHz_NOTE = (s: string): Pick<OsintPerformance, 'control_link_freq' | 'sour
   source: 'OSINT: manufacturer datasheet / product page',
 })
 
-/** Family matchers — first match wins. Tested against slug + display name. */
+/** Family matchers: first match wins. Tested against slug + display name. */
 const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
   {
     test: /mavic.?3|dji-mavic-3/,
@@ -21,8 +21,8 @@ const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
       ceiling_m: 6000,
       gnss_used: ['GPS', 'Galileo', 'BeiDou', 'GLONASS'],
       gnss_dependency: 'high',
-      ...MHz_NOTE('OcuSync 3 / O3 — 2.4 / 5.8 GHz'),
-      source: 'OSINT: DJI Mavic 3 series specs — 15 km FCC O3, 46 min class endurance, 6 km ceiling',
+      ...MHz_NOTE('OcuSync 3 / O3: 2.4 / 5.8 GHz'),
+      source: 'OSINT: DJI Mavic 3 series specs: 15 km FCC O3, 46 min class endurance, 6 km ceiling',
     },
   },
   {
@@ -35,8 +35,8 @@ const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
       gnss_used: ['GPS', 'GLONASS', 'BeiDou', 'Galileo'],
       rtk_capable: true,
       gnss_dependency: 'high',
-      ...MHz_NOTE('OcuSync Enterprise — 2.400–2.4835 / 5.725–5.850 GHz'),
-      source: 'OSINT: DJI M300 RTK datasheet — 15 km FCC, 55 min, 23 m/s, 5000 m (7000 m high-alt props)',
+      ...MHz_NOTE('OcuSync Enterprise: 2.400–2.4835 / 5.725–5.850 GHz'),
+      source: 'OSINT: DJI M300 RTK datasheet: 15 km FCC, 55 min, 23 m/s, 5000 m (7000 m high-alt props)',
     },
   },
   {
@@ -49,8 +49,8 @@ const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
       gnss_used: ['GPS', 'GLONASS', 'BeiDou', 'Galileo'],
       rtk_capable: true,
       gnss_dependency: 'high',
-      ...MHz_NOTE('OcuSync Enterprise — 2.4 / 5.8 GHz'),
-      source: 'OSINT: DJI Matrice 350 RTK product brief — 20 km FCC, 55 min class',
+      ...MHz_NOTE('OcuSync Enterprise: 2.4 / 5.8 GHz'),
+      source: 'OSINT: DJI Matrice 350 RTK product brief: 20 km FCC, 55 min class',
     },
   },
   {
@@ -63,8 +63,8 @@ const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
       gnss_used: ['GPS', 'Galileo', 'BeiDou', 'GLONASS'],
       rtk_capable: true,
       gnss_dependency: 'high',
-      ...MHz_NOTE('OcuSync Enterprise — 2.4 / 5.8 GHz'),
-      source: 'OSINT: DJI Matrice 30 series specs — 23 m/s, 5000–7000 m ceiling',
+      ...MHz_NOTE('OcuSync Enterprise: 2.4 / 5.8 GHz'),
+      source: 'OSINT: DJI Matrice 30 series specs: 23 m/s, 5000–7000 m ceiling',
     },
   },
   {
@@ -76,8 +76,8 @@ const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
       ceiling_m: 7010,
       gnss_used: ['GPS', 'GLONASS', 'Galileo', 'BeiDou'],
       gnss_dependency: 'medium',
-      ...MHz_NOTE('SkyLink 3.0 — 900 MHz / 2.4 / 5.2 / 5.8 GHz'),
-      source: 'OSINT: Autel EVO Max 4T — 20 km SkyLink, 42 min, 7010 m ceiling',
+      ...MHz_NOTE('SkyLink 3.0: 900 MHz / 2.4 / 5.2 / 5.8 GHz'),
+      source: 'OSINT: Autel EVO Max 4T: 20 km SkyLink, 42 min, 7010 m ceiling',
     },
   },
   {
@@ -89,8 +89,8 @@ const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
       ceiling_m: 4500,
       gnss_used: ['GPS', 'Galileo', 'GLONASS', 'BeiDou'],
       gnss_dependency: 'medium',
-      ...MHz_NOTE('Skydio Link — multi-band encrypted'),
-      source: 'OSINT: Skydio X10/X10D — ~40 min, visual autonomy GPS-denied capable',
+      ...MHz_NOTE('Skydio Link: multi-band encrypted'),
+      source: 'OSINT: Skydio X10/X10D: ~40 min, visual autonomy GPS-denied capable',
     },
   },
   {
@@ -104,7 +104,7 @@ const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
       rtk_capable: true,
       gnss_dependency: 'high',
       ...MHz_NOTE('2.4 GHz C2 (mapping VTOL)'),
-      source: 'OSINT: WingtraOne GEN II — 59 min, RTK/PPK mapping VTOL',
+      source: 'OSINT: WingtraOne GEN II: 59 min, RTK/PPK mapping VTOL',
     },
   },
   {
@@ -118,7 +118,7 @@ const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
       rtk_capable: true,
       gnss_dependency: 'high',
       ...MHz_NOTE('2.4 GHz C2'),
-      source: 'OSINT: senseFly eBee X family — up to 90 min endurance class',
+      source: 'OSINT: senseFly eBee X family: up to 90 min endurance class',
     },
   },
   {
@@ -130,8 +130,8 @@ const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
       ceiling_m: 4500,
       gnss_used: ['GPS', 'GLONASS', 'Galileo'],
       gnss_dependency: 'high',
-      ...MHz_NOTE('Wi-Fi / Parrot Skycontroller — 2.4 / 5.8 GHz'),
-      source: 'OSINT: Parrot ANAFI family — ~32 min class, Blue UAS variants USA/Gov',
+      ...MHz_NOTE('Wi-Fi / Parrot Skycontroller: 2.4 / 5.8 GHz'),
+      source: 'OSINT: Parrot ANAFI family: ~32 min class, Blue UAS variants USA/Gov',
     },
   },
   {
@@ -143,8 +143,8 @@ const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
       ceiling_m: 6000,
       gnss_used: ['GPS', 'GLONASS'],
       gnss_dependency: 'high',
-      ...MHz_NOTE('OcuSync / Lightbridge — 2.4 / 5.8 GHz'),
-      source: 'OSINT: DJI OcuSync/Lightbridge generation — typical 8 km FCC class',
+      ...MHz_NOTE('OcuSync / Lightbridge: 2.4 / 5.8 GHz'),
+      source: 'OSINT: DJI OcuSync/Lightbridge generation: typical 8 km FCC class',
     },
   },
   {
@@ -156,8 +156,8 @@ const FAMILIES: { test: RegExp; perf: OsintPerformance }[] = [
       ceiling_m: 4000,
       gnss_used: ['GPS', 'Galileo', 'BeiDou'],
       gnss_dependency: 'high',
-      ...MHz_NOTE('OcuSync — 2.4 / 5.8 GHz'),
-      source: 'OSINT: DJI Mini/Air O3 class — ~10 km FCC, sub-250 g / light quad',
+      ...MHz_NOTE('OcuSync: 2.4 / 5.8 GHz'),
+      source: 'OSINT: DJI Mini/Air O3 class: ~10 km FCC, sub-250 g / light quad',
     },
   },
 ]

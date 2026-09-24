@@ -33,10 +33,10 @@ function resolveCount(module: SpectralModule, stats: ModuleCatalogStats): string
 }
 
 const RECENT_INCIDENTS = [
-  { id: 'ukraine-shahed-swarm', label: 'Ukraine — Shahed-136 swarm campaign', status: 'ongoing', type: 'strike' },
-  { id: 'vivid-sydney-2024', label: 'Vivid Sydney 2024 — GPS denial (80+ drones)', status: 'closed', type: 'gnss' },
-  { id: 'ukraine-lancet', label: 'Ukraine — Lancet loitering munition vs armour', status: 'ongoing', type: 'strike' },
-  { id: 'houthi-red-sea', label: 'Yemen — Houthi Red Sea drone campaign', status: 'ongoing', type: 'swarm' },
+  { id: 'ukraine-shahed-swarm', label: 'Ukraine: Shahed-136 swarm campaign', status: 'ongoing', type: 'strike' },
+  { id: 'vivid-sydney-2024', label: 'Vivid Sydney 2024: GPS denial (80+ drones)', status: 'closed', type: 'gnss' },
+  { id: 'ukraine-lancet', label: 'Ukraine: Lancet loitering munition vs armour', status: 'ongoing', type: 'strike' },
+  { id: 'houthi-red-sea', label: 'Yemen: Houthi Red Sea drone campaign', status: 'ongoing', type: 'swarm' },
 ]
 
 const STATS = (stats: ModuleCatalogStats) => [
@@ -126,7 +126,7 @@ export function DashboardModuleCatalog({ stats }: DashboardModuleCatalogProps) {
               ) : (
                 <CheckCircle className="w-3.5 h-3.5 text-[#4ADE80] shrink-0" aria-label="Closed" />
               )}
-              <p className="text-[13px] store-text-body group-hover:text-[var(--store-ink)] flex-1">{label.replace(' — ', ': ')}</p>
+              <p className="text-[13px] store-text-body group-hover:text-[var(--store-ink)] flex-1">{label.replace(': ', ': ')}</p>
               <span className="tag capitalize">{status}</span>
               <span className="tag">{type}</span>
             </Link>

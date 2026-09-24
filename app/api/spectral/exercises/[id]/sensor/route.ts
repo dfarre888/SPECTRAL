@@ -28,7 +28,7 @@ export async function GET(
 
     if (contacts === null) {
       return NextResponse.json(
-        { error: 'Not authorised — player not assigned to this force' },
+        { error: 'Not authorised: player not assigned to this force' },
         { status: 403 },
       );
     }

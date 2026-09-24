@@ -1,5 +1,5 @@
 /**
- * Client-safe OSINT defeat system ranges — no Supabase / next/headers.
+ * Client-safe OSINT defeat system ranges: no Supabase / next/headers.
  * Shared by WOPR COP range rings and server-side DefeatMatrixCache.createOffline().
  */
 

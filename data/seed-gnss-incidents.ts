@@ -1,5 +1,5 @@
 /**
- * SPECTRAL — GNSS incident seed dataset (OSINT, evidence-graded).
+ * SPECTRAL: GNSS incident seed dataset (OSINT, evidence-graded).
  * CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 
@@ -9,10 +9,10 @@ const now = '2026-06-14T00:00:00Z';
 
 export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
 
-  // ── DOCKLANDS 2023 — the confirmed-cause anchor (ATSB AO-2023-033) ──────────
+  // ── DOCKLANDS 2023: the confirmed-cause anchor (ATSB AO-2023-033) ──────────
   {
     id: 'INC-2023-DOCKLANDS',
-    title: 'Docklands swarm — 427 of 500 drones ditched; wind exceedance (GNSS ruled out)',
+    title: 'Docklands swarm: 427 of 500 drones ditched; wind exceedance (GNSS ruled out)',
     date: '2023-07-14',
     event_context: 'Drone light show, Victoria Harbour, supporting a sporting event',
     platform: {
@@ -26,21 +26,21 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
       country: 'Australia',
       lat: -37.8190, lng: 144.9460,
       environment_type: 'urban_dense',
-      rf_density_note: 'Dense urban harbour, high-rise on three sides. Notably, the operator anticipated magnetic interference at the launch site from steel-reinforced dock concrete — but that was not the cause.',
+      rf_density_note: 'Dense urban harbour, high-rise on three sides. Notably, the operator anticipated magnetic interference at the launch site from steel-reinforced dock concrete: but that was not the cause.',
       near_known_interference_zone: false,
     },
-    // CATEGORISATION — primarily environmental, NOT GNSS denial
+    // CATEGORISATION: primarily environmental, NOT GNSS denial
     failure_family_primary: 'environmental',
     failure_family_contributing: ['human_factors', 'procedural'],
-    // SPECTRUM — the operator actually ran a survey and found the bands clean
+    // SPECTRUM: the operator actually ran a survey and found the bands clean
     spectrum: {
       dependencies: [
         { band: 'GPS_L1', role: 'positioning', interference_on_band: { value: false, grade: 'confirmed', basis: 'Aircraft showed 23–28 satellites and a high-accuracy RTK fix at launch; pre-show spectrum analyser found no abnormalities.', source_ref: 'ATSB AO-2023-033' }, note: 'Primary positioning band; confirmed healthy at launch.' },
         { band: 'rtk_correction_link', role: 'positioning_correction', interference_on_band: { value: false, grade: 'confirmed', basis: 'RTK fix was high-accuracy and stable pre-launch; GCS positions matched CCTV (no spoofing displacement).', source_ref: 'ATSB AO-2023-033' }, note: 'Differential ground station correction link.' },
-        { band: 'control_link_2_4ghz', role: 'swarm_network', interference_on_band: { value: false, grade: 'confirmed', basis: 'Wi-Fi swarm network; no command/control anomalies recorded. ATSB also ruled out a malicious actor — no unexpected mode changes or commands.', source_ref: 'ATSB AO-2023-033' }, note: 'Wi-Fi swarm comms + 2.4 GHz VANTAC/FrSky hand controller backup.' },
+        { band: 'control_link_2_4ghz', role: 'swarm_network', interference_on_band: { value: false, grade: 'confirmed', basis: 'Wi-Fi swarm network; no command/control anomalies recorded. ATSB also ruled out a malicious actor: no unexpected mode changes or commands.', source_ref: 'ATSB AO-2023-033' }, note: 'Wi-Fi swarm comms + 2.4 GHz VANTAC/FrSky hand controller backup.' },
       ],
       spectrum_survey_conducted: true,
-      survey_finding: 'Operator set up a spectrum analyser pre-show specifically to detect GNSS interference. No abnormalities identified. This is the model behaviour the repository advocates — and here it correctly exonerated the spectrum.',
+      survey_finding: 'Operator set up a spectrum analyser pre-show specifically to detect GNSS interference. No abnormalities identified. This is the model behaviour the repository advocates: and here it correctly exonerated the spectrum.',
     },
     failure_mode: {
       value: 'onboard_fault',   // i.e. not RF; environmental exceedance of capability
@@ -51,7 +51,7 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
     affected_bands: {
       value: [],
       grade: 'confirmed',
-      basis: 'No band was affected — the spectrum was confirmed clean. This is the dataset\u2019s proof that not every swarm loss is an RF event.',
+      basis: 'No band was affected: the spectrum was confirmed clean. This is the dataset\u2019s proof that not every swarm loss is an RF event.',
       source_ref: 'ATSB AO-2023-033',
     },
     affected_constellations: {
@@ -61,7 +61,7 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
       source_ref: 'ATSB AO-2023-033',
     },
     interference_source: {
-      value: 'None — no interference involved',
+      value: 'None: no interference involved',
       grade: 'confirmed',
       basis: 'Cause was environmental (wind) plus human factors. Interference explicitly excluded by investigation.',
       source_ref: 'ATSB AO-2023-033',
@@ -78,10 +78,10 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
     mitigation_that_helped: 'Over-water siting prevented injury. Pre-show spectrum survey correctly cleared GNSS. Geofence and failsafe modes activated.',
     mitigation_that_would_have_helped: 'Use of the GCS wind-speed readout (crew were unaware it existed); a weather-drone wind check at show altitude; active wind-exceedance alerting; sterile-cockpit procedures; a more current copilot to flatten the cockpit gradient.',
     sources: [
-      { type: 'ntsb_atsb', title: 'ATSB AO-2023-033 — Control issues and ditching involving RPA swarm of 500 Damoda Newton 2.2 RPA, Victoria Harbour, Docklands', url: 'https://www.atsb.gov.au/publications/investigation_reports/2025/report/ao-2023-033', reliability: 'primary', accessed: '2026-06-14' },
+      { type: 'ntsb_atsb', title: 'ATSB AO-2023-033: Control issues and ditching involving RPA swarm of 500 Damoda Newton 2.2 RPA, Victoria Harbour, Docklands', url: 'https://www.atsb.gov.au/publications/investigation_reports/2025/report/ao-2023-033', reliability: 'primary', accessed: '2026-06-14' },
     ],
     overall_confidence: 'confirmed',
-    analyst_notes: 'THE ANCHOR INCIDENT. The most thorough drone-swarm investigation in existence, and the only confirmed-cause entry in the dataset. Crucially, it is NOT a GNSS-denial event — the ATSB ran the spectrum check and cleared it, then proved wind + human factors. This is the repository\u2019s credibility keystone: it demonstrates the tool will say "not RF" when the evidence says not RF. Human-factors chain worth teaching in full: RPIC unaware the GCS displayed wind speed; no active wind alert; high workload from an inexperienced copilot (who was the CRP — negative cockpit gradient); client/CEO pressure; continuation bias from 30+ incident-free shows; a fixed harbour-closure window forcing launch time.',
+    analyst_notes: 'THE ANCHOR INCIDENT. The most thorough drone-swarm investigation in existence, and the only confirmed-cause entry in the dataset. Crucially, it is NOT a GNSS-denial event, the ATSB ran the spectrum check and cleared it, then proved wind + human factors. This is the repository\u2019s credibility keystone: it demonstrates the tool will say "not RF" when the evidence says not RF. Human-factors chain worth teaching in full: RPIC unaware the GCS displayed wind speed; no active wind alert; high workload from an inexperienced copilot (who was the CRP, negative cockpit gradient); client/CEO pressure; continuation bias from 30+ incident-free shows; a fixed harbour-closure window forcing launch time.',
     created_at: now, updated_at: now,
   },
 
@@ -89,7 +89,7 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
   // ── VIVID SYDNEY 2026 ──────────────────────────────────────────────────────
   {
     id: 'INC-2026-SYD-VIVID',
-    title: 'Vivid Sydney Star-Bound show cancelled — GPS positioning disrupted',
+    title: 'Vivid Sydney Star-Bound show cancelled: GPS positioning disrupted',
     date: '2026-05-26',
     event_context: 'Vivid Sydney 2026 nightly drone show, Cockle Bay, Darling Harbour',
     platform: {
@@ -103,7 +103,7 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
       country: 'Australia',
       lat: -33.8748, lng: 151.1987,
       environment_type: 'urban_dense',
-      rf_density_note: 'Dense CBD waterfront — high ambient RF, surrounded by commercial towers and transport infrastructure.',
+      rf_density_note: 'Dense CBD waterfront: high ambient RF, surrounded by commercial towers and transport infrastructure.',
       near_known_interference_zone: false,
     },
     failure_family_primary: 'gnss_denial',
@@ -135,7 +135,7 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
       source_ref: 'ABC News 2026-05-26',
     },
     interference_source: {
-      value: 'Under investigation — not identified',
+      value: 'Under investigation: not identified',
       grade: 'unknown',
       basis: 'No source identified the interference source. Officially under investigation.',
       source_ref: null,
@@ -152,17 +152,17 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
     mitigation_that_helped: 'Failsafe controlled descent prevented uncontrolled falls; pre-show decision to cancel.',
     mitigation_that_would_have_helped: 'Pre-show RF survey; multi-constellation + non-GNSS (UWB/INS) fallback for GNSS-denied resilience.',
     sources: [
-      { type: 'news', title: 'ABC News — Vivid drone show cancellation', url: 'https://www.abc.net.au/news/2026-05-26/technical-issues-force-cancellation-vivid-drone-show-monday/106721200', reliability: 'secondary', accessed: '2026-05-27' },
+      { type: 'news', title: 'ABC News: Vivid drone show cancellation', url: 'https://www.abc.net.au/news/2026-05-26/technical-issues-force-cancellation-vivid-drone-show-monday/106721200', reliability: 'secondary', accessed: '2026-05-27' },
     ],
     overall_confidence: 'inferred',
-    analyst_notes: 'A near-textbook GNSS-denial event in a dense urban waterfront. Cause genuinely undetermined publicly — graded accordingly. Strong teaching example precisely because the cause is unconfirmed: operators must plan for GNSS denial even when they will never know the source.',
+    analyst_notes: 'A near-textbook GNSS-denial event in a dense urban waterfront. Cause genuinely undetermined publicly: graded accordingly. Strong teaching example precisely because the cause is unconfirmed: operators must plan for GNSS denial even when they will never know the source.',
     created_at: now, updated_at: now,
   },
 
   // ── HO CHI MINH CITY 2025 ──────────────────────────────────────────────────
   {
     id: 'INC-2025-HCMC',
-    title: 'Ho Chi Minh City 10,500-drone show — mass signal interference',
+    title: 'Ho Chi Minh City 10,500-drone show: mass signal interference',
     date: '2025-04-30',
     event_context: '50th Reunification Anniversary celebration',
     platform: {
@@ -207,7 +207,7 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
       source_ref: null,
     },
     interference_source: {
-      value: 'Unconfirmed — urban RF density suspected',
+      value: 'Unconfirmed: urban RF density suspected',
       grade: 'reported',
       basis: 'Reporting suggested urban RF density; no confirmed source.',
       source_ref: 'News reporting 2025',
@@ -224,8 +224,8 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
     mitigation_that_helped: null,
     mitigation_that_would_have_helped: 'RF survey of the dense urban site; non-GNSS positioning fallback; reduced swarm density over audience.',
     sources: [
-      { type: 'news', title: 'News reporting — HCMC Reunification drone show', url: null, reliability: 'secondary', accessed: '2026-05-27' },
-      { type: 'academic', title: 'arXiv — Robust Evacuation for Multi-Drone Failure in Drone Light Shows', url: 'https://arxiv.org/pdf/2601.06728', reliability: 'primary', accessed: '2026-06-14' },
+      { type: 'news', title: 'News reporting: HCMC Reunification drone show', url: null, reliability: 'secondary', accessed: '2026-05-27' },
+      { type: 'academic', title: 'arXiv: Robust Evacuation for Multi-Drone Failure in Drone Light Shows', url: 'https://arxiv.org/pdf/2601.06728', reliability: 'primary', accessed: '2026-06-14' },
     ],
     overall_confidence: 'unknown',
     analyst_notes: 'Largest swarm in the dataset and the most severe audience impact. Cause never confirmed. The scale makes it the strongest argument for mandatory RF survey at large urban shows.',
@@ -235,7 +235,7 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
   // ── SEATTLE / SEATAC 2024 ──────────────────────────────────────────────────
   {
     id: 'INC-2024-SEATTLE',
-    title: 'Seattle Independence Day show — 55 drones lost GPS, descended into lake',
+    title: 'Seattle Independence Day show: 55 drones lost GPS, descended into lake',
     date: '2024-07-04',
     event_context: 'Independence Day drone show',
     platform: {
@@ -264,7 +264,7 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
     failure_mode: {
       value: 'jamming_broadband',
       grade: 'reported',
-      basis: 'Operator publicly confirmed "nothing wrong with drones or software" and attributed the loss to outside RF interference. Whether broadband jamming vs adjacent-band was the mechanism was not confirmed — graded reported, not confirmed.',
+      basis: 'Operator publicly confirmed "nothing wrong with drones or software" and attributed the loss to outside RF interference. Whether broadband jamming vs adjacent-band was the mechanism was not confirmed: graded reported, not confirmed.',
       source_ref: 'Operator statement; FAA investigation 2024',
     },
     affected_bands: {
@@ -280,7 +280,7 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
       source_ref: 'Operator statement 2024',
     },
     interference_source: {
-      value: 'Outside RF interference — off-frequency towers or unauthorised jamming suspected; never conclusively attributed',
+      value: 'Outside RF interference: off-frequency towers or unauthorised jamming suspected; never conclusively attributed',
       grade: 'reported',
       basis: 'Operator and reporting cited outside interference; source never confirmed.',
       source_ref: 'FAA investigation 2024',
@@ -298,17 +298,17 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
     mitigation_that_would_have_helped: 'Multi-constellation receivers; RF monitoring during show to characterise the interference.',
     sources: [
       { type: 'operator_statement', title: 'Operator statement on outside RF interference', url: null, reliability: 'primary', accessed: '2026-05-27' },
-      { type: 'academic', title: 'arXiv — drone-show failure analysis (SeaTac 2024)', url: 'https://arxiv.org/pdf/2601.06728', reliability: 'primary', accessed: '2026-06-14' },
+      { type: 'academic', title: 'arXiv: drone-show failure analysis (SeaTac 2024)', url: 'https://arxiv.org/pdf/2601.06728', reliability: 'primary', accessed: '2026-06-14' },
     ],
     overall_confidence: 'reported',
-    analyst_notes: 'Useful because the operator explicitly ruled out aircraft/software fault — one of the cleaner "external interference" attributions, though the source was never confirmed.',
+    analyst_notes: 'Useful because the operator explicitly ruled out aircraft/software fault: one of the cleaner "external interference" attributions, though the source was never confirmed.',
     created_at: now, updated_at: now,
   },
 
   // ── FOLLY BEACH 2024 ───────────────────────────────────────────────────────
   {
     id: 'INC-2024-FOLLY',
-    title: 'Folly Beach NYE show — signal malfunction, one injury',
+    title: 'Folly Beach NYE show: signal malfunction, one injury',
     date: '2024-12-31',
     event_context: 'New Year\'s Eve drone show',
     platform: {
@@ -370,17 +370,17 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
     mitigation_that_helped: 'Controlled descent limited severity.',
     mitigation_that_would_have_helped: 'Greater stand-off between swarm and crowd; documented cause would aid prevention.',
     sources: [
-      { type: 'regulator', title: 'FAA notification — Folly Beach NYE incident', url: null, reliability: 'secondary', accessed: '2026-05-27' },
+      { type: 'regulator', title: 'FAA notification: Folly Beach NYE incident', url: null, reliability: 'secondary', accessed: '2026-05-27' },
     ],
     overall_confidence: 'unknown',
-    analyst_notes: 'Included specifically because cause was NOT disclosed — a reminder that "signal malfunction" in reporting tells an operator nothing actionable. Injury occurred despite controlled descent: crowd stand-off matters.',
+    analyst_notes: 'Included specifically because cause was NOT disclosed: a reminder that "signal malfunction" in reporting tells an operator nothing actionable. Injury occurred despite controlled descent: crowd stand-off matters.',
     created_at: now, updated_at: now,
   },
 
   // ── ORLANDO 2024 ───────────────────────────────────────────────────────────
   {
     id: 'INC-2024-ORLANDO',
-    title: 'Orlando drone show — collision/drop, child injured',
+    title: 'Orlando drone show: collision/drop, child injured',
     date: '2024-12-21',
     event_context: 'Holiday drone show',
     platform: {
@@ -401,7 +401,7 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
     failure_family_contributing: ['procedural'],
     spectrum: {
       dependencies: [
-        { band: 'unknown', role: 'positioning', interference_on_band: { value: false, grade: 'reported', basis: 'Not attributed to RF interference; associated with collision/operational failure.', source_ref: null }, note: 'Not an RF event — counter-example.' },
+        { band: 'unknown', role: 'positioning', interference_on_band: { value: false, grade: 'reported', basis: 'Not attributed to RF interference; associated with collision/operational failure.', source_ref: null }, note: 'Not an RF event: counter-example.' },
       ],
       spectrum_survey_conducted: null,
       survey_finding: null,
@@ -440,19 +440,19 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
       description: 'Drones collided/dropped; a child was injured. Significant regulatory response followed.',
     },
     mitigation_that_helped: null,
-    mitigation_that_would_have_helped: 'Not necessarily an RF mitigation case — included to show not every show failure is GNSS denial.',
+    mitigation_that_would_have_helped: 'Not necessarily an RF mitigation case: included to show not every show failure is GNSS denial.',
     sources: [
       { type: 'ntsb_atsb', title: 'NTSB investigation / FAA waiver suspension', url: null, reliability: 'secondary', accessed: '2026-05-27' },
     ],
     overall_confidence: 'reported',
-    analyst_notes: 'IMPORTANT for analytic honesty: this is the counter-example in the dataset. It is widely listed among "drone show failures" but is NOT a confirmed GNSS-denial event. Keeping it — correctly graded — stops the analytics from overcounting RF causation.',
+    analyst_notes: 'IMPORTANT for analytic honesty: this is the counter-example in the dataset. It is widely listed among "drone show failures" but is NOT a confirmed GNSS-denial event. Keeping it, correctly graded, stops the analytics from overcounting RF causation.',
     created_at: now, updated_at: now,
   },
 
   // ── HONG KONG 2018 ─────────────────────────────────────────────────────────
   {
     id: 'INC-2018-HONGKONG',
-    title: 'Hong Kong Victoria Harbour show — 46 drones dropped into harbour',
+    title: 'Hong Kong Victoria Harbour show: 46 drones dropped into harbour',
     date: '2018-10-01',
     event_context: 'Drone light show, Victoria Harbour',
     platform: {
@@ -497,7 +497,7 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
       source_ref: null,
     },
     interference_source: {
-      value: 'Suspected interference — not confirmed',
+      value: 'Suspected interference: not confirmed',
       grade: 'reported',
       basis: 'Reporting cited suspected interference; source never confirmed.',
       source_ref: 'arXiv 2601.06728',
@@ -514,17 +514,17 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
     mitigation_that_helped: 'Descent over water avoided crowd injury.',
     mitigation_that_would_have_helped: 'RF survey in an extreme-density harbour environment; non-GNSS fallback.',
     sources: [
-      { type: 'academic', title: 'arXiv — Robust Evacuation for Multi-Drone Failure in Drone Light Shows', url: 'https://arxiv.org/pdf/2601.06728', reliability: 'primary', accessed: '2026-06-14' },
+      { type: 'academic', title: 'arXiv: Robust Evacuation for Multi-Drone Failure in Drone Light Shows', url: 'https://arxiv.org/pdf/2601.06728', reliability: 'primary', accessed: '2026-06-14' },
     ],
     overall_confidence: 'reported',
-    analyst_notes: 'Earliest incident in the dataset (2018) — establishes that this is not a new phenomenon. The "~46 drones dropped" figure is close to the "89 dropped" the operator may be recalling; worth verifying which harbour-drop event they meant.',
+    analyst_notes: 'Earliest incident in the dataset (2018): establishes that this is not a new phenomenon. The "~46 drones dropped" figure is close to the "89 dropped" the operator may be recalling; worth verifying which harbour-drop event they meant.',
     created_at: now, updated_at: now,
   },
 
   // ── TAICHUNG 2020 ──────────────────────────────────────────────────────────
   {
     id: 'INC-2020-TAICHUNG',
-    title: 'Taichung City drone show — multi-drone drop',
+    title: 'Taichung City drone show: multi-drone drop',
     date: '2020-02-08',
     event_context: 'Lantern Festival / city drone show',
     platform: {
@@ -571,10 +571,10 @@ export const SEED_GNSS_INCIDENTS: GnssIncident[] = [
     mitigation_that_helped: null,
     mitigation_that_would_have_helped: 'Cause-determination instrumentation (GNSS interference logging) would have made this actionable.',
     sources: [
-      { type: 'academic', title: 'arXiv — Robust Evacuation for Multi-Drone Failure in Drone Light Shows', url: 'https://arxiv.org/pdf/2601.06728', reliability: 'primary', accessed: '2026-06-14' },
+      { type: 'academic', title: 'arXiv: Robust Evacuation for Multi-Drone Failure in Drone Light Shows', url: 'https://arxiv.org/pdf/2601.06728', reliability: 'primary', accessed: '2026-06-14' },
     ],
     overall_confidence: 'unknown',
-    analyst_notes: 'Indeterminate cause. Included to keep the "unknown" category honest — a large share of real incidents are simply never explained, which is itself the headline finding.',
+    analyst_notes: 'Indeterminate cause. Included to keep the "unknown" category honest: a large share of real incidents are simply never explained, which is itself the headline finding.',
     created_at: now, updated_at: now,
   },
 

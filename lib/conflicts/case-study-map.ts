@@ -12,7 +12,7 @@ export function caseStudyToMapIncidents(study: ConflictCaseStudy): ConflictIncid
       {
         id: `${study.id}:region`,
         conflict_name: study.name,
-        incident_title: `${study.region} — operational area`,
+        incident_title: `${study.region}: operational area`,
         incident_type: 'other',
         occurred_at: `${study.source_date}T00:00:00Z`,
         lat: anchor.lat,

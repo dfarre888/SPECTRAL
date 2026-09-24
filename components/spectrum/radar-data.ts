@@ -1,6 +1,6 @@
 'use client';
 /**
- * Radar data access — loads radar systems and exposes them to the radar
+ * Radar data access: loads radar systems and exposes them to the radar
  * canvas, the library, and AeroCopilot. Supabase path documented for Cursor.
  */
 

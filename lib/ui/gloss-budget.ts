@@ -2,7 +2,7 @@
  * Gloss budget.
  *
  * Dark Frame's central rule is that gloss appears in two or three places per
- * screen and nowhere else — gloss everywhere is a theme, gloss in one place is
+ * screen and nowhere else: gloss everywhere is a theme, gloss in one place is
  * a thing worth looking at. Put a sweep on every panel and the page reads
  * uniformly plasticky rather than expensive.
  *
@@ -34,7 +34,7 @@ export interface GlossCandidate {
  * Pick the elements that get gloss.
  *
  * Returns a set rather than a list so the render path is a cheap membership
- * test, and returns nothing at all when nothing is eligible — a screen with no
+ * test, and returns nothing at all when nothing is eligible: a screen with no
  * attention state should be entirely matte, which is what makes the treatment
  * legible when it does appear.
  */

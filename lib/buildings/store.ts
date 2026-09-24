@@ -7,7 +7,7 @@ const memoryStore = new Map<string, BuildingFootprint[]>()
 function assertTenantPartition(buildings: BuildingFootprint[], tenantId: string): BuildingFootprint[] {
   return buildings.filter((b) => {
     if (b.tenantId !== tenantId) {
-      console.warn(`[buildings] Dropped footprint ${b.id} — tenant mismatch (expected ${tenantId})`)
+      console.warn(`[buildings] Dropped footprint ${b.id}: tenant mismatch (expected ${tenantId})`)
       return false
     }
     return true
@@ -57,7 +57,7 @@ export function cacheBuildingsForTenant(tenantId: string, buildings: BuildingFoo
   memoryStore.set(tenantId, assertTenantPartition(buildings, tenantId))
 }
 
-/** Invalidate cached footprints after ingest or tenant switch — prevents cross-tenant bleed. */
+/** Invalidate cached footprints after ingest or tenant switch: prevents cross-tenant bleed. */
 export function invalidateBuildingCache(tenantId?: string): void {
   if (tenantId) memoryStore.delete(tenantId)
   else memoryStore.clear()

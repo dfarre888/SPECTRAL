@@ -1,7 +1,7 @@
 /**
  * Builds a kill chain from the inputs the pair adjudicator already computes.
  *
- * Nothing new is measured here — the same spectrum verdict, propagation gate,
+ * Nothing new is measured here: the same spectrum verdict, propagation gate,
  * range check and Pk that feed combinedScore() are re-expressed as conditional
  * stages. The point is interpretability: the same evidence, arranged so it can
  * be reasoned about and argued with.
@@ -60,7 +60,7 @@ export function killChainFromPairResult(
   // is not a track, and an RF effector gated by propagation cannot maintain one.
   const trackP = result.propagationGated ? 0.45 : 0.9
 
-  // Engagement is gated hard by range and immunity — these are pass/fail, not
+  // Engagement is gated hard by range and immunity: these are pass/fail, not
   // soft factors, and modelling them as such is more honest than a multiplier.
   const engageP = !result.inRange ? 0 : result.isImmune ? 0.05 : 0.9
 
@@ -83,7 +83,7 @@ export function killChainFromPairResult(
       label: 'Track',
       p: trackP,
       basis: result.propagationGated
-        ? 'Propagation gated — terrain or path loss degrades track hold'
+        ? 'Propagation gated: terrain or path loss degrades track hold'
         : 'Clear propagation path',
       confidence: 'osint',
     },
@@ -105,7 +105,7 @@ export function killChainFromPairResult(
       basis:
         result.defeatMatrixPk !== null
           ? `Pk ${result.defeatMatrixPk}% from ${result.data_source ?? 'osint'} layer`
-          : 'No Pk on record — stage estimated, band widened accordingly',
+          : 'No Pk on record: stage estimated, band widened accordingly',
       confidence: result.defeatMatrixPk !== null ? confidence : 'estimated',
     },
   ]

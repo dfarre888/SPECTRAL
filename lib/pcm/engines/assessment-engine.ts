@@ -1,5 +1,5 @@
 /**
- * PCM assessment phase — force totals, outcome, win probability.
+ * PCM assessment phase: force totals, outcome, win probability.
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';

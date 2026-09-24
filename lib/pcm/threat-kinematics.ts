@@ -1,5 +1,5 @@
 /**
- * Inbound threat kinematics — grid-hop progression toward Blue C2.
+ * Inbound threat kinematics: grid-hop progression toward Blue C2.
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';

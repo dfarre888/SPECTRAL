@@ -1,12 +1,12 @@
 /**
- * Spectrum Intelligence — F3 effector / interceptor layer types
+ * Spectrum Intelligence: F3 effector / interceptor layer types
  * =============================================================
  * Extends the model from "what emits/detects/jams" (radars) to the full
  * Find–Fix–Finish kill chain. An EffectorSystem is a shooter: a SAM, a gun,
  * an HPM, or a laser. It carries:
  *   - FIND/FIX: the sensor that cues it (links to a RadarSystem id)
  *   - FIRE:     the engagement envelope (min/max range, min/max altitude,
- *               no-escape zone) — this is what becomes a polygon on the map
+ *               no-escape zone): this is what becomes a polygon on the map
  *   - FINISH:   effect type, Pk, magazine depth, reload/cooldown
  *   - SURVIVABILITY: what it can evade, ARM/SEAD vulnerability, EMCON posture
  *
@@ -28,7 +28,7 @@ export type EffectType =
   | 'kinetic_interceptor_drone' // drone-on-drone / loitering interceptor
   | 'net_capture';      // physical capture (point defence)
 
-/** Tier of the layered IADS — drives map ring colour & planning. */
+/** Tier of the layered IADS: drives map ring colour & planning. */
 export type EffectorTier =
   | 'point_defence'     // <10 km, last-ditch
   | 'shorad'            // short-range air defence
@@ -38,7 +38,7 @@ export type EffectorTier =
   | 'ciws_naval'        // naval close-in
   | 'c_uas';            // dedicated counter-UAS effector
 
-/** The FIRE dimension — becomes the 3D engagement volume on the map. */
+/** The FIRE dimension: becomes the 3D engagement volume on the map. */
 export interface EngagementEnvelope {
   min_range_km: number;
   max_range_km: number;
@@ -46,7 +46,7 @@ export interface EngagementEnvelope {
   max_alt_km: number;       // ceiling
   /** no-escape zone: inside this range an evading target likely cannot outrun the shot */
   no_escape_range_km?: number | null;
-  /** coverage arc — 360 for rotating, else sector degrees */
+  /** coverage arc: 360 for rotating, else sector degrees */
   azimuth_deg?: number | null;
   /** DYNAMIC-SIM: flyout speed (Mach) for time-to-intercept maths */
   intercept_speed_mach?: number | null;
@@ -61,7 +61,7 @@ export interface EffectorSystem {
   manufacturer?: string | null;
   tier: EffectorTier;
   associated_system?: string | null;   // parent platform (e.g. "S-400")
-  /** FIND/FIX — radar ids that cue this effector (links into the radar layer) */
+  /** FIND/FIX: radar ids that cue this effector (links into the radar layer) */
   cueing_radar_ids?: string[];
 
   effect: EffectType;
@@ -124,7 +124,7 @@ export interface EnvelopeRing {
   side: Side;
 }
 
-/** Great-circle distance (km) — for coverage tests without a map dependency. */
+/** Great-circle distance (km): for coverage tests without a map dependency. */
 export function haversineKm(a: GeoPoint, b: GeoPoint): number {
   const R = 6371;
   const dLat = ((b.lat - a.lat) * Math.PI) / 180;

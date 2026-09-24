@@ -6,7 +6,7 @@ interface MainShellProps {
   proposedCurrencyCount: number
   platformCount: number
   children: React.ReactNode
-  /** Full-bleed modules (map, spectrum) — no main padding */
+  /** Full-bleed modules (map, spectrum): no main padding */
   fullBleed?: boolean
   moduleLabel?: string
 }

@@ -1,5 +1,5 @@
 /**
- * SPECTRAL — Detection field types
+ * SPECTRAL: Detection field types
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 

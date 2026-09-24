@@ -54,7 +54,7 @@ export function Sidebar({ proposedCurrencyCount = 0, platformCount = 0 }: Sideba
       try {
         window.localStorage.setItem(COLLAPSE_KEY, JSON.stringify(next))
       } catch {
-        /* private mode — collapse state is a convenience, not state we rely on */
+        /* private mode: collapse state is a convenience, not state we rely on */
       }
       return next
     })

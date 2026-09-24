@@ -1,5 +1,5 @@
 /**
- * Capability Acquisition — shared types
+ * Capability Acquisition: shared types
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 
@@ -111,7 +111,7 @@ export interface AcquireSession {
   options: RankedAcquireOption[]
   calc: AcquireCalcResult
   brief: AcquisitionBrief
-  /** Defeat matrix rows the session was built from — surfaced in the page header. */
+  /** Defeat matrix rows the session was built from: surfaced in the page header. */
   defeatCoverage: DefeatCoverageRow[]
 }
 

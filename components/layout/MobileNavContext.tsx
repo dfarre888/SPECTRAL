@@ -23,7 +23,7 @@ export function MobileNavProvider({ children }: { children: ReactNode }) {
     try {
       setRail(window.localStorage.getItem(RAIL_KEY) === '1')
     } catch {
-      /* storage blocked — the rail is a convenience */
+      /* storage blocked: the rail is a convenience */
     }
   }, [])
   const toggle = useCallback(() => setOpen((v) => !v), [])

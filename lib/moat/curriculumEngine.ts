@@ -1,12 +1,12 @@
 /**
- * SPECTRAL — Moat-Builder (Curriculum Feedback Loop)
+ * SPECTRAL: Moat-Builder (Curriculum Feedback Loop)
  *
  * Turns the learner model's blind spots into targeted training: scenario
  * recommendations, condition-specific drills, and a measurable training plan.
- * This is the loop no competitor closes — the system teaches what THIS
+ * This is the loop no competitor closes: the system teaches what THIS
  * commander keeps getting wrong, then proves it trained the weakness out.
  *
- * Buildable now — pure pedagogy. No controlled logic.
+ * Buildable now: pure pedagogy. No controlled logic.
  */
 
 import {
@@ -57,7 +57,7 @@ export const CURRICULUM_LIBRARY: CurriculumModule[] = [
   },
   {
     id: 'MOD-DUU-01',
-    title: 'Decision Under Uncertainty — Low-Confidence Contacts',
+    title: 'Decision Under Uncertainty: Low-Confidence Contacts',
     target_competency: 'decision_under_uncertainty',
     description: 'Drills correct action on low-confidence contacts where dismissal is fatal.',
     trains_under: ['under_ew', 'night'],
@@ -77,7 +77,7 @@ export const CURRICULUM_LIBRARY: CurriculumModule[] = [
   },
   {
     id: 'MOD-ADAPT-01',
-    title: 'Adaptation — Novel Threats',
+    title: 'Adaptation: Novel Threats',
     target_competency: 'adaptation',
     description: 'Drills recognition of and response to threats that defeat the current counter (e.g. fibre-optic FPV vs EW).',
     trains_under: ['under_ew'],
@@ -97,7 +97,7 @@ export const CURRICULUM_LIBRARY: CurriculumModule[] = [
   },
   {
     id: 'MOD-CONT-01',
-    title: 'Contingency Planning — Degraded Operations',
+    title: 'Contingency Planning: Degraded Operations',
     target_competency: 'contingency_planning',
     description: 'Drills pre-planning for comms / sensor / asset loss.',
     trains_under: ['degraded_comms'],
@@ -117,17 +117,17 @@ export const CURRICULUM_LIBRARY: CurriculumModule[] = [
   },
   {
     id: 'MOD-TEMPO-01',
-    title: 'Tempo and Initiative — Forcing Adversary Reaction',
+    title: 'Tempo and Initiative: Forcing Adversary Reaction',
     target_competency: 'tempo_and_initiative',
     description: 'Drills proactive tasking under inbound threats rather than reactive or delayed response.',
     trains_under: ['saturation', 'decoy_heavy'],
-    scenario_emphasis: 'Time-critical inbound with delayed launch authority inject — forces issue of platform tasks early.',
+    scenario_emphasis: 'Time-critical inbound with delayed launch authority inject: forces issue of platform tasks early.',
     recommended_injects: ['RED-001', 'RED-004'],
     mastery_criteria: 'Issues platform tasks on 3+ consecutive turns with inbound threats present; average decision time ≤ 45s, across 3 sessions.',
   },
   {
     id: 'MOD-SA-01',
-    title: 'Situational Awareness — Building and Holding the Air Picture',
+    title: 'Situational Awareness: Building and Holding the Air Picture',
     target_competency: 'situational_awareness',
     description: 'Drills persistent sensor management so the air picture stays current through a multi-wave attack.',
     trains_under: ['saturation', 'under_ew', 'night'],
@@ -137,7 +137,7 @@ export const CURRICULUM_LIBRARY: CurriculumModule[] = [
   },
   {
     id: 'MOD-RESPR-01',
-    title: 'Resource Prioritisation — Competing Demands on Finite Assets',
+    title: 'Resource Prioritisation: Competing Demands on Finite Assets',
     target_competency: 'resource_prioritisation',
     description: 'Drills allocation of sensors, interceptors and EW assets when demand exceeds supply.',
     trains_under: ['saturation', 'degraded_comms'],
@@ -157,7 +157,7 @@ export interface TrainingAssignment {
   competency: SpectralCompetency;
   module: CurriculumModule;
   rationale: string;
-  // For the next exercise — how to configure it
+  // For the next exercise: how to configure it
   next_exercise_config: {
     emphasise_conditions: string[];
     recommended_injects: string[];
@@ -272,7 +272,7 @@ export class CurriculumEngine {
     const lines: string[] = [];
     lines.push(`Training focus for ${record.callsign} (${record.overall_level}):`);
     for (const a of assignments) {
-      lines.push(`• [P${a.priority}] ${a.module.title} — ${a.rationale}`);
+      lines.push(`• [P${a.priority}] ${a.module.title}: ${a.rationale}`);
     }
     lines.push(`Configure the next exercise(s) to emphasise: ${Array.from(new Set(assignments.flatMap(a => a.next_exercise_config.emphasise_conditions))).join(', ').replace(/_/g, ' ')}.`);
     return lines.join('\n');

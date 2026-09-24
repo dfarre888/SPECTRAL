@@ -1,4 +1,4 @@
-/** GNSS Intelligence — Supabase row types (OSINT training layer). */
+/** GNSS Intelligence: Supabase row types (OSINT training layer). */
 
 export type GnssConstellationStatus = 'operational' | 'degraded' | 'testing';
 

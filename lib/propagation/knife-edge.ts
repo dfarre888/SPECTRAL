@@ -2,7 +2,7 @@
  * Knife-edge diffraction (ITU-R P.526 inspired).
  * Single-edge: Bullington-style Fresnel parameter.
  * Multi-edge: simplified Deygout main-obstacle + Epstein-Peterson secondary cascade.
- * Confidence: Estimated — not a site survey model.
+ * Confidence: Estimated: not a site survey model.
  */
 
 export interface DiffractionEdge {
@@ -30,7 +30,7 @@ export function knifeEdgeLossDb(
  * Deygout chain for multiple diffraction edges.
  * Selects dominant obstacle, applies effective distance for main edge,
  * then cascades secondary edge excess (Epstein-Peterson heuristic).
- * Single-edge Bullington underestimates loss in ridge-heavy terrain — use this
+ * Single-edge Bullington underestimates loss in ridge-heavy terrain: use this
  * when terrain sampling yields multiple obstructions.
  */
 export function deygoutChainLossDb(

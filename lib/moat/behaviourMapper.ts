@@ -113,7 +113,7 @@ export function buildTurnObservation(
     behaviour(
       'magazine_management',
       !magazineWasted(events, postState),
-      `magazine state after turn — ${contextLabel}`,
+      `magazine state after turn: ${contextLabel}`,
     ),
   );
 

@@ -3,13 +3,13 @@
  * incident leads the air-gapped instance can import as a bundle.
  *
  * Sources (all open, each with its own attribution requirement):
- *   GDELT DOC 2.0  — worldwide news article index (attribution: GDELT Project)
- *   Google News RSS — query-driven headline aggregation across outlets
+ *   GDELT DOC 2.0 : worldwide news article index (attribution: GDELT Project)
+ *   Google News RSS: query-driven headline aggregation across outlets
  *   Tier-1 / defence-press RSS
- *   NASA FIRMS     — VIIRS active-fire detections (physical corroboration)
- *   GPSJam         — daily ADS-B-derived GNSS interference by H3 cell
+ *   NASA FIRMS    : VIIRS active-fire detections (physical corroboration)
+ *   GPSJam        : daily ADS-B-derived GNSS interference by H3 cell
  *                    (John Wiseman, gpsjam.org; attribution required)
- *   adsb.lol       — community ADS-B, military-flagged aircraft snapshot
+ *   adsb.lol      : community ADS-B, military-flagged aircraft snapshot
  *
  * Everything here is a LEAD, not a finding. A lead is graded by how many
  * independent outlets carried it and never by what any one outlet claimed.

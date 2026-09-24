@@ -1,5 +1,5 @@
 /**
- * Spectrum Intelligence — design tokens
+ * Spectrum Intelligence: design tokens
  * Obsidian language (see DESIGN.md): lacquer for content, Liquid Glass for
  * controls. Import the CSS once at the app root; use the TS constants in
  * components where inline values are needed (SVG fills, etc.).

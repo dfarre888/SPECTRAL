@@ -14,7 +14,7 @@ interface AcquirePageProps {
   searchParams?: { from?: string; template?: string; competency?: string }
 }
 
-/** Training demo record — illustrates Plan→PCM→AAR→MOAT→Acquire without DB write. */
+/** Training demo record: illustrates Plan→PCM→AAR→MOAT→Acquire without DB write. */
 function demoMoatRecord(): Pick<LongitudinalCompetencyRecord, 'player_id' | 'callsign' | 'blind_spots'> {
   return {
     player_id: 'demo-player',

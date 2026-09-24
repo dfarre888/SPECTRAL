@@ -1,6 +1,6 @@
 'use client';
 /**
- * /spectrum — Spectrum Intelligence + F3 kill-chain app shell.
+ * /spectrum: Spectrum Intelligence + F3 kill-chain app shell.
  * Full-bleed. One scroller for the module, a glass view switcher that rides
  * the top of it, and the AeroCopilot dock floating at the bottom of the
  * content area (never over the app sidebar), wired to drive navigation,

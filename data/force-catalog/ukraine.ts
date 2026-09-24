@@ -1,5 +1,5 @@
 /**
- * Force Catalogue — Ukraine (UKR).
+ * Force Catalogue: Ukraine (UKR).
  * OSINT only. Verified Jul 2026. Indigenous + donor systems combat-proven 2022–26.
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY.
  */
@@ -86,7 +86,7 @@ export const UKRAINE_CATALOG: ForceCatalogPlatformFull[] = [
     data_confidence: 'medium', sources: ['OSINT Ukraine force reporting 2022–26', 'defence press'],
     comms: [uhfVoice('UKR-CAT-BABAYAGA')],
     sensors: [pinnedSensor('UKR-CAT-BABAYAGA', 'eo_ir', 'Night EO/IR bomber payload', 'IR', 'night strike',
-      ['ground_targets'], [], 'Heavy multirotor — descriptive')],
+      ['ground_targets'], [], 'Heavy multirotor: descriptive')],
   }),
   P({
     id: 'UKR-CAT-POKROVA', designation: 'Pokrova GNSS spoofing system', short_name: 'Pokrova',
@@ -96,7 +96,7 @@ export const UKRAINE_CATALOG: ForceCatalogPlatformFull[] = [
     data_confidence: 'estimated', sources: ['OSINT Ukraine force reporting 2022–26', 'defence press'],
     comms: [uhfVoice('UKR-CAT-POKROVA')],
     sensors: [pinnedSensor('UKR-CAT-POKROVA', 'esm', 'GNSS spoofing emitters', 'L', 'NAVWAR',
-      ['gnss_receivers'], [], 'Spoofing — descriptive')],
+      ['gnss_receivers'], [], 'Spoofing: descriptive')],
   }),
   P({
     id: 'UKR-CAT-STORMSHADOW', designation: 'Storm Shadow / SCALP-EG', short_name: 'Storm Shadow',
@@ -138,11 +138,11 @@ export const UKRAINE_CATALOG: ForceCatalogPlatformFull[] = [
     id: 'UKR-CAT-PATRIOT', designation: 'MIM-104 Patriot (UA)', short_name: 'Patriot UA',
     manufacturer: 'Raytheon', domain: 'ground', role: 'radar_ground', force_side: 'blue',
     service_status: 'in_service', program_stage: 'fielded', ioc_year: 2023,
-    open_source_summary: 'combat-proven: Ukraine 2023–26. Donor Patriot — claimed Kinzhal intercepts; magazine economics stressed.',
+    open_source_summary: 'combat-proven: Ukraine 2023–26. Donor Patriot: claimed Kinzhal intercepts; magazine economics stressed.',
     data_confidence: 'high', sources: ['OSINT Ukraine force reporting 2022–26', 'defence press'],
     comms: [link16('UKR-CAT-PATRIOT', true), satcom('UKR-CAT-PATRIOT'), uhfVoice('UKR-CAT-PATRIOT')],
     sensors: [pinnedSensor('UKR-CAT-PATRIOT', 'radar', 'Patriot engagement radar', 'C', 'SAM/BMD',
-      ['aircraft', 'cruise_missile', 'ballistic_missile'], [], 'Patriot — descriptive')],
+      ['aircraft', 'cruise_missile', 'ballistic_missile'], [], 'Patriot: descriptive')],
   }),
   P({
     id: 'UKR-CAT-NASAMS', designation: 'NASAMS (UA)', short_name: 'NASAMS UA',
@@ -152,7 +152,7 @@ export const UKRAINE_CATALOG: ForceCatalogPlatformFull[] = [
     data_confidence: 'high', sources: ['OSINT Ukraine force reporting 2022–26', 'defence press'],
     comms: [link16('UKR-CAT-NASAMS'), uhfVoice('UKR-CAT-NASAMS')],
     sensors: [pinnedSensor('UKR-CAT-NASAMS', 'radar', 'NASAMS fire-control', 'X', 'short-medium SAM',
-      ['aircraft', 'cruise_missile', 'large_uas'], [], 'NASAMS — descriptive')],
+      ['aircraft', 'cruise_missile', 'large_uas'], [], 'NASAMS: descriptive')],
   }),
   P({
     id: 'UKR-CAT-IRIST', designation: 'IRIS-T SLM (UA)', short_name: 'IRIS-T SLM',
@@ -162,13 +162,13 @@ export const UKRAINE_CATALOG: ForceCatalogPlatformFull[] = [
     data_confidence: 'high', sources: ['OSINT Ukraine force reporting 2022–26', 'defence press'],
     comms: [link16('UKR-CAT-IRIST'), uhfVoice('UKR-CAT-IRIST')],
     sensors: [pinnedSensor('UKR-CAT-IRIST', 'radar', 'IRIS-T SLM radar', 'X', 'short-medium SAM',
-      ['aircraft', 'cruise_missile', 'large_uas'], [], 'IRIS-T — descriptive')],
+      ['aircraft', 'cruise_missile', 'large_uas'], [], 'IRIS-T: descriptive')],
   }),
   P({
     id: 'UKR-CAT-GEPARD', designation: 'Gepard SPAAG (UA)', short_name: 'Gepard',
     manufacturer: 'Krauss-Maffei', domain: 'ground', role: 'other', force_side: 'blue',
     service_status: 'in_service', program_stage: 'fielded', ioc_year: 2022,
-    open_source_summary: 'combat-proven: Ukraine 2022–26. Twin 35mm SPAAG — favourable exchange vs Shahed-class.',
+    open_source_summary: 'combat-proven: Ukraine 2022–26. Twin 35mm SPAAG: favourable exchange vs Shahed-class.',
     data_confidence: 'high', sources: ['OSINT Ukraine force reporting 2022–26', 'defence press'],
     comms: [uhfVoice('UKR-CAT-GEPARD')],
     sensors: [],

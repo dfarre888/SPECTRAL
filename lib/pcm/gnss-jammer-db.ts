@@ -31,7 +31,7 @@ export const GNSS_JAMMER_DB: GnssJammerSpec[] = [
     effective_radius_km: 0.05,
     mobility: 'man_portable',
     constellations_affected: ['GPS', 'Galileo', 'BeiDou B1C', 'GLONASS G1'],
-    notes: 'Commercial L1 blocker — short range only.',
+    notes: 'Commercial L1 blocker: short range only.',
     osint_confidence: 'high',
     osint_source: 'FCC enforcement actions, UK Ofcom seizure reports 2019-2023',
     pcm_asset_template: { type: 'Generic L1 GPS Blocker', status: 'inactive', jam_bands: ['L1'], effective_radius_km: 0.05 },
@@ -53,7 +53,7 @@ export const GNSS_JAMMER_DB: GnssJammerSpec[] = [
   },
   {
     id: 'JAMMER-MOTS-GNSS-MANPACK',
-    type: 'GNSS Manpack Jammer (various — MOTS)',
+    type: 'GNSS Manpack Jammer (various: MOTS)',
     country_of_origin: 'Russia/China',
     category: 'MOTS',
     jam_bands: ['L1', 'L2', 'L5', 'G1', 'G2'],

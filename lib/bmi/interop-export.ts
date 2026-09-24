@@ -1,5 +1,5 @@
 /**
- * BMI interop export stub — Phase 6 attach to battlespace_plans / export-afsim pattern.
+ * BMI interop export stub: Phase 6 attach to battlespace_plans / export-afsim pattern.
  */
 
 import type { InteropGraph, PacePlan } from '@/lib/bmi/bmi-types'
@@ -32,6 +32,6 @@ export function buildInteropExportBundle(
       isolated_pair_count: graph.isolated_pairs.length,
     },
     pace_plans: pacePlans,
-    note: 'OSINT training export — not operational COMSEC material',
+    note: 'OSINT training export: not operational COMSEC material',
   }
 }

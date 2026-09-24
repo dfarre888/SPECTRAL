@@ -1,5 +1,5 @@
 /**
- * SPECTRAL PCM — Cesium globe bridge
+ * SPECTRAL PCM: Cesium globe bridge
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 import type { CesiumModule, CesiumViewer } from '@/lib/map/cesium-types';

@@ -1,5 +1,5 @@
 /**
- * SPECTRAL PCM Phase 3 — SPECTRAL-REF API (narrative + coaching only).
+ * SPECTRAL PCM Phase 3: SPECTRAL-REF API (narrative + coaching only).
  */
 
 import { callBedrock } from '@/lib/claude/bedrock';
@@ -60,7 +60,7 @@ function buildRefSystemPrompt(): string {
 
 Your ONLY responsibilities:
 1. Plain-language DS briefing from the resolved world state provided.
-2. One Socratic coaching question for Blue — never give the answer.
+2. One Socratic coaching question for Blue: never give the answer.
 3. Recommend at most one inject ID from the list, or null.
 
 You do NOT resolve combat. Narrate and coach only.
@@ -105,7 +105,7 @@ function parseRefRaw(raw: string): RefRawResponse {
   } catch {
     return {
       reasoning: '',
-      ds_briefing: 'REF narrative parse error — manual DS review required.',
+      ds_briefing: 'REF narrative parse error: manual DS review required.',
       blue_suggestion: null,
       proposed_inject_id: null,
     };

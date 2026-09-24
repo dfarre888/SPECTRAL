@@ -1,5 +1,5 @@
 /**
- * Training-tier catalogue performance resolver — OSINT fields from platform-performance-view.
+ * Training-tier catalogue performance resolver: OSINT fields from platform-performance-view.
  */
 
 import {

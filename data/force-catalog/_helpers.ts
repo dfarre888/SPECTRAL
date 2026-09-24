@@ -1,5 +1,5 @@
 /**
- * Force Catalogue — shared builders. Keep nation files lean and consistent.
+ * Force Catalogue: shared builders. Keep nation files lean and consistent.
  * OSINT-descriptive only. Performance pins to SOVEREIGN_CORE_BOUNDARY.
  */
 
@@ -37,7 +37,7 @@ export const ifdl = (id: string): CommsBearer => ({
   data_confidence: 'high', sources: ['OSINT: F-22 IFDL descriptive'], boundary_note: null,
 })
 /**
- * Indigenous / national tactical datalink (non-NATO). Used by Red forces — will
+ * Indigenous / national tactical datalink (non-NATO). Used by Red forces: will
  * NOT share a bearer with Link 16, correctly surfacing interop gaps against Blue.
  * pnt_dependent reflects reliance on national GNSS (e.g. BeiDou) for net timing.
  */

@@ -122,7 +122,7 @@ describe('buildBattlePictureView', () => {
     ]
     const view = buildBattlePictureView(platforms, 'ukraine-2026')
     expect(view.effects).toHaveLength(10)
-    expect(view.assessText).toMatch(/^ASSESS — Ukraine 2026/)
+    expect(view.assessText).toMatch(/^ASSESS: Ukraine 2026/)
     expect(view.assessText).toContain('So what:')
     expect(SCENARIO_PRESETS).toHaveLength(4)
   })

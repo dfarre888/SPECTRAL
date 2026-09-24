@@ -14,7 +14,7 @@ export interface ConflictDigestEntry {
 export const CONFLICT_DIGEST: ConflictDigestEntry[] = [
   {
     id: 'ukraine-shahed-2026',
-    title: 'Shahed-136 saturation — southern axis',
+    title: 'Shahed-136 saturation: southern axis',
     sourceDate: '2026-03-15',
     confidence: 'Assessed',
     employmentPattern: 'Mixed Shahed/cruise salvo at 02:00–04:00 local; terrain-masked ingress at 80–150m AGL.',

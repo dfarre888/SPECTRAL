@@ -1,5 +1,5 @@
 /**
- * Edition-gated PCM pair adjudication — Training grid physics or Operations laydown.
+ * Edition-gated PCM pair adjudication: Training grid physics or Operations laydown.
  */
 
 import { adjudicatePair, type LaydownPairInput } from '@/lib/operations/adjudication';
@@ -254,7 +254,7 @@ function trainingPairResult(
     !inRange || propagation.los_state === 'NLOS' || (isRfJammer && !rfViable);
   if (isUrbanTerrain) propagationGated = true;
 
-  // When RF link is not viable, score spectrum as no_engagement — band overlap is irrelevant
+  // When RF link is not viable, score spectrum as no_engagement: band overlap is irrelevant
   const scoringSpectrum: EngagementResult = rfViable
     ? spectrum
     : { ...spectrum, verdict: 'no_engagement' as const, effectiveCoverage: 0 };

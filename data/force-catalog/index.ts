@@ -1,5 +1,5 @@
 /**
- * Force Catalogue — aggregation index.
+ * Force Catalogue: aggregation index.
  * Add a nation: create `data/force-catalog/<nation>.ts` exporting
  * `ForceCatalogPlatformFull[]`, then register it here + add its CatalogNation row.
  * OSINT only. See README.md for the ingestion quality bar.

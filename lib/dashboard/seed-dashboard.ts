@@ -1,6 +1,6 @@
 import type { DashboardMetrics, LiveMapContext, OperatorRow, TrackedAsset } from '@/lib/dashboard/types'
 
-/** Synthetic demo rows — training personas only, no real personnel. */
+/** Synthetic demo rows: training personas only, no real personnel. */
 export const DEMO_METRICS: DashboardMetrics = {
   activeRpa: 4,
   activeMissions: 2,
@@ -16,7 +16,7 @@ export const DEMO_OPERATORS: OperatorRow[] = [
     role: 'Lead EW Analyst',
     flightCurrency: 'current',
     medicalCurrency: 'current',
-    currentTask: 'Laydown adjudication — Map Intel',
+    currentTask: 'Laydown adjudication: Map Intel',
     href: '/map',
   },
   {
@@ -26,7 +26,7 @@ export const DEMO_OPERATORS: OperatorRow[] = [
     role: 'C-UAS Instructor',
     flightCurrency: 'current',
     medicalCurrency: 'due',
-    currentTask: 'Defeat matrix review — Shahed variants',
+    currentTask: 'Defeat matrix review: Shahed variants',
     href: '/defeat',
   },
   {
@@ -36,7 +36,7 @@ export const DEMO_OPERATORS: OperatorRow[] = [
     role: 'WOPR Controller',
     flightCurrency: 'due',
     medicalCurrency: 'current',
-    currentTask: 'Red/Blue Arena — tick advance',
+    currentTask: 'Red/Blue Arena: tick advance',
     href: '/arena',
   },
   {
@@ -46,7 +46,7 @@ export const DEMO_OPERATORS: OperatorRow[] = [
     role: 'Spectrum Analyst',
     flightCurrency: 'current',
     medicalCurrency: 'current',
-    currentTask: 'Band tile laydown — 2.4 GHz cluster',
+    currentTask: 'Band tile laydown: 2.4 GHz cluster',
     href: '/spectrum',
   },
 ]

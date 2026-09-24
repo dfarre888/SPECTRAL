@@ -1,5 +1,5 @@
 /**
- * Capability Acquisition — server data loaders
+ * Capability Acquisition: server data loaders
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 
@@ -96,7 +96,7 @@ export async function loadEconomicsRows(threatPlatformId: string): Promise<Econo
       magazineRounds: 1000,
       reloadMin: 0.5,
       costConfidence: 'Estimated',
-      sourceRef: 'OSINT baseline — engagement_economics unavailable',
+      sourceRef: 'OSINT baseline: engagement_economics unavailable',
     },
   ]
 }

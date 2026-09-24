@@ -6,7 +6,7 @@
  * percentage but is not one: you cannot multiply a verdict heuristic by 0.35 and
  * defend the result as a probability of kill.
  *
- * This models the engagement the way it actually happens — as a chain of
+ * This models the engagement the way it actually happens: as a chain of
  * conditional stages, each a real probability:
  *
  *     P(kill) = P(detect) x P(track | detect) x P(engage | track) x P(hit | engage)
@@ -16,7 +16,7 @@
  *   1. The result is interpretable. 0.28 means 28 engagements in 100 end in a
  *      kill, not "28 points of blended score".
  *   2. The chain names its own bottleneck. A planner does not want a number,
- *      they want to know which link to attack — and a chain says so directly.
+ *      they want to know which link to attack: and a chain says so directly.
  *   3. Uncertainty propagates. Every stage carries the provenance of its input,
  *      and the weakest provenance sets the width of the reported band.
  *
@@ -34,7 +34,7 @@ export interface KillChainStage {
   label: string
   /** Conditional probability of this stage succeeding, 0-1. */
   p: number
-  /** Where the number came from — shown to the user, never hidden. */
+  /** Where the number came from: shown to the user, never hidden. */
   basis: string
   confidence: StageConfidence
 }
@@ -52,7 +52,7 @@ export interface KillChainResult {
   salvoSize: number
   /** 1 - (1 - Pss)^n, 0-1. */
   cumulativePk: number
-  /** Lowest-probability stage — the link to attack. */
+  /** Lowest-probability stage: the link to attack. */
   limitingStage: KillChainStage
   /** Worst provenance across stages. */
   confidence: StageConfidence
@@ -163,7 +163,7 @@ export function sensitivity(input: KillChainInput): StageSensitivity[] {
 /**
  * Salvo size needed to reach a target cumulative Pk.
  *
- * Returns null when the target is unreachable at any salvo size — which happens
+ * Returns null when the target is unreachable at any salvo size: which happens
  * whenever a stage is zero, and is a more useful answer than a large number.
  */
 export function salvoForTarget(singleShotPk: number, target: number): number | null {

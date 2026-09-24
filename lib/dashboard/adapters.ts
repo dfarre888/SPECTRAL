@@ -1,4 +1,4 @@
-/** Dashboard copy + skin — Spectral training/ops vs A3DM aviation management labels. */
+/** Dashboard copy + skin: Spectral training/ops vs A3DM aviation management labels. */
 export type DashboardSkin = 'spectral' | 'spectral-ops' | 'a3dm'
 
 export interface DashboardCopy {
@@ -27,7 +27,7 @@ const SPECTRAL_TRAINING: DashboardCopy = {
   commandEyebrow: 'Master Command Center',
   commandTitle: 'Operational picture at a glance',
   commandSubtitle:
-    'Block-based COP layout — threat laydown, airspace context, analyst currency, and selected platform intelligence.',
+    'Block-based COP layout: threat laydown, airspace context, analyst currency, and selected platform intelligence.',
   crewPanelTitle: 'Crew & Compliance',
   crewPanelSubtitle: 'Analyst currency · mission assignment',
   crewCurrencyHint: 'Flight · Medical currency',
@@ -50,7 +50,7 @@ const SPECTRAL_OPS: DashboardCopy = {
   ...SPECTRAL_TRAINING,
   commandEyebrow: 'Operations Command Center',
   commandSubtitle:
-    'Tenant-scoped COP — live plans, WOPR scenarios, import queue, and adjudicated laydown from Map Intel.',
+    'Tenant-scoped COP: live plans, WOPR scenarios, import queue, and adjudicated laydown from Map Intel.',
   crewPanelSubtitle: 'Operator currency · tenant missions',
   metrics: {
     ...SPECTRAL_TRAINING.metrics,
@@ -62,7 +62,7 @@ const A3DM: DashboardCopy = {
   commandEyebrow: 'Fleet Command Center',
   commandTitle: 'All fleet data in one place',
   commandSubtitle:
-    'Advance Aviation and Drone Management — active flights, CASA approvals, maintenance status, and crew dispatch.',
+    'Advance Aviation and Drone Management: active flights, CASA approvals, maintenance status, and crew dispatch.',
   crewPanelTitle: 'Pilot Log & Dispatch',
   crewPanelSubtitle: 'Flight currency · medical · mission assignment',
   crewCurrencyHint: 'Flight · Medical certification',

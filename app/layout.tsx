@@ -6,7 +6,7 @@ import { ClassificationBanner } from '@/components/operations/ClassificationBann
 import { THEME_BOOT_SCRIPT } from '@/lib/ui/theme'
 
 export const metadata: Metadata = {
-  title: 'Spectral — Drone Threat Intelligence',
+  title: 'Spectral: Drone Threat Intelligence',
   description: 'Military UAS platform analysis, EW spectrum visualisation, and Red/Blue scenario simulation.',
 }
 

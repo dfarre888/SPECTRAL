@@ -1,5 +1,5 @@
 /**
- * Acquire session assembly — pure pipeline (testable without Supabase)
+ * Acquire session assembly: pure pipeline (testable without Supabase)
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 

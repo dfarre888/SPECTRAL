@@ -1,5 +1,5 @@
 /**
- * Radar seed — supplementary systems (both sides) to broaden coverage.
+ * Radar seed: supplementary systems (both sides) to broaden coverage.
  * Same sourcing standards as seed-radars-red/blue.
  */
 
@@ -205,7 +205,7 @@ export const EXTRA_RADARS: RadarSystem[] = [
     strengths: ['Chinese Aegis-equivalent naval AESA', '4 fixed faces for 360°'],
     limitations: ['Horizon-limited at sea'],
     confidence: 'estimated',
-    intel_note: 'PLAN multifunction naval AESA — the "Chinese Aegis" radar on Type 052D/055.',
+    intel_note: 'PLAN multifunction naval AESA: the "Chinese Aegis" radar on Type 052D/055.',
   },
 
   /* ---------------- BLUE supplementary ---------------- */
@@ -328,9 +328,9 @@ export const EXTRA_RADARS: RadarSystem[] = [
     can_detect: ['aircraft', 'helicopter', 'cruise_missile', 'large_uas', 'small_uas', 'rocket_artillery_mortar'],
     cannot_detect: ['stealth'],
     strengths: ['USMC GaN AESA multi-role: air defence + counter-battery + C-UAS', 'Single radar replaces five legacy types'],
-    limitations: ['S-band — not counter-stealth'],
+    limitations: ['S-band: not counter-stealth'],
     confidence: 'estimated',
-    intel_note: 'Ground/Air Task-Oriented Radar — USMC expeditionary multi-mission GaN AESA.',
+    intel_note: 'Ground/Air Task-Oriented Radar: USMC expeditionary multi-mission GaN AESA.',
   },
   {
     id: 'radar-antpq-37',
@@ -377,7 +377,7 @@ export const EXTRA_RADARS: RadarSystem[] = [
     can_detect: ['aircraft', 'cruise_missile', 'ballistic_missile', 'rocket_artillery_mortar', 'large_uas', 'small_uas'],
     cannot_detect: ['stealth'],
     strengths: ['Multi-mission: air defence + C-RAM fire control', 'Backbone of Iron Dome'],
-    limitations: ['S-band — not counter-stealth'],
+    limitations: ['S-band: not counter-stealth'],
     confidence: 'estimated',
     intel_note: 'Multi-Mission Radar behind Iron Dome and David\'s Sling; air defence and counter-rocket.',
   },
@@ -404,7 +404,7 @@ export const EXTRA_RADARS: RadarSystem[] = [
     strengths: ['Australian GaN naval AESA (S + X faces)', 'Strong sea-skimmer detection'],
     limitations: ['Naval, horizon-limited'],
     confidence: 'estimated',
-    intel_note: 'CEA Technologies multifunction naval AESA — Australian-designed, on RAN frigates.',
+    intel_note: 'CEA Technologies multifunction naval AESA: Australian-designed, on RAN frigates.',
   },
   {
     id: 'radar-drone-sentry-x',

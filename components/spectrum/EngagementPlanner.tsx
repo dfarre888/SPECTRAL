@@ -1,6 +1,6 @@
 'use client';
 /**
- * EngagementPlanner — the teaching core (Mockup Frame 04).
+ * EngagementPlanner: the teaching core (Mockup Frame 04).
  * Pick a Red threat and a Blue effector; read the outcome. Renders the
  * Red-vs-Blue engagement canvas (Frame 09) and the OutcomePanel.
  */

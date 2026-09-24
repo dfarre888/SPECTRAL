@@ -2,7 +2,7 @@
 
 /**
  * Callers: ForceCatalogClient (battle tab)
- * Purpose: Commander effects board — overmatch by capability class as a
+ * Purpose: Commander effects board: overmatch by capability class as a
  * diverging chart, domain balance, commander's assessment with the three
  * facts that matter. Rows drill into the workbench.
  */

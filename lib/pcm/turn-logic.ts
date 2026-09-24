@@ -1,5 +1,5 @@
 /**
- * SPECTRAL PCM Phase 1 — pure turn progression helpers (no Supabase).
+ * SPECTRAL PCM Phase 1: pure turn progression helpers (no Supabase).
  */
 
 import type { PCM } from '@/lib/pcm/spectral.types';
@@ -48,7 +48,7 @@ export function evaluateOutcome(worldState: PCM.WorldState): PCM.TurnOutcome {
   return 'continues';
 }
 
-/** Red objective hooks — logistics degradation via impacts and magazine exhaustion. */
+/** Red objective hooks: logistics degradation via impacts and magazine exhaustion. */
 export function evaluateRedObjectiveProgress(
   worldState: PCM.WorldState,
   leakers: number,

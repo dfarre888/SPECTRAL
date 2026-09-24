@@ -1,6 +1,6 @@
 'use client';
 /**
- * Effector data access — loads F3 shooters and exposes them to the kill-chain
+ * Effector data access: loads F3 shooters and exposes them to the kill-chain
  * engine, AeroCopilot, and the map. Supabase path documented (mirror radars).
  */
 

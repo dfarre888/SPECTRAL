@@ -158,7 +158,7 @@ export function adjudicatePcmPair(
     emitter: {
       position: { ...gridToLatLon(defenderGrid), alt_m: 102 },
       freq_hz: jamTransmit?.freq_hz ?? 2.4e9,
-      erp_dbm: gcsErp_dbm, // GCS control-link ERP — J/S signal baseline (P0-C)
+      erp_dbm: gcsErp_dbm, // GCS control-link ERP: J/S signal baseline (P0-C)
     },
     receiver: {
       position: { ...gridToLatLon(threatGrid), alt_m: threat.altitude_m ?? 200 },
@@ -169,7 +169,7 @@ export function adjudicatePcmPair(
   });
 
   const jts = propagation.jam_to_signal_db ?? 0;
-  // P0-A: gate on propagation viability — NLOS or J/S < 3 dB means band overlap is irrelevant
+  // P0-A: gate on propagation viability: NLOS or J/S < 3 dB means band overlap is irrelevant
   const rfViable = isRfJammer
     ? propagationEngagementViable(spectrum.overlaps, propagation)
     : true;
@@ -191,7 +191,7 @@ export function adjudicatePcmPair(
     ? Math.round(matrixPk * 0.4 + spectrumScore * 0.35 + Math.min(100, 50 + jamBonus) * 0.25)
     : 0;
 
-  // RF jammer with no viable propagation path — sharply reduce effectiveness (P0-A)
+  // RF jammer with no viable propagation path: sharply reduce effectiveness (P0-A)
   if (!rfViable && isRfJammer) {
     combined = Math.round(combined * 0.55);
   }

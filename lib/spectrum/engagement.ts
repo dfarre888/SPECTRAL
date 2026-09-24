@@ -1,5 +1,5 @@
 /**
- * Spectrum Intelligence — engagement engine
+ * Spectrum Intelligence: engagement engine
  * -----------------------------------------
  * Computes band overlaps between a Red threat and a Blue effector, then
  * derives a plain-language outcome verdict and recommendations.
@@ -164,7 +164,7 @@ export function assessEngagement(
       recommendations: rfSilent
         ? ['Use radar + acoustic + EO/IR fusion (SAPIENT-style) to detect.', 'Pair with an HPM or kinetic effector to defeat.']
         : ['Hand the track to a jammer, HPM, or kinetic effector.'],
-      effectiveCoverage: 0, // detection only — contributes no defeat probability
+      effectiveCoverage: 0, // detection only: contributes no defeat probability
     };
   }
 
@@ -178,7 +178,7 @@ export function assessEngagement(
       uncovered,
       recommendations: [
         'Detect via non-RF means: acoustic, optical, or radar.',
-        'Defeat with a direct-electronics effect — High-Power Microwave (HPM).',
+        'Defeat with a direct-electronics effect: High-Power Microwave (HPM).',
         'Consider kinetic interception (net, interceptor UAS, gun).',
       ],
       effectiveCoverage: 0,
@@ -188,7 +188,7 @@ export function assessEngagement(
   // ---- HPM present ----
   if (hasHPM) {
     const note = rfSilent
-      ? `${red.name} is RF-silent, but HPM does not rely on the control link — it induces destructive voltage in the airframe's electronics regardless of how the drone is controlled.`
+      ? `${red.name} is RF-silent, but HPM does not rely on the control link: it induces destructive voltage in the airframe's electronics regardless of how the drone is controlled.`
       : `HPM supplements RF/GNSS coverage with a one-to-many electronics-kill effect, useful against swarms and hardened links.`;
     return {
       verdict: 'defeat_likely',
@@ -198,7 +198,7 @@ export function assessEngagement(
       uncovered: [], // HPM is band-agnostic; nothing meaningfully "uncovered"
       recommendations: [
         'HPM effective within its engagement envelope (~2 km class).',
-        rfSilent ? 'No RF/GNSS effect available — HPM/kinetic is the path.' : 'Layer with RF/GNSS jamming for graduated response.',
+        rfSilent ? 'No RF/GNSS effect available: HPM/kinetic is the path.' : 'Layer with RF/GNSS jamming for graduated response.',
       ],
       // HPM is band-agnostic (not a link-coverage score), use fixed high-confidence value
       effectiveCoverage: 0.92,
@@ -238,7 +238,7 @@ export function assessEngagement(
       uncovered,
       recommendations: [
         'GNSS/link jamming alone will not stop a terminal-guided strike.',
-        'Layer a terminal-phase effector — HPM or kinetic interception.',
+        'Layer a terminal-phase effector: HPM or kinetic interception.',
         'Hardened GNSS (CRPA) further reduces jamming effectiveness.',
       ],
       effectiveCoverage,
@@ -254,7 +254,7 @@ export function assessEngagement(
       uncovered,
       recommendations: [
         'Monitor for return-to-home flight that may transit sensitive airspace.',
-        'Confirm defeat — jammed drones can recover when out of range.',
+        'Confirm defeat: jammed drones can recover when out of range.',
       ],
       effectiveCoverage,
     };
@@ -277,7 +277,7 @@ export function assessEngagement(
 
   return {
     verdict: 'no_engagement',
-    headline: 'No band overlap — this effector cannot engage this threat.',
+    headline: 'No band overlap: this effector cannot engage this threat.',
     detail: `None of ${blue.name}'s coverage intersects ${red.name}'s dependencies.`,
     overlaps,
     uncovered,

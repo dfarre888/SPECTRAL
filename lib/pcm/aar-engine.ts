@@ -1,5 +1,5 @@
 /**
- * SPECTRAL PCM — AAR engine (extends debrief-engine)
+ * SPECTRAL PCM: AAR engine (extends debrief-engine)
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 import { buildAAR, aarToText, type AARReport, type AARSection } from '@/lib/pcm/debrief-engine';

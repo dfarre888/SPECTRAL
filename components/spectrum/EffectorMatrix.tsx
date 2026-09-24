@@ -1,6 +1,6 @@
 'use client';
 /**
- * EffectorMatrix — the F3 / Find-Fix-Finish effector view.
+ * EffectorMatrix: the F3 / Find-Fix-Finish effector view.
  * Shows the layered air-defence picture: effectors ordered by tier
  * (strategic BMD → long → medium → SHORAD → point defence → CIWS → C-UAS),
  * Red or Blue, each row surfacing the engagement envelope (range/altitude),

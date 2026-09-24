@@ -1,5 +1,5 @@
 /**
- * Radar seed — BLUE (friendly / Allied) radar systems.
+ * Radar seed: BLUE (friendly / Allied) radar systems.
  * Sources: IEEE 521-2002 (bands); CSIS Missile Threat, manufacturer pages
  * (Raytheon/RTX, Lockheed Martin, Northrop Grumman, Saab, Leonardo, Thales,
  * Echodyne), radartutorial.eu, Wikipedia. Open-source; verify before use.
@@ -11,7 +11,7 @@ import { RADAR_BAND_HZ } from '@/lib/spectrum/radar-types';
 const B = RADAR_BAND_HZ;
 
 export const BLUE_RADARS: RadarSystem[] = [
-  /* ===================== US — air & missile defence ===================== */
+  /* ===================== US: air & missile defence ===================== */
   {
     id: 'radar-an-mpq-65',
     name: 'AN/MPQ-65',
@@ -33,8 +33,8 @@ export const BLUE_RADARS: RadarSystem[] = [
     eccm: 'high',
     can_detect: ['aircraft', 'cruise_missile', 'ballistic_missile', 'large_uas'],
     cannot_detect: ['small_uas'],
-    limitations: ['90–120° sector — needs cueing for 360° coverage', 'Legacy single-face PESA (LTAMDS replaces)'],
-    strengths: ['Detection-to-kill in one radar', 'No moving parts — hard to jam', 'Proven combat record'],
+    limitations: ['90–120° sector: needs cueing for 360° coverage', 'Legacy single-face PESA (LTAMDS replaces)'],
+    strengths: ['Detection-to-kill in one radar', 'No moving parts: hard to jam', 'Proven combat record'],
     confidence: 'curated',
     intel_note: 'Patriot PAC-3 fire-control radar (C-band / NATO G-band). Sector coverage; being superseded by LTAMDS.',
   },
@@ -58,10 +58,10 @@ export const BLUE_RADARS: RadarSystem[] = [
     eccm: 'high',
     can_detect: ['aircraft', 'stealth', 'cruise_missile', 'ballistic_missile', 'hypersonic', 'large_uas'],
     cannot_detect: ['small_uas'],
-    strengths: ['GaN AESA — 360° via main + 2 secondary arrays', 'Far greater sensitivity than MPQ-65', 'IBCS-native'],
-    limitations: ['Newer — fielding in progress'],
+    strengths: ['GaN AESA: 360° via main + 2 secondary arrays', 'Far greater sensitivity than MPQ-65', 'IBCS-native'],
+    limitations: ['Newer: fielding in progress'],
     confidence: 'curated',
-    intel_note: 'Lower Tier Air & Missile Defense Sensor — GaN AESA replacing the Patriot MPQ-65, 360° coverage.',
+    intel_note: 'Lower Tier Air & Missile Defense Sensor: GaN AESA replacing the Patriot MPQ-65, 360° coverage.',
   },
   {
     id: 'radar-an-tpy-2',
@@ -109,8 +109,8 @@ export const BLUE_RADARS: RadarSystem[] = [
     eccm: 'high',
     can_detect: ['aircraft', 'cruise_missile', 'ballistic_missile', 'sea_surface', 'large_uas'],
     cannot_detect: ['small_uas'],
-    strengths: ['Four fixed faces — true 360°', 'Backbone of Aegis BMD'],
-    limitations: ['PESA — being replaced by SPY-6 AESA', 'S-band detect/lock VLO at reduced range'],
+    strengths: ['Four fixed faces: true 360°', 'Backbone of Aegis BMD'],
+    limitations: ['PESA: being replaced by SPY-6 AESA', 'S-band detect/lock VLO at reduced range'],
     confidence: 'curated',
     intel_note: 'Aegis PESA multifunction radar; four faces for 360°. 6 MW class.',
   },
@@ -135,7 +135,7 @@ export const BLUE_RADARS: RadarSystem[] = [
     can_detect: ['aircraft', 'stealth', 'cruise_missile', 'ballistic_missile', 'hypersonic', 'sea_surface', 'large_uas'],
     cannot_detect: ['small_uas'],
     strengths: ['GaN AESA, modular RMA construction', '~30x sensitivity of SPY-1', 'Simultaneous AAW + BMD'],
-    limitations: ['Newest — limited fleet fit'],
+    limitations: ['Newest: limited fleet fit'],
     confidence: 'curated',
     intel_note: 'Air & Missile Defense Radar (AMDR) on Flight III Burkes; GaN AESA, far more sensitive than SPY-1.',
   },
@@ -165,7 +165,7 @@ export const BLUE_RADARS: RadarSystem[] = [
     intel_note: 'Upgraded Early Warning Radar (PAVE PAWS lineage) for strategic missile warning & space tracking.',
   },
 
-  /* ===================== Western — ground-based air defence surveillance ===================== */
+  /* ===================== Western: ground-based air defence surveillance ===================== */
   {
     id: 'radar-giraffe-amb',
     name: 'Giraffe AMB',
@@ -188,7 +188,7 @@ export const BLUE_RADARS: RadarSystem[] = [
     can_detect: ['aircraft', 'helicopter', 'cruise_missile', 'large_uas', 'small_uas', 'rocket_artillery_mortar'],
     cannot_detect: ['stealth'],
     strengths: ['1-second revisit; classifies fixed-wing, heli, UAV, jammer & RAM', 'Mast-elevated for low-altitude coverage', 'Sense-and-warn for C-RAM'],
-    limitations: ['C-band — not a counter-stealth sensor'],
+    limitations: ['C-band: not a counter-stealth sensor'],
     confidence: 'curated',
     intel_note: 'Saab medium-range 3D GBAD surveillance radar; strong low/slow/small + RAM performance.',
   },
@@ -239,7 +239,7 @@ export const BLUE_RADARS: RadarSystem[] = [
     can_detect: ['aircraft', 'helicopter', 'cruise_missile', 'large_uas', 'small_uas', 'rocket_artillery_mortar'],
     cannot_detect: ['stealth'],
     strengths: ['GaN AESA multi-mission', 'Simultaneous air-defence + C-RAM modes'],
-    limitations: ['S-band — not optimised for VLO'],
+    limitations: ['S-band: not optimised for VLO'],
     confidence: 'estimated',
     intel_note: 'Thales tactical GaN AESA multi-mission radar; air defence and counter-RAM in one.',
   },
@@ -364,7 +364,7 @@ export const BLUE_RADARS: RadarSystem[] = [
     strengths: ['Ku-band high-resolution drone detection', 'Feeds Coyote / KuRFS C-UAS kill chain'],
     limitations: ['Short range; Ku rain attenuation'],
     confidence: 'estimated',
-    intel_note: 'Ku-band Radio Frequency System — the sensor behind Raytheon’s Coyote-based C-UAS.',
+    intel_note: 'Ku-band Radio Frequency System: the sensor behind Raytheon’s Coyote-based C-UAS.',
   },
 
   /* ===================== Counter-battery ===================== */
@@ -415,7 +415,7 @@ export const BLUE_RADARS: RadarSystem[] = [
     can_detect: ['aircraft', 'stealth', 'cruise_missile', 'large_uas', 'sea_surface'],
     cannot_detect: ['small_uas'],
     strengths: ['SAR mapping + GMTI + EW + electronic attack', 'Low probability of intercept', 'Sensor-fusion core of F-35'],
-    limitations: ['Airframe sector coverage', 'Range figures classified — estimate'],
+    limitations: ['Airframe sector coverage', 'Range figures classified: estimate'],
     confidence: 'estimated',
     intel_note: 'F-35 multifunction X-band AESA; air-to-air, air-to-ground, and electronic-attack roles.',
   },
@@ -463,7 +463,7 @@ export const BLUE_RADARS: RadarSystem[] = [
     can_detect: ['aircraft', 'stealth', 'cruise_missile', 'large_uas', 'sea_surface'],
     cannot_detect: ['small_uas'],
     strengths: ['Repositioner gives ~200° wide-angle scan', 'Large aperture'],
-    limitations: ['Range classified — estimate'],
+    limitations: ['Range classified: estimate'],
     confidence: 'estimated',
     intel_note: 'Eurofighter AESA with a mechanical repositioner for an exceptionally wide field of regard.',
   },
@@ -486,7 +486,7 @@ export const BLUE_RADARS: RadarSystem[] = [
     eccm: 'high',
     can_detect: ['aircraft', 'stealth', 'cruise_missile', 'large_uas', 'sea_surface'],
     cannot_detect: ['small_uas'],
-    strengths: ['UHF AEW&C — counter-stealth-leaning', 'Rotodome 360°', 'Theatre air picture'],
+    strengths: ['UHF AEW&C: counter-stealth-leaning', 'Rotodome 360°', 'Theatre air picture'],
     limitations: ['UHF resolution; large platform'],
     confidence: 'estimated',
     intel_note: 'E-2D airborne early-warning radar; UHF rotodome with claimed reduced-RCS detection.',

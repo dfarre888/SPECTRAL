@@ -1,5 +1,5 @@
 /**
- * Force Catalogue — Hamas / PIJ (HMS).
+ * Force Catalogue: Hamas / PIJ (HMS).
  * OSINT only. Verified Jul 2026. Non-state red.
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY.
  */
@@ -37,7 +37,7 @@ export const HAMAS_CATALOG: ForceCatalogPlatformFull[] = [
     id: 'HMS-CAT-TUNNEL', designation: 'Subterranean tunnel network (capability)', short_name: 'Tunnel network',
     manufacturer: 'Hamas', domain: 'ground', role: 'other', force_side: 'red',
     service_status: 'in_service', program_stage: 'fielded', ioc_year: 2000,
-    open_source_summary: 'combat-proven: Gaza. Subterranean logistics/C2 — capability class.',
+    open_source_summary: 'combat-proven: Gaza. Subterranean logistics/C2: capability class.',
     data_confidence: 'medium', sources: ['OSINT Hamas/PIJ reporting 2023–24', 'defence press'],
     comms: [ndl('HMS-CAT-TUNNEL'), uhfVoice('HMS-CAT-TUNNEL')],
     sensors: [],

@@ -9,7 +9,7 @@ import { AlertTriangle, ClipboardCheck, Plane, Radio } from 'lucide-react'
 import { allocateGloss } from '@/lib/ui/gloss-budget'
 import { cn } from '@/lib/utils'
 
-/** Threat-priority order — critical alerts first for commander scan pattern. */
+/** Threat-priority order: critical alerts first for commander scan pattern. */
 const KEYS = ['criticalAlerts', 'activeRpa', 'activeMissions', 'pendingApprovals'] as const
 const ICONS = [AlertTriangle, Plane, Radio, ClipboardCheck] as const
 
@@ -28,7 +28,7 @@ function metricHref(key: (typeof KEYS)[number]): string {
 
 /**
  * Weight for the gloss budget. Only tiles wanting attention compete, and the
- * budget caps how many can win — so the shine says "these matter most", not
+ * budget caps how many can win: so the shine says "these matter most", not
  * "a lot is happening".
  */
 function glossWeight(key: (typeof KEYS)[number], value: number): number {

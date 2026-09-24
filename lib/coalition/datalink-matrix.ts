@@ -9,7 +9,7 @@
  * Two ideas do the work:
  *
  *  1. Connectivity is tiered. A vehicle on a combat-net radio is not
- *     "disconnected" — it simply cannot exchange machine tracks. Reporting one
+ *     "disconnected": it simply cannot exchange machine tracks. Reporting one
  *     cohesion number hides that, so every tier is scored separately.
  *
  *  2. Links bridge, but not for free. Link 22 was specified to interoperate with
@@ -26,7 +26,7 @@ export const TIER_ORDER: ConnTier[] = ['track', 'data', 'voice', 'none']
 export interface DatalinkSpec {
   standard: string
   label: string
-  /** Descriptive band(s) — OSINT. */
+  /** Descriptive band(s): OSINT. */
   band: string
   tier: ConnTier
   /** Scoped to one nation (indigenous crypto/waveform) rather than coalition-wide. */
@@ -89,7 +89,7 @@ export const DATALINK_SPECS: Record<string, DatalinkSpec> = {
     tier: 'track',
     nationScoped: true,
     pntDependent: true,
-    note: 'Indigenous waveform and crypto. Joins own-nation platforms only — the reason a multi-nation adversary bloc does not automatically share a picture.',
+    note: 'Indigenous waveform and crypto. Joins own-nation platforms only: the reason a multi-nation adversary bloc does not automatically share a picture.',
   },
 }
 
@@ -97,8 +97,8 @@ export interface DatalinkBridge {
   a: string
   b: string
   /**
-   * 'native'  — the standards were specified to interwork; no dedicated relay needed.
-   * 'gateway' — requires a platform carrying both and fitted to forward.
+   * 'native' : the standards were specified to interwork; no dedicated relay needed.
+   * 'gateway': requires a platform carrying both and fitted to forward.
    */
   mechanism: 'native' | 'gateway'
   note: string
@@ -123,7 +123,7 @@ export const DATALINK_BRIDGES: DatalinkBridge[] = [
   },
   {
     a: 'ifdl', b: 'link16', mechanism: 'gateway',
-    note: 'As MADL — intra-flight only until relayed.',
+    note: 'As MADL: intra-flight only until relayed.',
   },
 ]
 

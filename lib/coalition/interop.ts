@@ -7,17 +7,17 @@
  * Connectivity is scored in tiers rather than as a single number, because those
  * tiers answer different questions:
  *
- *   track — machine-to-machine track exchange. Drives fused air pictures,
+ *   track: machine-to-machine track exchange. Drives fused air pictures,
  *           cued intercepts and cooperative engagement.
- *   data  — non-track digital traffic (SATCOM data). Orders and reports move;
+ *   data : non-track digital traffic (SATCOM data). Orders and reports move;
  *           a live track picture does not.
- *   voice — HF/VHF/UHF/SATCOM voice. A human relays what a machine cannot.
+ *   voice: HF/VHF/UHF/SATCOM voice. A human relays what a machine cannot.
  *
- * A protected mobility vehicle on a combat-net radio is not "isolated" — it is
+ * A protected mobility vehicle on a combat-net radio is not "isolated": it is
  * voice-connected and cannot receive machine tracks. Reporting one number hides
  * exactly the distinction a planner needs.
  *
- * Pure data — no React, no DB — so the graph semantics stay testable in node.
+ * Pure data, no React, no DB, so the graph semantics stay testable in node.
  */
 
 import {
@@ -71,7 +71,7 @@ export interface TierResult {
   participantIds: string[]
   /** participants / all platforms, 0-100. */
   coveragePct: number
-  /** Largest island / participants, 0-100 — how unified those who can are. */
+  /** Largest island / participants, 0-100: how unified those who can are. */
   cohesionPct: number
   /**
    * Largest island / ALL platforms, 0-100.
@@ -91,7 +91,7 @@ export interface InteropResult {
   voice: TierResult
   /** Best tier each platform reaches. */
   tierByPlatform: Record<string, ConnTier>
-  /** Platforms with no bearer of any kind — genuinely out of the net. */
+  /** Platforms with no bearer of any kind: genuinely out of the net. */
   unconnectedIds: string[]
 }
 
@@ -253,7 +253,7 @@ export function analyseInteropUnderGnssDenial(platforms: InteropPlatform[]): Int
 export interface InteropDelta {
   nominal: InteropResult
   denied: InteropResult
-  /** Track-tier reach lost, in points — the meaningful denial measure. */
+  /** Track-tier reach lost, in points: the meaningful denial measure. */
   trackReachDropPct: number
   /** Track-tier cohesion lost, in points. Reported for completeness. */
   trackCohesionDropPct: number

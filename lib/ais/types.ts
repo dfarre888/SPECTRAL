@@ -1,5 +1,5 @@
 /**
- * AIS Marine Traffic — normalised types for SPECTRAL
+ * AIS Marine Traffic: normalised types for SPECTRAL
  *
  * Provider-agnostic representation. The server route at
  * /api/ais/vessels normalises raw API responses into this shape.
@@ -13,9 +13,9 @@ export interface AisVessel {
   name: string
   lat: number
   lon: number
-  /** Speed over ground — knots */
+  /** Speed over ground: knots */
   sog: number
-  /** Course over ground — degrees true */
+  /** Course over ground: degrees true */
   cog: number
   /** AIS vessel type code 0–99 (https://api.marinetraffic.com/en/it/vessel_types) */
   type: number
@@ -37,7 +37,7 @@ export interface AisBbox {
   maxLat: number
 }
 
-/** Default AIS query extent — global coverage [[-90,-180],[90,180]] */
+/** Default AIS query extent: global coverage [[-90,-180],[90,180]] */
 export const AIS_DEFAULT_BBOX: AisBbox = {
   minLat: -90,
   minLon: -180,
@@ -80,10 +80,10 @@ export function aisTypeLabel(typeCode: number): string {
 /** Returns the SPECTRAL COP colour for a vessel type */
 export function aisTypeColor(typeCode: number): string {
   if (typeCode >= 35 && typeCode <= 39)        return '#EF4444' // naval / military
-  if (typeCode >= 80 && typeCode <= 89)        return '#F97316' // tanker — orange
-  if (typeCode >= 70 && typeCode <= 79)        return '#06B6D4' // cargo — cyan
-  if (typeCode >= 60 && typeCode <= 69)        return '#A855F7' // passenger — purple
-  if (typeCode === 51 || typeCode === 58)      return '#22C55E' // SAR / medical — green
+  if (typeCode >= 80 && typeCode <= 89)        return '#F97316' // tanker: orange
+  if (typeCode >= 70 && typeCode <= 79)        return '#06B6D4' // cargo: cyan
+  if (typeCode >= 60 && typeCode <= 69)        return '#A855F7' // passenger: purple
+  if (typeCode === 51 || typeCode === 58)      return '#22C55E' // SAR / medical: green
   return '#06B6D4'                                              // default cyan
 }
 

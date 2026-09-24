@@ -1,4 +1,4 @@
-// SPECTRAL — IADS ↔ SAM profile bridge
+// SPECTRAL: IADS ↔ SAM profile bridge
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 
 import {

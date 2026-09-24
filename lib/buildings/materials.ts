@@ -1,6 +1,6 @@
 import type { BuildingMaterialClass } from '@/lib/buildings/types'
 
-/** Estimated penetration loss at 2.4 GHz — not site survey. */
+/** Estimated penetration loss at 2.4 GHz: not site survey. */
 export const MATERIAL_PENETRATION_DB: Record<BuildingMaterialClass, number> = {
   concrete: 12,
   brick: 8,

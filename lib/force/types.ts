@@ -1,4 +1,4 @@
-/** National force catalogue — BMI air / land / maritime ORBAT. UNCLASSIFIED OSINT. */
+/** National force catalogue: BMI air / land / maritime ORBAT. UNCLASSIFIED OSINT. */
 
 export type ForceDomain = 'air' | 'ground' | 'maritime'
 export type ForceSide = 'blue' | 'red' | 'neutral'

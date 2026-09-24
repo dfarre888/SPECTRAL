@@ -1,5 +1,5 @@
 /**
- * Engagement Economics — cost exchange ratio and salvo leak-through
+ * Engagement Economics: cost exchange ratio and salvo leak-through
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 
@@ -77,7 +77,7 @@ export function simulateSalvoStochastic(
   };
 }
 
-/** Default salvo model — deterministic expected-value (reproducible for training). */
+/** Default salvo model: deterministic expected-value (reproducible for training). */
 export function simulateSalvo(
   magazine: number,
   salvoSize: number,

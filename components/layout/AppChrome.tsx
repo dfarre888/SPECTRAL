@@ -12,7 +12,7 @@ interface AppChromeProps {
   proposedCurrencyCount?: number
   platformCount?: number
   children: ReactNode
-  /** Full-bleed modules (map, spectrum) — no main padding */
+  /** Full-bleed modules (map, spectrum): no main padding */
   fullBleed?: boolean
   moduleLabel?: string
 }

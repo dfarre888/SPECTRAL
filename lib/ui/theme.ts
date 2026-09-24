@@ -25,7 +25,7 @@ export function applyTheme(theme: SpectralTheme): void {
   try {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme)
   } catch {
-    /* private mode — theme still applies for this session */
+    /* private mode: theme still applies for this session */
   }
 }
 
@@ -35,5 +35,5 @@ export function toggleTheme(current: SpectralTheme): SpectralTheme {
   return next
 }
 
-/** Inline boot script — runs before paint to avoid a dark flash on light preference. */
+/** Inline boot script: runs before paint to avoid a dark flash on light preference. */
 export const THEME_BOOT_SCRIPT = `(function(){try{var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t!=='light'&&t!=='dark'){t='dark';}var r=document.documentElement;r.setAttribute('data-theme',t);r.style.colorScheme=t;r.classList.toggle('dark',t==='dark');r.classList.toggle('light',t==='light');}catch(e){var r=document.documentElement;r.setAttribute('data-theme','dark');r.style.colorScheme='dark';r.classList.add('dark');}})();`

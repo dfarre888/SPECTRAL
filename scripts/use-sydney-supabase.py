@@ -13,7 +13,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ENV = ROOT / ".env.local"
 
-SYDNEY_REF = "nxnukrnkbxiqberymqzq"
+SYDNEY_REF = "ewmonpfznutfviouqdbr"  # SPECTRAL free project, ap-southeast-2
 SYDNEY_URL = f"https://{SYDNEY_REF}.supabase.co"
 MUMBAI_REF = "wzsoajpvcoesgsmuwuwm"
 DASH = f"https://supabase.com/dashboard/project/{SYDNEY_REF}/settings/api"

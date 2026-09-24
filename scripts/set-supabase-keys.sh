@@ -1,17 +1,18 @@
 #!/bin/bash
-# Paste the Sydney Supabase keys into .env.local without them appearing on
-# screen, in shell history or anywhere else. Each key is checked against the
-# Sydney project before anything is written; the old file is backed up.
+# Paste the SPECTRAL Supabase keys into .env.local without them appearing on
+# screen, in shell history or anywhere else. Legacy JWT keys are checked
+# against the project before anything is written; the old file is backed up.
+# Project: SPECTRAL, org "Spectral" (free plan), ap-southeast-2 (Sydney).
 #
 #   bash scripts/set-supabase-keys.sh
 set -uo pipefail
 
 ENV_FILE="$(cd "$(dirname "$0")/.." && pwd)/.env.local"
-REF="nxnukrnkbxiqberymqzq"
+REF="${SUPABASE_REF:-ewmonpfznutfviouqdbr}"
 DASH="https://supabase.com/dashboard/project/$REF/settings/api"
 
 echo
-echo "Sydney Supabase keys for SPECTRAL"
+echo "Supabase keys for SPECTRAL (project $REF)"
 echo "Copy each key from: $DASH"
 echo "Paste it at the prompt and press Return. Nothing will show as you paste; that is normal."
 echo
@@ -34,10 +35,10 @@ try:
 except Exception:
     print("  could not read that key. Try copying it again."); sys.exit(1)
 if claims.get("ref") != ref:
-    print(f"  that key belongs to project {claims.get('ref')}, not Sydney ({ref})."); sys.exit(1)
+    print(f"  that key belongs to project {claims.get('ref')}, not SPECTRAL ({ref})."); sys.exit(1)
 if claims.get("role") != role:
     print(f"  that is the {claims.get('role')} key; this prompt needs the {role} key."); sys.exit(1)
-print(f"  OK: Sydney {role} key")
+print(f"  OK: {role} key for {ref}")
 PY
 }
 
@@ -59,7 +60,7 @@ ask() {
 ask "Paste the anon (public) key" anon ANON_KEY
 ask "Paste the service_role (secret) key" service_role SERVICE_KEY
 
-cp -p "$ENV_FILE" "$ENV_FILE.before-sydney-keys.bak"
+cp -p "$ENV_FILE" "$ENV_FILE.before-key-switch.bak"
 
 ANON_KEY="$ANON_KEY" SERVICE_KEY="$SERVICE_KEY" ENV_FILE="$ENV_FILE" REF="$REF" python3 - <<'PY'
 import os, re
@@ -73,12 +74,12 @@ def put(text, name, value):
 text = put(text, "SUPABASE_SERVICE_ROLE_KEY", os.environ["SERVICE_KEY"].strip())
 text = put(text, "NEXT_PUBLIC_SUPABASE_ANON_KEY", os.environ["ANON_KEY"].strip())
 text = put(text, "NEXT_PUBLIC_SUPABASE_URL", f"https://{ref}.supabase.co")
-text = re.sub(r"^# Supabase .*wzsoajpvcoesgsmuwuwm.*$", "# Supabase: Spectral (Sydney, ap-southeast-2)", text, flags=re.M)
+text = re.sub(r"^# Supabase.*$", f"# Supabase: SPECTRAL ({ref}, ap-southeast-2)", text, count=1, flags=re.M)
 open(path, "w").write(text)
 PY
 
 unset ANON_KEY SERVICE_KEY KEY
 echo
-echo "Done. .env.local now points at Sydney with Sydney keys."
-echo "Previous file saved as .env.local.before-sydney-keys.bak"
+echo "Done. .env.local now points at $REF with its keys."
+echo "Previous file saved as .env.local.before-key-switch.bak"
 echo "You can close this tab and tell Claude \"done\"."

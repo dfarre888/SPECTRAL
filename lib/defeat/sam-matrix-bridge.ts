@@ -1,4 +1,4 @@
-// SPECTRAL — SAM Defeat Matrix Bridge
+// SPECTRAL: SAM Defeat Matrix Bridge
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 
 import {

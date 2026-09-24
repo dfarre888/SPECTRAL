@@ -4,6 +4,7 @@ import { CONFLICT_CASE_STUDIES } from '@/data/seed-conflicts'
 import { BLUE_EFFECTORS } from '@/data/seed-effectors-blue'
 import { RED_EFFECTORS } from '@/data/seed-effectors-red'
 import { getPlatformCount } from '@/lib/platforms/queries'
+import { getGnssJammers } from '@/lib/gnss/queries'
 
 /** Live OSINT catalog counts for dashboard module tiles. */
 export async function fetchModuleCatalogStats() {
@@ -21,8 +22,8 @@ export async function fetchModuleCatalogStats() {
   return {
     platformCount,
     defeatSystemCount,
-    /** GNSS jammers + constellations in seed — stable training baseline */
-    gnssJammerCount: 12,
+    /** GNSS jammers on record in the connected database. */
+    gnssJammerCount: await getGnssJammers().then((j) => j.length).catch(() => 0),
     conflictCaseCount: CONFLICT_CASE_STUDIES.length,
     plannerVignetteCount: 5,
   }

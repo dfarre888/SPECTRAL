@@ -1,9 +1,9 @@
 import type { DefeatTypeFilter } from '@/lib/defeat/defeat-types'
-import { getPrimaryDefeatType } from '@/lib/defeat/defeat-types'
+import { getPrimaryDefeatType, isDetectOnly } from '@/lib/defeat/defeat-types'
 import type { AntiDroneSystem, Platform } from '@/lib/types'
 
 /**
- * Generic Group 1–2 COTS Pk — OSINT-estimated training defaults.
+ * Generic Group 1–2 COTS Pk: OSINT-estimated training defaults.
  * Used when no dedicated defeat_effectiveness row exists.
  */
 const COTS_DEFAULTS: Record<string, { rf: number | null; kinetic: number | null; dew: number | null }> = {
@@ -42,7 +42,7 @@ export function synthesizeCotsCountermeasures(platformId: string): import('@/lib
     data_confidence: 'estimated',
     is_immune: false,
     immune_reason: null,
-    adjudication_rationale: 'COTS Group 1–2 generic Pk — OSINT training default pending pair-specific row',
+    adjudication_rationale: 'COTS Group 1–2 generic Pk: OSINT training default pending pair-specific row',
     modifiers: [],
     recommended_response: 'Layer RF (DroneGun/EnforceAir) with HPM/HEL. Cue with radar/EO.',
     weather_limited: systemId.includes('beam') || systemId.includes('dragon') || systemId.includes('helios'),
@@ -57,6 +57,8 @@ export function resolveCotsDefeatPct(
   filter: DefeatTypeFilter = 'all',
 ): number | null {
   if (!isCotsPlatform(platform)) return null
+  // Sensors detect; they have no kill probability to default to.
+  if (isDetectOnly(system)) return null
   const row = COTS_DEFAULTS[system.id]
   const primary = getPrimaryDefeatType(system)
   if (row) {

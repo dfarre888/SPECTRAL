@@ -1,3 +1,4 @@
+import { publishedSpecs } from '@/components/platforms/platform-display'
 import { Suspense } from 'react'
 import { PlatformLibrary } from '@/components/platforms/PlatformLibrary'
 import { PlatformGridSkeleton } from '@/components/platforms/PlatformGrid'
@@ -24,7 +25,7 @@ export default async function PlatformsPage() {
   return (
     <Suspense fallback={<PlatformGridSkeleton />}>
       <PlatformLibrary
-        platforms={platforms}
+        platforms={platforms.map(publishedSpecs)}
         countries={countries}
         sovereignPlatforms={sovereignPlatforms}
       />

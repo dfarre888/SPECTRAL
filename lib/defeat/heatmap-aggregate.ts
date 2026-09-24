@@ -3,7 +3,7 @@
  *
  * The previous heat map drew one column per platform. With 477 platforms at
  * 52px that is a grid roughly 25,000px wide, and the rotated column labels were
- * tall enough to push the coloured cells below the fold — so the one thing a
+ * tall enough to push the coloured cells below the fold: so the one thing a
  * heat map exists to do, letting you see the pattern at a glance, was the one
  * thing it could not do.
  *
@@ -13,7 +13,7 @@
  * Individual platforms remain available in the table view.
  *
  * Median rather than mean: Pk within a class is skewed by a handful of
- * outliers, and a median says "the typical platform in this class" — which is
+ * outliers, and a median says "the typical platform in this class": which is
  * what the cell is claiming.
  */
 
@@ -34,7 +34,7 @@ export const THREAT_CLASSES: ThreatClassDef[] = [
 ]
 
 export interface HeatSample {
-  /** null means no assessment on record — distinct from a Pk of zero. */
+  /** null means no assessment on record: distinct from a Pk of zero. */
   pct: number | null
   immune: boolean
   confidence?: string

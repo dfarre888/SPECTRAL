@@ -5,7 +5,7 @@ import { defaultRangeExtractor, useVirtualizer, type Range } from '@tanstack/rea
 import { ScrollArea } from '@/components/ui/ScrollArea'
 import { BAND_TEXT, MatrixCell } from '@/components/defeat/MatrixCell'
 import { useDockScroll } from '@/components/defeat/useDockScroll'
-import { getPrimaryDefeatType, type DefeatTypeFilter } from '@/lib/defeat/defeat-types'
+import { getPrimaryDefeatType, isDetectOnly, type DefeatTypeFilter } from '@/lib/defeat/defeat-types'
 import { readLaydownSession } from '@/lib/map/laydown-session'
 import { cn } from '@/lib/utils'
 import type {
@@ -54,7 +54,8 @@ function evenStartRange(range: Range): number[] {
 }
 
 function typeLabel(system: AntiDroneSystem, filter: DefeatTypeFilter): string {
-  // The number in a column is the Pk for this defeat type.
+  // The number in a column is the Pk for this defeat type; sensors have none.
+  if (isDetectOnly(system)) return 'Detect'
   return filter !== 'all' ? filter : getPrimaryDefeatType(system)
 }
 

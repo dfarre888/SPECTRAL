@@ -46,7 +46,7 @@ export type GuidanceType =
 
 // ─── Guidance mode constants (migration-sourced) ───────────────────────────────
 
-/** Iranian missile guidance modes — migration 20260624120000 */
+/** Iranian missile guidance modes: migration 20260624120000 */
 export const IRANIAN_GUIDANCE_MODES = {
   INS_GPS_TERCOM: 'INS+GPS+TERCOM',
   INS_MARV_GPS: 'INS+MaRV+GPS',
@@ -58,7 +58,7 @@ export const IRANIAN_GUIDANCE_MODES = {
 
 export type IranianGuidanceMode = typeof IRANIAN_GUIDANCE_MODES[keyof typeof IRANIAN_GUIDANCE_MODES]
 
-/** Allied LACM guidance modes — migration 20260624130000 */
+/** Allied LACM guidance modes: migration 20260624130000 */
 export const ALLIED_LACM_GUIDANCE_MODES = {
   INS_GPS_TERCOM_IIR: 'INS+GPS+TERCOM+IIR',
   INS_GPS_IIR_ATA: 'INS+GPS+IIR+ATA',
@@ -72,16 +72,16 @@ export type AlliedLacmGuidanceMode = typeof ALLIED_LACM_GUIDANCE_MODES[keyof typ
 
 export type NatoConfidence = 'Confirmed' | 'Assessed' | 'Estimated' | 'Reported'
 
-/** GNSS dependency level — mirrors lib/spectrum/types GnssDependency */
+/** GNSS dependency level: mirrors lib/spectrum/types GnssDependency */
 export type GnssDependency = 'high' | 'medium' | 'low' | 'none'
 
-/** Provenance confidence of the OSINT record — mirrors lib/spectrum/types SourceConfidence */
+/** Provenance confidence of the OSINT record: mirrors lib/spectrum/types SourceConfidence */
 export type SourceConfidenceLevel = 'curated' | 'derived' | 'estimated'
 
-/** Side in engagement model — mirrors lib/spectrum/types Side */
+/** Side in engagement model: mirrors lib/spectrum/types Side */
 export type PlatformSide = 'red' | 'blue' | 'neutral'
 
-/** DoD UAS Group categorisation — mirrors lib/spectrum/types UASGroup */
+/** DoD UAS Group categorisation: mirrors lib/spectrum/types UASGroup */
 export type UASGroup = 1 | 2 | 3 | 4 | 5 | null
 
 export interface Platform {
@@ -106,13 +106,13 @@ export interface Platform {
   length_m: number | null
   wingspan_m: number | null
   height_m: number | null
-  /** Unit flyaway cost USD — OSINT estimate. */
+  /** Unit flyaway cost USD: OSINT estimate. */
   unit_cost_usd: number | null
   /** Initial operational capability year. */
   ioc_year: number | null
   /** Terminal attack speed (loitering munitions). */
   terminal_speed_kmh: number | null
-  /** Armour penetration (mm RHA) — loitering munitions. */
+  /** Armour penetration (mm RHA): loitering munitions. */
   armor_piercing_mm: number | null
   engine_type: string | null
   radar_cross_section_m2: number | null
@@ -144,12 +144,12 @@ export interface Platform {
   defeat_note: string | null
   /** Control link frequency description, e.g. '2.4/5.8 GHz ISM' | 'Ku-band SATCOM' | 'fiber-optic' */
   control_link_freq: string | null
-  /** GNSS dependency level — determines jamming/spoofing viability */
+  /** GNSS dependency level: determines jamming/spoofing viability */
   gnss_dependency: GnssDependency | null
   // ── Engagement model fields for Arena ────────────────────────────────────────
-  /** Side: 'red' | 'blue' — used by Arena and ThreatLibrary */
+  /** Side: 'red' | 'blue': used by Arena and ThreatLibrary */
   side: PlatformSide | null
-  /** DoD UAS Group (1–5) — null for Blue effectors */
+  /** DoD UAS Group (1–5): null for Blue effectors */
   uas_group: UASGroup
   /** A3DM shared catalog key (DRN-####). */
   a3dm_drone_id?: string | null
@@ -221,6 +221,8 @@ export type DefeatMethod =
   | 'RF_jamming' | 'kinetic' | 'laser' | 'net'
   | 'cyber' | 'spoofing' | 'combined' | 'EMP' | 'directed_energy'
   | 'directed_energy_laser' | 'kinetic_interceptor_uas' | 'cyber_takeover' | 'ai_ew_adaptive'
+  /** Sensor only: finds and tracks, cannot defeat. */
+  | 'detect'
 
 export type Portability = 'man-portable' | 'vehicle' | 'fixed' | 'airborne' | 'naval'
 
@@ -268,7 +270,7 @@ export interface DefeatEffectiveness {
   defeat_system?: AntiDroneSystem
 }
 
-/** OSINT intelligence update metadata — docs/SPECTRAL_INTEL_UPDATE_2025.md */
+/** OSINT intelligence update metadata: docs/SPECTRAL_INTEL_UPDATE_2025.md */
 export const INTEL_UPDATE_2025 = {
   date: '2026-06-07',
   source: 'docs/SPECTRAL_INTEL_UPDATE_2025.md',

@@ -4,12 +4,14 @@ import {
   fetchGnssJammingIncidents,
   fetchGnssPlatformDependencies,
 } from '@/lib/gnss/gnss-queries'
+import { getGnssJammers } from '@/lib/gnss/queries'
 
 export default async function GnssPage() {
-  const [constellations, dependencies, incidents] = await Promise.all([
+  const [constellations, dependencies, incidents, jammers] = await Promise.all([
     fetchGnssConstellations(),
     fetchGnssPlatformDependencies(),
     fetchGnssJammingIncidents(),
+    getGnssJammers().catch(() => []),
   ])
 
   return (
@@ -25,6 +27,7 @@ export default async function GnssPage() {
         constellations={constellations}
         dependencies={dependencies}
         incidents={incidents}
+        jammers={jammers}
       />
     </div>
   )

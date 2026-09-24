@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
   try {
-    // P0-D: auth guard — this endpoint exposes defeat intelligence data
+    // P0-D: auth guard: this endpoint exposes defeat intelligence data
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -56,6 +56,12 @@ export async function GET(request: Request) {
           adjudication_rationale: null,
           kind: 'empty',
         },
+      })
+    }
+
+    if (cell.kind === 'sensor') {
+      return NextResponse.json({
+        data: { effectiveness_pct: null, is_immune: false, kind: 'sensor', note: 'Detection sensor: no defeat effect' },
       })
     }
 

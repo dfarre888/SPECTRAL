@@ -1,4 +1,4 @@
-// SPECTRAL — Unified SAM Pk resolver
+// SPECTRAL: Unified SAM Pk resolver
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 //
 // Single source of truth for effective kinetic Pk (as integer percent).

@@ -5,6 +5,7 @@ import { OFFLINE_DEFEAT_SYSTEMS } from '@/lib/pcm/defeat-matrix-offline-data'
 import { buildComputedSamPkMap, SAM_MATRIX_PLATFORMS, isSamSystemId } from '@/lib/defeat/sam-matrix-bridge'
 import type { AccreditedDefeatPkRow, AntiDroneSystem, DefeatEffectiveness, DefeatMatrixPayload, Platform } from '@/lib/types'
 import { fetchAllAccreditedDefeatPk } from '@/lib/operations/accredited-supplements'
+import { dedupeSystems } from '@/lib/defeat/dedupe-systems'
 
 function mergeDefeatPlatforms(dbRows: Platform[]): Platform[] {
   const seen = new Set(dbRows.map((p) => p.id))
@@ -49,6 +50,8 @@ export async function getDefeatMatrixData(): Promise<DefeatMatrixPayload> {
   } catch {
     platforms = mergeDefeatPlatforms([])
   }
+
+  ;({ systems, effectiveness } = dedupeSystems(systems, effectiveness))
 
   let accreditedPkMap: Record<string, AccreditedDefeatPkRow> | undefined
   if (process.env.SPECTRAL_ACCREDITED_RESOLVER === 'true') {

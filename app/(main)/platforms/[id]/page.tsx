@@ -8,7 +8,7 @@ import { CountermeasuresPanel } from '@/components/platforms/CountermeasuresPane
 import { PayloadCompatPanel } from '@/components/platforms/PayloadCompatPanel'
 import { PlatformSpecSheet, formatDateOfInformation } from '@/components/platforms/PlatformSpecSheet'
 import { SamDefeatPanel } from '@/components/platforms/SamDefeatPanel'
-import { categoryLabel, fmtNum, keyFigures, knownFlag } from '@/components/platforms/platform-display'
+import { categoryLabel, fmtNum, keyFigures, knownFlag, publishedSpecs } from '@/components/platforms/platform-display'
 import { payloadsForPlatform } from '@/lib/a3dm/catalog'
 import { hasResolvedPlatformImage } from '@/lib/platforms/image-resolve'
 import { getPlatformById, getPlatformCountermeasures } from '@/lib/platforms/queries'
@@ -28,12 +28,13 @@ const INST_COLS: Record<number, string> = {
 }
 
 export default async function PlatformDetailPage({ params }: PlatformDetailPageProps) {
-  const [platform, countermeasures] = await Promise.all([
+  const [rawPlatform, countermeasures] = await Promise.all([
     getPlatformById(params.id),
     getPlatformCountermeasures(params.id),
   ])
 
-  if (!platform) notFound()
+  if (!rawPlatform) notFound()
+  const platform = publishedSpecs(rawPlatform)
 
   const flag = knownFlag(platform.country_of_origin)
   const hasImage = hasResolvedPlatformImage(platform.id)

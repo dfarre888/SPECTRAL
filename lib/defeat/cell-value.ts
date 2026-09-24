@@ -1,6 +1,7 @@
 import {
   defeatTypeToPctField,
   getPrimaryDefeatType,
+  isDetectOnly,
   systemIsRfType,
   type DefeatTypeFilter,
 } from '@/lib/defeat/defeat-types'
@@ -16,6 +17,8 @@ export type CellColour = 'red' | 'amber' | 'green' | 'immune' | 'none'
 
 export type CellValue =
   | { kind: 'immune'; reason: string | null }
+  /** The column is a sensor: it detects, it has no Pk. */
+  | { kind: 'sensor' }
   | { kind: 'pct'; value: number; colour: CellColour; laydown?: LaydownPropagationBadge }
   | { kind: 'empty' }
 
@@ -63,6 +66,9 @@ export function resolveCellValue(
   laydownPair?: LaydownSessionPair | null,
   computedSamPk?: number | null,
 ): CellValue {
+  // A sensor column has no Pk, even when a stray effectiveness row exists.
+  if (isDetectOnly(system)) return { kind: 'sensor' }
+
   if (row?.is_immune) {
     return { kind: 'immune', reason: row.immune_reason }
   }
@@ -70,7 +76,7 @@ export function resolveCellValue(
   if (platform.guidance_type === 'fibre_optic' && systemIsRfType(system)) {
     return {
       kind: 'immune',
-      reason: 'No RF datalink — fibre-optic tether',
+      reason: 'No RF datalink: fibre-optic tether',
     }
   }
 
@@ -83,7 +89,7 @@ export function resolveCellValue(
     if (!row || row.rf_jamming_pct === 0) {
       return {
         kind: 'immune',
-        reason: 'GNSS-free navigation — RF jamming ineffective',
+        reason: 'GNSS-free navigation: RF jamming ineffective',
       }
     }
   }
@@ -133,5 +139,6 @@ export function resolveCellValue(
 export function cellValueToDisplay(value: CellValue): string {
   if (value.kind === 'immune') return 'IMMUNE'
   if (value.kind === 'empty') return '—'
+  if (value.kind === 'sensor') return 'DETECT'
   return `${value.value}%`
 }

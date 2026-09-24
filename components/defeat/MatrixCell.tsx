@@ -119,6 +119,7 @@ function describeCell(
   if (accRow?.is_immune) return 'immune'
   if (value.kind === 'immune') return value.reason ? `immune (${value.reason})` : 'immune'
   if (value.kind === 'empty') return 'no finding'
+  if (value.kind === 'sensor') return 'detection sensor, no defeat effect'
   const accPk = accRow ? accreditedPkForSystem(accRow, system) : null
   if (accPk != null) return `Pk ${accPk}%, accredited`
   return row ? `Pk ${value.value}%` : `Pk ${value.value}%, estimate (no pair-specific finding)`
@@ -140,6 +141,9 @@ function CellContent({
   }
   if (value.kind === 'empty') {
     return <span className="font-mono text-[13px] text-[rgba(255,255,255,0.2)]" aria-hidden>–</span>
+  }
+  if (value.kind === 'sensor') {
+    return <span className="font-sans text-[11px] text-[var(--store-ink-mute)]">Detect</span>
   }
   const accPk = accRow ? accreditedPkForSystem(accRow, system) : null
   if (accPk != null) {

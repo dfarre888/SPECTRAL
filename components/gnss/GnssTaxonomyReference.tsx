@@ -56,9 +56,9 @@ export function GnssTaxonomyReference({ defaultOpen = false }: GnssTaxonomyRefer
             not a targeting catalogue. Typical show drone: GPS L1, RTK link, 2.4 GHz swarm network.
           </p>
           <ul className="font-mono text-[11px] text-cyan space-y-0.5">
-            <li>GPS L1 — {BAND_REFERENCE.GPS_L1.centre_mhz} MHz</li>
-            <li>RTK correction link — datalink</li>
-            <li>C2 / swarm 2.4 GHz — {BAND_REFERENCE.control_link_2_4ghz.centre_mhz} MHz</li>
+            <li>GPS L1: {BAND_REFERENCE.GPS_L1.centre_mhz} MHz</li>
+            <li>RTK correction link: datalink</li>
+            <li>C2 / swarm 2.4 GHz: {BAND_REFERENCE.control_link_2_4ghz.centre_mhz} MHz</li>
           </ul>
         </div>
       )}

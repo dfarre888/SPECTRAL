@@ -3,10 +3,20 @@ import type { AntiDroneSystem, DefeatMethod } from '@/lib/types'
 
 export type DefeatTypeFilter = 'all' | 'RF' | 'Kinetic' | 'DEW' | 'Net'
 
-const RF_METHODS: DefeatMethod[] = ['RF_jamming', 'spoofing', 'cyber']
-const KINETIC_METHODS: DefeatMethod[] = ['kinetic', 'combined']
-const DEW_METHODS: DefeatMethod[] = ['laser', 'directed_energy', 'EMP']
+const RF_METHODS: DefeatMethod[] = ['RF_jamming', 'spoofing', 'cyber', 'cyber_takeover', 'ai_ew_adaptive']
+const KINETIC_METHODS: DefeatMethod[] = ['kinetic', 'combined', 'kinetic_interceptor_uas']
+const DEW_METHODS: DefeatMethod[] = ['laser', 'directed_energy', 'directed_energy_laser', 'EMP']
 const NET_METHODS: DefeatMethod[] = ['net']
+const DEFEAT_METHODS: DefeatMethod[] = [...RF_METHODS, ...KINETIC_METHODS, ...DEW_METHODS, ...NET_METHODS]
+
+/**
+ * A sensor (radar, passive RF, EO) that finds and tracks but cannot defeat.
+ * It has no Pk against anything, so the matrix must never show one for it.
+ */
+export function isDetectOnly(system: AntiDroneSystem): boolean {
+  const methods = system.defeat_method ?? []
+  return methods.length > 0 && !methods.some((m) => DEFEAT_METHODS.includes(m))
+}
 
 export const DEFEAT_TYPE_FILTERS: { id: DefeatTypeFilter; label: string }[] = [
   { id: 'all', label: 'All' },

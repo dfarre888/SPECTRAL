@@ -26,7 +26,7 @@ export function GnssAnalyticsPanel({ analytics }: GnssAnalyticsPanelProps) {
           Analytics
         </h2>
         <p className="text-[11px] store-text-muted mt-0.5">
-          Headlines use evidenced counts only — inferred shown separately
+          Headlines use evidenced counts only: inferred shown separately
         </p>
       </div>
 

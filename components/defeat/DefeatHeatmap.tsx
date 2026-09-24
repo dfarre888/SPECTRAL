@@ -8,7 +8,7 @@ import {
   isSamSystemId,
   type SamSystemGroup,
 } from '@/lib/defeat/sam-matrix-bridge'
-import type { DefeatTypeFilter } from '@/lib/defeat/defeat-types'
+import { isDetectOnly, type DefeatTypeFilter } from '@/lib/defeat/defeat-types'
 import { getCellColour, resolveCellValue } from '@/lib/defeat/cell-value'
 import { resolveSamKineticPct } from '@/lib/defeat/resolve-sam-pk'
 import type {
@@ -172,7 +172,8 @@ export function DefeatHeatmap({
   useDockScroll(scrollEl, dockScroll)
 
   const filteredSystems = useMemo(() => {
-    let list = systems
+    // Sensors have no Pk, so they have no row on a Pk heat map.
+    let list = systems.filter((s) => !isDetectOnly(s))
     if (samOnlyFilter) list = list.filter((s) => isSamSystemId(s.id))
     if (systemGroup !== 'all') {
       list = list.filter((s) => getSamSystemGroup(s.id) === systemGroup)

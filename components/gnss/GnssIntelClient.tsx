@@ -9,16 +9,19 @@ import type {
 import { ConstellationStatusPanel } from '@/components/gnss/ConstellationStatusPanel'
 import { GnssVulnerabilityMatrix } from '@/components/gnss/GnssVulnerabilityMatrix'
 import { JammingIncidentsPanel } from '@/components/gnss/JammingIncidentsPanel'
+import { GnssJammersTable } from '@/components/gnss/GnssJammersTable'
+import type { GnssJammer } from '@/lib/gnss/queries'
 
-type Tab = 'constellations' | 'vulnerability' | 'incidents'
+type Tab = 'constellations' | 'vulnerability' | 'incidents' | 'jammers'
 
 interface GnssIntelClientProps {
   constellations: GnssConstellation[]
   dependencies: GnssPlatformDependency[]
   incidents: GnssJammingIncident[]
+  jammers?: GnssJammer[]
 }
 
-export function GnssIntelClient({ constellations, dependencies, incidents }: GnssIntelClientProps) {
+export function GnssIntelClient({ constellations, dependencies, incidents, jammers = [] }: GnssIntelClientProps) {
   const [tab, setTab] = useState<Tab>('constellations')
 
   const inst = useMemo(() => {
@@ -35,6 +38,7 @@ export function GnssIntelClient({ constellations, dependencies, incidents }: Gns
     { id: 'constellations', label: 'Constellations', n: constellations.length },
     { id: 'vulnerability', label: 'Platform vulnerability', n: inst.platforms },
     { id: 'incidents', label: 'Jamming incidents', n: incidents.length },
+    { id: 'jammers', label: 'Jammers', n: jammers.length },
   ]
 
   return (
@@ -64,6 +68,7 @@ export function GnssIntelClient({ constellations, dependencies, incidents }: Gns
         <GnssVulnerabilityMatrix constellations={constellations} dependencies={dependencies} />
       ) : null}
       {tab === 'incidents' ? <JammingIncidentsPanel incidents={incidents} /> : null}
+      {tab === 'jammers' ? <GnssJammersTable jammers={jammers} /> : null}
     </div>
   )
 }

@@ -148,3 +148,24 @@ export function keyFigures(p: Platform): KeyFigure[] {
     { key: 'terminal', label: 'Terminal speed', unit: 'km/h', value: p.terminal_speed_kmh },
   ]
 }
+
+/**
+ * The A3DM COTS import stored the Map Intel placement fallback (5 km envelope,
+ * 12 m/s, 500 m ceiling, 20 min) in the spec columns of ~250 commercial
+ * drones. Those are planning defaults, not published specs, so the library,
+ * dossier and Compare show them as unpublished. The map keeps using them.
+ */
+export function hasEnvelopeFallbackSpecs(p: Pick<Platform, 'range_km' | 'max_speed_kmh' | 'service_ceiling_m' | 'endurance_hrs'>): boolean {
+  return (
+    Number(p.range_km) === 5 &&
+    Number(p.max_speed_kmh) === 43.2 &&
+    Number(p.service_ceiling_m) === 500 &&
+    Number(p.endurance_hrs) === 0.33
+  )
+}
+
+/** The platform as it should be read: placeholder performance figures removed. */
+export function publishedSpecs<T extends Platform>(p: T): T {
+  if (!hasEnvelopeFallbackSpecs(p)) return p
+  return { ...p, range_km: null, max_speed_kmh: null, service_ceiling_m: null, endurance_hrs: null }
+}

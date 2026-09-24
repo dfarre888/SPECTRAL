@@ -1,3 +1,4 @@
+import { publishedSpecs } from '@/components/platforms/platform-display'
 import Link from 'next/link'
 import { GitCompare, Plus } from 'lucide-react'
 import { redirect } from 'next/navigation'
@@ -27,7 +28,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
     redirect(`/compare?ids=${DEFAULT_COMPARE_PAIR.join(',')}`)
   }
 
-  const platforms = await getPlatformsByIds(ids)
+  const platforms = (await getPlatformsByIds(ids)).map(publishedSpecs)
 
   return (
     <div className="pb-8">

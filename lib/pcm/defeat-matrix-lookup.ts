@@ -199,7 +199,7 @@ function cellToLookup(cell: CellValue, swarmPct: number | null, defeatType: Defe
       defeatType,
     };
   }
-  if (cell.kind === 'empty') {
+  if (cell.kind === 'empty' || cell.kind === 'sensor') {
     return {
       defeatMatrixPk: null,
       isImmune: false,

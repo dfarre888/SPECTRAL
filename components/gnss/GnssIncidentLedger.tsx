@@ -37,7 +37,7 @@ export function GnssIncidentLedger({ incidents }: GnssIncidentLedgerProps) {
             Incident ledger ({filtered.length})
           </h2>
           <p className="text-[11px] store-text-muted mt-0.5">
-            OSINT RPAS show failures — evidence-graded, not every loss is jamming
+            OSINT RPAS show failures: evidence-graded, not every loss is jamming
           </p>
         </div>
         <div className="flex gap-2">

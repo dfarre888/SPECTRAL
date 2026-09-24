@@ -76,7 +76,7 @@ export function CommandHero({ title, subtitle, switcher, instruments, points, bu
         key,
         x: pos.x,
         y: pos.y,
-        // Same colours as the Incident Timeline's type pills.
+        // Same colours as the Watchfloor's incident type pills.
         colour: INCIDENT_TYPE_COLOR[normalizeIncidentType(p.type)],
         count: 1,
         label: p.title,
@@ -161,7 +161,7 @@ export function CommandHero({ title, subtitle, switcher, instruments, points, bu
               {inView} OSINT incidents on this hemisphere
               {bundleAt ? <span className="font-mono">· bundle {bundleAt.slice(0, 10)}</span> : null}
               <Link href="/conflict" className="text-[var(--wb-blue)] hover:underline underline-offset-2">
-                Open timeline
+                Open Watchfloor
               </Link>
             </>
           ) : (

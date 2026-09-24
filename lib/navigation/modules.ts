@@ -28,6 +28,8 @@ export type ModuleIconName =
   | 'radio'
   | 'satellite'
   | 'shield'
+  | 'radar'
+  | 'shield-check'
   | 'shopping-cart'
   | 'swords'
   | 'target'
@@ -164,16 +166,16 @@ export const SPECTRAL_MODULES: readonly SpectralModule[] = [
   {
     id: 'conflict',
     href: '/conflict',
-    label: 'Incident Timeline',
-    sub: 'Imported incident feed',
-    kicker: 'IMPORTED',
-    blurb: 'Reported UAS incidents, refreshed by operator import',
+    label: 'Watchfloor',
+    sub: 'Incidents and reporting',
+    kicker: 'WATCHFLOOR',
+    blurb: 'Incidents, news, official releases, analysis and advisories, refreshed daily',
     icon: 'activity',
     accent: 'amber',
     group: 'intelligence',
     priority: 6,
-    staticCount: 'Feed',
-    countUnit: 'imported',
+    staticCount: 'Daily',
+    countUnit: 'feed',
   },
   {
     id: 'force',
@@ -305,6 +307,21 @@ export const SPECTRAL_MODULES: readonly SpectralModule[] = [
     countUnit: 'workbench',
   },
 
+  {
+    id: 'base-protection',
+    href: '/base-protection',
+    label: 'Base Protection',
+    sub: 'Sites, sightings, coverage',
+    kicker: 'C-UAS SITES',
+    blurb: 'Counter-drone coverage, sightings and cost to close for every Defence site',
+    icon: 'radar',
+    accent: 'red',
+    group: 'planning',
+    priority: 11,
+    staticCount: 'Sites',
+    countUnit: 'portfolio',
+  },
+
   // ---- Training -----------------------------------------------------------
   {
     id: 'pcm',
@@ -364,6 +381,20 @@ export const SPECTRAL_MODULES: readonly SpectralModule[] = [
     staticCount: 'Queue',
     countUnit: 'review',
     hideFromCatalog: true,
+  },
+  {
+    id: 'trust',
+    href: '/trust',
+    label: 'Trust & Assurance',
+    sub: 'Provenance, crypto, AI use',
+    kicker: 'ASSURANCE',
+    blurb: 'How the data is sourced, signed and kept sovereign, and how the AI is used',
+    icon: 'shield-check',
+    accent: 'success',
+    group: 'administration',
+    priority: 21,
+    staticCount: 'Assured',
+    countUnit: 'posture',
   },
   {
     id: 'operations-import',

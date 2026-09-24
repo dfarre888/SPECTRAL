@@ -10,6 +10,8 @@ import { fetchModuleCatalogStats } from '@/lib/dashboard/module-stats'
 import { fetchDashboardLiveData } from '@/lib/dashboard/queries'
 import { fetchConflictIncidents } from '@/lib/conflicts/queries'
 import { loadLatestBundle } from '@/lib/conflicts/latest-bundle'
+import { loadLatestReporting } from '@/lib/intel/latest-reporting'
+import { DefenceWeekPanel } from '@/components/dashboard/DefenceWeekPanel'
 
 export default async function Dashboard() {
   const [snapshot, catalogStats, dbIncidents] = await Promise.all([
@@ -22,9 +24,10 @@ export default async function Dashboard() {
   const built = buildDashboardFromLive(snapshot, copy)
   const defaultTab = getDefaultHomeTab(skin)
 
-  // The hero globe plots the same picture the Incident Timeline shows:
+  // The hero globe plots the same picture the Watchfloor shows:
   // curated rows plus the newest OSINT bundle, deduplicated.
   const latest = loadLatestBundle()
+  const reporting = loadLatestReporting()
   const seen = new Set(dbIncidents.map((i) => i.id))
   const points: HeroIncidentPoint[] = [...dbIncidents, ...(latest?.bundle.incidents ?? []).filter((i) => !seen.has(i.id))]
     .filter((i) => Number.isFinite(i.lat) && Number.isFinite(i.lon))
@@ -59,9 +62,12 @@ export default async function Dashboard() {
           />
         }
         commandCenter={
-          <Suspense fallback={null}>
-            <DashboardCommandCenter copy={copy} {...built} instrumentsElsewhere />
-          </Suspense>
+          <>
+            <Suspense fallback={null}>
+              <DashboardCommandCenter copy={copy} {...built} instrumentsElsewhere />
+            </Suspense>
+            <DefenceWeekPanel items={reporting?.items ?? []} generatedAt={reporting?.generatedAt ?? null} />
+          </>
         }
         moduleCatalog={<DashboardModuleCatalog stats={catalogStats} />}
       />

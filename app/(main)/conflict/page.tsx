@@ -5,6 +5,10 @@ import { OsintLeadsPanel } from '@/components/conflict/OsintLeadsPanel';
 import { loadLatestBundle } from '@/lib/conflicts/latest-bundle';
 import { buildEngagementBrief, type EngagementBrief } from '@/lib/conflicts/engagement-brief';
 import { getDefeatMatrixData } from '@/lib/defeat/queries';
+import { loadLatestReporting } from '@/lib/intel/latest-reporting';
+import { WATCHFLOOR_NAME } from '@/lib/intel/watchfloor';
+import { WatchfloorReporting } from '@/components/conflict/WatchfloorReporting';
+import { WatchfloorViews } from '@/components/conflict/WatchfloorViews';
 
 export default async function ConflictIntelPage() {
   const [dbIncidents, defeat] = await Promise.all([
@@ -12,6 +16,7 @@ export default async function ConflictIntelPage() {
     getDefeatMatrixData().catch(() => null),
   ]);
   const latest = loadLatestBundle();
+  const reporting = loadLatestReporting();
 
   // Curated rows plus the newest OSINT bundle on one timeline. Bundle leads keep
   // their 'possible/unconfirmed' grades and theatre-level positions.
@@ -41,9 +46,11 @@ export default async function ConflictIntelPage() {
   return (
     <div className="max-w-[100rem] mx-auto">
       <header>
-        <h1 className="page-title m-0">Incident Timeline</h1>
+        <h1 className="page-title m-0">{WATCHFLOOR_NAME}</h1>
         <p className="page-lede">
-          Imported incidents on one map and one timeline, newest first. For narrative case studies see{' '}
+          Everything coming in, in one place: graded incidents on the map, the week&apos;s reporting from newsrooms,
+          governments and analysts, and the raw OSINT leads behind them. Refreshed daily on a connected machine. For
+          narrative case studies see{' '}
           <a href="/conflicts" className="text-[var(--wb-blue)] underline-offset-2 hover:underline">
             Conflict Intel
           </a>
@@ -51,27 +58,46 @@ export default async function ConflictIntelPage() {
         </p>
       </header>
 
-      <IntelFreshnessBanner lastImportAt={lastImportAt} incidentCount={incidents.length} />
-
-      <ConflictIntelClient incidents={incidents} briefs={briefs} />
-
-      <section className="mt-14 pt-8 border-t fc-hair" aria-labelledby="osint-leads-title">
-        <h2 id="osint-leads-title" className="text-[20px] store-display font-semibold tracking-[-0.015em] text-[var(--store-ink)] m-0">
-          Automated OSINT leads
-        </h2>
-        <p className="text-[13px] store-text-body mt-1.5 mb-6 max-w-[80ch] text-pretty">
-          Open news and GNSS-interference feeds harvested on a connected machine, graded by how many independent outlets carried each event, and matched against the platform catalogue. Leads, not findings; every row links to the outlets behind it.
-        </p>
-        {latest ? (
-          <OsintLeadsPanel incidents={latest.bundle.incidents} manifest={latest.bundle.manifest} attribution={latest.attribution} snapshots={latest.snapshots?.theatres ?? null} />
-        ) : (
-          <p className="text-[12px] store-text-muted">
-            No OSINT bundle on this instance. Build one on a connected machine with{' '}
-            <code className="font-mono text-[var(--store-ink-soft)]">npx tsx scripts/build-intel-bundle.ts</code> and drop it in{' '}
-            <code className="font-mono text-[var(--store-ink-soft)]">data/intel/bundles</code>.
-          </p>
-        )}
-      </section>
+      <WatchfloorViews
+        counts={{
+          incidents: incidents.length,
+          reporting: reporting?.items.length ?? 0,
+          leads: latest?.bundle.incidents.length ?? 0,
+        }}
+        incidents={
+          <>
+            <IntelFreshnessBanner lastImportAt={lastImportAt} incidentCount={incidents.length} />
+            <ConflictIntelClient incidents={incidents} briefs={briefs} />
+          </>
+        }
+        reporting={
+          <WatchfloorReporting
+            items={reporting?.items ?? []}
+            generatedAt={reporting?.generatedAt ?? null}
+            sources={reporting?.sources ?? []}
+            windowDays={reporting?.windowDays ?? 14}
+          />
+        }
+        leads={
+          <section aria-labelledby="osint-leads-title">
+            <h2 id="osint-leads-title" className="text-[20px] store-display font-semibold tracking-[-0.015em] text-[var(--store-ink)] m-0">
+              Automated OSINT leads
+            </h2>
+            <p className="text-[13px] store-text-body mt-1.5 mb-6 max-w-[80ch] text-pretty">
+              Open news and GNSS-interference feeds harvested on a connected machine, graded by how many independent outlets carried each event, and matched against the platform catalogue. Leads, not findings; every row links to the outlets behind it.
+            </p>
+            {latest ? (
+              <OsintLeadsPanel incidents={latest.bundle.incidents} manifest={latest.bundle.manifest} attribution={latest.attribution} snapshots={latest.snapshots?.theatres ?? null} />
+            ) : (
+              <p className="text-[12px] store-text-muted">
+                No OSINT bundle on this instance. Build one on a connected machine with{' '}
+                <code className="font-mono text-[var(--store-ink-soft)]">npm run intel:bundle</code> and drop it in{' '}
+                <code className="font-mono text-[var(--store-ink-soft)]">data/intel/bundles</code>.
+              </p>
+            )}
+          </section>
+        }
+      />
     </div>
   );
 }

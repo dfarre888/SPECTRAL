@@ -18,3 +18,8 @@ next-env.d.ts
 
 # Local build/distribution bundles
 *.tar.gz
+
+# Local env backups carry secrets
+.env*.bak
+.env.local.*
+!.env.local.example

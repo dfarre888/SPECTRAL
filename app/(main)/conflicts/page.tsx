@@ -82,7 +82,7 @@ export default function ConflictsPage() {
             OSINT digest <span className="font-mono tabular-nums opacity-70">{CONFLICT_DIGEST.length}</span>
           </button>
         </div>
-        <Link href="/conflict" className="fc-action ml-auto">Open the Incident Timeline</Link>
+        <Link href="/conflict" className="fc-action ml-auto">Open the Watchfloor</Link>
       </div>
 
       {tab === 'digest' ? (

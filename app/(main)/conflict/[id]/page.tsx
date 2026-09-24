@@ -10,7 +10,7 @@ export default function ConflictIncidentDetailPage({ params }: ConflictDetailPag
   return (
     <div className="max-w-[72rem] mx-auto">
       <nav aria-label="Breadcrumb" className="mb-3 text-[12px] store-text-muted">
-        <Link href="/conflict" className="hover:text-[var(--store-ink)] transition-colors duration-150">Incident Timeline</Link>
+        <Link href="/conflict" className="hover:text-[var(--store-ink)] transition-colors duration-150">Watchfloor</Link>
         <span aria-hidden className="mx-2">/</span>
         <span>Incident</span>
       </nav>
@@ -26,7 +26,7 @@ export default function ConflictIncidentDetailPage({ params }: ConflictDetailPag
         <p className="text-[12px] store-text-muted m-0">
           Incident ID <span className="font-mono text-[var(--store-ink-soft)]">{params.id}</span>
         </p>
-        <Link href="/conflict" className="btn-glass">Open the Incident Timeline</Link>
+        <Link href="/conflict" className="btn-glass">Open the Watchfloor</Link>
       </div>
     </div>
   )

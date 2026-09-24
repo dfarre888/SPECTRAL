@@ -1,13 +1,13 @@
 /**
  * Map-envelope defaults for COTS airframes with no published range/speed.
- * Instructor-directed training values — Estimated, not OSINT Confirmed.
+ * Instructor-directed training values: Estimated, not OSINT Confirmed.
  * Date of information: Aug 2026.
  */
 
 /** Horizontal combat / C2 sphere radius when the sheet has no range. */
 export const COTS_MAP_FALLBACK_RANGE_KM = 5
 
-/** Cruise speed when the sheet has no speed — 12 m/s. */
+/** Cruise speed when the sheet has no speed: 12 m/s. */
 export const COTS_MAP_FALLBACK_SPEED_MS = 12
 
 /** 12 m/s → km/h. */

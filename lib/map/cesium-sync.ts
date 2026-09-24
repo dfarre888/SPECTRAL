@@ -11,6 +11,7 @@ import { MAX_MAP_UAS_DISC_KM } from '@/lib/map/spectra-assets'
 import { TERRAIN_SURFACE_AGL_M, placementNeedsTerrainRefresh } from '@/lib/map/terrain'
 import { PIN_SVG, SHIELD_SVG, UAS_SILHOUETTE_SVG, windArrowSvg } from '@/lib/map/icons'
 import { app6Sidc, app6Label } from '@/lib/map/app6-symbols'
+import { cuasCallsign, resolveCuasSide, resolveUasSide, uasCallsign } from '@/lib/map/laydown-sides'
 import {
   domeHeightAtDistanceM,
   offsetBearingM,
@@ -45,7 +46,7 @@ export interface MaskingPolygon {
   emitterAltM: number
   maxRange_m: number
   rays: MaskingRayResult[]
-  /** Terrain footprint quads — occluded ground behind ridges (MathWorks-style coverage map). */
+  /** Terrain footprint quads: occluded ground behind ridges (MathWorks-style coverage map). */
   footprintCells: TerrainShadowFootprint[]
 }
 
@@ -347,7 +348,7 @@ function removeStale(viewer: CesiumViewer, keepIds: Set<string>) {
 }
 
 /**
- * Sphere epicenter (centroid) on sampled terrain — instructor click point.
+ * Sphere epicenter (centroid) on sampled terrain: instructor click point.
  * Tiny offset avoids z-fighting with the globe mesh.
  */
 export function sphereEpicenterOnTerrainM(terrainAMSL: number): number {
@@ -359,17 +360,17 @@ export function sphereDomeTopM(terrainAMSL: number, radiusM: number): number {
   return sphereEpicenterOnTerrainM(terrainAMSL) + radiusM
 }
 
-/** @deprecated Ground-tangent — lifts centroid by full radius; use sphereEpicenterOnTerrainM. */
+/** @deprecated Ground-tangent: lifts centroid by full radius; use sphereEpicenterOnTerrainM. */
 export function defeatSphereCentreM(terrainAMSL: number, radiusM: number): number {
   return terrainAMSL + radiusM
 }
 
 /**
- * Range envelope sphere — EllipsoidGraphics centred on the placement point.
+ * Range envelope sphere: EllipsoidGraphics centred on the placement point.
  *
  * WHY EllipsoidGraphics (not PolygonGraphics/PolylineGraphics ground primitives):
  *   - PolygonGraphics height + heightReference: CLAMP_TO_GROUND creates a render
- *     conflict — ground-primitive path vs elevated-polygon path — nothing draws.
+ *     conflict, ground-primitive path vs elevated-polygon path, nothing draws.
  *   - PolylineGraphics clampToGround fails with ColorMaterialProperty material type.
  *
  * Epicenter on terrain; upper hemisphere only (minimumCone/maximumCone). No vertical walls —
@@ -393,14 +394,14 @@ function syncRangeSphere(
     outlineHex: string
     outlineAlpha: number
     outlineWidth?: number
-    /** Cesium ShadowMode — defeat spheres receive terrain sun shadows. */
+    /** Cesium ShadowMode: defeat spheres receive terrain sun shadows. */
     shadows?: number
   },
 ) {
   const id = `map-${idPrefix}-sphere-${instanceId}${suffix}`
   keep.add(id)
 
-  // Defer rendering until terrain tiles have loaded — prevents centering at sea-level (0 m fallback).
+  // Defer rendering until terrain tiles have loaded: prevents centering at sea-level (0 m fallback).
   if (placementNeedsTerrainRefresh(terrainAMSL)) return
 
   const fillColor = colour(Cesium, style.fillHex ?? CYAN, style.fillAlpha)
@@ -419,7 +420,7 @@ function syncRangeSphere(
   entity.polyline = undefined
   entity.ellipse = undefined
   entity.wall = undefined
-  // Upper hemisphere only (local +Z) — epicenter on terrain; no submerged half, no vertical walls.
+  // Upper hemisphere only (local +Z): epicenter on terrain; no submerged half, no vertical walls.
   if (!ellipsoidGraphicsUnchanged(entity.ellipsoid, radius_m, fillColor, outlineColor)) {
     entity.ellipsoid = new Cesium.EllipsoidGraphics({
       radii: new Cesium.Cartesian3(radius_m, radius_m, radius_m),
@@ -439,7 +440,7 @@ function syncRangeSphere(
 const SHIELD_GREY = '#64748B'
 
 /**
- * 3D terrain shield on the defeat hemisphere — occluded sectors + ridge skyline.
+ * 3D terrain shield on the defeat hemisphere: occluded sectors + ridge skyline.
  * MEA viewshed rays mark where terrain blocks LOS to low-altitude drones (30 m AGL).
  */
 function syncTerrainDomeShield(
@@ -876,9 +877,9 @@ export function syncMapEntities(
     }
 
     const labelText =
-      app6Label(uas.asset.name, app6Sidc('uas', uas.asset.side === 'blue' ? 'friendly' : 'hostile')) +
+      app6Label(uas.asset.name, app6Sidc('uas', resolveUasSide(uas) === 'blue' ? 'friendly' : 'hostile')) +
       '\n' +
-      `${uas.asset.name}\n${rangeLabel} · ${formatHHMM(uas.annotationTime_min)}`
+      `${uasCallsign(uas)}\n${rangeLabel} · ${formatHHMM(uas.annotationTime_min)}`
     const existingLabelText = entity.label?.text?.getValue?.() ?? entity.label?.text
     if (existingLabelText !== labelText || entity.label?.heightReference?.getValue?.() !== heightRef) {
       entity.label = new Cesium.LabelGraphics({
@@ -935,6 +936,8 @@ export function syncMapEntities(
     const id = `map-cuas-mark-${cuas.instanceId}`
     keep.add(id)
     const r = cuas.asset.defeat_range_m
+    // A Red (OPFOR) jammer draws in the threat hue so it never reads as own C-UAS.
+    const cuasHex = resolveCuasSide(cuas) === 'red' ? RED : ORANGE
 
     syncRangeSphere(
       Cesium,
@@ -948,9 +951,9 @@ export function syncMapEntities(
       r,
       '',
       {
-        fillHex: ORANGE,
+        fillHex: cuasHex,
         fillAlpha: 0.14,
-        outlineHex: ORANGE,
+        outlineHex: cuasHex,
         outlineAlpha: 0.75,
         outlineWidth: 3,
         shadows: Cesium.ShadowMode.RECEIVE_ONLY,
@@ -975,7 +978,7 @@ export function syncMapEntities(
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
     })
     entity.label = new Cesium.LabelGraphics({
-      text: `${cuas.asset.name}\n${(cuas.asset.defeat_range_m / 1000).toFixed(1)} km`,
+      text: `${cuasCallsign(cuas)}\n${(cuas.asset.defeat_range_m / 1000).toFixed(1)} km`,
       font: '12px JetBrains Mono',
       fillColor: Cesium.Color.WHITE,
       outlineColor: Cesium.Color.BLACK,
@@ -1176,7 +1179,7 @@ export function syncMapEntities(
     entity.position = new Cesium.ConstantPositionProperty(
       Cesium.Cartesian3.fromDegrees(vol.lon, vol.lat, vol.alt_m)
     )
-    // Same footprint as C-UAS defeat hemisphere — adjudication tint only, never oversized.
+    // Same footprint as C-UAS defeat hemisphere: adjudication tint only, never oversized.
     entity.ellipsoid = new Cesium.EllipsoidGraphics({
       radii: new Cesium.Cartesian3(vol.radius_m, vol.radius_m, vol.radius_m),
       minimumCone: 0,

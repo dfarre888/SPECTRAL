@@ -224,7 +224,7 @@ export function collectPkThreats(
   return out
 }
 
-/** PD routing uses class detection range — not the tactical display dome. */
+/** PD routing uses class detection range: not the tactical display dome. */
 export const DISPLAY_CHUNK_M = 400
 
 export interface PathSegmentChunk {

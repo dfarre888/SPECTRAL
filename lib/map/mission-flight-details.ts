@@ -106,19 +106,19 @@ function buildRouteAssessment(
   placedEffectors: PlacedEffector[],
 ): string {
   if (mission.manualOverride) {
-    return 'Manual flight path — auto-replan paused. Click Replan to optimise around new threats.'
+    return 'Manual flight path, auto-replan paused. Click Replan to optimise around new threats.'
   }
   if (placedCuas.length === 0 && placedEffectors.length === 0) {
-    return 'No C-UAS or effector on map — route ignores defeat envelopes until you place counter-systems.'
+    return 'No C-UAS or effector on map, route ignores defeat envelopes until you place counter-systems.'
   }
   if (directThroughPkThreat && mission.waypoints.length <= 2) {
-    return 'Direct chord crosses a defeat envelope with no detour — click Replan or Edit flight path.'
+    return 'Direct chord crosses a defeat envelope with no detour, click Replan or Edit flight path.'
   }
   if (directThroughPkThreat && mission.maxPk_pct >= PK_THRESHOLD_PCT) {
-    return `Suboptimal — max Pk ${mission.maxPk_pct}% on path through threat airspace. Replan for a flank.`
+    return `Suboptimal, max Pk ${mission.maxPk_pct}% on path through threat airspace. Replan for a flank.`
   }
   if (mission.pathMode === 'soft-minimize') {
-    return 'Soft-minimise — exposure reduced but full avoidance not possible within range.'
+    return 'Soft-minimise, exposure reduced but full avoidance not possible within range.'
   }
   if (mission.waypoints.length > 2) {
     return `Detour route with ${mission.waypoints.length - 2} extra waypoint(s) around threat domes.`

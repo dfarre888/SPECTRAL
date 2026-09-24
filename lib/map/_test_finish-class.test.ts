@@ -30,8 +30,8 @@ describe('finish-class', () => {
     const evaluation: LaydownEvaluation = {
       subject: { kind: 'uas', instanceId: 'u1', name: 'DJI Mavic 3', lon: 0, lat: 0 },
       sections: [
-        { title: 'Radars — can detect', tone: 'can', items: [{ kind: 'radar', assetId: 'r1', name: 'Giraffe', reason: '' }] },
-        { title: 'Radars — cannot detect', tone: 'cannot', items: [] },
+        { title: 'Radars: can detect', tone: 'can', items: [{ kind: 'radar', assetId: 'r1', name: 'Giraffe', reason: '' }] },
+        { title: 'Radars: cannot detect', tone: 'cannot', items: [] },
         {
           title: 'Can shoot down',
           tone: 'can',
@@ -62,7 +62,7 @@ describe('finish-class', () => {
     const evaluation: LaydownEvaluation = {
       subject: { kind: 'uas', instanceId: 'u1', name: 'DJI Mavic 3', lon: 0, lat: 0 },
       sections: [
-        { title: 'Radars — can detect', tone: 'can', items: [{ kind: 'radar', assetId: 'r1', name: 'Giraffe', reason: '' }] },
+        { title: 'Radars: can detect', tone: 'can', items: [{ kind: 'radar', assetId: 'r1', name: 'Giraffe', reason: '' }] },
         {
           title: 'Can shoot down',
           tone: 'can',

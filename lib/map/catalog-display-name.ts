@@ -14,7 +14,7 @@ export function stripSaSuffix(label: string): string {
   return label.replace(/\s*\([^)]*\)/g, '').trim()
 }
 
-/** GRAU / industrial index or US AN/ nomenclature — not a spoken system name. */
+/** GRAU / industrial index or US AN/ nomenclature: not a spoken system name. */
 export function looksLikeIndustrialDesignator(token: string): boolean {
   const t = token.trim()
   if (!t) return false

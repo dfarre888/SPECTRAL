@@ -1,9 +1,9 @@
 import type { CesiumModule, CesiumViewer } from '@/lib/map/cesium-types'
 
-/** Shadow map resolution — higher = sharper terrain shadows on defeat spheres. */
+/** Shadow map resolution: higher = sharper terrain shadows on defeat spheres. */
 export const SHADOW_MAP_SIZE = 4096
 
-/** Max shadow draw distance (m) — covers 15 km defeat range with margin. */
+/** Max shadow draw distance (m): covers 15 km defeat range with margin. */
 export const SHADOW_MAP_MAX_DISTANCE_M = 25_000
 
 /**
@@ -28,7 +28,7 @@ export function configureMapIntelShadows(viewer: CesiumViewer, Cesium: CesiumMod
 }
 
 /**
- * Toggle terrain shadows when C-UAS systems are placed — avoids GPU cost on empty maps.
+ * Toggle terrain shadows when C-UAS systems are placed: avoids GPU cost on empty maps.
  */
 export function setTerrainShadowsActive(
   viewer: CesiumViewer,

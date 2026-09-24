@@ -38,7 +38,7 @@ export const DEFAULT_EMITTER_MAST_M = 10
 export const DRONE_TARGET_AGL_M = 30
 
 /**
- * A quad of terrain-draped dead-ground — occluded area behind a ridge.
+ * A quad of terrain-draped dead-ground: occluded area behind a ridge.
  * positionsLonLat: inner-left → inner-right → outer-right → outer-left
  * heights: terrain AMSL + TERRAIN_SURFACE_AGL_M at each corner (for sampling; render uses classification drape)
  */
@@ -66,7 +66,7 @@ export interface SphereLosMaskResult {
   emitterAltM: number
   footprintCells: TerrainShadowFootprint[]
   rays: MaskingRayResult[]
-  /** Terrain coverage behind the result — surface this rather than hiding it. */
+  /** Terrain coverage behind the result: surface this rather than hiding it. */
   quality: ViewshedQuality
 }
 
@@ -114,7 +114,7 @@ export function domeHeightAtDistanceM(
 }
 
 /**
- * Maximum-elevation-angle viewshed — farthest distance at which a drone at
+ * Maximum-elevation-angle viewshed: farthest distance at which a drone at
  * DRONE_TARGET_AGL_M above terrain can be seen from the emitter (dead-ground boundary).
  */
 export function visibleDistanceGroundLevel(
@@ -150,7 +150,7 @@ export function visibleDistanceGroundLevel(
 }
 
 /**
- * Terrain LOS dead-ground footprint inside defeat radius — MEA viewshed per azimuth,
+ * Terrain LOS dead-ground footprint inside defeat radius: MEA viewshed per azimuth,
  * grey cells drape on occluded ground behind ridges (MathWorks coverage-over-terrain model).
  */
 export async function computeTerrainMasking(

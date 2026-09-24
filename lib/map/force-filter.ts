@@ -15,7 +15,7 @@ export function uasForceSides(asset: MapUasAsset): Side[] {
   const side = asset.side
   if (side === 'red') return ['red']
   if (side === 'blue') return ['blue']
-  // Neutral / unknown — usable by either force in training laydowns.
+  // Neutral / unknown: usable by either force in training laydowns.
   return ['red', 'blue']
 }
 

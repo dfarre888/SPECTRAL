@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { buildOverlapVolume, detectOverlapPairs } from '@/lib/map/overlap'
+import { resolveCuasSide, resolveUasSide } from '@/lib/map/laydown-sides'
 import { isOperationsEditionClient } from '@/lib/operations/edition-client'
 import type { OverlapVolume, PlacedCuas, PlacedUas } from '@/lib/map/types'
 
@@ -23,7 +24,11 @@ export function useDefeatOverlap(placedUas: PlacedUas[], placedCuas: PlacedCuas[
       return
     }
 
-    const pairs = detectOverlapPairs(placedUas, placedCuas)
+    // Only opposing pairs are defeat engagements. Own drone inside own C-UAS is
+    // spectrum fratricide, reported by the fratricide check instead.
+    const pairs = detectOverlapPairs(placedUas, placedCuas).filter(
+      ({ uas, cuas }) => resolveUasSide(uas) !== resolveCuasSide(cuas),
+    )
     if (pairs.length === 0) {
       setOverlaps([])
       setSource('geometry')

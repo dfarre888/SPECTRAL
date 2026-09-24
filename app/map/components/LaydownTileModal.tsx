@@ -1,6 +1,6 @@
 'use client'
 
-/** Map Intel laydown wrapper — delegates to shared BandTileFullscreenModal. */
+/** Map Intel laydown wrapper: delegates to shared BandTileFullscreenModal. */
 import { BandTileFullscreenModal } from '@/components/spectrum/BandTileFullscreenModal'
 import type { BandTile } from '@/components/spectrum/band-tile-data'
 import type { LaydownEmission } from '@/lib/map/laydown-tiles'

@@ -6,7 +6,7 @@ import { GlobeSkeleton } from '@/components/ui/loading-skeleton'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Map Intel — Spectral',
+  title: 'Map Intel | Spectral',
   description: 'Terrain-anchored UAS/C-UAS placement and defeat overlap visualisation',
 }
 

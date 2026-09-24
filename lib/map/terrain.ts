@@ -9,7 +9,7 @@ export type { CesiumModule } from '@/lib/map/cesium-types'
 /** Small offset above draped geometry to avoid z-fighting with terrain tiles. */
 export const TERRAIN_SURFACE_AGL_M = 2
 
-/** Sentinel when terrain tiles have not resolved — distinct from valid sea-level (0 m). */
+/** Sentinel when terrain tiles have not resolved: distinct from valid sea-level (0 m). */
 const TERRAIN_UNRESOLVED_M = Number.NaN
 
 export async function sampleTerrainAMSL(

@@ -13,18 +13,18 @@
  *
  *     -ln P(survive) = sum of hazard_i * dt_i
  *
- * which is additive and non-negative — exactly what a shortest-path search
+ * which is additive and non-negative: exactly what a shortest-path search
  * needs. Minimising accumulated hazard therefore maximises survival exactly,
  * with no heuristic weighting between the two.
  *
  * Three things shape the hazard field:
  *
- *   Range      — outside detection range an emitter contributes nothing.
- *   Aspect     — a pulse-Doppler radar rejects targets whose radial velocity
+ *   Range     : outside detection range an emitter contributes nothing.
+ *   Aspect    : a pulse-Doppler radar rejects targets whose radial velocity
  *                falls in its clutter notch. A target flying tangentially has
  *                near-zero radial velocity and is filtered out. This is the
  *                notch, and it is why a route bends rather than beelines.
- *   Terrain    — masked ground contributes nothing, which is what makes the
+ *   Terrain   : masked ground contributes nothing, which is what makes the
  *                viewshed work worth doing.
  *
  * The notch is not free: flying perpendicular to an emitter maximises safety
@@ -94,7 +94,7 @@ const MIN_LEG_SAMPLES = 8
 
 /**
  * Inside this range the line of sight is numerically degenerate and aspect is
- * meaningless — you are on top of the emitter, so the notch cannot save you.
+ * meaningless: you are on top of the emitter, so the notch cannot save you.
  */
 const DEGENERATE_RANGE_M = 500
 
@@ -130,7 +130,7 @@ export function dopplerFactor(
   notchHalfWidthDeg: number,
 ): number {
   // Fold the aspect into 0-90 as angular distance from broadside. 0 means the
-  // track is perpendicular to the line of sight — zero radial velocity, deepest
+  // track is perpendicular to the line of sight: zero radial velocity, deepest
   // in the notch. 90 means head-on or tail-on, full radial velocity.
   const offNotchDeg = Math.abs(((aspectDeg % 180) + 180) % 180 - 90)
   if (notchHalfWidthDeg <= 0) return 1
@@ -198,13 +198,13 @@ export interface RouteResult {
   lengthM: number
   directLengthM: number
   detourFactor: number
-  /** Accumulated hazard-time — the quantity minimised. */
+  /** Accumulated hazard-time: the quantity minimised. */
   cumulativeHazard: number
   /** exp(-cumulativeHazard), 0-1. */
   survivalProbability: number
   /**
    * Weakest provenance among threats that actually contributed hazard.
-   * Null when the route avoided every threat — no Pk was consulted, so
+   * Null when the route avoided every threat: no Pk was consulted, so
    * claiming a provenance would overstate what the figure rests on.
    */
   confidence: ThreatConfidence | null
@@ -214,7 +214,7 @@ export interface RouteResult {
 
 const CONF_RANK: Record<ThreatConfidence, number> = { accredited: 0, osint: 1, estimated: 2 }
 
-/** Score an explicit list of waypoints — used for the direct leg and for results. */
+/** Score an explicit list of waypoints: used for the direct leg and for results. */
 export function scoreRoute(
   waypoints: readonly RoutePoint[],
   threats: readonly ThreatEmitter[],
@@ -233,7 +233,7 @@ export function scoreRoute(
 
     // Integrate along the leg rather than sampling its midpoint. A single
     // sample misses everything a long leg passes through, and lands exactly on
-    // the emitter when a leg crosses one — where the line of sight is
+    // the emitter when a leg crosses one: where the line of sight is
     // degenerate and the notch would read as zero hazard.
     const samples = Math.max(MIN_LEG_SAMPLES, Math.ceil(lengthM / LEG_SAMPLE_SPACING_M))
     let rateSum = 0
@@ -282,7 +282,7 @@ export function scoreRoute(
 
 // ── Search ──────────────────────────────────────────────────────────────────
 
-/** Minimal binary heap — avoids a dependency for the open set. */
+/** Minimal binary heap: avoids a dependency for the open set. */
 class MinHeap<T> {
   private a: { k: number; v: T }[] = []
   get size() { return this.a.length }
@@ -451,7 +451,7 @@ export function planThreatRoute(
     const inBearing = bearingDeg(raw[i - 1], raw[i])
     const outBearing = bearingDeg(raw[i], raw[i + 1])
     const turn = Math.abs(((outBearing - inBearing + 540) % 360) - 180)
-    // Keep only real turns — a waypoint every grid cell is not a flight plan.
+    // Keep only real turns: a waypoint every grid cell is not a flight plan.
     if (turn > 5) waypoints.push(raw[i])
   }
   waypoints.push(raw[raw.length - 1])

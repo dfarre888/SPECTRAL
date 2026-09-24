@@ -1,4 +1,4 @@
-// SPECTRAL — Risk overlay Cesium entity management
+// SPECTRAL: Risk overlay Cesium entity management
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 
 import type { CesiumModule, CesiumViewer } from '@/lib/map/cesium-types'
@@ -6,7 +6,7 @@ import { loadCesium } from '@/lib/map/load-cesium'
 
 export const RISK_ANCHOR_ID = 'spectral-risk-anchor'
 
-/** All Cesium entity ids used by blast / jamming overlays — for stale cleanup. */
+/** All Cesium entity ids used by blast / jamming overlays: for stale cleanup. */
 export const RISK_OVERLAY_ENTITY_IDS = [
   RISK_ANCHOR_ID,
   'spectral-risk-hazard',

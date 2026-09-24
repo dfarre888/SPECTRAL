@@ -46,7 +46,7 @@ function virtualCuasAtThreat(uas: PlacedUas, asset: MapCuasAsset): PlacedCuas {
   }
 }
 
-/** Pd — detection probability from spectrum overlap and effector class (OSINT training estimate). */
+/** Pd: detection probability from spectrum overlap and effector class (OSINT training estimate). */
 export function computeDetectionPct(
   spectrum: EngagementResult,
   inRange: boolean,
@@ -94,14 +94,14 @@ function recommendationReason(
   kind: 'detection' | 'defeat',
 ): string {
   if (kind === 'detection') {
-    if (pair.spectrum.verdict === 'detect_only') return 'Passive RF / ESM cueing — detection without defeat'
+    if (pair.spectrum.verdict === 'detect_only') return 'Passive RF / ESM cueing, detection without defeat'
     if (pair.spectrum.overlaps.length > 0) return 'Band overlap enables RF signature detection'
     return 'Radar / EO-IR cue within defeat envelope'
   }
-  if (pair.isImmune) return 'Threat immune to this effector — see Defeat Matrix'
+  if (pair.isImmune) return 'Threat immune to this effector, see Defeat Matrix'
   if (!pair.inDefeatRange) return `Outside ${asset.defeat_range_km} km envelope at threat position`
   if (pair.spectrum.verdict === 'defeat_likely') return 'Spectrum + geometry favour defeat'
-  if (pair.spectrum.overlaps.length === 0) return 'Kinetic / DEW path — no RF overlap required'
+  if (pair.spectrum.overlaps.length === 0) return 'Kinetic / DEW path, no RF overlap required'
   return 'Combined matrix Pk and band overlap'
 }
 
@@ -174,7 +174,7 @@ export function buildThreatAssessments(
       }
       tacticNote = bestPair.blueTactic
     } else if (placedCuas.length > 0) {
-      tacticNote = 'Threat outside all placed C-UAS defeat envelopes — reposition effectors'
+      tacticNote = 'Threat outside all placed C-UAS defeat envelopes, reposition effectors'
       detectionPct = 12
     } else {
       tacticNote = 'Place a defeat system to assess engagement geometry'

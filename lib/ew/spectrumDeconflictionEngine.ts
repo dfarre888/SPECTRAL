@@ -1,4 +1,4 @@
-// SPECTRAL — spectrum deconfliction (friendly vs adversary EW)
+// SPECTRAL: spectrum deconfliction (friendly vs adversary EW)
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 
 import { haversineM } from '@/lib/propagation/geo'
@@ -52,7 +52,7 @@ export class SpectrumDeconflictionEngine {
             adversary_id: a.id,
             separation_m: Math.round(sep),
             band: f.band,
-            note: 'Co-band footprint overlap — assess fratricide / collateral GNSS denial.',
+            note: 'Co-band footprint overlap: assess fratricide / collateral GNSS denial.',
           })
         }
       }
@@ -80,8 +80,8 @@ export class SpectrumDeconflictionEngine {
       verdict === 'clear'
         ? 'No co-band footprint overlap detected at current ERP assumptions.'
         : verdict === 'contested'
-          ? 'Friendly and adversary EW footprints overlap — deconflict power, time, or geometry.'
-          : 'Friendly emitters on the same band overlap — risk of self-jam / GNSS denial to blue force.'
+          ? 'Friendly and adversary EW footprints overlap: deconflict power, time, or geometry.'
+          : 'Friendly emitters on the same band overlap: risk of self-jam / GNSS denial to blue force.'
 
     return {
       adversary_effectiveness_ref: EW_ADVERSARY_EFFECTIVENESS_REF,

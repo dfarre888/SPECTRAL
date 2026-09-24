@@ -1,4 +1,4 @@
-// SPECTRAL — EW propagation (training FSPL + J/S effect)
+// SPECTRAL: EW propagation (training FSPL + J/S effect)
 // CLASSIFICATION: UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
 
 import { BAND_REFERENCE, type GnssBand } from '@/lib/gnss/types'

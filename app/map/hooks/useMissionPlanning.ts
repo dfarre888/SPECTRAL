@@ -10,6 +10,7 @@ import {
 } from '@/lib/map/mission-path-planner'
 import { collectCombinedThreats, missionPathIntersectsThreats } from '@/lib/map/mission-path-scoring'
 import { sampleTerrainAMSL } from '@/lib/map/terrain'
+import { hostileLaydownFor, resolveUasRole } from '@/lib/map/laydown-sides'
 import type { CesiumContext } from '@/app/map/hooks/usePlatformPlacement'
 import type {
   MissionRouteObjective,
@@ -61,10 +62,12 @@ export function useMissionPlanning(
       const ctx = getCesium()
       if (!ctx) return null
       const goalTerrainAMSL = await sampleTerrainAMSL(ctx.Cesium, ctx.terrainProvider, goalLon, goalLat, ctx.viewer)
+      // Plan against the opposing force only: own C-UAS, radars and SAMs are not threats.
+      const hostile = hostileLaydownFor(uas, placedCuas, placedRadars, placedEffectors)
       const overlapVolumes = overlaps.filter((o) => o.uasInstanceId === uas.instanceId)
       let overlapForPlanner = overlapVolumes
-      if (overlapVolumes.length === 0 && placedCuas.length > 0) {
-        const analysis = analyzeLaydown([uas], placedCuas, overlaps)
+      if (overlapVolumes.length === 0 && hostile.cuas.length > 0) {
+        const analysis = analyzeLaydown([uas], hostile.cuas, overlaps)
         overlapForPlanner = analysis.pairs
           .filter((p) => p.inDefeatRange)
           .map((p) => ({
@@ -74,7 +77,7 @@ export function useMissionPlanning(
             lon: goalLon,
             lat: goalLat,
             alt_m: uas.discAltitude_m,
-            radius_m: placedCuas.find((c) => c.instanceId === p.cuasInstanceId)?.asset.defeat_range_m ?? 0,
+            radius_m: hostile.cuas.find((c) => c.instanceId === p.cuasInstanceId)?.asset.defeat_range_m ?? 0,
             effectiveness_pct: p.blueSuccessPct,
             isDefeat: p.blueSuccessPct >= 50,
             label: `${p.blueSuccessPct}% Pk`,
@@ -89,9 +92,9 @@ export function useMissionPlanning(
         goalTerrainAMSL,
         goalKind,
         asset: uas.asset,
-        placedCuas,
-        placedRadars,
-        placedEffectors,
+        placedCuas: hostile.cuas,
+        placedRadars: hostile.radars,
+        placedEffectors: hostile.effectors,
         emcon,
         routeObjective,
         overlapVolumes: overlapForPlanner,
@@ -109,14 +112,17 @@ export function useMissionPlanning(
       if (autoPlanSuppressedRef.current.has(uasInstanceId)) return false
       const uas = placedUas.find((u) => u.instanceId === uasInstanceId)
       if (!uas || uas.mission) return Boolean(uas?.mission)
+      // Relays hold station; they never get an auto-planned strike path.
+      if (resolveUasRole(uas) === 'relay') return false
+      const hostile = hostileLaydownFor(uas, placedCuas, placedRadars, placedEffectors)
       const hasThreats =
-        placedCuas.length > 0 || placedRadars.length > 0 || placedEffectors.length > 0
+        hostile.cuas.length > 0 || hostile.radars.length > 0 || hostile.effectors.length > 0
       if (!hasThreats && !options?.force) return false
 
       const threats = [
-        ...placedCuas.map((c) => ({ lon: c.lon, lat: c.lat })),
-        ...placedRadars.map((r) => ({ lon: r.lon, lat: r.lat })),
-        ...placedEffectors.map((e) => ({ lon: e.lon, lat: e.lat })),
+        ...hostile.cuas.map((c) => ({ lon: c.lon, lat: c.lat })),
+        ...hostile.radars.map((r) => ({ lon: r.lon, lat: r.lat })),
+        ...hostile.effectors.map((e) => ({ lon: e.lon, lat: e.lat })),
       ]
       const { goalLon, goalLat } = inferDefaultMissionGoal(
         uas.lon,
@@ -124,7 +130,7 @@ export function useMissionPlanning(
         uas.asset.max_range_km,
         threats,
       )
-      const routeObjective = defaultRouteObjective(placedCuas, placedRadars, placedEffectors)
+      const routeObjective = defaultRouteObjective(hostile.cuas, hostile.radars, hostile.effectors)
       const mission = await buildMissionForUas(uas, 'target', goalLon, goalLat, false, routeObjective)
       if (!mission) return false
       const manualOverride = options?.manualOverride ?? false
@@ -145,11 +151,11 @@ export function useMissionPlanning(
     }
     const ctx = getCesium()
     if (!ctx) {
-      return { ok: false, reason: 'Map not ready — wait for terrain to load, then try again.' }
+      return { ok: false, reason: 'Map not ready, wait for terrain to load, then try again.' }
     }
 
     for (const uas of placedUas) {
-      if (!uas.mission) {
+      if (!uas.mission && resolveUasRole(uas) !== 'relay') {
         const created = await autoPlanDefaultMission(uas.instanceId, { force: true, manualOverride: true })
         if (!created) {
           return { ok: false, reason: `Could not create a mission path for ${uas.asset.name}.` }
@@ -220,14 +226,14 @@ export function useMissionPlanning(
     ): Promise<{ ok: true } | { ok: false; reason: string }> => {
       const uas = placedUas.find((u) => u.instanceId === uasInstanceId)
       if (!uas?.mission) {
-        return { ok: false, reason: 'No mission path on this UAS — place a threat asset to auto-plan or set a mission goal.' }
+        return { ok: false, reason: 'No mission path on this UAS, place a threat asset to auto-plan or set a mission goal.' }
       }
       if (uas.mission.waypoints.length < 2) {
         return { ok: false, reason: 'Mission path needs at least two waypoints before inserting.' }
       }
       const ctx = getCesium()
       if (!ctx) {
-        return { ok: false, reason: 'Map not ready — wait for terrain to load, then try again.' }
+        return { ok: false, reason: 'Map not ready, wait for terrain to load, then try again.' }
       }
       const terrainAMSL = await sampleTerrainAMSL(ctx.Cesium, ctx.terrainProvider, lon, lat, ctx.viewer)
       const insertAfter =
@@ -253,12 +259,13 @@ export function useMissionPlanning(
           const waypoints = [...row.mission.waypoints]
           waypoints.splice(insertAfter + 1, 0, newWp)
           const overlapVolumes = overlaps.filter((o) => o.uasInstanceId === uasInstanceId)
+          const hostile = hostileLaydownFor(row, placedCuas, placedRadars, placedEffectors)
           const mission = rescoreMissionPlan(
             { ...row.mission, waypoints, manualOverride: true },
             row.asset,
-            placedCuas,
-            placedRadars,
-            placedEffectors,
+            hostile.cuas,
+            hostile.radars,
+            hostile.effectors,
             overlapVolumes,
             row.mission.emcon,
             rcsOverrides?.[uasInstanceId],
@@ -284,7 +291,7 @@ export function useMissionPlanning(
     if (patch.lon != null && patch.lat != null) {
       const ctx = getCesium()
       if (!ctx) {
-        return { ok: false, reason: 'Map not ready — cannot resample terrain for moved waypoint.' }
+        return { ok: false, reason: 'Map not ready, cannot resample terrain for moved waypoint.' }
       }
       resolvedPatch.terrainAMSL = await sampleTerrainAMSL(
         ctx.Cesium,
@@ -304,12 +311,13 @@ export function useMissionPlanning(
       if (u.instanceId !== uasInstanceId || !u.mission) return u
       const waypoints = u.mission.waypoints.map((wp) => wp.id === waypointId ? { ...wp, ...resolvedPatch } : wp)
       const overlapVolumes = overlaps.filter((o) => o.uasInstanceId === uasInstanceId)
+      const hostile = hostileLaydownFor(u, placedCuas, placedRadars, placedEffectors)
       const mission = rescoreMissionPlan(
         { ...u.mission, waypoints, manualOverride: true },
         u.asset,
-        placedCuas,
-        placedRadars,
-        placedEffectors,
+        hostile.cuas,
+        hostile.radars,
+        hostile.effectors,
         overlapVolumes,
         u.mission.emcon,
         rcsOverrides?.[uasInstanceId],
@@ -402,20 +410,20 @@ export function useMissionPlanning(
         if (mode.active && mode.kind === 'mission-goal') return
 
         for (const u of placedUasRef.current) {
+          const hostile = hostileLaydownFor(u, placedCuas, placedRadars, placedEffectors)
           if (!u.mission) {
             if (
-              placedCuas.length > 0 ||
-              placedRadars.length > 0 ||
-              placedEffectors.length > 0
+              resolveUasRole(u) !== 'relay' &&
+              (hostile.cuas.length > 0 || hostile.radars.length > 0 || hostile.effectors.length > 0)
             ) {
               await autoPlanDefaultMission(u.instanceId)
             }
             continue
           }
           const allThreats = collectCombinedThreats(
-            placedCuas,
-            placedRadars,
-            placedEffectors,
+            hostile.cuas,
+            hostile.radars,
+            hostile.effectors,
             u.asset,
           )
           const threatOnPath = missionPathIntersectsThreats(u.mission.waypoints, allThreats)
@@ -423,11 +431,11 @@ export function useMissionPlanning(
           if (u.mission.manualOverride && !threatOnPath) continue
           let routeObjective =
             u.mission.routeObjective ??
-            defaultRouteObjective(placedCuas, placedRadars, placedEffectors)
+            defaultRouteObjective(hostile.cuas, hostile.radars, hostile.effectors)
           if (
             !u.mission.manualOverride &&
             routeObjective === 'pd' &&
-            (placedCuas.length > 0 || placedEffectors.length > 0)
+            (hostile.cuas.length > 0 || hostile.effectors.length > 0)
           ) {
             routeObjective = 'combined'
           }

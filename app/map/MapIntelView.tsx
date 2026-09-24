@@ -36,8 +36,26 @@ import { PlanLoadDialog } from '@/components/planner/PlanLoadDialog'
 import toast from 'react-hot-toast'
 import { IadsStackPanel } from '@/app/map/components/IadsStackPanel'
 import { MapCard } from '@/app/map/components/MapUi'
-import { Layers, PanelLeftOpen, Route, X } from 'lucide-react'
+import { Download, Layers, LayoutTemplate, PanelLeftOpen, Route, X } from 'lucide-react'
 import { getVignette, vignetteToLaydown } from '@/lib/planner/vignettes'
+import { FratricidePanel } from '@/app/map/components/FratricidePanel'
+import { MapMenu } from '@/app/map/components/MapUi'
+import {
+  buildPresetLaydown,
+  ensurePresetFallbackAssets,
+  LAYDOWN_PRESETS,
+  type LaydownPresetId,
+} from '@/lib/map/laydown-presets'
+import { applyMitigationPatch, clearMitigations, runLaydownFratricide } from '@/lib/map/fratricide-adapter'
+import { clearFratricideLayer, syncFratricideLayer } from '@/lib/map/fratricide-layer'
+import {
+  DEFAULT_FRATRICIDE_OPTIONS,
+  type FratricideConflict,
+  type FratricideOptions,
+  type MitigationPatch,
+} from '@/lib/ew/fratricide'
+import { buildExportDocument, EXPORT_FORMATS, renderExport, type ExportFormat } from '@/lib/map/export'
+import { cuasCallsign, uasCallsign } from '@/lib/map/laydown-sides'
 import { hydrateLaydown } from '@/lib/planner/battlespace-plan'
 import { readForcePackage, clearForcePackage } from '@/lib/force/package-session'
 import { haversineM } from '@/lib/propagation/geo'
@@ -108,7 +126,7 @@ interface MapIntelViewProps {
 
 export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const searchParams = useSearchParams()
-  const [assets] = useState(() => ensureCotsMapAssets(initialAssets))
+  const [assets] = useState(() => ensurePresetFallbackAssets(ensureCotsMapAssets(initialAssets)))
   const [placedUas, setPlacedUas] = useState<PlacedUas[]>([])
   const [rcsOverrides, setRcsOverrides] = useState<Record<string, RcsFacets>>({})
   const [placedCuas, setPlacedCuas] = useState<PlacedCuas[]>([])
@@ -144,9 +162,14 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const bottomBarRef = useRef<HTMLDivElement>(null)
   const [chromeH, setChromeH] = useState({ top: 42, bottom: 42 })
 
-  type MapToolMode = 'none' | 'cuas-siting' | 'ew-deconflict'
+  type MapToolMode = 'none' | 'cuas-siting' | 'ew-deconflict' | 'fratricide'
 
   const [mapTool, setMapTool] = useState<MapToolMode>('none')
+  const [fratOptions, setFratOptions] = useState<FratricideOptions>(DEFAULT_FRATRICIDE_OPTIONS)
+  const [fratView, setFratView] = useState<'fratricide' | 'enemy' | 'all'>('fratricide')
+  const [fratSelectedId, setFratSelectedId] = useState<string | null>(null)
+  const [presetBanner, setPresetBanner] = useState<{ name: string; standIns: string[]; missing: string[] } | null>(null)
+  const [pendingView, setPendingView] = useState<{ lon: number; lat: number; height_m?: number } | null>(null)
   const [flightPathEditActive, setFlightPathEditActive] = useState(false)
   const [riskPopTier, setRiskPopTier] = useState<PopulationDensityTier>('urban')
   const [riskTimeOfDay, setRiskTimeOfDay] = useState<TimeOfDay>('business_day')
@@ -535,10 +558,14 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
   const placedLaydownChips = useMemo(() => {
     const nameFor = (item: SelectedLaydownItem) => {
       switch (item.kind) {
-        case 'uas':
-          return placedUas.find((u) => u.instanceId === item.instanceId)?.asset.name ?? item.instanceId
-        case 'cuas':
-          return placedCuas.find((c) => c.instanceId === item.instanceId)?.asset.name ?? item.instanceId
+        case 'uas': {
+          const u = placedUas.find((x) => x.instanceId === item.instanceId)
+          return u ? uasCallsign(u) : item.instanceId
+        }
+        case 'cuas': {
+          const c = placedCuas.find((x) => x.instanceId === item.instanceId)
+          return c ? cuasCallsign(c) : item.instanceId
+        }
         case 'radar': {
           const radar = placedRadars.find((r) => r.instanceId === item.instanceId)
           return radar ? formatRadarDisplayName(radar.asset) : item.instanceId
@@ -772,11 +799,56 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     if (stageId || cuasId) setSpectralOpen(true)
   }, [searchParams, assets.uas, assets.cuas, startUasPlacement, startCuasPlacement])
 
+  /** Replace the laydown with a preset (combat team, base defence, deployed base). */
+  const loadPreset = useCallback(
+    (id: LaydownPresetId, opts: { name?: string; openFratricide?: boolean } = {}) => {
+      const preset = buildPresetLaydown(id, assets)
+      setPlacementMode({ active: false })
+      setSelectedLaydownItem(null)
+      setFratSelectedId(null)
+      setPlacedUas(preset.placedUas)
+      setPlacedCuas(preset.placedCuas)
+      setPlacedRadars(preset.placedRadars)
+      setPlacedEffectors(preset.placedEffectors)
+      planner.setPlanName(opts.name ?? preset.name)
+      setPendingView(preset.viewport)
+      const short = (w: string) => w.replace(/\s*\([^)]*\)\s*$/, '')
+      const standIns = [
+        ...new Set(preset.resolution.filter((r) => r.fallback && !r.used.startsWith('not in')).map((r) => short(r.wanted))),
+      ]
+      const missing = preset.resolution.filter((r) => r.used.startsWith('not in')).map((r) => short(r.wanted))
+      setPresetBanner({ name: opts.name ?? preset.name, standIns, missing })
+      if (opts.openFratricide) {
+        closeRiskOverlay()
+        setShowIadsPanel(false)
+        setMapTool('fratricide')
+      }
+    },
+    // planner.setPlanName is a stable state setter
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [assets, closeRiskOverlay],
+  )
+
+  const handleLoadPreset = useCallback(
+    (id: string) => {
+      const hasLaydown = placedUas.length + placedCuas.length + placedRadars.length + placedEffectors.length > 0
+      if (hasLaydown && !window.confirm('Load the preset? This replaces the placed assets.')) return
+      loadPreset(id as LaydownPresetId, { openFratricide: id === 'combat-team' })
+    },
+    [loadPreset, placedUas.length, placedCuas.length, placedRadars.length, placedEffectors.length],
+  )
+
+  const vignetteHandledRef = useRef<string | null>(null)
   useEffect(() => {
     const vignetteId = searchParams.get('planVignette')
-    if (!vignetteId) return
+    if (!vignetteId || vignetteHandledRef.current === vignetteId) return
     const v = getVignette(vignetteId)
     if (!v) return
+    vignetteHandledRef.current = vignetteId
+    if (v.preset) {
+      loadPreset(v.preset, { name: v.name, openFratricide: v.openTool === 'fratricide' })
+      return
+    }
     const doc = vignetteToLaydown(v)
     const hydrated = hydrateLaydown(doc, assets)
     setPlacedUas(hydrated.placedUas)
@@ -784,7 +856,137 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
     setPlacedRadars(hydrated.placedRadars)
     setPlacedEffectors(hydrated.placedEffectors)
     planner.setPlanName(v.name)
-  }, [searchParams, assets])
+    if (doc.viewport) setPendingView(doc.viewport)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, assets, loadPreset])
+
+  /** Fly to a look-at point with a 60 degree oblique view (instant under reduced motion). */
+  const flyToView = useCallback((v: { lon: number; lat: number; height_m?: number }) => {
+    const ctx = cesiumCtxRef.current
+    if (!ctx || ctx.viewer.isDestroyed?.()) return false
+    const { Cesium, viewer } = ctx
+    const h = Math.max(1500, v.height_m ?? 40_000)
+    const pitchDeg = 60
+    const back_m = h / Math.tan((pitchDeg * Math.PI) / 180)
+    const reduce =
+      typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    viewer.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(v.lon, v.lat - back_m / 111_320, h),
+      orientation: { heading: 0, pitch: Cesium.Math.toRadians(-pitchDeg), roll: 0 },
+      duration: reduce ? 0 : 1.8,
+    })
+    return true
+  }, [])
+
+  useEffect(() => {
+    if (!pendingView || !cesiumReady) return
+    if (flyToView(pendingView)) setPendingView(null)
+  }, [pendingView, cesiumReady, flyToView])
+
+  /** ?lat=&lon=[&h=] opens the globe on a place (Base Protection sites link here). */
+  useEffect(() => {
+    const lat = Number(searchParams.get('lat'))
+    const lon = Number(searchParams.get('lon'))
+    if (!searchParams.has('lat') || !searchParams.has('lon')) return
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return
+    const h = Number(searchParams.get('h'))
+    setPendingView({ lat, lon, height_m: Number.isFinite(h) && h > 0 ? h : 12_000 })
+  }, [searchParams])
+
+  /* ---------------- spectrum fratricide ---------------- */
+
+  const fratricideReport = useMemo(
+    () => runLaydownFratricide(placedUas, placedCuas, fratOptions),
+    [placedUas, placedCuas, fratOptions],
+  )
+  const fratVisible = useMemo(
+    () =>
+      fratricideReport.conflicts.filter((c) =>
+        fratView === 'all' ? true : fratView === 'fratricide' ? c.kind === 'fratricide' : c.kind === 'enemy_ew',
+      ),
+    [fratricideReport.conflicts, fratView],
+  )
+  const fratHasEdits = useMemo(
+    () => placedUas.some((u) => u.linkPlan) || placedCuas.some((c) => c.emcon),
+    [placedUas, placedCuas],
+  )
+
+  useEffect(() => {
+    const ctx = cesiumCtxRef.current
+    if (!cesiumReady || !ctx || ctx.viewer.isDestroyed?.()) return
+    if (mapTool === 'fratricide') syncFratricideLayer(ctx.Cesium, ctx.viewer, fratVisible, fratSelectedId)
+    else clearFratricideLayer(ctx.viewer)
+  }, [cesiumReady, mapTool, fratVisible, fratSelectedId])
+
+  const handleSelectConflict = useCallback(
+    (c: FratricideConflict | null) => {
+      setFratSelectedId(c?.id ?? null)
+      if (!c || c.path.length === 0) return
+      const pts = [...c.path, ...c.groundReceivers, c.jammerPosition]
+      const lons = pts.map((p) => p.lon)
+      const lats = pts.map((p) => p.lat)
+      const spanKm = Math.max(
+        (Math.max(...lats) - Math.min(...lats)) * 111,
+        (Math.max(...lons) - Math.min(...lons)) * 111 * Math.cos((lats[0] * Math.PI) / 180),
+      )
+      flyToView({
+        lon: (Math.max(...lons) + Math.min(...lons)) / 2,
+        lat: (Math.max(...lats) + Math.min(...lats)) / 2,
+        height_m: Math.max(4000, spanKm * 1000 * 1.6),
+      })
+    },
+    [flyToView],
+  )
+
+  const handleApplyMitigation = useCallback(
+    (patch: MitigationPatch, label: string) => {
+      const next = applyMitigationPatch({ placedUas, placedCuas }, patch)
+      if (next.placedUas !== placedUas) setPlacedUas(next.placedUas)
+      if (next.placedCuas !== placedCuas) setPlacedCuas(next.placedCuas)
+      setFratSelectedId(null)
+      toast.success(`Applied: ${label}`)
+    },
+    [placedUas, placedCuas],
+  )
+
+  const handleClearMitigations = useCallback(() => {
+    const next = clearMitigations({ placedUas, placedCuas })
+    setPlacedUas(next.placedUas)
+    setPlacedCuas(next.placedCuas)
+  }, [placedUas, placedCuas])
+
+  /* ---------------- exports ---------------- */
+
+  const handleExport = useCallback(
+    (id: string) => {
+      const format = id as ExportFormat
+      const doc = buildExportDocument({
+        title: planner.planName && planner.planName !== 'Untitled plan' ? planner.planName : 'Map Intel laydown',
+        placedUas,
+        placedCuas,
+        placedRadars,
+        placedEffectors,
+        conflicts: fratricideReport.conflicts,
+      })
+      if (doc.items.length === 0) {
+        toast.error('Nothing to export yet. Place assets or load a preset.')
+        return
+      }
+      const file = renderExport(format, doc)
+      const blob = new Blob([file.data as BlobPart], { type: file.mime })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = file.filename
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.setTimeout(() => URL.revokeObjectURL(url), 4000)
+      const label = EXPORT_FORMATS.find((f) => f.id === format)?.label ?? format
+      toast.success(`${label}: ${doc.items.length} assets exported`)
+    },
+    [planner.planName, placedUas, placedCuas, placedRadars, placedEffectors, fratricideReport.conflicts],
+  )
 
   const forceHandledRef = useRef(false)
   useEffect(() => {
@@ -875,7 +1077,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         staticPk: p.defeatMatrixPk,
         operationsPk: p.propagation ? p.blueSuccessPct : null,
         jamToSignal_db: p.propagation?.jam_to_signal_db ?? null,
-        los_state: p.propagation?.los_state ?? '—',
+        los_state: p.propagation?.los_state ?? 'n/a',
         propagationGated: p.propagation?.propagationGated ?? false,
         rangeKm,
         uasAltitude_m: uas?.discAltitude_m,
@@ -1041,7 +1243,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         {/* Top row: plan on the left, analysis tools on the right. */}
         <div
           ref={toolbarRowRef}
-          className="absolute z-20 top-3 left-[var(--map-l)] right-3 flex flex-wrap items-start gap-2 pointer-events-none"
+          className="absolute z-30 top-3 left-[var(--map-l)] right-3 flex flex-wrap items-start gap-2 pointer-events-none"
         >
           {!assetPanelOpen && (
             <button
@@ -1092,6 +1294,29 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
                   .catch((e) => toast.error(e instanceof Error ? e.message : 'PCM publish failed'))
               }}
             />
+            <span className="lg-sep" aria-hidden />
+            <MapMenu
+              label={
+                <>
+                  <Download className="w-3.5 h-3.5" aria-hidden />
+                  Export
+                </>
+              }
+              menuLabel="Export laydown"
+              header="Download the current laydown for the tactical picture"
+              buttonClassName="btn-e sm inline-flex items-center gap-1.5"
+              width={340}
+              items={EXPORT_FORMATS.map((f) => ({
+                id: f.id,
+                label: (
+                  <>
+                    {f.label} <span className="font-mono text-[12px] store-text-muted">.{f.ext}</span>
+                  </>
+                ),
+                note: f.note,
+              }))}
+              onSelect={handleExport}
+            />
           </div>
           <div
             className="lg-glass pointer-events-auto ml-auto flex items-center gap-0.5 p-1 shrink-0"
@@ -1136,6 +1361,29 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             >
               EW Deconflict
             </button>
+            <button
+              type="button"
+              aria-pressed={mapTool === 'fratricide'}
+              onClick={() => {
+                closeRiskOverlay()
+                setMapTool((t) => (t === 'fratricide' ? 'none' : 'fratricide'))
+              }}
+              className={mapToolbarBtn(mapTool === 'fratricide')}
+              title="Own jammers against own drone links"
+            >
+              Fratricide
+              {fratricideReport.counts.fratricide > 0 ? (
+                <span
+                  className={cn(
+                    'ml-1 font-mono text-[12px] tabular-nums',
+                    mapTool === 'fratricide' ? 'text-white' : 'text-[#FF8A98]',
+                  )}
+                  aria-label={`${fratricideReport.counts.fratricide} conflicts`}
+                >
+                  {fratricideReport.counts.fratricide}
+                </span>
+              ) : null}
+            </button>
             <span className="lg-sep" aria-hidden />
             <button
               type="button"
@@ -1149,7 +1397,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
         </div>
 
         {/* Status banners: one centred stack under the toolbars, clear of both side columns. */}
-        <div className="absolute z-20 top-[var(--map-t)] left-[var(--map-l)] right-[var(--map-r)] flex flex-col items-center gap-2 pointer-events-none">
+        <div className="absolute z-30 top-[var(--map-t)] left-[var(--map-l)] right-[var(--map-r)] flex flex-col items-center gap-2 pointer-events-none">
           {stagingBanner && (
             <div className="glass-popover pointer-events-auto w-full max-w-xl pl-4 pr-2 py-2 flex items-start justify-between gap-3 text-[12px] store-text-body leading-relaxed">
               <span className="py-1">
@@ -1182,6 +1430,25 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
                 onClick={() => setForceBanner(null)}
                 className="glass-icon-btn !w-7 !h-7 !rounded-lg shrink-0"
                 aria-label="Dismiss force package banner"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+          {presetBanner && (
+            <div className="glass-popover pointer-events-auto w-full max-w-xl pl-4 pr-2 py-2 flex items-start justify-between gap-3 text-[12px] store-text-body leading-relaxed">
+              <span className="py-1">
+                {presetBanner.name} loaded. Notional positions.
+                {presetBanner.standIns.length > 0
+                  ? ` Stand-in specs (not in the live catalogue): ${presetBanner.standIns.join(', ')}.`
+                  : ''}
+                {presetBanner.missing.length > 0 ? ` Left out: ${presetBanner.missing.join(', ')}.` : ''}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPresetBanner(null)}
+                className="glass-icon-btn !w-7 !h-7 !rounded-lg shrink-0"
+                aria-label="Dismiss preset banner"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -1300,6 +1567,21 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
             {mapTool === 'cuas-siting' && (
               <CuasSitingPlanner placedUas={placedUas} placedCuas={placedCuas} onClose={() => setMapTool('none')} />
             )}
+            {mapTool === 'fratricide' && (
+              <FratricidePanel
+                report={fratricideReport}
+                options={fratOptions}
+                onOptionsChange={(patch) => setFratOptions((o) => ({ ...o, ...patch }))}
+                selectedId={fratSelectedId}
+                onSelect={handleSelectConflict}
+                onApply={handleApplyMitigation}
+                hasEdits={fratHasEdits}
+                onClearEdits={handleClearMitigations}
+                view={fratView}
+                onViewChange={setFratView}
+                onClose={() => setMapTool('none')}
+              />
+            )}
             {mapTool === 'ew-deconflict' && (
               <EwFootprintAnalyser
                 placedUas={placedUas}
@@ -1335,7 +1617,7 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           </div>
         )}
 
-        <div ref={bottomBarRef} className="absolute z-20 bottom-3 left-[var(--map-l)] right-3">
+        <div ref={bottomBarRef} className="absolute z-30 bottom-3 left-[var(--map-l)] right-3">
         <MapBottomBar
           className="w-full flex-wrap"
           cursor={cursor}
@@ -1344,17 +1626,34 @@ export default function MapIntelView({ initialAssets }: MapIntelViewProps) {
           onNilWindChange={setNilWind}
           onClearAll={handleClearAll}
           tools={
-            <button
-              type="button"
-              aria-pressed={flightPathEditActive}
-              disabled={placedUas.length === 0}
-              onClick={toggleFlightPathEdit}
-              className={mapToolbarBtn(flightPathEditActive)}
-              title={placedUas.length === 0 ? 'Place a UAS first' : 'Edit flight paths'}
-            >
-              <Route className="w-3.5 h-3.5" />
-              Edit flight path
-            </button>
+            <>
+              <button
+                type="button"
+                aria-pressed={flightPathEditActive}
+                disabled={placedUas.length === 0}
+                onClick={toggleFlightPathEdit}
+                className={mapToolbarBtn(flightPathEditActive)}
+                title={placedUas.length === 0 ? 'Place a UAS first' : 'Edit flight paths'}
+              >
+                <Route className="w-3.5 h-3.5" />
+                Edit flight path
+              </button>
+              <MapMenu
+                label={
+                  <>
+                    <LayoutTemplate className="w-3.5 h-3.5" aria-hidden />
+                    Presets
+                  </>
+                }
+                menuLabel="Laydown presets"
+                header="Replaces the placed assets"
+                placement="up"
+                buttonClassName={mapToolbarBtn(false)}
+                width={320}
+                items={LAYDOWN_PRESETS.map((p) => ({ id: p.id, label: p.label, note: p.hint }))}
+                onSelect={handleLoadPreset}
+              />
+            </>
           }
         />
         </div>

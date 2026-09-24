@@ -1,6 +1,7 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/ScrollArea'
 import { cn } from '@/lib/utils'
@@ -156,3 +157,147 @@ export function enumLabel(v: string): string {
 
 /** Blue range slider (the chrome accent; orange is reserved for the IR band). */
 export const rangeClass = 'w-full h-5 cursor-pointer accent-[#2997FF]'
+
+export interface MapMenuItem {
+  id: string
+  label: ReactNode
+  /** One quiet line under the label. */
+  note?: ReactNode
+  disabled?: boolean
+}
+
+/**
+ * A glass menu button for the map chrome (Export, Presets). Opens a glass
+ * popover of items, each with a one-line note. Esc and outside click close it.
+ *
+ * The popover renders in a portal with fixed positioning: toolbar groups are
+ * themselves Liquid Glass (backdrop-filter), which would make them the backdrop
+ * root and stop the popover blurring the panels behind it.
+ */
+export function MapMenu({
+  label,
+  items,
+  onSelect,
+  placement = 'down',
+  align = 'start',
+  buttonClassName,
+  menuLabel,
+  width = 320,
+  header,
+}: {
+  label: ReactNode
+  items: MapMenuItem[]
+  onSelect: (id: string) => void
+  placement?: 'down' | 'up'
+  align?: 'start' | 'end'
+  buttonClassName?: string
+  menuLabel: string
+  width?: number
+  header?: ReactNode
+}) {
+  const [open, setOpen] = useState(false)
+  const [pos, setPos] = useState<{ left: number; top?: number; bottom?: number; width: number } | null>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const menuId = useId()
+
+  useEffect(() => {
+    if (!open) return
+    const place = () => {
+      const r = buttonRef.current?.getBoundingClientRect()
+      if (!r) return
+      const vw = window.innerWidth
+      const w = Math.min(width, vw - 32)
+      const rawLeft = align === 'start' ? r.left : r.right - w
+      const left = Math.max(16, Math.min(rawLeft, vw - w - 16))
+      setPos(
+        placement === 'down'
+          ? { left, top: r.bottom + 8, width: w }
+          : { left, bottom: window.innerHeight - r.top + 8, width: w },
+      )
+    }
+    place()
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node
+      if (buttonRef.current?.contains(t) || menuRef.current?.contains(t)) return
+      setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation()
+        setOpen(false)
+        buttonRef.current?.focus()
+      }
+    }
+    window.addEventListener('resize', place)
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey, true)
+    return () => {
+      window.removeEventListener('resize', place)
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey, true)
+    }
+  }, [open, placement, align, width])
+
+  useEffect(() => {
+    if (open && pos) menuRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]:not(:disabled)')?.focus()
+  }, [open, pos])
+
+  const menu =
+    open && pos && typeof document !== 'undefined'
+      ? createPortal(
+          <div
+            ref={menuRef}
+            id={menuId}
+            role="menu"
+            aria-label={menuLabel}
+            style={{ position: 'fixed', left: pos.left, top: pos.top, bottom: pos.bottom, width: pos.width, zIndex: 60 }}
+            className="glass-popover p-1.5 flex flex-col gap-0.5"
+            onKeyDown={(e) => {
+              if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return
+              e.preventDefault()
+              const list = [...(menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not(:disabled)') ?? [])]
+              const i = list.indexOf(document.activeElement as HTMLButtonElement)
+              const next = list[(i + (e.key === 'ArrowDown' ? 1 : -1) + list.length) % list.length]
+              next?.focus()
+            }}
+          >
+            {header ? <div className="px-2.5 pt-1.5 pb-1 text-[12px] store-text-muted">{header}</div> : null}
+            {items.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="menuitem"
+                disabled={item.disabled}
+                onClick={() => {
+                  setOpen(false)
+                  onSelect(item.id)
+                }}
+                className="text-left rounded-[10px] px-2.5 py-2 hover:bg-[rgba(255,255,255,0.07)] focus-visible:bg-[rgba(255,255,255,0.07)] disabled:opacity-40 disabled:pointer-events-none transition-colors duration-150 ease-out motion-reduce:transition-none"
+              >
+                <span className="block text-[13px] font-medium text-[var(--store-ink)]">{item.label}</span>
+                {item.note ? <span className="block mt-0.5 text-[12px] leading-snug store-text-muted">{item.note}</span> : null}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )
+      : null
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-controls={open ? menuId : undefined}
+        onClick={() => setOpen((v) => !v)}
+        className={buttonClassName}
+      >
+        {label}
+      </button>
+      {menu}
+    </>
+  )
+}

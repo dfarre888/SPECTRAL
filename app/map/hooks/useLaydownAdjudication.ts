@@ -135,8 +135,8 @@ export function useLaydownAdjudication(
             source: 'fallback',
             fallbackReason:
               json.fallback === 'client_band_overlap'
-                ? 'Operations API unavailable — Training band overlap'
-                : 'Forbidden — using client analysis',
+                ? 'Operations API unavailable, Training band overlap'
+                : 'Forbidden, using client analysis',
           })
           return
         }
@@ -144,7 +144,7 @@ export function useLaydownAdjudication(
           setState({
             analysis: base,
             source: 'fallback',
-            fallbackReason: `Adjudication ${r.status} — client fallback`,
+            fallbackReason: `Adjudication ${r.status}, client fallback`,
           })
           return
         }
@@ -158,7 +158,7 @@ export function useLaydownAdjudication(
           setState({
             analysis: base,
             source: 'fallback',
-            fallbackReason: 'Network error — client fallback',
+            fallbackReason: 'Network error, client fallback',
           })
         }
       }

@@ -102,7 +102,7 @@ function collectRedundancies(platform: Platform): string[] {
     out.push('GNSS-independent navigation (visual / INS)')
   }
   if (platform.guidance_type?.includes('fibre') || platform.control_link_freq?.includes('fiber')) {
-    out.push('Fibre-optic control — RF jamming ineffective')
+    out.push('Fibre-optic control, RF jamming ineffective')
   }
   if (platform.guidance_type?.toLowerCase().includes('autonomous')) {
     out.push('AI / autonomous terminal phase')
@@ -114,7 +114,7 @@ function collectRedundancies(platform: Platform): string[] {
   const resistances = new Set<string>()
   for (const c of platform.capabilities ?? []) {
     for (const r of c.defeat_resistance ?? []) {
-      if (r === 'rf_silent') resistances.add('RF-silent — no emissions to jam')
+      if (r === 'rf_silent') resistances.add('RF-silent, no emissions to jam')
       else if (r.includes('jamming_high')) resistances.add('CRPA / anti-jam GNSS')
       else if (r.includes('jamming_med')) resistances.add('Partial anti-jam / hopping')
       else if (r === 'gnss_denied_capable') resistances.add('GNSS-denied capable')
@@ -142,18 +142,18 @@ function spectrumSuccessPct(result: EngagementResult): number {
 function primaryCuasTactic(asset: MapCuasAsset, spectrum: EngagementResult): string {
   const methods = asset.defeat_methods ?? []
   if (methods.includes('laser') || methods.includes('directed_energy')) {
-    return 'Directed-energy defeat — HEL burns through airframe electronics/optics within envelope'
+    return 'Directed-energy defeat, HEL burns through airframe electronics/optics within envelope'
   }
   if (methods.includes('kinetic')) {
-    return 'Kinetic intercept — gun, missile, or ram within defeat envelope'
+    return 'Kinetic intercept, gun, missile, or ram within defeat envelope'
   }
   if (methods.includes('net')) {
     return 'Net capture / physical intercept within short range'
   }
   if (methods.includes('RF_jamming')) {
     return spectrum.overlaps.length > 0
-      ? 'RF/GNSS jamming — deny control link and navigation bands that overlap threat emissions'
-      : 'RF jammer emplaced but no band overlap — re-seat effector or change threat profile'
+      ? 'RF/GNSS jamming, deny control link and navigation bands that overlap threat emissions'
+      : 'RF jammer emplaced but no band overlap, re-seat effector or change threat profile'
   }
   return asset.categoryLabel || 'C-UAS engagement per OSINT defeat matrix'
 }
@@ -188,39 +188,39 @@ function uasSurvivalPlaybook(
   const tactics: string[] = []
 
   if (!inRange) {
-    tactics.push('Remain outside C-UAS defeat envelope — geometry is primary survivability layer')
+    tactics.push('Remain outside C-UAS defeat envelope, geometry is primary survivability layer')
   } else if (blueSuccessPct >= 50) {
-    tactics.push(`Exit ${cuasName} defeat range — lateral manoeuvre beyond ${inRange ? 'current' : ''} envelope`)
+    tactics.push(`Exit ${cuasName} defeat range, lateral manoeuvre beyond ${inRange ? 'current' : ''} envelope`)
   }
 
   if (spectrum.verdict === 'no_engagement' || spectrum.overlaps.length === 0) {
-    tactics.push('Exploit band mismatch — threat emissions not covered by jammer (maintain current link profile)')
+    tactics.push('Exploit band mismatch, threat emissions not covered by jammer (maintain current link profile)')
   }
 
   for (const cap of spectrum.uncovered) {
-    tactics.push(`Protect uncovered dependency: ${cap.label} — not in jammer overlap`)
+    tactics.push(`Protect uncovered dependency: ${cap.label}, not in jammer overlap`)
   }
 
   if (uas.gnss_dependency === 'none' || uas.gnss_dependency === 'low') {
-    tactics.push('Continue mission under GNSS denial — visual / INS navigation redundant path active')
+    tactics.push('Continue mission under GNSS denial, visual / INS navigation redundant path active')
   }
 
   if (uas.guidance_type?.includes('fibre')) {
-    tactics.push('Maintain fibre-optic tether integrity — RF jamming cannot affect control path')
+    tactics.push('Maintain fibre-optic tether integrity, RF jamming cannot affect control path')
   }
 
   const hasHardened = (uas.capabilities ?? []).some((c) =>
     (c.defeat_resistance ?? []).some((r) => r.includes('jamming_high') || r.includes('jamming_med')),
   )
   if (hasHardened) {
-    tactics.push('Use hardened / hopping link — expect degraded but not total jamming effect')
+    tactics.push('Use hardened / hopping link, expect degraded but not total jamming effect')
   }
 
   tactics.push('EMCON: suppress non-essential emissions when not required for terminal guidance')
-  tactics.push('Terrain mask ingress/egress — stay below ridge lines where C-UAS LOS is blocked')
+  tactics.push('Terrain mask ingress/egress, stay below ridge lines where C-UAS LOS is blocked')
 
   if (blueSuccessPct < 50) {
-    tactics.push('Current laydown favours UAS — press attack window before Blue repositions')
+    tactics.push('Current laydown favours UAS, press attack window before Blue repositions')
   }
 
   return [...new Set(tactics)].slice(0, 6)
@@ -355,20 +355,20 @@ export function analyzeLaydown(
   const baseCopilot = askCopilot(query, { platforms: spectrumPlatforms, radars: [] })
 
   const laydownReasoning = [
-    `Laydown: ${placedUas.length} UAS × ${placedCuas.length} C-UAS — ${activeEngagements} geometric engagement${activeEngagements === 1 ? '' : 's'} inside defeat envelopes.`,
+    `Laydown: ${placedUas.length} UAS × ${placedCuas.length} C-UAS, ${activeEngagements} geometric engagement${activeEngagements === 1 ? '' : 's'} inside defeat envelopes.`,
     `${defeatLikely} pairing${defeatLikely === 1 ? '' : 's'} favour Blue (≥50% combined success); ${survivable} survivable for Red; ${outOfRange} out of range.`,
     ...pairs
       .filter((p) => p.inDefeatRange)
       .slice(0, 4)
       .map(
         (p) =>
-          `${p.cuasName} vs ${p.uasName}: ${p.blueSuccessPct}% — ${p.spectrum.headline}`,
+          `${p.cuasName} vs ${p.uasName}: ${p.blueSuccessPct}%, ${p.spectrum.headline}`,
       ),
   ]
 
   const copilot: CopilotResponse = {
     ...baseCopilot,
-    answer: `Map laydown analysis — ${uasNames || 'no UAS'} vs ${cuasNames || 'no C-UAS'}. ${baseCopilot.answer}`,
+    answer: `Map laydown analysis, ${uasNames || 'no UAS'} vs ${cuasNames || 'no C-UAS'}. ${baseCopilot.answer}`,
     reasoning: [...laydownReasoning, ...(baseCopilot.reasoning ?? [])].slice(0, 8),
     followups: [
       'Which bands are not covered by the jammer?',
@@ -431,7 +431,7 @@ export function mergeAdjudicationIntoLaydown(
       },
       uasSurvivalTactics: adj.propagationGated
         ? [
-            'Propagation LOS blocked — reposition for line-of-sight or escalate to kinetic/DEW',
+            'Propagation LOS blocked, reposition for line-of-sight or escalate to kinetic/DEW',
             ...p.uasSurvivalTactics,
           ].slice(0, 6)
         : p.uasSurvivalTactics,

@@ -186,7 +186,7 @@ export function buildEncounterAssessment(input: {
     detParts.push('No radar cueing threat assessed on this route.')
   } else if (mission.pdThresholdExceeded) {
     detParts.push(
-      `Detection exposure flagged — peak segment Pd ${mission.maxPd_pct}% (threshold ${PD_THRESHOLD_PCT}%). Integrated exposure ${mission.pdExposure_km.toFixed(1)} km.`,
+      `Detection exposure flagged, peak segment Pd ${mission.maxPd_pct}% (threshold ${PD_THRESHOLD_PCT}%). Integrated exposure ${mission.pdExposure_km.toFixed(1)} km.`,
     )
   } else if (mission.maxPd_pct > 0) {
     detParts.push(
@@ -195,14 +195,14 @@ export function buildEncounterAssessment(input: {
   } else {
     detParts.push('Route remains outside assessed radar detection envelopes.')
   }
-  if (mission.emcon) detParts.push('EMCON active — radiated signature suppressed for Pd scoring.')
+  if (mission.emcon) detParts.push('EMCON active, radiated signature suppressed for Pd scoring.')
 
   const killParts: string[] = []
   if (placedCuas.length === 0 && placedEffectors.length === 0) {
-    killParts.push('No C-UAS or SAM/BMD effector placed — Pk exposure not modelled.')
+    killParts.push('No C-UAS or SAM/BMD effector placed, Pk exposure not modelled.')
   } else if (mission.pkThresholdExceeded) {
     killParts.push(
-      `Kill-chain exposure flagged — peak segment Pk ${mission.maxPk_pct}% (threshold ${PK_THRESHOLD_PCT}%). Integrated exposure ${mission.pkExposure_km.toFixed(1)} km.`,
+      `Kill-chain exposure flagged, peak segment Pk ${mission.maxPk_pct}% (threshold ${PK_THRESHOLD_PCT}%). Integrated exposure ${mission.pkExposure_km.toFixed(1)} km.`,
     )
   } else if (mission.maxPk_pct > 0) {
     killParts.push(
@@ -215,33 +215,33 @@ export function buildEncounterAssessment(input: {
   let rerouteAssessment: string
   if (mission.manualOverride) {
     rerouteAssessment =
-      'Manual flight-path edit active — auto-replan suspended unless a new threat intersects the current polyline.'
+      'Manual flight-path edit active, auto-replan suspended unless a new threat intersects the current polyline.'
   } else if (mission.pathMode === 'hard-avoid' && !pathIntersectsPk && !pathIntersectsPd) {
-    rerouteAssessment = `Hard-avoid routing — ${mission.waypoints.length - 2} detour waypoint(s) keep the full polyline outside threat envelopes where range allows.`
+    rerouteAssessment = `Hard-avoid routing, ${mission.waypoints.length - 2} detour waypoint(s) keep the full polyline outside threat envelopes where range allows.`
   } else if (mission.pathMode === 'soft-minimize') {
     rerouteAssessment =
-      'Soft-minimise — planner reduced combined Pk+Pd exposure but full avoidance is not achievable within UAS range/endurance.'
+      'Soft-minimise, planner reduced combined Pk+Pd exposure but full avoidance is not achievable within UAS range/endurance.'
   } else if (directChordPk && mission.waypoints.length <= 2) {
-    rerouteAssessment = 'Direct chord crosses a defeat envelope — replan or add manual detour waypoints.'
+    rerouteAssessment = 'Direct chord crosses a defeat envelope, replan or add manual detour waypoints.'
   } else {
-    rerouteAssessment = `Combined Pk+Pd objective — ${mission.totalDistance_km.toFixed(1)} km path scored across ${scores.length} segment(s).`
+    rerouteAssessment = `Combined Pk+Pd objective, ${mission.totalDistance_km.toFixed(1)} km path scored across ${scores.length} segment(s).`
   }
 
   const recommendations: string[] = []
   if (mission.pkThresholdExceeded) {
     recommendations.push('Flank wide of engagement domes or climb above effector ceiling where platform allows.')
     if (uas.asset.category === 'loitering_munition' || uas.asset.max_altitude_agl_m <= 500) {
-      recommendations.push('Consider nap-of-earth transit in radar shadow — low altitude reduces Pd on most acquisition radars.')
+      recommendations.push('Consider nap-of-earth transit in radar shadow, low altitude reduces Pd on most acquisition radars.')
     }
   }
   if (mission.pdThresholdExceeded && !mission.emcon) {
-    recommendations.push('Enable EMCON for ingress if mission allows — reduces radiated cross-section for Pd scoring.')
+    recommendations.push('Enable EMCON for ingress if mission allows, reduces radiated cross-section for Pd scoring.')
   }
   if (threatsOnRoute.some((t) => t.kind === 'effector' && t.peakPk_pct >= PK_THRESHOLD_PCT)) {
-    recommendations.push('Assessed DEW/SAM effector on axis — weather and dwell-time limitations may degrade kill probability (OSINT training estimate).')
+    recommendations.push('Assessed DEW/SAM effector on axis, weather and dwell-time limitations may degrade kill probability (OSINT training estimate).')
   }
   if (recommendations.length === 0 && threatsOnRoute.length === 0) {
-    recommendations.push('No counter-system intersection on current path — maintain EMCON discipline if penetrating contested airspace.')
+    recommendations.push('No counter-system intersection on current path, maintain EMCON discipline if penetrating contested airspace.')
   }
 
   const summary = `${uas.asset.name} · ${mission.totalDistance_km.toFixed(1)} km · max Pk ${mission.maxPk_pct}% · max Pd ${mission.maxPd_pct}%`
@@ -251,7 +251,7 @@ export function buildEncounterAssessment(input: {
       ? `Flight polyline transits ${threatsOnRoute.length} counter-system envelope(s).`
       : 'Flight polyline clears all placed counter-system envelopes on current geometry.',
     mission.pkThresholdExceeded || mission.pdThresholdExceeded
-      ? 'Exposure thresholds exceeded — review reroute options.'
+      ? 'Exposure thresholds exceeded, review reroute options.'
       : 'Exposure within assessed training thresholds.',
   ].join(' ')
 

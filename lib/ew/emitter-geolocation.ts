@@ -1,5 +1,5 @@
 /**
- * OSINT DF triangulation — bearing intersection from two+ passive sensors.
+ * OSINT DF triangulation: bearing intersection from two+ passive sensors.
  * Estimated confidence only; not a classified geolocation solver.
  */
 

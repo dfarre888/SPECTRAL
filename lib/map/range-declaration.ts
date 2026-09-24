@@ -1,25 +1,25 @@
 /**
- * Platform range envelope — adapted from A3DM lib/signals/c2-range-declaration.ts
+ * Platform range envelope: adapted from A3DM lib/signals/c2-range-declaration.ts
  *
  * A3DM CASA/TMI uses 80% of declared C2 range as the operational containment cap.
  * SPECTRAL Map Intel draws a **horizontal combat envelope disc** at the stated altitude.
  *
  * OSINT `range_km` in the platform library is often manufacturer **ferry / one-way
  * max distance** (e.g. TB-001 @ 6000 km). Map Intel must NOT use that literally as
- * sphere radius — Earth is ~6371 km. We derive **operational combat radius** instead.
+ * sphere radius: Earth is ~6371 km. We derive **operational combat radius** instead.
  */
 
 import { effectiveRangeKm } from '@/lib/map/wind'
 import type { AltitudeReference, MapUasAsset, WindSample } from '@/lib/map/types'
 import type { PlatformCategory } from '@/lib/types'
 
-/** CASA / TMI reference — operational cap vs declared max (A3DM pattern). */
+/** CASA / TMI reference: operational cap vs declared max (A3DM pattern). */
 export const CASA_RANGE_CONTAINMENT_RATIO = 0.8
 
-/** SPECTRAL intel — envelope uses full derived operational radius (not 80% cap). */
+/** SPECTRAL intel: envelope uses full derived operational radius (not 80% cap). */
 export const SPECTRAL_SPEC_RANGE_RATIO = 1.0
 
-/** Categories where max range is one-way — full spec is the envelope. */
+/** Categories where max range is one-way: full spec is the envelope. */
 const ONE_WAY_CATEGORIES = new Set<PlatformCategory>(['loitering_munition'])
 
 export interface OperationalEnvelope {
@@ -32,19 +32,19 @@ export interface OperationalEnvelope {
 }
 
 export interface PlatformRangeEnvelope {
-  /** Raw OSINT max range (km) — may be ferry figure. */
+  /** Raw OSINT max range (km): may be ferry figure. */
   declaredRangeKm: number
   /** Combat envelope used for map disc (km). */
   operationalRadiusKm: number
-  /** Optional 80% compliance reference (km) — A3DM TMI style. */
+  /** Optional 80% compliance reference (km): A3DM TMI style. */
   containmentRangeKm: number
-  /** Active range for map disc (km) — wind-adjusted operational radius. */
+  /** Active range for map disc (km): wind-adjusted operational radius. */
   effectiveRangeKm: number
   /** Radius used for Cesium disc (m). */
   sphereRadiusM: number
-  /** Disc altitude MSL — envelope operating height. */
+  /** Disc altitude MSL: envelope operating height. */
   discAltitudeM: number
-  /** Legacy midpoint MSL — overlap reference. */
+  /** Legacy midpoint MSL: overlap reference. */
   sphereCentreAltM: number
   /** Whether effectiveRangeKm is below operational due to wind. */
   windAdjusted: boolean
@@ -97,7 +97,7 @@ export function operationalEnvelopeRadiusKm(asset: MapUasAsset): OperationalEnve
     }
   }
 
-  // Short-range tactical — spec is already combat radius (Group 1–3, FPV, interceptors).
+  // Short-range tactical: spec is already combat radius (Group 1–3, FPV, interceptors).
   if (declaredSpecKm <= 400) {
     return {
       declaredSpecKm,
@@ -117,7 +117,7 @@ export function operationalEnvelopeRadiusKm(asset: MapUasAsset): OperationalEnve
 
   const candidates = [declaredSpecKm, enduranceCombatKm, halfFerryKm]
   if (declaredSpecKm > 2000) {
-    // Very long ferry claims (TB-001 6000 km) — combat radius ~25% of ferry (OSINT assessed).
+    // Very long ferry claims (TB-001 6000 km): combat radius ~25% of ferry (OSINT assessed).
     candidates.push(declaredSpecKm / 4)
   }
 
@@ -134,7 +134,7 @@ export function operationalEnvelopeRadiusKm(asset: MapUasAsset): OperationalEnve
 }
 
 /**
- * Combat range envelope — horizontal disc radius + altitude.
+ * Combat range envelope: horizontal disc radius + altitude.
  * Map Intel draws EllipseGraphics at discAltitudeM in cesium-sync.
  */
 export function computePlatformRangeEnvelope(

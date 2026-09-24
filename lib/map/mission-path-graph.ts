@@ -149,7 +149,7 @@ function flankCandidates(
   return points
 }
 
-/** Rim samples for large engagement domes — perpendicular flanks fail when domes span the chord. */
+/** Rim samples for large engagement domes: perpendicular flanks fail when domes span the chord. */
 function threatRimWaypoints(threat: ThreatCircle, segments = 12): GraphPoint[] {
   const offset = threat.radius_m + DETOUR_BUFFER_M
   const points: GraphPoint[] = []

@@ -46,7 +46,7 @@ export interface EvaluatedItem {
   reason: string
   pct?: number
   placed?: boolean
-  /** Placed map instance — when set, UI can select without search. */
+  /** Placed map instance: when set, UI can select without search. */
   instanceId?: string
   /** Parent SAM/IADS platform (e.g. S-400 Triumf). */
   parentSystem?: string
@@ -192,8 +192,8 @@ function firstSection(evaluation: LaydownEvaluation, titles: string[]): Evaluati
 /** Resolve detect / defeat / gap sections across UAS, radar, C-UAS, and effector evaluations. */
 export function scoreboardSections(evaluation: LaydownEvaluation) {
   return {
-    detect: firstSection(evaluation, ['Radars — can detect', 'Can detect']),
-    detectBlind: firstSection(evaluation, ['Radars — cannot detect', 'Cannot detect']),
+    detect: firstSection(evaluation, ['Radars: can detect', 'Can detect']),
+    detectBlind: firstSection(evaluation, ['Radars: cannot detect', 'Cannot detect']),
     defeat: firstSection(evaluation, ['Can shoot down']),
     noShot: firstSection(evaluation, ['Cannot detect or shoot', 'Cannot shoot down']),
   }
@@ -206,7 +206,7 @@ function bestByPct(items: EvaluatedItem[]): { name: string; pct: number; finishC
   return { name: top.name, pct: top.pct, finishClass: top.finishClass }
 }
 
-/** Commander roll-up — counts only, not the 200-row catalog dump. */
+/** Commander roll-up: counts only, not the 200-row catalog dump. */
 export function commanderScoreboard(evaluation: LaydownEvaluation): CommanderScoreboard {
   const { detect: detectSection, detectBlind: detectBlindSection, defeat: defeatSection, noShot: noShotSection } =
     scoreboardSections(evaluation)
@@ -257,7 +257,7 @@ export function commanderScoreboard(evaluation: LaydownEvaluation): CommanderSco
     verdict = 'deny_only'
     verdictLine = bestDeny
       ? `Find and deny only. Best P(link): ${bestDeny.name} ${bestDeny.pct}%. Airframe stays up.`
-      : 'Sensors can find it. Catalog effectors only deny the link — the airframe stays up.'
+      : 'Sensors can find it. Catalog effectors only deny the link, the airframe stays up.'
     williamtownLine =
       'RAAF Williamtown lesson: a DroneGun-class purchase denies COTS C2/GNSS. It does not drop the airframe. Fibre-optic and encrypted links walk through. Layer HPM or kinetic if the aircraft must not fly again.'
   } else if (hasDetectAxis && detect > 0 && (!hasDefeatAxis || defeat === 0)) {
@@ -566,7 +566,7 @@ function effectorCanShootUas(
     }
   }
   const pk = engage.pk != null ? Math.round(engage.pk * 100) : undefined
-  const marginal = engage.verdict === 'marginal' ? ' (marginal — cost exchange)' : ''
+  const marginal = engage.verdict === 'marginal' ? ' (marginal, cost exchange)' : ''
   return {
     can: true,
     pct: pk,
@@ -694,8 +694,8 @@ export function evaluateUas(uas: PlacedUas, state: LaydownState): LaydownEvaluat
       lat: uas.lat,
     },
     sections: [
-      { title: 'Radars — can detect', tone: 'can', items: canDetectRadars },
-      { title: 'Radars — cannot detect', tone: 'cannot', items: cannotDetectRadars },
+      { title: 'Radars: can detect', tone: 'can', items: canDetectRadars },
+      { title: 'Radars: cannot detect', tone: 'cannot', items: cannotDetectRadars },
       { title: 'Can shoot down', tone: 'can', items: canShoot },
       { title: 'Cannot detect or shoot', tone: 'cannot', items: complement },
     ],

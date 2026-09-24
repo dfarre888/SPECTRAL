@@ -57,7 +57,7 @@ export function radarDetectionRangeKm(r: RadarSystem): number {
   )
 }
 
-/** Globe dome radius — prefers fighter-class tactical range, capped for display. */
+/** Globe dome radius: prefers fighter-class tactical range, capped for display. */
 export function radarDomeRangeKm(r: RadarSystem): number {
   const tactical = r.range_vs_fighter_km ?? r.instrumented_range_km ?? 0
   return Math.min(tactical, MAX_MAP_RADAR_DOME_KM)

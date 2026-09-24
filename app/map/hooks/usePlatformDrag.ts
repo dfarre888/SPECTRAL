@@ -171,7 +171,7 @@ export function usePlatformDrag(
         const cartesian = viewer.scene.globe.pick(ray, viewer.scene)
         if (!cartesian) return
 
-        // Move the mark entity directly in Cesium — no React state, no re-render
+        // Move the mark entity directly in Cesium: no React state, no re-render
         const entity = viewer.entities.getById(dragRef.current.entityId)
         if (entity) {
           entity.position = new Cesium.ConstantPositionProperty(cartesian)
@@ -215,7 +215,7 @@ export function usePlatformDrag(
         camera.enableTranslate = true
         canvas.style.cursor = ''
 
-        // Click-without-drag — don't emit a spurious state update
+        // Click-without-drag: don't emit a spurious state update
         if (!drag.didMove) return
 
         const ray = viewer.camera.getPickRay(e.position)

@@ -74,16 +74,16 @@ function verdictTag(verdict: string): string {
 
 function centreFreqGHz(pair: PairLaydownAssessment): string {
   const overlap = pair.bandOverlaps[0]
-  if (!overlap) return '—'
+  if (!overlap) return 'n/a'
   const lo = overlap.redCapability.freq_low_hz ?? overlap.blueCapability.freq_low_hz
   const hi = overlap.redCapability.freq_high_hz ?? overlap.blueCapability.freq_high_hz
-  if (!lo || !hi) return '—'
+  if (!lo || !hi) return 'n/a'
   return `${((lo + hi) / 2 / 1e9).toFixed(2)} GHz`
 }
 
 function jamErpLabel(pair: PairLaydownAssessment, placedCuas: PlacedCuas[]): string {
   const cuas = placedCuas.find((c) => c.asset.name === pair.cuasName)
-  if (!cuas) return '—'
+  if (!cuas) return 'n/a'
   if (!cuas.asset.defeat_methods.includes('RF_jamming')) return 'N/A (non-RF effector)'
   const blue = cuasAssetToSpectrumBlue(cuas.asset)
   const jam = resolveJamTransmit(blue, pair.bandOverlaps[0] ?? null)
@@ -339,7 +339,7 @@ function PairAssessmentCard({
         </div>
         <div className="text-right shrink-0">
           <p className={clsx('text-lg font-mono font-bold', pctClass(pair.blueSuccessPct))}>
-            {pair.inDefeatRange ? `${pair.blueSuccessPct}%` : '—'}
+            {pair.inDefeatRange ? `${pair.blueSuccessPct}%` : 'n/a'}
           </p>
           <p className="text-[11px] store-text-muted">Blue success</p>
         </div>
@@ -383,7 +383,7 @@ function PairAssessmentCard({
               J/S:{' '}
               {pair.propagation.jam_to_signal_db != null
                 ? `${pair.propagation.jam_to_signal_db} dB`
-                : '—'}
+                : 'n/a'}
             </span>
           </div>
           <p className="text-[11px] font-mono store-text-muted">

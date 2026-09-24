@@ -17,7 +17,7 @@ export interface MapUasAsset {
   side?: PlatformSide | null
   manufacturer?: string | null
   catalog_tier?: 'cots' | 'military' | null
-  /** Compatible A3DM payloads — searchable on Map Intel. */
+  /** Compatible A3DM payloads: searchable on Map Intel. */
   payloads?: Array<{ id: string; name: string; type: string }>
   /** True when max_range_km is the COTS 5 km training default, not a published spec. */
   rangeEstimated?: boolean
@@ -29,6 +29,19 @@ export interface MapUasAsset {
   max_speed_kmh: number
   endurance_min: number
   climb_rate_mpm: number
+  /** Platform-library link data (MHz) when the DB row carries it. Optional; the fratricide check falls back to spectrum seed data, then labelled defaults. */
+  c2_mhz?: number[] | null
+  video_mhz?: number[] | null
+  datalink_mhz?: number[] | null
+  /** Free-text control link description, e.g. '2.4 / 5.8 GHz ISM' or 'fibre-optic'. */
+  control_link_freq?: string | null
+}
+
+/** One RF band a C-UAS system covers, in MHz, with where the figure came from. */
+export interface MapCuasBand {
+  label: string
+  lo_mhz: number
+  hi_mhz: number
 }
 
 export interface MapCuasAsset {
@@ -39,6 +52,43 @@ export interface MapCuasAsset {
   defeat_range_m: number
   defeat_range_km: number
   defeat_methods: string[]
+  /** Bands from anti_drone_systems.frequency_bands_covered (jam and detect keys both kept; the label says which). */
+  bands_mhz?: MapCuasBand[]
+  /** Published output power (W) when the catalogue carries it. */
+  power_output_w?: number | null
+  /** True for catalogue entries SPECTRAL synthesised as a labelled planning assumption. */
+  planningAssumption?: boolean
+  /** Short provenance note shown in the fratricide panel and exports. */
+  note?: string | null
+}
+
+/** Per-instance force side. Absent means infer (instance id token, then catalogue side). */
+export type ForceSide = 'red' | 'blue'
+
+/** What a placed drone is doing in the laydown. Drives relay handling in the fratricide check. */
+export type UasRole = 'isr' | 'strike' | 'relay' | 'multirole'
+
+/** A link band override set by a mitigation (drone moved to an uncovered band). */
+export interface UasLinkOverride {
+  kind: 'c2' | 'video' | 'datalink'
+  label: string
+  lo_mhz: number
+  hi_mhz: number
+}
+
+/** Per-drone link plan edits made from the fratricide panel. */
+export interface UasLinkPlan {
+  overrides?: UasLinkOverride[]
+  /** Fly this sortie on a fibre-optic FPV (no RF link to jam). */
+  fibre?: boolean
+}
+
+/** Jammer emission control set from the fratricide panel. */
+export interface JammerEmissionControl {
+  /** Minutes after H-hour when the jammer is held silent. */
+  quietWindows?: Array<{ start_min: number; end_min: number }>
+  /** Bearing sectors (degrees true, clockwise from `from_deg` to `to_deg`) the jammer does not radiate into. */
+  blankSectors?: Array<{ from_deg: number; to_deg: number }>
 }
 
 export interface MapRadarAsset {
@@ -48,9 +98,9 @@ export interface MapRadarAsset {
   role: RadarRole
   roleLabel: string
   image_url: string | null
-  /** OSINT instrumented / class range — shown in sidebar. */
+  /** OSINT instrumented / class range: shown in sidebar. */
   detection_range_km: number
-  /** Tactical dome radius on globe (may be capped — see spectra-assets). */
+  /** Tactical dome radius on globe (may be capped: see spectra-assets). */
   dome_range_km: number
   sector_deg: number
   bandsLabel: string
@@ -67,7 +117,7 @@ export interface MapEffectorAsset {
   effect: EffectType
   engagement_max_km: number
   engagement_min_km: number
-  /** Tactical globe dome radius (capped — sidebar shows engagement_max_km). */
+  /** Tactical globe dome radius (capped: sidebar shows engagement_max_km). */
   engagement_dome_km: number
   /** Assessed Pk (%), from effector seed pk_estimate. */
   pk_estimate_pct: number
@@ -99,11 +149,19 @@ export interface PlacedUas {
   ceilingAMSL_m: number
   annotationTime_min: number
   effectiveRange_km: number
-  /** Terrain AMSL samples around disc perimeter — drives terrain-following side walls. */
+  /** Terrain AMSL samples around disc perimeter: drives terrain-following side walls. */
   wallTerrain_m?: number[]
   loiter?: LoiterPlan
   mission?: MissionPlan
   infoPanelClosed: boolean
+  /** Force side for this instance (the same airframe can fly for either side). */
+  side?: ForceSide
+  role?: UasRole
+  /** Display callsign, e.g. 'FPV A1'. Exports use it as the CoT callsign. */
+  callsign?: string
+  /** Launch time, minutes after H-hour. Drives the "when" in the fratricide check. */
+  launchTime_min?: number
+  linkPlan?: UasLinkPlan
 }
 
 
@@ -165,8 +223,12 @@ export interface PlacedCuas {
   lat: number
   terrainAMSL: number
   hasTerrainMasking: boolean
-  /** Terrain AMSL samples around defeat sphere equator — terrain-following side walls. */
+  /** Terrain AMSL samples around defeat sphere equator: terrain-following side walls. */
   wallTerrain_m?: number[]
+  /** C-UAS default to Blue; a Red OPFOR jammer sets 'red'. */
+  side?: ForceSide
+  callsign?: string
+  emcon?: JammerEmissionControl
 }
 
 export interface PlacedRadar {

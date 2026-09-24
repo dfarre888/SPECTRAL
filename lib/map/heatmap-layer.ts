@@ -1,12 +1,12 @@
 import type { CesiumModule, CesiumViewer } from '@/lib/map/cesium-types'
 import type { HeatmapCell } from '@/lib/propagation/types'
 
-/** Max grid resolution — larger grids recurse Cesium tile geometry and stack-overflow. */
+/** Max grid resolution: larger grids recurse Cesium tile geometry and stack-overflow. */
 export const MAX_HEATMAP_GRID_STEPS = 24
 /** Max geographic span per heatmap layer (degrees). */
 export const MAX_HEATMAP_SPAN_DEG = 6
 
-/** Jam / path-loss heat — visible above terrain without terrain classification (avoids tile recursion). */
+/** Jam / path-loss heat: visible above terrain without terrain classification (avoids tile recursion). */
 function lossToColour(Cesium: CesiumModule, pathLossDb: number, losState: string) {
   // 80–160 dB → cyan (strong field) → orange (weak). NLOS still shows gradient, not flat grey.
   const t = Math.min(1, Math.max(0, (pathLossDb - 80) / 80))

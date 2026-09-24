@@ -140,7 +140,7 @@ describe('laydown-evaluation', () => {
 
   it('UAS evaluation lists Giraffe in can-detect and complement excludes engaged assets', () => {
     const evalResult = evaluateUas(placedShahed(), baseState())
-    const canDetect = evalResult.sections.find((s) => s.title === 'Radars — can detect')!
+    const canDetect = evalResult.sections.find((s) => s.title === 'Radars: can detect')!
     const complement = evalResult.sections.find((s) => s.title === 'Cannot detect or shoot')!
 
     expect(canDetect.items.some((i) => i.assetId === 'radar-giraffe-amb')).toBe(true)
@@ -160,7 +160,7 @@ describe('laydown-evaluation', () => {
 
   it('FPV UAS puts Big Bird in cannot-detect radars', () => {
     const evalResult = evaluateUas(placedFpv(), baseState())
-    const cannotDetect = evalResult.sections.find((s) => s.title === 'Radars — cannot detect')!
+    const cannotDetect = evalResult.sections.find((s) => s.title === 'Radars: cannot detect')!
     expect(cannotDetect.items.some((i) => i.assetId === 'radar-91n6e-big-bird')).toBe(true)
   })
 
@@ -221,7 +221,7 @@ describe('laydown-evaluation', () => {
   it('groupEvaluatedByIadsStack collapses S-400 variants and standalone bucket', () => {
     expect(iadsStackGroupKey('S-400 Triumf (SA-21)')).toBe(iadsStackGroupKey('S-400 Triumf'))
     const evalResult = evaluateUas(placedShahed(), baseState())
-    const canDetect = evalResult.sections.find((s) => s.title === 'Radars — can detect')!
+    const canDetect = evalResult.sections.find((s) => s.title === 'Radars: can detect')!
     const groups = groupEvaluatedByIadsStack(canDetect.items)
     expect(groups.length).toBeGreaterThan(1)
     expect(groups.every((g) => g.items.length > 0)).toBe(true)
@@ -262,7 +262,7 @@ describe('laydown-evaluation', () => {
     }
     const evalResult = evaluateUas(uas, baseState({ catalogUas: [uas.asset] }))
     const canShoot = evalResult.sections.find((s) => s.title === 'Can shoot down')!
-    const canDetect = evalResult.sections.find((s) => s.title === 'Radars — can detect')!
+    const canDetect = evalResult.sections.find((s) => s.title === 'Radars: can detect')!
     expect(canDetect.items.length).toBeGreaterThan(0)
     expect(canShoot.items.length).toBeGreaterThan(0)
     expect(canShoot.items.some((i) => i.pct != null && i.pct > 0)).toBe(true)
@@ -306,7 +306,7 @@ describe('laydown-evaluation', () => {
     }
     const evalResult = evaluateUas(uas, baseState({ catalogUas: [uas.asset] }))
     const canShoot = evalResult.sections.find((s) => s.title === 'Can shoot down')!
-    const canDetect = evalResult.sections.find((s) => s.title === 'Radars — can detect')!
+    const canDetect = evalResult.sections.find((s) => s.title === 'Radars: can detect')!
     expect(canDetect.items.length).toBeGreaterThan(0)
     expect(canShoot.items.length).toBeGreaterThan(0)
     expect(canShoot.items.some((i) => i.assetId === cuasAsset.id)).toBe(true)
@@ -366,7 +366,7 @@ describe('laydown-evaluation', () => {
 
   it('evaluateUas names radars with spoken name first and designator second', () => {
     const evalResult = evaluateUas(placedFpv(), baseState())
-    const cannotDetect = evalResult.sections.find((s) => s.title === 'Radars — cannot detect')!
+    const cannotDetect = evalResult.sections.find((s) => s.title === 'Radars: cannot detect')!
     const complement = evalResult.sections.find((s) => s.title === 'Cannot detect or shoot')!
     const bigBird = cannotDetect.items.find((i) => i.assetId === 'radar-91n6e-big-bird')
     const tombstone = complement.items.find((i) => i.assetId === 'radar-64n6-tombstone')
@@ -385,7 +385,7 @@ describe('laydown-evaluation', () => {
         expect(['uas', 'cuas', 'radar', 'effector']).toContain(item.kind)
       }
     }
-    const canDetect = evalResult.sections.find((s) => s.title === 'Radars — can detect')!
+    const canDetect = evalResult.sections.find((s) => s.title === 'Radars: can detect')!
     expect(canDetect.items.every((i) => i.kind === 'radar')).toBe(true)
   })
 })

@@ -74,7 +74,7 @@ export function usePropagationHeatmap(
       grid_steps: gridSteps,
       receiver_alt_m: receiverAltM,
       environment: {
-        // Nominal propagation grid — terrain shielding is shown on the defeat dome, not as all-NLOS grey tiles.
+        // Nominal propagation grid: terrain shielding is shown on the defeat dome, not as all-NLOS grey tiles.
         urban_density: 'open',
         terrain_obstructed: false,
       },

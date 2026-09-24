@@ -75,7 +75,7 @@ export function buildOverlapVolume(
     effectiveness_pct: pct,
     isDefeat,
     label: isDefeat
-      ? `DEFEAT ZONE — ${pct}% Pk`
-      : `SURVIVABLE — ${pct}% Pk`,
+      ? `DEFEAT ZONE: ${pct}% Pk`
+      : `SURVIVABLE: ${pct}% Pk`,
   }
 }

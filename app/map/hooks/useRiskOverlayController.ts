@@ -36,7 +36,7 @@ export interface UseRiskOverlayControllerOptions {
   cursorLat: number
 }
 
-/** Shared sync implementation — exported for unit tests. */
+/** Shared sync implementation: exported for unit tests. */
 export async function syncRiskOverlayImpl(
   ctx: RiskOverlaySyncContext,
   riskMode: RiskMode,

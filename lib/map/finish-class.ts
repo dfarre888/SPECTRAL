@@ -1,5 +1,5 @@
 /**
- * Finish class — Deny the link vs Destroy the airframe.
+ * Finish class: Deny the link vs Destroy the airframe.
  *
  * Williamtown lesson: a DroneGun-class RF buy is not a crash. Soft-kill
  * denies the pilot. Hard-kill (HPM / HEL / kinetic / net) takes the
@@ -46,6 +46,6 @@ export function finishPctLabel(finish: FinishClass): string {
 
 export function finishOutcomeLine(finish: FinishClass): string {
   return finish === 'destroy'
-    ? 'Airframe down — electronics fried, burned, or hit'
-    : 'Link denied — airframe recoverable, still airworthy'
+    ? 'Airframe down, electronics fried, burned, or hit'
+    : 'Link denied, airframe recoverable, still airworthy'
 }

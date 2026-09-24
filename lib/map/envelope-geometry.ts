@@ -1,7 +1,7 @@
 /** Segments around combat disc / defeat sphere perimeter walls. */
 export const ENVELOPE_WALL_SEGMENTS = 48
 
-/** Horizontal ring sample points (closed loop — first point not repeated at end). */
+/** Horizontal ring sample points (closed loop: first point not repeated at end). */
 export function envelopePerimeterPoints(
   lon: number,
   lat: number,

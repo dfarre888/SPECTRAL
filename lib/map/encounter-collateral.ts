@@ -54,7 +54,7 @@ export function buildEncounterCollateral(input: {
       cde: null,
       impactLon,
       impactLat,
-      summary: 'AOI mission — collateral damage estimate applies to target strikes only.',
+      summary: 'AOI mission, collateral damage estimate applies to target strikes only.',
     }
   }
 
@@ -67,7 +67,7 @@ export function buildEncounterCollateral(input: {
       impactLon,
       impactLat,
       summary:
-        'No OSINT warhead mapping for this platform — open Blast tool and select a munition manually.',
+        'No OSINT warhead mapping for this platform, open Blast tool and select a munition manually.',
     }
   }
 

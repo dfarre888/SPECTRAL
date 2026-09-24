@@ -1,5 +1,5 @@
 /**
- * Engagement envelopes for air defence systems — OSINT.
+ * Engagement envelopes for air defence systems: OSINT.
  *
  * Two things drove the shape of this data, both learned from the sources
  * themselves rather than assumed:
@@ -18,7 +18,7 @@
  *
  * No Pk is recorded here. Kill probability against a given target is not
  * available in open sources at any useful confidence, and inventing it would be
- * worse than leaving it blank — it would be undetectable. Pk comes from the
+ * worse than leaving it blank: it would be undetectable. Pk comes from the
  * accredited layer; where none exists the kill chain marks the stage estimated
  * and widens its band.
  *
@@ -39,7 +39,7 @@ export interface EngagementEnvelope {
   label: string
   nation: string
   category: 'sam_long' | 'sam_medium' | 'sam_short' | 'chaad' | 'abm'
-  /** What the interceptor can reach — the figure usually quoted in headlines. */
+  /** What the interceptor can reach: the figure usually quoted in headlines. */
   kinematicRangeM: RangeInterval
   /**
    * Where the system can realistically engage, bounded by fire control and
@@ -54,7 +54,7 @@ export interface EngagementEnvelope {
   dopplerNotch: boolean
   /**
    * Notch half-width in degrees of aspect. Genuinely not published for any of
-   * these systems — a modelling assumption, flagged as such, uniform so it does
+   * these systems: a modelling assumption, flagged as such, uniform so it does
    * not silently advantage one side.
    */
   notchHalfWidthDeg: number
@@ -69,7 +69,7 @@ const SRC_MDAA = 'Missile Defense Advocacy Alliance'
 const SRC_LM = 'Lockheed Martin PAC-3 MSE product sheet'
 const SRC_WIKI = 'Wikipedia, citing manufacturer and press reporting'
 
-/** Uniform assumption — see notchHalfWidthDeg. */
+/** Uniform assumption: see notchHalfWidthDeg. */
 const ASSUMED_NOTCH_DEG = 12
 
 export const ENGAGEMENT_ENVELOPES: EngagementEnvelope[] = [
@@ -134,7 +134,7 @@ export const ENGAGEMENT_ENVELOPES: EngagementEnvelope[] = [
     notchHalfWidthDeg: 0,
     confidence: 'consensus',
     note:
-      'Exo/endo-atmospheric ballistic missile defence. Not an anti-aircraft system — present so a laydown can show ABM coverage, and it should not be treated as a threat to aircraft. AN/TPY-2 detection range varies enormously with mode.',
+      'Exo/endo-atmospheric ballistic missile defence. Not an anti-aircraft system, present so a laydown can show ABM coverage, and it should not be treated as a threat to aircraft. AN/TPY-2 detection range varies enormously with mode.',
     sources: [SRC_CSIS, SRC_MDAA],
   },
   {
@@ -173,7 +173,7 @@ export const ENGAGEMENT_ENVELOPES: EngagementEnvelope[] = [
     nation: 'RUS',
     category: 'sam_long',
     kinematicRangeM: { loM: 380_000, hiM: 400_000 },
-    // Deliberately far below the kinematic figure — see note.
+    // Deliberately far below the kinematic figure: see note.
     effectiveRangeM: { loM: 150_000, hiM: 250_000 },
     detectionRangeM: { loM: 400_000, hiM: 600_000 },
     ceilingM: { loM: 30_000, hiM: 35_000 },
@@ -327,7 +327,7 @@ export const UNKNOWN_PK_PLACEHOLDER = 0.4
 /**
  * Turn placed systems into planner threats under a stated posture.
  *
- * Uses effective range for engagement — kinematic reach would draw rings the
+ * Uses effective range for engagement: kinematic reach would draw rings the
  * fire control cannot support.
  */
 export function toThreatEmitters(

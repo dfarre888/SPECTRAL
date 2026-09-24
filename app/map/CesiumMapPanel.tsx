@@ -264,7 +264,7 @@ export default function CesiumMapPanel({
       })
 
       configureMapIntelShadows(viewer, Cesium)
-      // Off until a C-UAS is placed — toggled in effect below.
+      // Off until a C-UAS is placed: toggled in effect below.
       setTerrainShadowsActive(viewer, Cesium, false)
 
       // Range domes / defeat ellipsoids must render above terrain (A3DM flight-plan pattern).
@@ -362,7 +362,7 @@ export default function CesiumMapPanel({
       handlerRef.current = null
       initRef.current = false
     }
-    // Viewer must init once — callback refs keep handlers current without re-creating the globe.
+    // Viewer must init once: callback refs keep handlers current without re-creating the globe.
   }, [pickLonLat])
 
   // Re-sample terrain when tiles finish loading or placements still hold fallback height (0).
@@ -457,7 +457,7 @@ export default function CesiumMapPanel({
     }
   }, [cesiumReady, terrainEpoch, stalePlacementCount])
 
-  // Native sun shadow map is kept OFF permanently — it darkens the whole terrain tile
+  // Native sun shadow map is kept OFF permanently: it darkens the whole terrain tile
   // uniformly which is too aggressive at typical viewing angles (southern hemisphere sun
   // casting long shadows over large terrain areas).  Terrain-blocked defeat zones are
   // visualised instead via the LOS masking polygon (useTerrainMasking / computeTerrainMasking).

@@ -6,12 +6,12 @@
  *
  *  1. Unresolved terrain samples arrive as NaN, and every comparison against
  *     NaN is false. An unresolved sample therefore passed the visibility test
- *     AND failed to raise the horizon angle — it was silently transparent.
+ *     AND failed to raise the horizon angle: it was silently transparent.
  *     Cesium resolves tiles at different detail depending on camera and cache,
  *     so the same emitter produced a different viewshed run to run.
  *
  *  2. Earth curvature was ignored, while radio-horizon.ts alongside it uses a
- *     4/3 effective radius. At 100 km the bulge is ~147 m — larger than most of
+ *     4/3 effective radius. At 100 km the bulge is ~147 m: larger than most of
  *     the terrain being tested against.
  *
  *  3. Emitter height came from TERRAIN_SURFACE_AGL_M, a 2 m z-fighting offset
@@ -30,7 +30,7 @@
  * being fixed here, so it is not used.
  */
 
-/** Mean Earth radius times 4/3 — standard refraction allowance. */
+/** Mean Earth radius times 4/3: standard refraction allowance. */
 export const EFFECTIVE_EARTH_RADIUS_M = 6371000 * (4 / 3)
 
 /** How an unresolved (NaN) terrain sample is treated. */
@@ -39,7 +39,7 @@ export type UnresolvedPolicy =
   | 'block'
   /** Carry the last resolved height forward. Best for sparse dropouts. */
   | 'carry'
-  /** Treat as transparent — the previous behaviour. Retained for comparison. */
+  /** Treat as transparent: the previous behaviour. Retained for comparison. */
   | 'ignore'
 
 export interface ViewshedOptions {
@@ -73,7 +73,7 @@ export interface RayVisibility {
   firstMaskM: number | null
   /** Total visible length along the ray, metres. */
   visibleLengthM: number
-  /** Samples that never resolved — surfaced so the UI can qualify the result. */
+  /** Samples that never resolved: surfaced so the UI can qualify the result. */
   unresolvedSamples: number
   totalSamples: number
 }
@@ -215,7 +215,7 @@ export function viewshedQuality(rays: readonly RayVisibility[], warnPct = 5): Vi
  * Sample budget for a full 360-degree sweep.
  *
  * Terrain sampling dominates the cost of a viewshed, and the count is the
- * product of azimuth rays and radial steps — so raising azimuth resolution
+ * product of azimuth rays and radial steps: so raising azimuth resolution
  * without a budget is how a map hangs. At 50 km a 0.5 degree step over 50 m
  * radial steps is 720 rays x 1000 steps = 720,000 samples.
  *
@@ -248,7 +248,7 @@ export function planSweep(
   const count = (az: number, st: number) =>
     Math.ceil(360 / az) * Math.max(1, Math.floor(maxRangeM / st))
 
-  // Widen azimuth first — losing angular detail costs less than missing a ridge.
+  // Widen azimuth first: losing angular detail costs less than missing a ridge.
   while (count(azStepDeg, stepM) > budget && azStepDeg < 5) {
     azStepDeg = Math.min(5, azStepDeg * 1.25)
     budgetLimited = true

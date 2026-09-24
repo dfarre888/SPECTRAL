@@ -1,5 +1,5 @@
 /**
- * SPECTRAL Planner — BattlespacePlan persistence model
+ * SPECTRAL Planner: BattlespacePlan persistence model
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 import type { LaydownSessionPair } from '@/lib/map/laydown-session';
@@ -11,6 +11,10 @@ import type {
   PlacedUas,
   LoiterPlan,
   MissionPlan,
+  ForceSide,
+  UasRole,
+  UasLinkPlan,
+  JammerEmissionControl,
 } from '@/lib/map/types';
 import type { IadsStackInstance } from '@/lib/planner/iads-stacks';
 
@@ -30,6 +34,12 @@ export interface PersistedPlacedUas {
   infoPanelClosed?: boolean;
   loiter?: LoiterPlan;
   mission?: MissionPlan;
+  /** Combat-team fields (optional; older plans load without them). */
+  side?: ForceSide;
+  role?: UasRole;
+  callsign?: string;
+  launchTime_min?: number;
+  linkPlan?: UasLinkPlan;
 }
 
 export interface PersistedPlacedCuas {
@@ -39,6 +49,10 @@ export interface PersistedPlacedCuas {
   lat: number;
   terrainAMSL: number;
   hasTerrainMasking: boolean;
+  side?: ForceSide;
+  callsign?: string;
+  /** Applied fratricide mitigations (silent windows, blanked arcs). */
+  emcon?: JammerEmissionControl;
 }
 
 export interface PersistedPlacedRadar {
@@ -122,6 +136,11 @@ export function serializeLaydown(state: LaydownState): MapLaydownDocument {
       infoPanelClosed: u.infoPanelClosed,
       loiter: u.loiter,
       mission: u.mission,
+      side: u.side,
+      role: u.role,
+      callsign: u.callsign,
+      launchTime_min: u.launchTime_min,
+      linkPlan: u.linkPlan,
     })),
     cuas: state.placedCuas.map((c) => ({
       instanceId: c.instanceId,
@@ -130,6 +149,9 @@ export function serializeLaydown(state: LaydownState): MapLaydownDocument {
       lat: c.lat,
       terrainAMSL: c.terrainAMSL,
       hasTerrainMasking: c.hasTerrainMasking,
+      side: c.side,
+      callsign: c.callsign,
+      emcon: c.emcon,
     })),
     radars: state.placedRadars.map((r) => ({
       instanceId: r.instanceId,
@@ -168,6 +190,11 @@ export function hydrateLaydown(doc: MapLaydownDocument, catalog: MapAssetsPayloa
       infoPanelClosed: row.infoPanelClosed ?? false,
       loiter: row.loiter,
       mission: row.mission,
+      side: row.side,
+      role: row.role,
+      callsign: row.callsign,
+      launchTime_min: row.launchTime_min,
+      linkPlan: row.linkPlan,
     });
   }
 
@@ -182,6 +209,9 @@ export function hydrateLaydown(doc: MapLaydownDocument, catalog: MapAssetsPayloa
       lat: row.lat,
       terrainAMSL: row.terrainAMSL,
       hasTerrainMasking: row.hasTerrainMasking,
+      side: row.side,
+      callsign: row.callsign,
+      emcon: row.emcon,
     });
   }
 

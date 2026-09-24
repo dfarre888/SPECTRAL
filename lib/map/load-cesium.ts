@@ -3,12 +3,12 @@ import type { CesiumModule } from '@/lib/map/cesium-types'
 let loadPromise: Promise<CesiumModule> | null = null
 
 /**
- * Load Cesium via script tag — avoids webpack parsing Cesium.js (import.meta).
+ * Load Cesium via script tag: avoids webpack parsing Cesium.js (import.meta).
  * Cesium.js is served from NEXT_PUBLIC_CESIUM_BASE_URL:
  *   - Local / Helm: /static/Cesium/ (public/ via copy-cesium-public.mjs)
  *   - Fallback:     /_next/static/Cesium/ (webpack CopyWebpackPlugin)
  *
- * Trailing slash is mandatory — without it Uri/Resource derivation can recurse
+ * Trailing slash is mandatory: without it Uri/Resource derivation can recurse
  * until "Maximum call stack size exceeded" during terrain tile requests.
  */
 function resolveCesiumBaseUrl(): string {

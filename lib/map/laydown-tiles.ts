@@ -323,7 +323,7 @@ export function catalogEmissionFromEvalItem(
   }
 }
 
-const EVAL_DEFENDER_SECTIONS = ['Radars — can detect', 'Can shoot down'] as const
+const EVAL_DEFENDER_SECTIONS = ['Radars: can detect', 'Can shoot down'] as const
 
 /** Virtual blue-force emissions from UAS laydown evaluation (skips already-placed defenders). */
 export function resolveEvaluationDefenderEmissions(

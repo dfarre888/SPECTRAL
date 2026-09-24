@@ -1,14 +1,23 @@
 /**
- * Demo vignettes — Taipan Strike 26 + North QLD C-UAS belt
+ * Demo vignettes: Taipan Strike 26 + North QLD C-UAS belt
  * UNCLASSIFIED // FOR OFFICIAL TRAINING USE ONLY
  */
 import { emptyLaydownDocument, type MapLaydownDocument } from '@/lib/planner/battlespace-plan';
+import type { LaydownPresetId } from '@/lib/map/laydown-presets';
 
 export interface PlannerVignette {
   id: string;
   name: string;
   description: string;
   iadsStackId: string;
+  /**
+   * Laydown built at load time by a Map Intel preset. Presets resolve kit by
+   * name against the live catalogue (with labelled fallbacks), so they are not
+   * frozen to asset ids like `laydownSeed`. The seed still carries the viewport.
+   */
+  preset?: LaydownPresetId;
+  /** Open this tool on arrival (e.g. the fratricide check). */
+  openTool?: 'fratricide';
   terrain?: string;
   economicsHighlight?: { platformId: string; defeatSystemId: string; label: string };
   swarmCount?: number;
@@ -131,6 +140,42 @@ export const PLANNER_VIGNETTES: PlannerVignette[] = [
         annotationTime_min: i * 2,
         effectiveRange_km: 250,
       })),
+    },
+  },
+  {
+    id: 'ts27-combat-team',
+    name: 'Talisman Sabre 27: Combat team drone strike vs counter-RAS',
+    description:
+      'Shoalwater Bay. A 1 Bde combat team (company and battle-group drone teams, FPV teams on relays to about 20 km) against a 7 Bde counter-RAS OPFOR. Opens on the fratricide check. From Army plans reported by Defence Connect, 17 Aug and 24 Sep 2026; positions notional.',
+    iadsStackId: 'stack-north-qld-cuas',
+    preset: 'combat-team',
+    openTool: 'fratricide',
+    laydownSeed: {
+      viewport: { lon: 150.46, lat: -22.585, height_m: 26000 },
+    },
+  },
+  {
+    id: 'williamtown-incursion',
+    name: 'RAAF Williamtown: Drone incursion response',
+    description:
+      'Base defence laydown with RF detect, radar and defeat layers against small drones over the airfield. Drones were reported over the base on 11 to 13 Jul and in early Aug 2026 and referred to NSW Police (ABC, 20 Aug 2026). Defence has not said how it responded; the layers here are notional.',
+    iadsStackId: 'stack-north-qld-cuas',
+    preset: 'williamtown',
+    laydownSeed: {
+      viewport: { lon: 151.842, lat: -32.797, height_m: 10000 },
+    },
+  },
+  {
+    id: 'al-minhad-owa',
+    name: 'Al Minhad Air Base: One-way attack drone saturation',
+    description:
+      'Deployed base against a Shahed-class raid of eight drones through a layered defence. Iranian drones struck the base on 3 Mar 2026 (ABC) and on 18 Mar 2026 damaged Australian accommodation and a medical facility (Defence statement). The defence shown is illustrative, not what is fielded.',
+    iadsStackId: 'stack-north-qld-cuas',
+    preset: 'al-minhad',
+    swarmCount: 8,
+    economicsHighlight: { platformId: 'shahed-136', defeatSystemId: 'nasams-amraam-er', label: 'Reported ~$30k drone vs interceptor cost' },
+    laydownSeed: {
+      viewport: { lon: 55.55, lat: 25.5, height_m: 190000 },
     },
   },
 ];

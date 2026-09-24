@@ -8,7 +8,7 @@ import type {
 
 export type CounterPlacementKind = 'cuas' | 'effector' | 'radar' | 'uas'
 
-/** Platform catalogue IDs that also exist as counter-systems — never place as threat UAS. */
+/** Platform catalogue IDs that also exist as counter-systems: never place as threat UAS. */
 export const DUAL_ROLE_PLATFORM_IDS = new Set([
   'iron-beam',
   'lite-beam',

@@ -61,9 +61,9 @@ function synthesizeCotsSpectrumUas(id: string): Platform {
     video_mhz: 5800,
     control_link_freq: '2.4 / 5.8 GHz ISM (estimated COTS family)',
     defeat_note:
-      'Estimated Group 1–2 COTS — RF jam 2.4/5.8 GHz C2 + video; GNSS spoof forces land or RTH. Same class as Mavic 3 family.',
+      'Estimated Group 1–2 COTS, RF jam 2.4/5.8 GHz C2 + video; GNSS spoof forces land or RTH. Same class as Mavic 3 family.',
     intel_note:
-      'A3DM / COTS sheet airframe with no military seed dossier. Spectrum bands are Estimated ISM/GNSS family defaults for training — not a curated per-airframe signature. Finish Pk is the catalog training default, not accredited Pk.',
+      'A3DM / COTS sheet airframe with no military seed dossier. Spectrum bands are Estimated ISM/GNSS family defaults for training, not a curated per-airframe signature. Finish Pk is the catalog training default, not accredited Pk.',
     capabilities: [],
   }
   return {
